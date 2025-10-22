@@ -1,8 +1,8 @@
-# ArticleSite
+# ArticlesSite
 
-[![GitHub](https://img.shields.io/github/license/mpaulosky/ArticleSite?style=flat-square&logo=github)](LICENSE.txt)
-[![.NET Build](https://img.shields.io/github/actions/workflow/status/mpaulosky/ArticleSite/dotnet.yml?style=flat-square&label=Build)](https://github.com/mpaulosky/ArticleSite/actions/workflows/dotnet.yml)
-[![CodeCov](https://img.shields.io/codecov/c/github/mpaulosky/ArticleSite/main?style=flat-square&logo=codecov)](https://codecov.io/gh/mpaulosky/ArticleSite)
+[![GitHub](https://img.shields.io/github/license/mpaulosky/ArticlesSite?style=flat-square&logo=github)](LICENSE.txt)
+[![.NET Build](https://img.shields.io/github/actions/workflow/status/mpaulosky/ArticlesSite/dotnet.yml?style=flat-square&label=Build)](https://github.com/mpaulosky/ArticlesSite/actions/workflows/dotnet.yml)
+[![CodeCov](https://img.shields.io/codecov/c/github/mpaulosky/ArticlesSite/main?style=flat-square&logo=codecov)](https://codecov.io/gh/mpaulosky/ArticlesSite)
 ![.NET version](https://img.shields.io/badge/.NET-9.0-512BD4?style=flat-square&logo=dotnet)
 
 ⭐ If you like this project, star it on GitHub — it helps a lot!
@@ -18,7 +18,7 @@ A modern, cloud-native blog management application built with **BlazorServer**, 
 
 ## Overview
 
-ArticleSite is a full-featured blog management system that enables users to create, manage, and publish articles with categories and rich content. Built on .NET Aspire's cloud-native orchestration, the application leverages modern serverless patterns to deliver a scalable, maintainable solution.
+ArticlesSite is a full-featured blog management system that enables users to create, manage, and publish articles with categories and rich content. Built on .NET Aspire's cloud-native orchestration, the application leverages modern serverless patterns to deliver a scalable, maintainable solution.
 
 The application uses **Blazor Server** for interactive server-side rendering, providing a responsive user experience without the complexity of client-side JavaScript frameworks. PostgreSQL serves as the primary data store, with Entity Framework Core managing migrations and data access patterns.
 
@@ -59,14 +59,14 @@ To run this application, you'll need:
 1. **Clone the repository**
 
    ```bash
-   git clone https://github.com/mpaulosky/ArticleSite.git
-   cd ArticleSite
+   git clone https://github.com/mpaulosky/ArticlesSite.git
+   cd ArticlesSite
    ```
 
 2. **Start the application**
 
    ```bash
-   dotnet run --project src/ArticleSite.AppHost
+   dotnet run --project src/ArticlesSite.AppHost
    ```
 
    The AppHost will orchestrate all services including PostgreSQL and handle database migrations automatically.
@@ -91,22 +91,22 @@ This runs:
 
 ## Architecture
 
-ArticleSite follows a clean, layered architecture with clear separation of concerns:
+ArticlesSite follows a clean, layered architecture with clear separation of concerns:
 
 ### Project Structure
 
 ```
-ArticleSite/
+ArticlesSite/
 ├── src/
-│   ├── ArticleSite.AppHost/              # .NET Aspire orchestration
-│   ├── ArticleSite.Web/                  # Blazor Server UI
-│   ├── ArticleSite.ServiceDefaults/      # Shared service configuration
-│   ├── ArticleSite.Shared/               # Domain models and contracts
-│   ├── ArticleSite.Data.Postgres/        # Data access layer
-│   └── ArticleSite.Data.Postgres.Migrations/ # Database migrations service
+│   ├── ArticlesSite.AppHost/              # .NET Aspire orchestration
+│   ├── ArticlesSite.Web/                  # Blazor Server UI
+│   ├── ArticlesSite.ServiceDefaults/      # Shared service configuration
+│   ├── ArticlesSite.Shared/               # Domain models and contracts
+│   ├── ArticlesSite.Data.Postgres/        # Data access layer
+│   └── ArticlesSite.Data.Postgres.Migrations/ # Database migrations service
 └── tests/
-    ├── ArticleSite.Web.Tests.Bunit/      # Component tests
-    └── ArticleSite.Tests.E2E/            # End-to-end tests
+    ├── ArticlesSite.Web.Tests.Bunit/      # Component tests
+    └── ArticlesSite.Tests.E2E/            # End-to-end tests
 ```
 
 ### Design Principles
@@ -126,11 +126,11 @@ PostgreSQL with Entity Framework Core provides:
 - Connection pooling and resilience
 - Full async/await support
 
-The `ArticleSite.Data.Postgres.Migrations` project runs as a background service, applying pending migrations before the main application starts.
+The `ArticlesSite.Data.Postgres.Migrations` project runs as a background service, applying pending migrations before the main application starts.
 
 ## Testing
 
-ArticleSite employs a comprehensive testing strategy:
+ArticlesSite employs a comprehensive testing strategy:
 
 ### Unit Tests
 - Fast, isolated tests for business logic
@@ -145,12 +145,12 @@ ArticleSite employs a comprehensive testing strategy:
 ### Component Tests (bUnit)
 - Blazor component behavior verification
 - Render testing and interaction testing
-- Example: `tests/ArticleSite.Web.Tests.Bunit/`
+- Example: `tests/ArticlesSite.Web.Tests.Bunit/`
 
 ### End-to-End Tests
 - Full application scenarios
 - Database and UI interaction
-- Located in `tests/ArticleSite.Tests.E2E/`
+- Located in `tests/ArticlesSite.Tests.E2E/`
 
 ### Running Specific Tests
 
@@ -196,7 +196,7 @@ When running the solution inside a Dev Container (Rider or VS Code), this reposi
 - RIDER_DEVCONTAINER=true
 - IN_DEVCONTAINER=true
 
-You can detect this in code via the helper ArticleSite.Shared.Helpers.RuntimeEnvironment:
+You can detect this in code via the helper ArticlesSite.Shared.Helpers.RuntimeEnvironment:
 
 - RuntimeEnvironment.IsRunningInDevContainer() -> true when in a Dev Container
 - RuntimeEnvironment.IsRunningInContainer() -> true when in any container
