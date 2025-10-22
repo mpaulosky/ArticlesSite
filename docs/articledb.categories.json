@@ -1,0 +1,98 @@
+[{
+  "_id": {
+    "$oid": "677db927900ea4af1b500cab"
+  },
+  "archived": false,
+  "Slug": "asp.net-core",
+  "ArchivedBy": {
+    "Email": "",
+    "Name": "",
+    "Roles": [],
+    "UserId": ""
+  },
+  "Name": "ASP.NET Core"
+},
+{
+  "_id": {
+    "$oid": "677db927900ea4af1b500cac"
+  },
+  "archived": false,
+  "Slug": "blazor-server",
+  "ArchivedBy": {
+    "Email": "",
+    "Name": "",
+    "Roles": [],
+    "UserId": ""
+  },
+  "Name": "Blazor Server"
+},
+{
+  "_id": {
+    "$oid": "677db9bd900ea4af1b500cad"
+  },
+  "archived": false,
+  "Slug": "blazor-webassembly",
+  "ArchivedBy": {
+    "Email": "",
+    "Name": "",
+    "Roles": [],
+    "UserId": ""
+  },
+  "Name": "Blazor WebAssembly"
+},
+{
+  "_id": {
+    "$oid": "677db9bd900ea4af1b500cae"
+  },
+  "archived": false,
+  "Slug": "c%23",
+  "ArchivedBy": {
+    "Email": "",
+    "Name": "",
+    "Roles": [],
+    "UserId": ""
+  },
+  "Name": "C#"
+},
+{
+  "_id": {
+    "$oid": "677db9bd900ea4af1b500caf"
+  },
+  "archived": false,
+  "Slug": "entity-framework-core-(ef-core)",
+  "ArchivedBy": {
+    "Email": "",
+    "Name": "",
+    "Roles": [],
+    "UserId": ""
+  },
+  "Name": "Entity Framework Core (EF Core)"
+},
+{
+  "_id": {
+    "$oid": "677db9bd900ea4af1b500cb0"
+  },
+  "archived": false,
+  "Slug": ".net-maui",
+  "ArchivedBy": {
+    "Email": "",
+    "Name": "",
+    "Roles": [],
+    "UserId": ""
+  },
+  "Name": ".NET MAUI"
+},
+{
+  "_id": {
+    "$oid": "677db9bd900ea4af1b500cb1"
+  },
+  "archived": false,
+  "Slug": "other",
+  "ArchivedBy": {
+    "Email": "",
+    "Name": "",
+    "Roles": [],
+    "UserId": ""
+  },
+  "Name": "Other"
+}]
