@@ -1,0 +1,115 @@
+@page "/articles/detail/{id}"
+@using global::Shared.Models
+
+@inject NavigationManager Navigation
+@inject GetArticle.IGetArticleHandler GetHandler
+@inject ILogger<Details> Logger
+
+@attribute [Authorize]
+
+<PageHeadingComponent HeaderText="Article Details" Level="1" TextColorClass="blue-500" />
+
+@if (_isLoading)
+{
+	<LoadingComponent />
+}
+else if (_article is null)
+{
+	<ErrorAlertComponent Title="Unable to load article">
+		@(_errorMessage ?? "Article not found.")
+	</ErrorAlertComponent>
+}
+else
+{
+	<div class="card">
+		<img src="@_article.CoverImageUrl" alt="Cover" class="card-img-top" style="max-height:200px;object-fit:cover;" />
+		<div class="card-body">
+			<h2>@_article.Title</h2>
+			<p>@_article.Introduction</p>
+			<div>@((MarkupString)_article.Content)</div>
+			<p><strong>Author:</strong> @(_article.Author?.Name)</p>
+			<p><strong>Category:</strong> @_article.Category?.CategoryName</p>
+			<p><strong>Published:</strong> @(_article.IsPublished ? "Yes" : "No")</p>
+			<p><strong>Published On:</strong> @_article.PublishedOn?.ToString("d")</p>
+			<p><strong>Archived:</strong> @_article.IsArchived</p>
+			<button class="btn btn-secondary" @onclick="GoToEdit" disabled="@(!_article.CanEdit)">Edit</button>
+			<button class="btn btn-light" @onclick="GoToList">Back to List</button>
+		</div>
+	</div>
+}
+
+@code {
+
+	/// <summary>
+	/// The unique identifier of the article to display.
+	/// </summary>
+	[Parameter]
+	public required string Id { get; set; } = string.Empty;
+
+	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+	/// <summary>
+	/// The article data to be displayed on the page.
+	/// </summary>
+	private ArticleDto? _article;
+
+	/// <summary>
+	/// Indicates whether the component is currently loading data.
+	/// </summary>
+	private bool _isLoading = true;
+
+	/// <summary>
+	/// Error message returned by the handler when loading fails. Shown in the UI.
+	/// </summary>
+	private string? _errorMessage;
+
+	/// <summary>
+	/// Initializes the component by loading the article data using the ArticleHandler.
+	/// </summary>
+	protected override async Task OnInitializedAsync()
+	{
+
+		Logger?.LogInformation("Loading article details for Id: {ArticleId}", Id);
+		_isLoading = true;
+
+		try
+		{
+			var result = await GetHandler.HandleAsync(Id);
+
+			if (result is { Success: true })
+			{
+				_article = result.Value;
+				_errorMessage = null;
+				Logger?.LogInformation("Article loaded successfully: {ArticleId}", Id);
+			}
+			else
+			{
+				_article = null;
+				_errorMessage = result?.Error ?? "Article not found.";
+				Logger?.LogWarning("Failed to load article: {ArticleId}. Error: {Error}", Id, _errorMessage);
+			}
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+
+	}
+
+	/// <summary>
+	/// Navigates to the edit page for the current article.
+	/// </summary>
+	private void GoToEdit()
+	{
+		Navigation.NavigateTo($"/articles/edit/{Id}");
+	}
+
+	/// <summary>
+	/// Navigates back to the article list page.
+	/// </summary>
+	private void GoToList()
+	{
+		Navigation.NavigateTo("/articles");
+	}
+
+}
