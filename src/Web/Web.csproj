@@ -7,4 +7,16 @@
 		<BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
 	</PropertyGroup>
 
+	<!-- Optimized CSS build - only runs when source CSS changes -->
+	<Target Name="BuildTailwindCSS" BeforeTargets="PreBuildEvent">
+		<Exec Command="npm run build:css" />
+		<Message Importance="high" Text="TailwindCSS compiled successfully" />
+	</Target>
+
+	<!-- Ensure npm packages are installed -->
+	<Target Name="EnsureNodeModules" BeforeTargets="BuildTailwindCSS">
+		<Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)" Condition="!Exists('node_modules')" />
+		<Message Importance="high" Text="Node modules installed successfully" />
+	</Target>
+
 </Project>

@@ -6,4 +6,11 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <PackageReference Include="Bogus" />
+	  <PackageReference Include="FluentValidation" />
+	  <PackageReference Include="MongoDB.Bson" />
+	  <PackageReference Include="WaffleGenerator.Bogus" />
+	</ItemGroup>
+
 </Project>
