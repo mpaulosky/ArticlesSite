@@ -3,7 +3,7 @@
 // File Name :     CategoryValidator.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
 
