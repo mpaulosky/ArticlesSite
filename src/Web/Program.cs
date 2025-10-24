@@ -18,7 +18,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseHttpsRedirection();
+/// <summary>
+/// HTTPS redirection is disabled in development mode to simplify local testing and avoid certificate issues.
+/// </summary>
+if (!app.Environment.IsDevelopment())
+{
+	app.UseHttpsRedirection();
+}
 
 app.UseAntiforgery();
 

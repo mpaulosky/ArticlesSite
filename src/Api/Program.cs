@@ -12,7 +12,13 @@ if (app.Environment.IsDevelopment())
 	app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+/// <summary>
+/// HTTPS redirection is disabled in development mode to simplify local testing and avoid certificate issues.
+/// </summary>
+if (!app.Environment.IsDevelopment())
+{
+	app.UseHttpsRedirection();
+}
 
 var summaries = new[]
 {
@@ -21,7 +27,7 @@ var summaries = new[]
 
 app.MapGet("/weatherforecast", () =>
 		{
-			var forecast =  Enumerable.Range(1, 5).Select(index =>
+			var forecast = Enumerable.Range(1, 5).Select(index =>
 							new WeatherForecast
 							(
 									DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

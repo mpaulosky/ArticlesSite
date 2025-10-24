@@ -4,9 +4,9 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Aspire -->
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.5.1" />
-    <PackageVersion Include="Aspire.Hosting.MongoDB" Version="9.5.1" />
-    <PackageVersion Include="Aspire.Hosting.Redis" Version="9.5.1" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.5.2" />
+    <PackageVersion Include="Aspire.Hosting.MongoDB" Version="9.5.2" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="9.5.2" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="9.5.1" />
     <PackageVersion Include="Aspire.MongoDB.Driver" Version="9.5.1" />
     <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.5.1" />
@@ -25,7 +25,7 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.9" />
     <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="9.9.0" />
-    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.5.1" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="9.5.2" />
   <!-- OpenTelemetry -->
   <PackageVersion Include="OpenTelemetry" Version="1.13.1" />
   <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.13.1" />
