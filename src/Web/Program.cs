@@ -2,11 +2,24 @@ using Web.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.AddServiceDefaults();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
 		.AddInteractiveServerComponents();
 
+builder.Services.AddApplicationInsightsTelemetry();
+
+builder.Services.AddOutputCache();
+
+// builder.Services.AddHttpClient<ApiClient>(client =>
+// {
+// 	client.BaseAddress = new Uri("https+http://webapt");
+// });
+
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
