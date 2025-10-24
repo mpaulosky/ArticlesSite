@@ -52,7 +52,10 @@ public class ArticleDtoValidatorTests
 	{
 		// Arrange - The validator checks for NotNull, but ObjectId.Empty is not null
 		// ObjectId is a struct and cannot be null
-		var dto = ArticleDto.Empty;
+		var dto = new ArticleDto
+		{
+			Id = ObjectId.Empty
+		};
 
 		// Act
 		var result = _validator.Validate(dto);

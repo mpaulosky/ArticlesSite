@@ -44,8 +44,10 @@ public class CategoryDtoValidatorTests
 	{
 		// Arrange - The validator checks for NotNull, but ObjectId is a struct and cannot be null
 		// ObjectId.Empty is a valid value, just not useful
-		var dto = CategoryDto.Empty;
-		dto.CategoryName = "Technology";
+		var dto = new CategoryDto
+		{
+			CategoryName = "Technology"
+		};
 
 		// Act
 		var result = _validator.Validate(dto);
