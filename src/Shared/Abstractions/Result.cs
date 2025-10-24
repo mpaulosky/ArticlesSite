@@ -3,9 +3,10 @@
 // File Name :     Result.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
+
 namespace Shared.Abstractions;
 
 public class Result
@@ -61,7 +62,7 @@ public sealed class Result<T> : Result
 		Value = value;
 	}
 
-	public static Result<T> Ok(T value)
+	private static Result<T> Ok(T value)
 	{
 		return new Result<T>(value, true);
 	}

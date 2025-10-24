@@ -1,0 +1,25 @@
+@* @using Web.Data.Entities *@
+@* <div class="flex gap-4 border-t border-gray-200 pt-4"> *@
+@* *@
+@* 	<div>Author: @Article.Author.UserName</div> *@
+@* *@
+@* 	<div>Created: @Article.CreatedOn.ToString("M/d/yyyy", CultureInfo.InvariantCulture)</div> *@
+@* *@
+@* 	@if (Article.IsPublished) *@
+@* 	{ *@
+@* 		$1$ <div>Published: @Article.PublishedOn?.ToString("M/d/yyyy", CultureInfo.InvariantCulture)</div> #1# *@
+@* 	} *@
+@* 	else *@
+@* 	{ *@
+@* 		<div>Draft</div> *@
+@* 	} *@
+@* *@
+@* 	<div>Categories: @Article.Category.CategoryName</div> *@
+@* *@
+@* </div> *@
+@* *@
+@* @code { *@
+@* *@
+@* 	[Parameter] public string Article { get; set; } = new(); *@
+@* *@
+@* } *@

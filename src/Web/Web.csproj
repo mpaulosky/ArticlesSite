@@ -7,6 +7,10 @@
 		<BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Shared\Shared.csproj" />
+	</ItemGroup>
+
 	<!-- Optimized CSS build - only runs when source CSS changes -->
 	<Target Name="BuildTailwindCSS" BeforeTargets="PreBuildEvent">
 		<Exec Command="npm run build:css" />

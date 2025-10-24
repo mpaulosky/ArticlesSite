@@ -3,7 +3,7 @@
 // File Name :     MyCategories.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
 // =======================================================
@@ -11,7 +11,7 @@
 // File Name :     MyCategories.cs
 // Company :       mpaulosky
 // Author :        Matthew
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
 
