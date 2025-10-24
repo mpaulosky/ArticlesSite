@@ -5,11 +5,11 @@
 	"version": "0.2.0",
 	"configurations": [
 	{
-		"name": "C#: ArticlesSite Debug",
-		"type": "dotnet",
-		"request": "launch",
-		"projectPath": "${workspaceFolder}/src/AppHost/AppHost.csproj"
-		,"preLaunchTask": "prelaunch-all"
+	 "name": "C#: ArticlesSite Debug",
+	 "type": "dotnet",
+	 "request": "launch",
+	 "projectPath": "${workspaceFolder}/src/AppHost/AppHost.csproj",
+	 "preLaunchTask": "prelaunch-all"
 	}
 	]
 }
