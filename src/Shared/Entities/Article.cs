@@ -233,12 +233,15 @@ public class Article
 	{
 		if (string.IsNullOrWhiteSpace(title))
 			throw new ArgumentException("Title cannot be null or whitespace.", nameof(title));
-		// Lowercase, replace spaces with underscores, remove invalid chars
-		return new string(title
-			.ToLowerInvariant()
-			.Replace(" ", "_")
-			.Where(c => char.IsLetterOrDigit(c) || c == '_')
-			.ToArray());
+		// Lowercase, replace non-alphanumeric sequences with single underscore, collapse multiple underscores
+		var slug = title.ToLowerInvariant();
+		// Replace any sequence of non-alphanumeric characters with underscore
+		slug = System.Text.RegularExpressions.Regex.Replace(slug, "[^a-z0-9]+", "_");
+		// Collapse multiple underscores into one
+		slug = System.Text.RegularExpressions.Regex.Replace(slug, "_+", "_");
+		// Trim leading/trailing underscores
+		slug = slug.Trim('_');
+		return slug;
 	}
 
 }

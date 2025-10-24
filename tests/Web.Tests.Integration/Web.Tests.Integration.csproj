@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<OutputType>Exe</OutputType>
+		<OutputType>Library</OutputType>
 		<RootNamespace>Web.Tests.Integration</RootNamespace>
 		<TargetFramework>net9.0</TargetFramework>
 		<IsTestProject>true</IsTestProject>

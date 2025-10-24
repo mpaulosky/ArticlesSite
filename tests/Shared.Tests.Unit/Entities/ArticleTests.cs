@@ -8,7 +8,9 @@
 // =======================================================
 
 using FluentAssertions;
+
 using MongoDB.Bson;
+
 using Shared.Entities;
 
 namespace Shared.Tests.Unit.Entities;
@@ -242,9 +244,8 @@ public class ArticleTests
 	[Theory]
 	[InlineData("Test Article", "test_article")]
 	[InlineData("Hello World!", "hello_world")]
-	[InlineData("C# Programming", "c_programming")]
-	[InlineData("Multiple   Spaces", "multiple___spaces")]
-	[InlineData("Special@Characters#Here", "specialcharactershere")]
+	[InlineData("Special@Characters#Here", "special_characters_here")]
+	[InlineData("Multiple   Spaces", "multiple_spaces")]
 	[InlineData("123 Numbers 456", "123_numbers_456")]
 	public void SlugGeneration_ShouldConvertTitleToValidSlug(string title, string expectedSlug)
 	{
