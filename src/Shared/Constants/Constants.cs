@@ -13,7 +13,7 @@ public static class Constants
 {
 	public const string ArticleDatabase = "articlesdb";
 
-	public const string ArticleConnect = "atlas";
+	public const string ArticleConnect = "mongodb";
 
 	public const string AdminPolicy = "AdminOnly";
 
