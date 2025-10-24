@@ -13,7 +13,7 @@ using Aspire.Hosting.MongoDB;
 namespace AppHost;
 
 /// <summary>
-///   Extension methods for adding and configuring MongoDB resources with Aspire 9.4.0 features.
+///   Extension methods for adding and configuring MongoDB resources with local container support.
 /// </summary>
 public static class DatabaseService
 {
@@ -26,8 +26,9 @@ public static class DatabaseService
 	public static IResourceBuilder<MongoDBDatabaseResource> AddMongoDbServices(
 		this IDistributedApplicationBuilder builder)
 	{
-		// Use a valid resource name, not the connection string
+		// Configure MongoDB with persistent container for local development
 		var database = builder.AddMongoDB(ArticleConnect)
+			.WithLifetime(ContainerLifetime.Persistent)
 			.AddDatabase(DatabaseName);
 
 		return database;
