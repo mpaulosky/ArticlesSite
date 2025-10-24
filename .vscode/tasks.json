@@ -9,14 +9,14 @@
 				"$msCompile"
 			],
 			"group": "build"
-		}
-		,{
+		},
+		{
 			"label": "trust-dev-certs",
 			"type": "shell",
 			"command": "dotnet dev-certs https --trust",
 			"group": "none"
-		}
-		,{
+		},
+		{
 			"label": "prelaunch-all",
 			"dependsOn": ["trust-dev-certs", "build-solution"],
 			"dependsOrder": "sequence",
