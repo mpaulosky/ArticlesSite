@@ -4,7 +4,7 @@
 		{
 			"label": "build-solution",
 			"type": "shell",
-			"command": "dotnet build e:\\github\\ArticlesSite\\ArticlesSite.slnx",
+			"command": "dotnet build ${workspaceFolder}/ArticlesSite.slnx",
 			"problemMatcher": [
 				"$msCompile"
 			],
