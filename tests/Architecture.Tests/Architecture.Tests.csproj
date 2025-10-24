@@ -6,6 +6,7 @@
 		<OutputType>Exe</OutputType>
 		<RootNamespace>Architecture.Tests</RootNamespace>
 		<TargetFramework>net9.0</TargetFramework>
+		<IsTestProject>true</IsTestProject>
 		<UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
 		<TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
 	</PropertyGroup>
