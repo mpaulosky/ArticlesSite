@@ -125,7 +125,7 @@ ArticlesSite/
 
 MongoDB provides flexible document storage with:
 - Persistent container storage for data durability
-- Document-based schema for articles and categories
+- Flexible document structure for articles and categories
 - Native support for complex nested structures
 - Full async/await support with MongoDB.Driver
 - Integration with .NET Aspire for orchestration
