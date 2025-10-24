@@ -17,7 +17,7 @@ if (!app.Environment.IsDevelopment())
 	app.UseHsts();
 }
 
-app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
+app.UseStatusCodePagesWithReExecute("/not-found");
 /// <summary>
 /// HTTPS redirection is disabled in development mode to simplify local testing and avoid certificate issues.
 /// </summary>
