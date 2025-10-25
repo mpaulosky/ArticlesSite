@@ -7,6 +7,7 @@ permissions:
   issues: write
   checks: write
   contents: read
+  pull-requests: write
 
 on:
   push:
@@ -39,7 +40,6 @@ jobs:
       AUTH0_E2E_PASSWORD: ${{ secrets.AUTH0_E2E_PASSWORD }}
       AUTH0_E2E_USERNAME_ADMIN: ${{ secrets.AUTH0_E2E_USERNAME_ADMIN }}
       AUTH0_E2E_PASSWORD_ADMIN: ${{ secrets.AUTH0_E2E_PASSWORD_ADMIN }}
-      AUTH0_E2E_USERNAME_AUTHOR: ${{ secrets.AUTH0_E2E_USERNAME_AUTHOR }}
       AUTH0_E2E_PASSWORD_AUTHOR: ${{ secrets.AUTH0_E2E_PASSWORD_AUTHOR }}
       AUTH0_E2E_USERNAME_USER: ${{ secrets.AUTH0_E2E_USERNAME_USER }}
       AUTH0_E2E_PASSWORD_USER: ${{ secrets.AUTH0_E2E_PASSWORD_USER }}
