@@ -164,7 +164,6 @@ public class FakeAuthorInfoTests
 	{
 		// Arrange & Act
 		AuthorInfo result1 = FakeAuthorInfo.GetNewAuthorInfo(true);
-
 		AuthorInfo result2 = FakeAuthorInfo.GetNewAuthorInfo(true);
 
 		// Assert
