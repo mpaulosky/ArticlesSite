@@ -7,10 +7,6 @@
 // Project Name :  Shared.Tests.Unit
 // =======================================================
 
-using FluentAssertions;
-
-using MongoDB.Bson;
-
 using Shared.Entities;
 
 namespace Shared.Tests.Unit.Entities;
