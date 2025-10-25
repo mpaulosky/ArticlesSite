@@ -7,8 +7,8 @@
 		<RootNamespace>Web.Tests.Unit</RootNamespace>
 		<TargetFramework>net9.0</TargetFramework>
 		<IsTestProject>true</IsTestProject>
-		<UseMicrosoftTestingPlatformRunner>true</UseMicrosoftTestingPlatformRunner>
-		<TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
+		<UseMicrosoftTestingPlatformRunner>false</UseMicrosoftTestingPlatformRunner>
+		<TestingPlatformDotnetTestSupport>false</TestingPlatformDotnetTestSupport>
 		<!--
 		This template uses native xUnit.net command line options when using 'dotnet run' and
 		VSTest by default when using 'dotnet test'. For more information on how to enable support
