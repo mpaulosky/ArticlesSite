@@ -117,7 +117,7 @@ jobs:
                 --no-build --no-restore \
                 --collect:"XPlat Code Coverage" \
                 --logger "trx;LogFileName=${name}.trx" \
-                --logger "junit;LogFileName=${name}.coverage.opencover.xml" \
+                --logger "junit;LogFileName=${name}.xml" \
                 --results-directory "test-results" 2>&1 | tee "test-results/${name}.trx"
               rc=$?
               set -e
