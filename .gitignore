@@ -370,3 +370,6 @@ src/Web/wwwroot/css/dist.css
 # Rider
 .idea/
 *.iml
+
+# Test results directory
+test-results/
