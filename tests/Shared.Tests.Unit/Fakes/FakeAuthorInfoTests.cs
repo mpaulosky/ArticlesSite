@@ -153,7 +153,6 @@ public class FakeAuthorInfoTests
 		// Arrange & Act
 		AuthorInfo result = FakeAuthorInfo.GetNewAuthorInfo();
 
-
 		// Assert
 		result.Should().NotBeNull();
 		result.UserId.Should().NotBeNullOrWhiteSpace();
