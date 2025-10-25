@@ -32,8 +32,8 @@ jobs:
 
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
-      E2E_HEADLESS: 'true'
-      E2E_BASE_URL: 'https://127.0.0.1:7180'
+      E2E_HEADLESS: "true"
+      E2E_BASE_URL: "https://127.0.0.1:7180"
       AUTH0_E2E_USERNAME: ${{ secrets.AUTH0_E2E_USERNAME }}
       AUTH0_E2E_PASSWORD: ${{ secrets.AUTH0_E2E_PASSWORD }}
       AUTH0_E2E_USERNAME_ADMIN: ${{ secrets.AUTH0_E2E_USERNAME_ADMIN }}
@@ -116,7 +116,8 @@ jobs:
                 --no-build --no-restore \
                 --collect:"XPlat Code Coverage" \
                 --logger "trx;LogFileName=${name}.trx" \
-                --results-directory "test-results" 2>&1 | tee "test-results/${name}.log"
+                --logger "junit;LogFileName=${name}.coverage.opencover.xml" \
+                --results-directory "test-results" 2>&1 | tee "test-results/${name}.trx"
               rc=$?
               set -e
 
@@ -128,7 +129,8 @@ jobs:
               echo "Skipping non-test project: $proj"
             fi
           done < <( find tests -type f -name "*.csproj" 2>/dev/null || true )
-
+          # Move all .trx files from subdirectories to test-results root
+          find test-results -type f -name '*.trx' -exec mv -n {} test-results/ \;
           echo "tests_exit_code=$overall_rc" >> "$GITHUB_OUTPUT"
           exit 0
 
@@ -138,13 +140,6 @@ jobs:
         with:
           name: Solution-Test-Results
           path: test-results
-
-      - name: Upload Test Logs
-        uses: actions/upload-artifact@v4
-        if: steps.check-tests.outputs.has_tests == 'true'
-        with:
-          name: Test-Logs
-          path: ${{ github.workspace }}/test-results/**/*.log
 
       - name: Codecov
         uses: codecov/codecov-action@v5.5.1
