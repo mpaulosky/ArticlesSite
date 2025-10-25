@@ -116,7 +116,8 @@ jobs:
                 --no-build --no-restore \
                 --collect:"XPlat Code Coverage" \
                 --logger "trx;LogFileName=${name}.trx" \
-                --results-directory "test-results" 2>&1 | tee "test-results/${name}.log"
+                --results-directory "test-results" \
+                -p:TestingPlatformDotnetTestSupport=false 2>&1 | tee "test-results/${name}.log"
               rc=$?
               set -e
 
