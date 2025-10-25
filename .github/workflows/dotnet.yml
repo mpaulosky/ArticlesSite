@@ -111,14 +111,13 @@ jobs:
           while IFS= read -r proj; do
             if grep -q "<IsTestProject>true</IsTestProject>" "$proj" 2>/dev/null; then
               name=$(basename "$proj" .csproj)
-              echo "Running tests for: $proj -> test-results/${name}.trx (logs -> test-results/${name}.coverage.log)"
+              echo "Running tests for: $proj -> test-results/${name}.trx (logs -> test-results/${name}.log)"
               set +e
               dotnet test "$proj" \
                 --no-build --no-restore \
                 --collect:"XPlat Code Coverage" \
                 --logger "trx;LogFileName=${name}.trx" \
-                --logger "junit;LogFileName=${name}.xml" \
-                --results-directory "test-results" 2>&1 | tee "test-results/${name}.trx"
+                --results-directory "test-results" 2>&1 | tee "test-results/${name}.log"
               rc=$?
               set -e
 
@@ -144,12 +143,6 @@ jobs:
       - name: Codecov
         uses: codecov/codecov-action@v5.5.1
         if: steps.check-tests.outputs.has_tests == 'true'
-
-      - name: Upload test results to Codecov
-        if: steps.check-tests.outputs.has_tests == 'true' && !cancelled()
-        uses: codecov/test-results-action@v1
-        with:
-          files: test-results/**/*.xml
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
