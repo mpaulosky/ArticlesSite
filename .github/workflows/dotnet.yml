@@ -32,8 +32,8 @@ jobs:
 
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
-      E2E_HEADLESS: 'true'
-      E2E_BASE_URL: 'https://127.0.0.1:7180'
+      E2E_HEADLESS: "true"
+      E2E_BASE_URL: "https://127.0.0.1:7180"
       AUTH0_E2E_USERNAME: ${{ secrets.AUTH0_E2E_USERNAME }}
       AUTH0_E2E_PASSWORD: ${{ secrets.AUTH0_E2E_PASSWORD }}
       AUTH0_E2E_USERNAME_ADMIN: ${{ secrets.AUTH0_E2E_USERNAME_ADMIN }}
@@ -101,11 +101,8 @@ jobs:
           # Ensure repository-level test-results exists
           mkdir -p "test-results"
           timestamp=$(date +%s)
-
           set -o pipefail
-
           overall_rc=0
-
           # Find all test projects recursively in tests folder only
           while IFS= read -r proj; do
             if grep -q "<IsTestProject>true</IsTestProject>" "$proj" 2>/dev/null; then
@@ -119,7 +116,6 @@ jobs:
                 --results-directory "test-results" 2>&1 | tee "test-results/${name}.log"
               rc=$?
               set -e
-
               if [ "$rc" -ne 0 ]; then
                 echo "dotnet test failed for $proj (exit code $rc)"
                 overall_rc=$rc
@@ -128,16 +124,20 @@ jobs:
               echo "Skipping non-test project: $proj"
             fi
           done < <( find tests -type f -name "*.csproj" 2>/dev/null || true )
-
           echo "tests_exit_code=$overall_rc" >> "$GITHUB_OUTPUT"
           exit 0
+      - name: List test-results files
+        if: steps.check-tests.outputs.has_tests == 'true'
+        run: |
+          echo "Listing all files in test-results directory:"
+          find test-results
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         if: steps.check-tests.outputs.has_tests == 'true'
         with:
           name: Solution-Test-Results
-          path: test-results
+          path: ${{ github.workspace }}/test-results/**/*.trx
 
       - name: Upload Test Logs
         uses: actions/upload-artifact@v4
