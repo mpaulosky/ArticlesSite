@@ -7,7 +7,6 @@
 // Project Name :  Shared.Tests.Unit
 // =======================================================
 
-using FluentAssertions;
 using Shared.Helpers;
 
 namespace Shared.Tests.Unit.Helpers;
