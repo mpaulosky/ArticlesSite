@@ -113,6 +113,7 @@ jobs:
                 --no-build --no-restore \
                 --collect:"XPlat Code Coverage" \
                 --logger "trx;LogFileName=${name}.trx" \
+                --logger "junit;LogFileName=${name}.coverage.opencover.xml" \
                 --results-directory "test-results" 2>&1 | tee "test-results/${name}.log"
               rc=$?
               set -e
@@ -124,6 +125,8 @@ jobs:
               echo "Skipping non-test project: $proj"
             fi
           done < <( find tests -type f -name "*.csproj" 2>/dev/null || true )
+          # Move all .trx files from subdirectories to test-results root
+          find test-results -type f -name '*.trx' -exec mv {} test-results/ \;
           echo "tests_exit_code=$overall_rc" >> "$GITHUB_OUTPUT"
           exit 0
       - name: List test-results files
