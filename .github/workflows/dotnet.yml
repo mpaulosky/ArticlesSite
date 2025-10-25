@@ -4,6 +4,7 @@
 name: Build and Test .NET projects
 
 permissions:
+  issues: write
   checks: write
   contents: read
 
