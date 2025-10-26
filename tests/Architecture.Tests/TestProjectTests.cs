@@ -7,7 +7,7 @@
 // Project Name :  Architecture.Tests
 // =======================================================
 
-namespace Architecture.Tests.Unit;
+namespace Architecture.Tests;
 
 /// <summary>
 ///   Tests to validate that all required test projects exist and are properly configured
@@ -16,9 +16,9 @@ namespace Architecture.Tests.Unit;
 public class TestProjectTests
 {
 
-	private const string SolutionRoot = @"e:\github\ArticleSite\src";
+	private const string SolutionRoot = @"e:/github/ArticleSite/src";
 
-	private const string TestsFolder = @"e:\github\ArticleSite\tests";
+	private const string TestsFolder = @"e:/github/ArticleSite/tests";
 
 	[Fact]
 	public void SharedTestsUnit_ShouldExist()
