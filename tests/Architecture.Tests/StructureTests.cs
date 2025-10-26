@@ -7,15 +7,7 @@
 // Project Name :  Architecture.Tests
 // =======================================================
 
-#region
-
-using Shared.Entities;
-
-using Web;
-
-#endregion
-
-namespace Architecture.Tests.Unit;
+namespace Architecture.Tests;
 
 /// <summary>
 ///   Tests to validate project structure and organization

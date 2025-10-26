@@ -17,6 +17,12 @@ global using FluentAssertions;
 
 global using NetArchTest.Rules;
 
+global using Shared.Entities;
+
+global using Web;
+
 global using Xunit;
+
+global using TestResult = NetArchTest.Rules.TestResult;
 
 #endregion

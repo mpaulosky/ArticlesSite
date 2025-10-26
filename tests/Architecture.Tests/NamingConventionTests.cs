@@ -9,12 +9,6 @@
 
 #region
 
-using Shared.Entities;
-
-using Web;
-
-using TestResult = NetArchTest.Rules.TestResult;
-
 #endregion
 
 namespace Architecture.Tests.Unit;

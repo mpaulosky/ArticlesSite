@@ -7,17 +7,7 @@
 // Project Name :  Architecture.Tests
 // =======================================================
 
-#region
-
-using Shared.Entities;
-
-using Web;
-
-using TestResult = NetArchTest.Rules.TestResult;
-
-#endregion
-
-namespace Architecture.Tests.Unit;
+namespace Architecture.Tests;
 
 /// <summary>
 ///   Tests to validate layer dependencies and architectural boundaries
