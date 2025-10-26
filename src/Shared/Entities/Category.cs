@@ -37,8 +37,8 @@ public class Category
 	/// <summary>
 	///   The name of the category.
 	/// </summary>
-	[ DisplayName("Category Name")]
-	[ MaxLength(80)]
+	[DisplayName("Category Name")]
+	[MaxLength(80)]
 	public string CategoryName { get; set; }
 
 	/// <summary>
