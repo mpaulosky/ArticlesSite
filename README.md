@@ -11,16 +11,23 @@
 
 ---
 
-A modern, cloud-native blog management application built with **BlazorServer**, **.NET Aspire**, and **MongoDB**. This project demonstrates best practices in serverless architecture, comprehensive testing strategies, and production-ready patterns for building scalable web applications with .NET 9.
+A modern, cloud-native blog management application built with **BlazorServer**, **.NET Aspire**, and **MongoDB**. This
+project demonstrates best practices in serverless architecture, comprehensive testing strategies, and production-ready
+patterns for building scalable web applications with .NET 9.
 
 > [!TIP]
-> This application is designed to showcase enterprise-grade patterns including CQRS, Vertical Slice Architecture, and comprehensive test coverage with unit, integration, and end-to-end tests.
+> This application is designed to showcase enterprise-grade patterns including CQRS, Vertical Slice Architecture, and
+> comprehensive test coverage with unit, integration, and end-to-end tests.
 
 ## Overview
 
-ArticlesSite is a full-featured blog management system that enables users to create, manage, and publish articles with categories and rich content. Built on .NET Aspire's cloud-native orchestration, the application leverages modern serverless patterns to deliver a scalable, maintainable solution.
+ArticlesSite is a full-featured blog management system that enables users to create, manage, and publish articles with
+categories and rich content. Built on .NET Aspire's cloud-native orchestration, the application leverages modern
+serverless patterns to deliver a scalable, maintainable solution.
 
-The application uses **Blazor Server** for interactive server-side rendering, providing a responsive user experience without the complexity of client-side JavaScript frameworks. MongoDB serves as the primary data store, providing flexible document-based storage for articles and categories.
+The application uses **Blazor Server** for interactive server-side rendering, providing a responsive user experience
+without the complexity of client-side JavaScript frameworks. MongoDB serves as the primary data store, providing
+flexible document-based storage for articles and categories.
 
 ### Key Technologies
 
@@ -84,6 +91,7 @@ dotnet test
 ```
 
 This runs:
+
 - **Unit tests** - Fast, isolated tests for business logic
 - **Integration tests** - Database and service integration tests using TestContainers
 - **bUnit tests** - Blazor component tests
@@ -124,34 +132,40 @@ ArticlesSite/
 ### Database
 
 MongoDB provides flexible document storage with:
+
 - Persistent container storage for data durability
 - Flexible document structure for articles and categories
 - Native support for complex nested structures
 - Full async/await support with MongoDB.Driver
 - Integration with .NET Aspire for orchestration
 
-The MongoDB container is configured with `ContainerLifetime.Persistent` to ensure data persists across application restarts.
+The MongoDB container is configured with `ContainerLifetime.Persistent` to ensure data persists across application
+restarts.
 
 ## Testing
 
 ArticlesSite employs a comprehensive testing strategy:
 
 ### Unit Tests
+
 - Fast, isolated tests for business logic
 - Test domain entities, helpers, and services
 - Located in `tests/` directory
 
 ### Integration Tests
+
 - Database integration with TestContainers
 - Ensures MongoDB compatibility
 - Isolated test data per test run
 
 ### Component Tests (bUnit)
+
 - Blazor component behavior verification
 - Render testing and interaction testing
 - Example: `tests/ArticlesSite.Web.Tests.Bunit/`
 
 ### End-to-End Tests
+
 - Full application scenarios
 - Database and UI interaction
 - Located in `tests/ArticlesSite.Tests.E2E/`
@@ -182,7 +196,8 @@ This project enforces strict coding standards through `.editorconfig` and analys
 - **XML documentation** for public APIs
 - **Centralized package management** in `Directory.Packages.props`
 
-See [`.github/instructions/copilot-instructions.md`](.github/instructions/copilot-instructions.md) for complete coding guidelines.
+See [`.github/instructions/copilot-instructions.md`](.github/instructions/copilot-instructions.md) for complete coding
+guidelines.
 
 ## Deployment
 
@@ -195,7 +210,8 @@ The application is designed for deployment to Azure or any container orchestrati
 
 ## Dev Container detection
 
-When running the solution inside a Dev Container (Rider or VS Code), this repository sets explicit environment variables from .devcontainer/devcontainer.json:
+When running the solution inside a Dev Container (Rider or VS Code), this repository sets explicit environment variables
+from .devcontainer/devcontainer.json:
 
 - RIDER_DEVCONTAINER=true
 - IN_DEVCONTAINER=true
@@ -217,7 +233,8 @@ The Web app logs a startup message indicating whether it is running inside a Dev
 
 ## Contributing
 
-Contributions are welcome! This project follows standard open-source contribution guidelines. Please ensure all tests pass and code follows the established standards before submitting a pull request.
+Contributions are welcome! This project follows standard open-source contribution guidelines. Please ensure all tests
+pass and code follows the established standards before submitting a pull request.
 
 ## License
 
