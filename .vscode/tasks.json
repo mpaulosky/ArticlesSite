@@ -18,7 +18,10 @@
 		},
 		{
 			"label": "prelaunch-all",
-			"dependsOn": ["trust-dev-certs", "build-solution"],
+			"dependsOn": [
+				"trust-dev-certs",
+				"build-solution"
+			],
 			"dependsOrder": "sequence",
 			"group": "none"
 		}
