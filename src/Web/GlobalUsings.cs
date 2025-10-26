@@ -10,12 +10,8 @@
 global using MongoDB.Bson;
 global using MongoDB.Driver;
 global using Shared.Abstractions;
-global using Shared.Abstractions;
-global using Shared.Entities;
 global using Shared.Entities;
 global using Shared.Interfaces;
-global using Shared.Interfaces;
-global using Shared.Models;
 global using Shared.Models;
 global using Web.Components;
 global using Web.Components.Features.Articles.ArticleCreate;
