@@ -1,17 +1,18 @@
 //=======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     FakeArticleDtoTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     FakeArticleDtoTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 
 namespace Shared.Tests.Unit.Fakes;
 
 [ExcludeFromCodeCoverage]
 public class FakeArticleDtoTests
 {
+
 	[Fact]
 	public void GetNewArticleDto_WithoutSeed_ShouldReturnValidArticleDto()
 	{
@@ -36,7 +37,7 @@ public class FakeArticleDtoTests
 	public void GetNewArticleDto_WithSeed_ShouldReturnValidArticleDto()
 	{
 		// Arrange & Act
-		ArticleDto result = FakeArticleDto.GetNewArticleDto(useSeed: true);
+		ArticleDto result = FakeArticleDto.GetNewArticleDto(true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -93,7 +94,7 @@ public class FakeArticleDtoTests
 		const int count = 3;
 
 		// Act
-		List<ArticleDto> result = FakeArticleDto.GetArticleDtos(count, useSeed: true);
+		List<ArticleDto> result = FakeArticleDto.GetArticleDtos(count, true);
 
 		// Assert
 		result.Should().HaveCount(count);
@@ -157,7 +158,7 @@ public class FakeArticleDtoTests
 	public void GenerateFake_WithoutSeed_ShouldReturnConfiguredFaker()
 	{
 		// Arrange & Act
-		var result = FakeArticleDto.GetNewArticleDto();
+		ArticleDto result = FakeArticleDto.GetNewArticleDto();
 
 		// Assert
 		result.Should().NotBeNull();
@@ -171,7 +172,7 @@ public class FakeArticleDtoTests
 	public void GenerateFake_WithSeed_ShouldProduceValidResults()
 	{
 		// Arrange & Act
-		var result = FakeArticleDto.GetNewArticleDto(useSeed: true);
+		ArticleDto result = FakeArticleDto.GetNewArticleDto(true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -187,7 +188,9 @@ public class FakeArticleDtoTests
 
 		// Assert
 		result.Slug.Should().NotBeNullOrWhiteSpace();
-		result.Slug.Should().MatchRegex(@"^[a-z0-9_]+$", "slug should only contain lowercase letters, numbers, and underscores");
+
+		result.Slug.Should()
+				.MatchRegex(@"^[a-z0-9_]+$", "slug should only contain lowercase letters, numbers, and underscores");
 	}
 
 	[Fact]
@@ -227,4 +230,5 @@ public class FakeArticleDtoTests
 		result.Should().HaveCount(count);
 		result.Select(a => a.Title).Distinct().Should().HaveCount(count, "all articles should have unique titles");
 	}
+
 }

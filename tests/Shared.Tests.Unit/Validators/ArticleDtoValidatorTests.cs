@@ -1,14 +1,20 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     ArticleDtoValidatorTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     ArticleDtoValidatorTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
+
+#region
+
+using FluentValidation.Results;
 
 using Shared.Entities;
 using Shared.Validators;
+
+#endregion
 
 namespace Shared.Tests.Unit.Validators;
 
@@ -17,27 +23,28 @@ namespace Shared.Tests.Unit.Validators;
 /// </summary>
 public class ArticleDtoValidatorTests
 {
+
 	private readonly ArticleDtoValidator _validator = new();
 
 	[Fact]
 	public void Validate_WithValidArticleDto_ShouldPass()
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Slug = "test_article",
-			Title = "Test Article",
-			Introduction = "Test introduction",
-			Content = "Test content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Technology" },
-			IsPublished = true,
-			PublishedOn = DateTimeOffset.UtcNow
+				Slug = "test_article",
+				Title = "Test Article",
+				Introduction = "Test introduction",
+				Content = "Test content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Technology" },
+				IsPublished = true,
+				PublishedOn = DateTimeOffset.UtcNow
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeTrue();
@@ -49,13 +56,10 @@ public class ArticleDtoValidatorTests
 	{
 		// Arrange - The validator checks for NotNull, but ObjectId.Empty is not null
 		// ObjectId is a struct and cannot be null
-		var dto = new ArticleDto
-		{
-			Id = ObjectId.Empty
-		};
+		ArticleDto dto = new() { Id = ObjectId.Empty };
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert - Should fail on other required fields but not on Id
 		result.IsValid.Should().BeFalse();
@@ -69,19 +73,19 @@ public class ArticleDtoValidatorTests
 	public void Validate_WithInvalidTitle_ShouldFail(string? invalidTitle)
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = invalidTitle!,
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = "valid_slug",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = invalidTitle!,
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = "valid_slug",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -92,19 +96,19 @@ public class ArticleDtoValidatorTests
 	public void Validate_WithTitleTooLong_ShouldFail()
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = new string('A', 101),
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = "valid_slug",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = new string('A', 101),
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = "valid_slug",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -118,23 +122,25 @@ public class ArticleDtoValidatorTests
 	public void Validate_WithInvalidIntroduction_ShouldFail(string? invalidIntro)
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = "Valid Title",
-			Introduction = invalidIntro!,
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = "valid_slug",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = invalidIntro!,
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = "valid_slug",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "Introduction" && e.ErrorMessage == "Introduction is required");
+
+		result.Errors.Should()
+				.Contain(e => e.PropertyName == "Introduction" && e.ErrorMessage == "Introduction is required");
 	}
 
 	[Theory]
@@ -144,19 +150,19 @@ public class ArticleDtoValidatorTests
 	public void Validate_WithInvalidContent_ShouldFail(string? invalidContent)
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = invalidContent!,
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = "valid_slug",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = invalidContent!,
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = "valid_slug",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -167,23 +173,25 @@ public class ArticleDtoValidatorTests
 	public void Validate_WithContentTooLong_ShouldFail()
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = new string('A', 4001),
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = "valid_slug",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = new string('A', 4001),
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = "valid_slug",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "Content" && e.ErrorMessage == "Content cannot exceed 4000 characters");
+
+		result.Errors.Should().Contain(e =>
+				e.PropertyName == "Content" && e.ErrorMessage == "Content cannot exceed 4000 characters");
 	}
 
 	[Theory]
@@ -193,23 +201,25 @@ public class ArticleDtoValidatorTests
 	public void Validate_WithInvalidCoverImageUrl_ShouldFail(string? invalidCoverImageUrl)
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = invalidCoverImageUrl!,
-			Slug = "valid_slug",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = invalidCoverImageUrl!,
+				Slug = "valid_slug",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "CoverImageUrl" && e.ErrorMessage == "Cover image is required");
+
+		result.Errors.Should()
+				.Contain(e => e.PropertyName == "CoverImageUrl" && e.ErrorMessage == "Cover image is required");
 	}
 
 	[Theory]
@@ -219,19 +229,19 @@ public class ArticleDtoValidatorTests
 	public void Validate_WithInvalidSlug_ShouldFail(string? invalidSlug)
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = invalidSlug!,
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = invalidSlug!,
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -245,42 +255,45 @@ public class ArticleDtoValidatorTests
 	public void Validate_WithInvalidSlugFormat_ShouldFail(string invalidSlug)
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = invalidSlug,
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = invalidSlug,
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "Slug" && e.ErrorMessage == "URL slug can only contain lowercase letters, numbers, and underscores");
+
+		result.Errors.Should().Contain(e =>
+				e.PropertyName == "Slug" &&
+				e.ErrorMessage == "URL slug can only contain lowercase letters, numbers, and underscores");
 	}
 
 	[Fact]
 	public void Validate_WithNullAuthor_ShouldFail()
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = "valid_slug",
-			Author = null,
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = "valid_slug",
+				Author = null,
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -291,19 +304,19 @@ public class ArticleDtoValidatorTests
 	public void Validate_WithNullCategory_ShouldFail()
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = "valid_slug",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = null
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = "valid_slug",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = null
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -314,49 +327,52 @@ public class ArticleDtoValidatorTests
 	public void Validate_WithPublishedButNoPublishedOn_ShouldFail()
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = "valid_slug",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" },
-			IsPublished = true,
-			PublishedOn = null
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = "valid_slug",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" },
+				IsPublished = true,
+				PublishedOn = null
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "PublishedOn" && e.ErrorMessage == "PublishedOn is required when IsPublished is true");
+
+		result.Errors.Should().Contain(e =>
+				e.PropertyName == "PublishedOn" && e.ErrorMessage == "PublishedOn is required when IsPublished is true");
 	}
 
 	[Fact]
 	public void Validate_WithNotPublishedAndNoPublishedOn_ShouldPass()
 	{
 		// Arrange
-		var dto = new ArticleDto
+		ArticleDto dto = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Slug = "valid_slug",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" },
-			IsPublished = false,
-			PublishedOn = null
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Slug = "valid_slug",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" },
+				IsPublished = false,
+				PublishedOn = null
 		};
 
 		// Act
-		var result = _validator.Validate(dto);
+		ValidationResult? result = _validator.Validate(dto);
 
 		// Assert
 		result.IsValid.Should().BeTrue();
 		result.Errors.Should().BeEmpty();
 	}
+
 }

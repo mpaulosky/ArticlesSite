@@ -1,13 +1,17 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     ArticleDtoTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     ArticleDtoTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
+
+#region
 
 using Shared.Entities;
+
+#endregion
 
 namespace Shared.Tests.Unit.Models;
 
@@ -16,11 +20,12 @@ namespace Shared.Tests.Unit.Models;
 /// </summary>
 public class ArticleDtoTests
 {
+
 	[Fact]
 	public void Constructor_Parameterless_ShouldSetDefaultValues()
 	{
 		// Arrange & Act
-		var dto = new ArticleDto();
+		ArticleDto dto = new ();
 
 		// Assert
 		dto.Id.Should().Be(ObjectId.Empty);
@@ -43,24 +48,24 @@ public class ArticleDtoTests
 	public void Constructor_WithParameters_ShouldSetAllProperties()
 	{
 		// Arrange
-		var id = ObjectId.GenerateNewId();
+		ObjectId id = ObjectId.GenerateNewId();
 		const string slug = "test_article";
 		const string title = "Test Article";
 		const string intro = "Test introduction";
 		const string content = "Test content";
 		const string coverImageUrl = "https://example.com/cover.jpg";
-		var author = new AuthorInfo("auth0|123", "John Doe");
-		var category = new Category { CategoryName = "Technology" };
+		AuthorInfo author = new ("auth0|123", "John Doe");
+		Category category = new()  { CategoryName = "Technology" };
 		const bool isPublished = true;
-		var publishedOn = DateTimeOffset.UtcNow;
-		var createdOn = DateTimeOffset.UtcNow.AddDays(-1);
-		var modifiedOn = DateTimeOffset.UtcNow;
+		DateTimeOffset publishedOn = DateTimeOffset.UtcNow;
+		DateTimeOffset createdOn = DateTimeOffset.UtcNow.AddDays(-1);
+		DateTimeOffset modifiedOn = DateTimeOffset.UtcNow;
 		const bool isArchived = false;
 		const bool canEdit = true;
 
 		// Act
-		var dto = new ArticleDto(id, slug, title, intro, content, coverImageUrl, author, category, 
-			isPublished, publishedOn, createdOn, modifiedOn, isArchived, canEdit);
+		ArticleDto dto = new (id, slug, title, intro, content, coverImageUrl, author, category,
+				isPublished, publishedOn, createdOn, modifiedOn, isArchived, canEdit);
 
 		// Assert
 		dto.Id.Should().Be(id);
@@ -83,7 +88,7 @@ public class ArticleDtoTests
 	public void Empty_ShouldReturnEmptyInstance()
 	{
 		// Arrange & Act
-		var empty = ArticleDto.Empty;
+		ArticleDto empty = ArticleDto.Empty;
 
 		// Assert
 		empty.Id.Should().Be(ObjectId.Empty);
@@ -106,7 +111,7 @@ public class ArticleDtoTests
 	public void UrlSlug_ShouldGetAndSetSlug()
 	{
 		// Arrange
-		var dto = new ArticleDto();
+		ArticleDto dto = new ();
 		const string slug = "test_url_slug";
 
 		// Act
@@ -121,10 +126,10 @@ public class ArticleDtoTests
 	public void UrlSlug_Get_ShouldReturnSlugValue()
 	{
 		// Arrange
-		var dto = new ArticleDto { Slug = "test_slug" };
+		ArticleDto dto = new()  { Slug = "test_slug" };
 
 		// Act
-		var urlSlug = dto.UrlSlug;
+		string urlSlug = dto.UrlSlug;
 
 		// Assert
 		urlSlug.Should().Be("test_slug");
@@ -134,9 +139,9 @@ public class ArticleDtoTests
 	public void Properties_ShouldBeSettable()
 	{
 		// Arrange
-		var dto = new ArticleDto();
-		var author = new AuthorInfo("auth0|123", "John Doe");
-		var category = new Category { CategoryName = "Tech" };
+		ArticleDto dto = new ();
+		AuthorInfo author = new ("auth0|123", "John Doe");
+		Category category = new()  { CategoryName = "Tech" };
 
 		// Act
 		dto.Slug = "new_slug";
@@ -168,4 +173,5 @@ public class ArticleDtoTests
 		dto.IsArchived.Should().BeTrue();
 		dto.CanEdit.Should().BeTrue();
 	}
+
 }

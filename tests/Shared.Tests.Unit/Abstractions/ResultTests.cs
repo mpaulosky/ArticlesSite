@@ -1,13 +1,17 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     ResultTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     ResultTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
+
+#region
 
 using Shared.Abstractions;
+
+#endregion
 
 namespace Shared.Tests.Unit.Abstractions;
 
@@ -16,11 +20,12 @@ namespace Shared.Tests.Unit.Abstractions;
 /// </summary>
 public class ResultTests
 {
+
 	[Fact]
 	public void Ok_ShouldCreateSuccessResult()
 	{
 		// Arrange & Act
-		var result = Result.Ok();
+		Result result = Result.Ok();
 
 		// Assert
 		result.Success.Should().BeTrue();
@@ -35,7 +40,7 @@ public class ResultTests
 		const string errorMessage = "Test error message";
 
 		// Act
-		var result = Result.Fail(errorMessage);
+		Result result = Result.Fail(errorMessage);
 
 		// Assert
 		result.Success.Should().BeFalse();
@@ -47,13 +52,14 @@ public class ResultTests
 	public void Failure_ShouldReturnOppositeOfSuccess()
 	{
 		// Arrange & Act
-		var successResult = Result.Ok();
-		var failureResult = Result.Fail("Error");
+		Result successResult = Result.Ok();
+		Result failureResult = Result.Fail("Error");
 
 		// Assert
 		successResult.Failure.Should().BeFalse();
 		failureResult.Failure.Should().BeTrue();
 	}
+
 }
 
 /// <summary>
@@ -61,6 +67,7 @@ public class ResultTests
 /// </summary>
 public class ResultOfTTests
 {
+
 	[Fact]
 	public void Ok_ShouldCreateSuccessResult_WithValue()
 	{
@@ -68,7 +75,7 @@ public class ResultOfTTests
 		const int expectedValue = 42;
 
 		// Act
-		var result = Result.Ok(expectedValue);
+		Result<int> result = Result.Ok(expectedValue);
 
 		// Assert
 		result.Success.Should().BeTrue();
@@ -84,7 +91,7 @@ public class ResultOfTTests
 		const string errorMessage = "Test error message";
 
 		// Act
-		var result = Result.Fail<int>(errorMessage);
+		Result<int> result = Result.Fail<int>(errorMessage);
 
 		// Assert
 		result.Success.Should().BeFalse();
@@ -100,7 +107,7 @@ public class ResultOfTTests
 		const string value = "test value";
 
 		// Act
-		var result = Result.FromValue(value);
+		Result<string> result = Result.FromValue(value);
 
 		// Assert
 		result.Success.Should().BeTrue();
@@ -114,7 +121,7 @@ public class ResultOfTTests
 		string? value = null;
 
 		// Act
-		var result = Result.FromValue(value);
+		Result<string> result = Result.FromValue(value);
 
 		// Assert
 		result.Success.Should().BeFalse();
@@ -127,7 +134,7 @@ public class ResultOfTTests
 	{
 		// Arrange
 		const int expectedValue = 42;
-		var result = Result.Ok(expectedValue);
+		Result<int> result = Result.Ok(expectedValue);
 
 		// Act
 		int? actualValue = result;
@@ -149,4 +156,5 @@ public class ResultOfTTests
 		result.Success.Should().BeTrue();
 		result.Value.Should().Be(value);
 	}
+
 }

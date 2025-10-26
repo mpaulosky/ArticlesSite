@@ -1,19 +1,15 @@
 //=======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     FakeCategoryTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
-
-using Shared.Entities;
-
-namespace Shared.Tests.Unit.Fakes;
-
+//Copyright (c) 2025. All rights reserved.
+//File Name :     FakeCategoryTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 [ExcludeFromCodeCoverage]
 public class FakeCategoryTests
 {
+
 	[Fact]
 	public void GetNewCategory_WithoutSeed_ShouldReturnValidCategory()
 	{
@@ -32,7 +28,7 @@ public class FakeCategoryTests
 	public void GetNewCategory_WithSeed_ShouldReturnValidCategory()
 	{
 		// Arrange & Act
-		Category result = FakeCategory.GetNewCategory(useSeed: true);
+		Category result = FakeCategory.GetNewCategory(true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -50,6 +46,7 @@ public class FakeCategoryTests
 		// Assert
 		result1.Should().NotBeNull();
 		result2.Should().NotBeNull();
+
 		// Note: CategoryName might be the same due to limited category names in GetRandomCategoryName
 		result1.Id.Should().NotBe(result2.Id);
 	}
@@ -88,7 +85,7 @@ public class FakeCategoryTests
 		const int count = 3;
 
 		// Act
-		List<Category> result = FakeCategory.GetCategories(count, useSeed: true);
+		List<Category> result = FakeCategory.GetCategories(count, true);
 
 		// Assert
 		result.Should().HaveCount(count);
@@ -109,6 +106,7 @@ public class FakeCategoryTests
 		// Assert
 		result1.Should().HaveCount(count);
 		result2.Should().HaveCount(count);
+
 		// Check that at least the IDs are different
 		result1[0].Id.Should().NotBe(result2[0].Id);
 	}
@@ -133,7 +131,7 @@ public class FakeCategoryTests
 	public void GenerateFake_WithoutSeed_ShouldReturnConfiguredFaker()
 	{
 		// Arrange & Act
-		var result = FakeCategory.GetNewCategory();
+		Category result = FakeCategory.GetNewCategory();
 
 		// Assert
 		result.Should().NotBeNull();
@@ -145,7 +143,7 @@ public class FakeCategoryTests
 	public void GenerateFake_WithSeed_ShouldProduceValidResults()
 	{
 		// Arrange & Act
-		var result = FakeCategory.GetNewCategory(useSeed: true);
+		Category result = FakeCategory.GetNewCategory(true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -211,20 +209,14 @@ public class FakeCategoryTests
 	public void GetNewCategory_CategoryName_ShouldBeFromPredefinedList()
 	{
 		// Arrange
-		var validCategoryNames = new[]
+		string[] validCategoryNames = new[]
 		{
-			"ASP.NET Core",
-			"Blazor Server",
-			"Blazor WebAssembly",
-			"C# Programming",
-			"Entity Framework Core (EF Core)",
-			".NET MAUI",
-			"General Programming",
-			"Web Development",
-			"Other .NET Topics"
+				"ASP.NET Core", "Blazor Server", "Blazor WebAssembly", "C# Programming", "Entity Framework Core (EF Core)",
+				".NET MAUI", "General Programming", "Web Development", "Other .NET Topics"
 		};
+
 		const int iterations = 50;
-		var categoryNames = new List<string>();
+		List<string> categoryNames = new ();
 
 		// Act
 		for (int i = 0; i < iterations; i++)
@@ -236,4 +228,5 @@ public class FakeCategoryTests
 		// Assert
 		categoryNames.Should().OnlyContain(name => validCategoryNames.Contains(name));
 	}
+
 }

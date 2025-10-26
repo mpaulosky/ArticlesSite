@@ -1,11 +1,11 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     CategoryDtoTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     CategoryDtoTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 
 namespace Shared.Tests.Unit.Models;
 
@@ -14,11 +14,12 @@ namespace Shared.Tests.Unit.Models;
 /// </summary>
 public class CategoryDtoTests
 {
+
 	[Fact]
 	public void Constructor_Parameterless_ShouldSetDefaultValues()
 	{
 		// Arrange & Act
-		var dto = new CategoryDto();
+		CategoryDto dto = new ();
 
 		// Assert
 		dto.Id.Should().Be(ObjectId.Empty);
@@ -32,7 +33,7 @@ public class CategoryDtoTests
 	public void Empty_ShouldReturnEmptyInstance()
 	{
 		// Arrange & Act
-		var empty = CategoryDto.Empty;
+		CategoryDto empty = CategoryDto.Empty;
 
 		// Assert
 		empty.Id.Should().Be(ObjectId.Empty);
@@ -46,10 +47,10 @@ public class CategoryDtoTests
 	public void Properties_ShouldBeSettable()
 	{
 		// Arrange
-		var dto = new CategoryDto();
-		var id = ObjectId.GenerateNewId();
-		var createdOn = DateTimeOffset.UtcNow;
-		var modifiedOn = DateTimeOffset.UtcNow.AddDays(1);
+		CategoryDto dto = new ();
+		ObjectId id = ObjectId.GenerateNewId();
+		DateTimeOffset createdOn = DateTimeOffset.UtcNow;
+		DateTimeOffset modifiedOn = DateTimeOffset.UtcNow.AddDays(1);
 
 		// Act
 		dto.Id = id;
@@ -70,17 +71,18 @@ public class CategoryDtoTests
 	public void CategoryDto_ShouldSupportObjectInitializer()
 	{
 		// Arrange & Act
-		var dto = new CategoryDto
+		CategoryDto dto = new()
 		{
-			Id = ObjectId.GenerateNewId(),
-			CategoryName = "Programming",
-			CreatedOn = DateTimeOffset.UtcNow,
-			ModifiedOn = DateTimeOffset.UtcNow,
-			IsArchived = false
+				Id = ObjectId.GenerateNewId(),
+				CategoryName = "Programming",
+				CreatedOn = DateTimeOffset.UtcNow,
+				ModifiedOn = DateTimeOffset.UtcNow,
+				IsArchived = false
 		};
 
 		// Assert
 		dto.CategoryName.Should().Be("Programming");
 		dto.IsArchived.Should().BeFalse();
 	}
+
 }

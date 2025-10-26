@@ -1,19 +1,11 @@
 //=======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     FakeCategoryDtoTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
-
-namespace Shared.Tests.Unit.Fakes;
-
-[ExcludeFromCodeCoverage]
-public class FakeCategoryDtoTests
-{
-	[Fact]
-	public void GetNewCategoryDto_WithoutSeed_ShouldReturnValidCategoryDto()
+//Copyright (c) 2025. All rights reserved.
+//File Name :     FakeCategoryDtoTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 	{
 		// Arrange & Act
 		CategoryDto result = FakeCategoryDto.GetNewCategoryDto();
@@ -30,7 +22,7 @@ public class FakeCategoryDtoTests
 	public void GetNewCategoryDto_WithSeed_ShouldReturnValidCategoryDto()
 	{
 		// Arrange & Act
-		CategoryDto result = FakeCategoryDto.GetNewCategoryDto(useSeed: true);
+		CategoryDto result = FakeCategoryDto.GetNewCategoryDto(true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -85,7 +77,7 @@ public class FakeCategoryDtoTests
 		const int count = 3;
 
 		// Act
-		List<CategoryDto> result = FakeCategoryDto.GetCategoriesDto(count, useSeed: true);
+		List<CategoryDto> result = FakeCategoryDto.GetCategoriesDto(count, true);
 
 		// Assert
 		result.Should().HaveCount(count);
@@ -143,7 +135,7 @@ public class FakeCategoryDtoTests
 	public void GenerateFake_WithoutSeed_ShouldReturnConfiguredFaker()
 	{
 		// Arrange & Act
-		var result = FakeCategoryDto.GetNewCategoryDto();
+		CategoryDto result = FakeCategoryDto.GetNewCategoryDto();
 
 		// Assert
 		result.Should().NotBeNull();
@@ -155,7 +147,7 @@ public class FakeCategoryDtoTests
 	public void GenerateFake_WithSeed_ShouldProduceValidResults()
 	{
 		// Arrange & Act
-		var result = FakeCategoryDto.GetNewCategoryDto(useSeed: true);
+		CategoryDto result = FakeCategoryDto.GetNewCategoryDto(true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -225,20 +217,14 @@ public class FakeCategoryDtoTests
 	public void GetNewCategoryDto_CategoryName_ShouldBeFromPredefinedList()
 	{
 		// Arrange
-		var validCategoryNames = new[]
+		string[] validCategoryNames = new[]
 		{
-			"ASP.NET Core",
-			"Blazor Server",
-			"Blazor WebAssembly",
-			"C# Programming",
-			"Entity Framework Core (EF Core)",
-			".NET MAUI",
-			"General Programming",
-			"Web Development",
-			"Other .NET Topics"
+				"ASP.NET Core", "Blazor Server", "Blazor WebAssembly", "C# Programming", "Entity Framework Core (EF Core)",
+				".NET MAUI", "General Programming", "Web Development", "Other .NET Topics"
 		};
+
 		const int iterations = 50;
-		var categoryNames = new List<string>();
+		List<string> categoryNames = new ();
 
 		// Act
 		for (int i = 0; i < iterations; i++)
@@ -250,4 +236,5 @@ public class FakeCategoryDtoTests
 		// Assert
 		categoryNames.Should().OnlyContain(name => validCategoryNames.Contains(name));
 	}
+
 }

@@ -1,19 +1,15 @@
 //=======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     FakeAuthorInfoTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
-
-using Shared.Entities;
-
-namespace Shared.Tests.Unit.Fakes;
-
+//Copyright (c) 2025. All rights reserved.
+//File Name :     FakeAuthorInfoTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 [ExcludeFromCodeCoverage]
 public class FakeAuthorInfoTests
 {
+
 	[Fact]
 	public void GetNewAuthorInfo_WithoutSeed_ShouldReturnValidAuthorInfo()
 	{
@@ -30,8 +26,8 @@ public class FakeAuthorInfoTests
 	public void GetNewAuthorInfo_WithSeed_ShouldReturnDeterministicAuthorInfo()
 	{
 		// Arrange & Act
-		AuthorInfo result1 = FakeAuthorInfo.GetNewAuthorInfo(useSeed: true);
-		AuthorInfo result2 = FakeAuthorInfo.GetNewAuthorInfo(useSeed: true);
+		AuthorInfo result1 = FakeAuthorInfo.GetNewAuthorInfo(true);
+		AuthorInfo result2 = FakeAuthorInfo.GetNewAuthorInfo(true);
 
 		// Assert
 		result1.Should().NotBeNull();
@@ -88,8 +84,8 @@ public class FakeAuthorInfoTests
 		const int count = 3;
 
 		// Act
-		List<AuthorInfo> result1 = FakeAuthorInfo.GetAuthorInfos(count, useSeed: true);
-		List<AuthorInfo> result2 = FakeAuthorInfo.GetAuthorInfos(count, useSeed: true);
+		List<AuthorInfo> result1 = FakeAuthorInfo.GetAuthorInfos(count, true);
+		List<AuthorInfo> result2 = FakeAuthorInfo.GetAuthorInfos(count, true);
 
 		// Assert
 		result1.Should().HaveCount(count);
@@ -206,4 +202,5 @@ public class FakeAuthorInfoTests
 		result.Name.Should().NotBeNullOrWhiteSpace();
 		result.Name.Should().Contain(" ", "name should be a full name with first and last name");
 	}
+
 }

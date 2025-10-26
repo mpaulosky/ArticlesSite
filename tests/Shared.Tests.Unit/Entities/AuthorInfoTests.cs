@@ -1,13 +1,17 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     AuthorInfoTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     AuthorInfoTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
+
+#region
 
 using Shared.Entities;
+
+#endregion
 
 namespace Shared.Tests.Unit.Entities;
 
@@ -16,6 +20,7 @@ namespace Shared.Tests.Unit.Entities;
 /// </summary>
 public class AuthorInfoTests
 {
+
 	[Fact]
 	public void Constructor_WithParameters_ShouldSetProperties()
 	{
@@ -24,7 +29,7 @@ public class AuthorInfoTests
 		const string name = "John Doe";
 
 		// Act
-		var authorInfo = new AuthorInfo(userId, name);
+		AuthorInfo authorInfo = new (userId, name);
 
 		// Assert
 		authorInfo.UserId.Should().Be(userId);
@@ -35,7 +40,7 @@ public class AuthorInfoTests
 	public void Constructor_Parameterless_ShouldSetDefaultValues()
 	{
 		// Arrange & Act
-		var authorInfo = new AuthorInfo();
+		AuthorInfo authorInfo = new ();
 
 		// Assert
 		authorInfo.UserId.Should().Be(string.Empty);
@@ -46,7 +51,7 @@ public class AuthorInfoTests
 	public void Empty_ShouldReturnEmptyInstance()
 	{
 		// Arrange & Act
-		var empty = AuthorInfo.Empty;
+		AuthorInfo empty = AuthorInfo.Empty;
 
 		// Assert
 		empty.UserId.Should().Be(string.Empty);
@@ -57,9 +62,9 @@ public class AuthorInfoTests
 	public void Record_Equality_ShouldCompareBothProperties()
 	{
 		// Arrange
-		var author1 = new AuthorInfo("auth0|123", "John Doe");
-		var author2 = new AuthorInfo("auth0|123", "John Doe");
-		var author3 = new AuthorInfo("auth0|456", "Jane Doe");
+		AuthorInfo author1 = new ("auth0|123", "John Doe");
+		AuthorInfo author2 = new ("auth0|123", "John Doe");
+		AuthorInfo author3 = new ("auth0|456", "Jane Doe");
 
 		// Act & Assert
 		author1.Should().Be(author2);
@@ -70,14 +75,15 @@ public class AuthorInfoTests
 	public void With_Expression_ShouldCreateNewInstance()
 	{
 		// Arrange
-		var original = new AuthorInfo("auth0|123", "John Doe");
+		AuthorInfo original = new ("auth0|123", "John Doe");
 
 		// Act
-		var modified = original with { Name = "Jane Doe" };
+		AuthorInfo modified = original with { Name = "Jane Doe" };
 
 		// Assert
 		modified.UserId.Should().Be(original.UserId);
 		modified.Name.Should().Be("Jane Doe");
 		original.Name.Should().Be("John Doe"); // Original unchanged
 	}
+
 }

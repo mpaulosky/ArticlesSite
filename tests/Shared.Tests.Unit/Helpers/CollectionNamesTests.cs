@@ -1,13 +1,18 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     CollectionNamesTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     CollectionNamesTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 
+#region
+
+using Shared.Abstractions;
 using Shared.Helpers;
+
+#endregion
 
 namespace Shared.Tests.Unit.Helpers;
 
@@ -16,6 +21,7 @@ namespace Shared.Tests.Unit.Helpers;
 /// </summary>
 public class CollectionNamesTests
 {
+
 	[Fact]
 	public void GetCollectionName_WithArticle_ShouldReturnArticlesCollection()
 	{
@@ -23,7 +29,7 @@ public class CollectionNamesTests
 		const string entityName = "Article";
 
 		// Act
-		var result = CollectionNames.GetCollectionName(entityName);
+		Result<string> result = CollectionNames.GetCollectionName(entityName);
 
 		// Assert
 		result.Success.Should().BeTrue();
@@ -38,7 +44,7 @@ public class CollectionNamesTests
 		const string entityName = "Category";
 
 		// Act
-		var result = CollectionNames.GetCollectionName(entityName);
+		Result<string> result = CollectionNames.GetCollectionName(entityName);
 
 		// Assert
 		result.Success.Should().BeTrue();
@@ -55,7 +61,7 @@ public class CollectionNamesTests
 	public void GetCollectionName_WithInvalidEntityName_ShouldReturnFailure(string? invalidEntityName)
 	{
 		// Arrange & Act
-		var result = CollectionNames.GetCollectionName(invalidEntityName);
+		Result<string> result = CollectionNames.GetCollectionName(invalidEntityName);
 
 		// Assert
 		result.Success.Should().BeFalse();
@@ -68,10 +74,11 @@ public class CollectionNamesTests
 	public void GetCollectionName_WithNull_ShouldReturnFailure()
 	{
 		// Arrange & Act
-		var result = CollectionNames.GetCollectionName(null);
+		Result<string> result = CollectionNames.GetCollectionName(null);
 
 		// Assert
 		result.Success.Should().BeFalse();
 		result.Error.Should().Be("Invalid entity name provided.");
 	}
+
 }
