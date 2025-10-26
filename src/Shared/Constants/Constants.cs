@@ -1,9 +1,9 @@
-//=======================================================
+﻿// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     Constants.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
 
@@ -11,9 +11,10 @@ namespace Shared.Constants;
 
 public static class Constants
 {
+
 	public const string ArticleDatabase = "articlesdb";
 
-	public const string ArticleConnect = "atlas";
+	public const string ArticleConnect = "mongodb";
 
 	public const string AdminPolicy = "AdminOnly";
 

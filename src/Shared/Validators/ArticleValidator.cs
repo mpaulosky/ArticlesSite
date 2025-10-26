@@ -3,7 +3,7 @@
 // File Name :     ArticleValidator.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
 
@@ -20,13 +20,13 @@ public class ArticleValidator : AbstractValidator<Article>
 
 		RuleFor(x => x.Id).NotEqual(ObjectId.Empty)
 				.WithMessage("Id is required");
-				
+
 		RuleFor(x => x.Id).NotEmpty()
 				.WithMessage("Id is required");
-		
+
 		RuleFor(x => x.Id).NotNull()
 				.WithMessage("Id is required");
-		
+
 		RuleFor(x => x.Title)
 				.NotEmpty()
 				.WithMessage("Title is required")

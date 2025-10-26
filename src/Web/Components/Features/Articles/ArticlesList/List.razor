@@ -1,0 +1,184 @@
+@page "/articles"
+
+@inject NavigationManager Navigation
+@inject IGetArticlesHandler ArticlesHandler
+@inject ILogger<List> Logger
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@attribute [Authorize]
+
+<PageHeadingComponent HeaderText="Articles" Level="1" TextColorClass="blue-500"/>
+
+
+@if (_isLoading)
+{
+	<LoadingComponent/>
+}
+else if (_articles == null || !_articles.Any())
+{
+	<div class="alert alert-info">
+		<ErrorAlertComponent Title="No articles available.">
+			@(_errorMessage ?? "Articles not found.")
+		</ErrorAlertComponent>
+		<AuthorizeView Roles="Admin,Author">
+			<button class="btn btn-success mt-3" @onclick="GoToCreate">Create New Article</button>
+		</AuthorizeView>
+	</div>
+}
+else
+{
+	<table class="table">
+		<thead>
+		<tr>
+			<th>Title</th>
+			<th>Release Date</th>
+			<th>Content</th>
+			<th>Author</th>
+			<th>Category</th>
+			<th>Created On</th>
+			<th>Modified On</th>
+			<th>Published</th>
+			<th>Published On</th>
+			<th>Archived</th>
+			<th>Actions</th>
+		</tr>
+		</thead>
+		<tbody>
+		@foreach (var article in _articles)
+		{
+			<tr>
+				<td>@article.Title</td>
+				<td>@article.Introduction</td>
+				<td>@article.Content</td>
+				<td>@article.Author?.Name</td>
+				<td>@article.Category?.CategoryName</td>
+				<td>@(article.CreatedOn?.ToString("d"))</td>
+				<td>@(article.ModifiedOn?.ToString("d") ?? "")</td>
+				<td>@article.IsPublished</td>
+				<td>@article.PublishedOn?.ToString("d")</td>
+				<td>@article.IsArchived</td>
+				<td>
+					<button class="btn btn-primary btn-sm mx-1" @onclick="@(() => GoToEdit(article.Id.ToString()))"
+									disabled="@(!article.CanEdit)">Edit
+					</button>
+					<button class="btn btn-info btn-sm mx-1" @onclick="@(() => GoToDetails(article.Id.ToString()))">Details
+					</button>
+				</td>
+			</tr>
+		}
+		</tbody>
+	</table>
+}
+<AuthorizeView Roles="Admin,Author">
+	<button class="btn btn-success mt-3" @onclick="GoToCreate">Create New Article</button>
+</AuthorizeView>
+
+@code {
+
+	/// <summary>
+	///   The list of articles to display.
+	/// </summary>
+	private IQueryable<ArticleDto>? _articles;
+
+	/// <summary>
+	///   Indicates whether the page is loading data.
+	/// </summary>
+	[CascadingParameter]
+	private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+	/// <summary>
+	///   Indicates whether the page is loading data.
+	/// </summary>
+	private bool _isLoading = true;
+
+	/// <summary>
+	///   Stores error messages for display in the UI.
+	/// </summary>
+	private string? _errorMessage;
+
+	/// <summary>
+	///   Called when the component is initialized. Loads all articles for display.
+	///   Adds structured logging for success and error cases.
+	///   Determines per-article edit/delete permissions for the current user.
+	/// </summary>
+	protected override Task OnInitializedAsync()
+	{
+		_isLoading = true;
+		_ = LoadAsync();
+
+		return Task.CompletedTask;
+	}
+
+	private async Task LoadAsync()
+	{
+		try
+		{
+			Logger.LogInformation("Loading articles list.");
+
+			var result = await ArticlesHandler.HandleAsync();
+
+			if (result.Success)
+			{
+				Logger.LogInformation("Articles loaded successfully. Count: {Count}", result.Value?.Count() ?? 0);
+				_articles = result.Value?.AsQueryable() ?? null;
+
+				// Determine current user and roles
+				var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+				var user = authState.User;
+
+				var userId = user.FindFirst(c =>
+					c.Type is "sub" or "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+
+				var isAdmin = user?.IsInRole("Admin") ?? false;
+				var isAuthor = user?.IsInRole("Author") ?? false;
+
+				if (_articles is not null)
+				{
+					foreach (var article in _articles)
+					{
+						article.CanEdit = isAdmin || (isAuthor && article.Author?.UserId == userId);
+					}
+				}
+			}
+			else
+			{
+				_errorMessage = result.Error ?? "Failed to load articles.";
+
+				Logger.LogError("Failed to load articles. Error: {Error}", result.Error ?? "Unknown error");
+				_articles = null;
+			}
+		}
+		catch (Exception ex)
+		{
+			_errorMessage = "Failed to load articles.";
+			Logger.LogError(ex, "Exception while loading articles list.");
+			_articles = null;
+		}
+		finally
+		{
+			_isLoading = false;
+
+			try { await InvokeAsync(StateHasChanged); }
+			catch { }
+		}
+	}
+
+	/// <summary>
+	///   Navigates to the creation category page.
+	/// </summary>
+	private void GoToCreate()
+	{
+		Navigation.NavigateTo("/articles/create");
+	}
+
+	private void GoToEdit(string id)
+	{
+		Navigation.NavigateTo($"/articles/edit/{id}");
+	}
+
+	private void GoToDetails(string id)
+	{
+		Navigation.NavigateTo($"/articles/details/{id}");
+	}
+
+}

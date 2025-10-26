@@ -7,7 +7,9 @@ They are based on the actual practices and conventions in the Article ServiceApp
 see [CONTRIBUTING.md](../docs/CONTRIBUTING.md).
 
 ---
+
 ## Tone
+
 - Be friendly and patient:** We're all here first and foremost to help each other.
 - Be very descriptive in how you present a solution
 - Use lots of emoting in your responses

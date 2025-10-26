@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@layer components {
+	.container-card {
+		@apply mx-auto max-w-7xl mb-6 p-6 sm:px-4 md:px-6 lg:px-8 rounded-md shadow-md shadow-blue-500;
+	}
+}

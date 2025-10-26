@@ -11,23 +11,30 @@
 
 ---
 
-A modern, cloud-native blog management application built with **BlazorServer**, **.NET Aspire**, and **PostgreSQL**. This project demonstrates best practices in serverless architecture, comprehensive testing strategies, and production-ready patterns for building scalable web applications with .NET 9.
+A modern, cloud-native blog management application built with **BlazorServer**, **.NET Aspire**, and **MongoDB**. This
+project demonstrates best practices in serverless architecture, comprehensive testing strategies, and production-ready
+patterns for building scalable web applications with .NET 9.
 
 > [!TIP]
-> This application is designed to showcase enterprise-grade patterns including CQRS, Vertical Slice Architecture, and comprehensive test coverage with unit, integration, and end-to-end tests.
+> This application is designed to showcase enterprise-grade patterns including CQRS, Vertical Slice Architecture, and
+> comprehensive test coverage with unit, integration, and end-to-end tests.
 
 ## Overview
 
-ArticlesSite is a full-featured blog management system that enables users to create, manage, and publish articles with categories and rich content. Built on .NET Aspire's cloud-native orchestration, the application leverages modern serverless patterns to deliver a scalable, maintainable solution.
+ArticlesSite is a full-featured blog management system that enables users to create, manage, and publish articles with
+categories and rich content. Built on .NET Aspire's cloud-native orchestration, the application leverages modern
+serverless patterns to deliver a scalable, maintainable solution.
 
-The application uses **Blazor Server** for interactive server-side rendering, providing a responsive user experience without the complexity of client-side JavaScript frameworks. PostgreSQL serves as the primary data store, with Entity Framework Core managing migrations and data access patterns.
+The application uses **Blazor Server** for interactive server-side rendering, providing a responsive user experience
+without the complexity of client-side JavaScript frameworks. MongoDB serves as the primary data store, providing
+flexible document-based storage for articles and categories.
 
 ### Key Technologies
 
 - **.NET 9** with **C# 13** - Latest .NET platform features
 - **.NET Aspire** - Cloud-native orchestration and service defaults
 - **Blazor Server** - Interactive server-side rendering
-- **PostgreSQL 17.2** - Relational database with Entity Framework Core
+- **MongoDB 8.0** - Document database with flexible schema
 - **xUnit** - Unit and integration testing framework
 - **bUnit** - Blazor component testing
 - **TestContainers** - Isolated integration test environments
@@ -38,7 +45,7 @@ The application uses **Blazor Server** for interactive server-side rendering, pr
 - **Category Organization** - Organize articles with hierarchical categories
 - **Interactive UI** - Blazor Server components with real-time updates
 - **Cloud-Native Architecture** - Built with .NET Aspire for container orchestration
-- **Automated Migrations** - Database schema management with Entity Framework Core
+- **Persistent Storage** - MongoDB container with persistent data volumes
 - **Health Checks** - Built-in monitoring and diagnostics
 - **OpenTelemetry Integration** - Distributed tracing and metrics
 - **Comprehensive Testing** - Unit, integration, and E2E test coverage
@@ -51,7 +58,7 @@ The application uses **Blazor Server** for interactive server-side rendering, pr
 To run this application, you'll need:
 
 - **.NET 9 SDK** - [Download](https://dotnet.microsoft.com/download/dotnet/9.0)
-- **Docker** - Required for PostgreSQL and TestContainers
+- **Docker** - Required for MongoDB container and TestContainers
 - **Visual Studio 2022 / Rider / VS Code** - Recommended for development
 
 ### Running the Application
@@ -66,10 +73,10 @@ To run this application, you'll need:
 2. **Start the application**
 
    ```bash
-   dotnet run --project src/ArticlesSite.AppHost
+   dotnet run --project src/AppHost
    ```
 
-   The AppHost will orchestrate all services including PostgreSQL and handle database migrations automatically.
+   The AppHost will orchestrate all services including MongoDB container and Redis cache.
 
 3. **Access the application**
 
@@ -84,6 +91,7 @@ dotnet test
 ```
 
 This runs:
+
 - **Unit tests** - Fast, isolated tests for business logic
 - **Integration tests** - Database and service integration tests using TestContainers
 - **bUnit tests** - Blazor component tests
@@ -98,15 +106,18 @@ ArticlesSite follows a clean, layered architecture with clear separation of conc
 ```
 ArticlesSite/
 ├── src/
-│   ├── ArticlesSite.AppHost/              # .NET Aspire orchestration
-│   ├── ArticlesSite.Web/                  # Blazor Server UI
-│   ├── ArticlesSite.ServiceDefaults/      # Shared service configuration
-│   ├── ArticlesSite.Shared/               # Domain models and contracts
-│   ├── ArticlesSite.Data.Postgres/        # Data access layer
-│   └── ArticlesSite.Data.Postgres.Migrations/ # Database migrations service
+│   ├── AppHost/              # .NET Aspire orchestration
+│   ├── Web/                  # Blazor Server UI
+│   ├── Api/                  # Web API endpoints
+│   ├── ServiceDefaults/      # Shared service configuration
+│   └── Shared/               # Domain models and contracts
 └── tests/
-    ├── ArticlesSite.Web.Tests.Bunit/      # Component tests
-    └── ArticlesSite.Tests.E2E/            # End-to-end tests
+    ├── Api.Tests.Unit/           # API unit tests
+    ├── Api.Tests.Integration/    # API integration tests
+    ├── Web.Tests.Unit/           # Web unit tests
+    ├── Web.Tests.Integration/    # Web integration tests
+    ├── Shared.Tests.Unit/        # Shared unit tests
+    └── Architecture.Tests/       # Architecture tests
 ```
 
 ### Design Principles
@@ -120,34 +131,41 @@ ArticlesSite/
 
 ### Database
 
-PostgreSQL with Entity Framework Core provides:
-- Automatic migrations on startup
-- Change tracking and concurrency handling
-- Connection pooling and resilience
-- Full async/await support
+MongoDB provides flexible document storage with:
 
-The `ArticlesSite.Data.Postgres.Migrations` project runs as a background service, applying pending migrations before the main application starts.
+- Persistent container storage for data durability
+- Flexible document structure for articles and categories
+- Native support for complex nested structures
+- Full async/await support with MongoDB.Driver
+- Integration with .NET Aspire for orchestration
+
+The MongoDB container is configured with `ContainerLifetime.Persistent` to ensure data persists across application
+restarts.
 
 ## Testing
 
 ArticlesSite employs a comprehensive testing strategy:
 
 ### Unit Tests
+
 - Fast, isolated tests for business logic
 - Test domain entities, helpers, and services
 - Located in `tests/` directory
 
 ### Integration Tests
+
 - Database integration with TestContainers
-- Ensures PostgreSQL compatibility
+- Ensures MongoDB compatibility
 - Isolated test data per test run
 
 ### Component Tests (bUnit)
+
 - Blazor component behavior verification
 - Render testing and interaction testing
 - Example: `tests/ArticlesSite.Web.Tests.Bunit/`
 
 ### End-to-End Tests
+
 - Full application scenarios
 - Database and UI interaction
 - Located in `tests/ArticlesSite.Tests.E2E/`
@@ -178,7 +196,8 @@ This project enforces strict coding standards through `.editorconfig` and analys
 - **XML documentation** for public APIs
 - **Centralized package management** in `Directory.Packages.props`
 
-See [`.github/instructions/copilot-instructions.md`](.github/instructions/copilot-instructions.md) for complete coding guidelines.
+See [`.github/instructions/copilot-instructions.md`](.github/instructions/copilot-instructions.md) for complete coding
+guidelines.
 
 ## Deployment
 
@@ -186,12 +205,13 @@ The application is designed for deployment to Azure or any container orchestrati
 
 1. **Container Build** - Dockerfiles included for all services
 2. **.NET Aspire Manifest** - Deploy to Azure Container Apps
-3. **PostgreSQL** - Use Azure Database for PostgreSQL or containerized deployment
+3. **MongoDB** - Use Azure Cosmos DB for MongoDB API or containerized deployment
 4. **Observability** - Built-in OpenTelemetry for Application Insights
 
 ## Dev Container detection
 
-When running the solution inside a Dev Container (Rider or VS Code), this repository sets explicit environment variables from .devcontainer/devcontainer.json:
+When running the solution inside a Dev Container (Rider or VS Code), this repository sets explicit environment variables
+from .devcontainer/devcontainer.json:
 
 - RIDER_DEVCONTAINER=true
 - IN_DEVCONTAINER=true
@@ -207,13 +227,14 @@ The Web app logs a startup message indicating whether it is running inside a Dev
 
 - [.NET Aspire Documentation](https://learn.microsoft.com/dotnet/aspire/)
 - [Blazor Server Documentation](https://learn.microsoft.com/aspnet/core/blazor/)
-- [Entity Framework Core](https://learn.microsoft.com/ef/core/)
-- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [MongoDB .NET Driver](https://www.mongodb.com/docs/drivers/csharp/)
+- [MongoDB Documentation](https://www.mongodb.com/docs/)
 - [TestContainers for .NET](https://dotnet.testcontainers.org/)
 
 ## Contributing
 
-Contributions are welcome! This project follows standard open-source contribution guidelines. Please ensure all tests pass and code follows the established standards before submitting a pull request.
+Contributions are welcome! This project follows standard open-source contribution guidelines. Please ensure all tests
+pass and code follows the established standards before submitting a pull request.
 
 ## License
 

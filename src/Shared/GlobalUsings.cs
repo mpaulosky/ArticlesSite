@@ -3,9 +3,11 @@
 // File Name :     GlobalUsings.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
+
+#region
 
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
@@ -14,7 +16,6 @@ global using System.Text.RegularExpressions;
 global using System.Web;
 
 global using Bogus;
-global using Bogus.DataSets;
 
 global using FluentValidation;
 
@@ -26,5 +27,6 @@ global using Shared.Entities;
 global using Shared.Models;
 global using Shared.Validators;
 
-global using static Shared.Constants.Constants;
 global using static Shared.Helpers.Helpers;
+
+#endregion

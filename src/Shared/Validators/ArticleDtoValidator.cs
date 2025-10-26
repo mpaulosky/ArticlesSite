@@ -3,15 +3,7 @@
 // File Name :     ArticleDtoValidator.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
-// Project Name :  Shared
-// =======================================================
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     ArticleDtoValidator.cs
-// Company :       mpaulosky
-// Author :        Matthew
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
 

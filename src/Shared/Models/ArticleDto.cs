@@ -1,9 +1,9 @@
-// =======================================================
+﻿// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     ArticleDto.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
 
@@ -15,6 +15,7 @@ namespace Shared.Models;
 /// </summary>
 public sealed class ArticleDto
 {
+
 	public ArticleDto()
 	{
 		Id = ObjectId.Empty;
@@ -33,7 +34,21 @@ public sealed class ArticleDto
 		CanEdit = false;
 	}
 
-	public ArticleDto(ObjectId id, string slug, string title, string introduction, string content, string coverImageUrl, AuthorInfo? author, Category? category, bool isPublished, DateTimeOffset? publishedOn, DateTimeOffset? createdOn, DateTimeOffset? modifiedOn, bool isArchived, bool canEdit)
+	public ArticleDto(
+			ObjectId id,
+			string slug,
+			string title,
+			string introduction,
+			string content,
+			string coverImageUrl,
+			AuthorInfo? author,
+			Category? category,
+			bool isPublished,
+			DateTimeOffset? publishedOn,
+			DateTimeOffset? createdOn,
+			DateTimeOffset? modifiedOn,
+			bool isArchived,
+			bool canEdit)
 	{
 		Id = id;
 		Slug = slug;
@@ -66,7 +81,8 @@ public sealed class ArticleDto
 	[BsonElement("Slug")]
 	[BsonRepresentation(BsonType.String)]
 	[MaxLength(200)]
-	[RegularExpression(@"^[a-z0-9_]+$", ErrorMessage = "URL slug can only contain lowercase letters, numbers, and underscores")]
+	[RegularExpression(@"^[a-z0-9_]+$",
+			ErrorMessage = "URL slug can only contain lowercase letters, numbers, and underscores")]
 	public string Slug { get; set; }
 
 	/// <summary>
@@ -166,28 +182,30 @@ public sealed class ArticleDto
 	public string UrlSlug
 	{
 		get => Slug;
+
 		set => Slug = value;
 	}
 
 	/// <summary>
 	///   Gets an empty ArticleDto instance.
 	/// </summary>
-	public static ArticleDto Empty => new()
-	{
-		Id = ObjectId.Empty,
-		Slug = string.Empty,
-		Title = string.Empty,
-		Introduction = string.Empty,
-		Content = string.Empty,
-		CoverImageUrl = string.Empty,
-		Author = null,
-		Category = null,
-		IsPublished = false,
-		PublishedOn = null,
-		CreatedOn = null,
-		ModifiedOn = null,
-		IsArchived = false,
-		CanEdit = false
-	};
+	public static ArticleDto Empty =>
+			new()
+			{
+					Id = ObjectId.Empty,
+					Slug = string.Empty,
+					Title = string.Empty,
+					Introduction = string.Empty,
+					Content = string.Empty,
+					CoverImageUrl = string.Empty,
+					Author = null,
+					Category = null,
+					IsPublished = false,
+					PublishedOn = null,
+					CreatedOn = null,
+					ModifiedOn = null,
+					IsArchived = false,
+					CanEdit = false
+			};
 
 }

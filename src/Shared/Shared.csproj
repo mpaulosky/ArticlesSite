@@ -1,24 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net10.0</TargetFramework>
+		<TargetFramework>net9.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Bogus" />
-		<PackageReference Include="FluentValidation" />
-		<PackageReference Include="Mapster" />
-		<PackageReference Include="MongoDB.Bson" />
-		<PackageReference Include="WaffleGenerator.Bogus" />
+		<PackageReference Include="Bogus"/>
+		<PackageReference Include="FluentValidation"/>
+		<PackageReference Include="MongoDB.Bson"/>
+		<PackageReference Include="WaffleGenerator.Bogus"/>
 	</ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="Architecture.Tests.Unit"/>
+		<InternalsVisibleTo Include="Architecture.Tests"/>
 		<InternalsVisibleTo Include="Shared.Tests.Unit"/>
 		<InternalsVisibleTo Include="Web.Tests.Unit"/>
-		<InternalsVisibleTo Include="Web.Tests"/>
 		<InternalsVisibleTo Include="Web.Tests.Integration"/>
 	</ItemGroup>
 

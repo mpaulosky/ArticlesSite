@@ -2,7 +2,8 @@
 
 Thank you for taking the time to consider contributing to our project.
 
-The following is a set of guidelines for contributing to the project. These are mostly guidelines, not rules, and can be changed in the future. Please submit your suggestions with a pull-request to this document.
+The following is a set of guidelines for contributing to the project. These are mostly guidelines, not rules, and can be
+changed in the future. Please submit your suggestions with a pull-request to this document.
 
 ## Table of Contents
 
@@ -18,7 +19,8 @@ The following is a set of guidelines for contributing to the project. These are 
 
 ## Welcome!
 
-Thank you for your interest in contributing! We value all contributions and strive to make this project a welcoming, inclusive space for everyone.
+Thank you for your interest in contributing! We value all contributions and strive to make this project a welcoming,
+inclusive space for everyone.
 
 Below are guidelines to help you get started. If you have suggestions, please submit a pull request to this document.
 
@@ -158,7 +160,8 @@ Please provide as much detail as possible, including steps to reproduce, expecte
 1. When you are done Create a Pull Request from your branch to the develop branch.
 1. Submit the Pull Request.
 
-**Note:** Pull requests without unit tests will be delayed until tests are added. All new features and bug fixes must include appropriate tests.
+**Note:** Pull requests without unit tests will be delayed until tests are added. All new features and bug fixes must
+include appropriate tests.
 
 Any code that is written to support a blazor component or new functionality are required to be accompanied with unit
 tests at the time the pull request is submitted. Pull requests without unit tests will be delayed and asked for unit

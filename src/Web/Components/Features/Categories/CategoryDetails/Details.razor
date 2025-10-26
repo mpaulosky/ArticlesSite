@@ -1,0 +1,156 @@
+@page "/categories/{id}"
+@using System.Security.Claims
+
+@inject NavigationManager Navigation
+@inject IGetCategoryHandler GetHandler
+@inject ILogger<Details> Logger
+@inject AuthenticationStateProvider AuthProvider
+
+@attribute [Authorize]
+
+<PageHeadingComponent HeaderText="Category Details" Level="1" TextColorClass="blue-500"/>
+
+@if (_isLoading)
+{
+	<LoadingComponent/>
+}
+else if (_category is null)
+{
+	<ErrorAlertComponent Title="Unable to load category">
+		@(_errorMessage ?? "Category not found.")
+	</ErrorAlertComponent>
+}
+else
+{
+	<div class="card">
+		<div class="card-body">
+			<h2>@_category?.CategoryName</h2>
+			<p>Created On: @_category?.CreatedOn.ToString("d")</p>
+			<p>Modified On: @_category?.ModifiedOn?.ToString("d")</p>
+			<button class="btn btn-secondary" @onclick="GoToEdit" disabled="@(!_canEdit)">Edit</button>
+			<button class="btn btn-light ms-2" type="button" @onclick="GoToList">Back to List</button>
+		</div>
+	</div>
+}
+
+@code {
+
+	/// <summary>
+	///   The unique identifier of the category to display.
+	/// </summary>
+	[Parameter]
+	public string Id { get; set; } = string.Empty;
+
+	/// <summary>
+	///   The authentication state of the user.
+	/// </summary>
+	[CascadingParameter]
+	private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+	/// <summary>
+	///   The category data to be displayed on the page.
+	/// </summary>
+	private CategoryDto? _category;
+
+	/// <summary>
+	///   Error message returned by the handler when loading fails. Shown in the UI.
+	/// </summary>
+	private string? _errorMessage;
+
+	/// <summary>
+	///   Indicates whether the component is currently loading data.
+	/// </summary>
+	private bool _isLoading = true;
+
+	/// <summary>
+	///   Indicates whether the current user has permission to edit the category.
+	/// </summary>
+	private bool _canEdit;
+
+	/// <summary>
+	///   Initializes the component by loading the category data using the CategoryService.
+	/// </summary>
+	protected override async Task OnInitializedAsync()
+	{
+		Logger.LogInformation("Loading category details for Id: {CategoryId}", Id);
+		_isLoading = true;
+
+		await SetCanEditAsync().ConfigureAwait(false);
+
+		try
+		{
+			var result = await GetHandler.HandleAsync(Id);
+
+			if (result.Success)
+			{
+				_category = result.Value;
+				_errorMessage = null;
+				Logger.LogInformation("Category loaded successfully: {CategoryId}", Id);
+			}
+			else
+			{
+				_category = null;
+				_errorMessage = result.Error ?? "Category not found.";
+
+				Logger.LogWarning("Failed to load category: {CategoryId}. Error: {Error}", Id, _errorMessage);
+			}
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	protected override async Task OnParametersSetAsync()
+	{
+		await SetCanEditAsync().ConfigureAwait(false);
+	}
+
+	private async Task SetCanEditAsync()
+	{
+		// Determine edit permission based on authenticated roles; default to false if auth state is unavailable
+		ClaimsPrincipal? userFromCascade = null;
+
+		if (AuthenticationState is not null)
+		{
+			var s = await AuthenticationState.ConfigureAwait(false);
+			userFromCascade = s.User;
+		}
+
+		ClaimsPrincipal? userFromProvider = null;
+
+		if (AuthProvider is not null)
+		{
+			var s2 = await AuthProvider.GetAuthenticationStateAsync().ConfigureAwait(false);
+			userFromProvider = s2.User;
+		}
+
+		var candidates = new[] { userFromCascade, userFromProvider };
+		var user = candidates.FirstOrDefault(u => u is not null && (u.Identity?.IsAuthenticated ?? false) && u.Claims.Any());
+		user ??= userFromCascade ?? userFromProvider;
+
+		var result = user is not null && (user.IsInRole("Admin") || user.Claims.Any(c => (string.Equals(c.Type, ClaimTypes.Role,
+																																											 StringComparison.OrdinalIgnoreCase) || string.Equals(c.Type, "role", StringComparison.OrdinalIgnoreCase)) &&
+																																										 string.Equals(c.Value, "Admin", StringComparison.OrdinalIgnoreCase)));
+
+		_canEdit = result;
+
+	}
+
+	/// <summary>
+	///   Navigates to the edit page for the current category.
+	/// </summary>
+	private void GoToEdit()
+	{
+		Navigation.NavigateTo($"/categories/edit/{Id}");
+	}
+
+	/// <summary>
+	///   Navigates back to the category list page.
+	/// </summary>
+	private void GoToList()
+	{
+		Navigation.NavigateTo("/categories");
+	}
+
+}

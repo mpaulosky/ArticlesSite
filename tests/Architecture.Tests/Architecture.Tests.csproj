@@ -3,15 +3,12 @@
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<OutputType>Exe</OutputType>
+		<OutputType>Library</OutputType>
 		<RootNamespace>Architecture.Tests</RootNamespace>
-		<TargetFramework>net10.0</TargetFramework>
-		<!--
-		This template uses native xUnit.net command line options when using 'dotnet run' and
-		VSTest by default when using 'dotnet test'. For more information on how to enable support
-		for Microsoft Testing Platform, please visit:
-			https://xunit.net/docs/getting-started/v3/microsoft-testing-platform
-		-->
+		<TargetFramework>net9.0</TargetFramework>
+		<IsTestProject>true</IsTestProject>
+		<UseMicrosoftTestingPlatformRunner>false</UseMicrosoftTestingPlatformRunner>
+		<TestingPlatformDotnetTestSupport>false</TestingPlatformDotnetTestSupport>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -23,9 +20,20 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" />
-		<PackageReference Include="xunit.v3" />
-		<PackageReference Include="xunit.runner.visualstudio" />
+		<PackageReference Include="coverlet.collector">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.NET.Test.Sdk"/>
+		<PackageReference Include="xunit.v3"/>
+		<PackageReference Include="xunit.runner.visualstudio"/>
+		<PackageReference Include="FluentAssertions"/>
+		<PackageReference Include="NetArchTest.Rules"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Shared\Shared.csproj"/>
+		<ProjectReference Include="..\..\src\Web\Web.csproj"/>
 	</ItemGroup>
 
 </Project>

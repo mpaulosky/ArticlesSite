@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "build-solution",
+			"type": "shell",
+			"command": "dotnet build ${workspaceFolder}/ArticlesSite.slnx",
+			"problemMatcher": [
+				"$msCompile"
+			],
+			"group": "build"
+		},
+		{
+			"label": "trust-dev-certs",
+			"type": "shell",
+			"command": "dotnet dev-certs https --trust",
+			"group": "none"
+		},
+		{
+			"label": "prelaunch-all",
+			"dependsOn": [
+				"trust-dev-certs",
+				"build-solution"
+			],
+			"dependsOrder": "sequence",
+			"group": "none"
+		}
+	]
+}

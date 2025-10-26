@@ -3,7 +3,7 @@
 // File Name :     CategoryValidator.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
 
@@ -24,11 +24,11 @@ public class CategoryValidator : AbstractValidator<Category>
 		RuleFor(x => x.Id)
 				.NotNull().WithMessage("Id is required")
 				.NotEmpty().WithMessage("Id cannot be empty");
-		
+
 		RuleFor(x => x.CategoryName)
 				.NotEmpty().WithMessage("Name is required")
 				.MaximumLength(80).WithMessage("Name cannot exceed 80 characters");
-		
+
 		RuleFor(x => x.CreatedOn)
 				.NotNull().WithMessage("CreatedOn is required")
 				.LessThanOrEqualTo(DateTimeOffset.UtcNow).WithMessage("CreatedOn cannot be in the future");

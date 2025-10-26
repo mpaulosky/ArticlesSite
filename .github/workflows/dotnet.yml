@@ -4,17 +4,19 @@
 name: Build and Test .NET projects
 
 permissions:
+  issues: write
   checks: write
   contents: read
+  pull-requests: write
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
     paths:
       - "src/**"
       - "tests/**"
   pull_request:
-    branches: ["*"]
+    branches: [ "*" ]
     paths:
       - "src/**"
       - "tests/**"
@@ -32,13 +34,12 @@ jobs:
 
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
-      E2E_HEADLESS: 'true'
-      E2E_BASE_URL: 'https://127.0.0.1:7180'
+      E2E_HEADLESS: "true"
+      E2E_BASE_URL: "https://127.0.0.1:7180"
       AUTH0_E2E_USERNAME: ${{ secrets.AUTH0_E2E_USERNAME }}
       AUTH0_E2E_PASSWORD: ${{ secrets.AUTH0_E2E_PASSWORD }}
       AUTH0_E2E_USERNAME_ADMIN: ${{ secrets.AUTH0_E2E_USERNAME_ADMIN }}
       AUTH0_E2E_PASSWORD_ADMIN: ${{ secrets.AUTH0_E2E_PASSWORD_ADMIN }}
-      AUTH0_E2E_USERNAME_AUTHOR: ${{ secrets.AUTH0_E2E_USERNAME_AUTHOR }}
       AUTH0_E2E_PASSWORD_AUTHOR: ${{ secrets.AUTH0_E2E_PASSWORD_AUTHOR }}
       AUTH0_E2E_USERNAME_USER: ${{ secrets.AUTH0_E2E_USERNAME_USER }}
       AUTH0_E2E_PASSWORD_USER: ${{ secrets.AUTH0_E2E_PASSWORD_USER }}
@@ -110,7 +111,7 @@ jobs:
           while IFS= read -r proj; do
             if grep -q "<IsTestProject>true</IsTestProject>" "$proj" 2>/dev/null; then
               name=$(basename "$proj" .csproj)
-              echo "Running tests for: $proj -> test-results/${name}.trx (logs -> test-results/${name}.coverage.log)"
+              echo "Running tests for: $proj -> test-results/${name}.trx (logs -> test-results/${name}.log)"
               set +e
               dotnet test "$proj" \
                 --no-build --no-restore \
@@ -127,34 +128,21 @@ jobs:
             else
               echo "Skipping non-test project: $proj"
             fi
-          done < <( find tests -type f -name "*.csproj" 2>/dev/null || true )
+            done < <( find tests -type f -name "*.csproj" 2>/dev/null || true )
 
-          echo "tests_exit_code=$overall_rc" >> "$GITHUB_OUTPUT"
-          exit 0
+            echo "tests_exit_code=$overall_rc" >> "$GITHUB_OUTPUT"
+            exit 0
 
       - name: Upload Test Results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: steps.check-tests.outputs.has_tests == 'true'
         with:
           name: Solution-Test-Results
           path: test-results
 
-      - name: Upload Test Logs
-        uses: actions/upload-artifact@v4
-        if: steps.check-tests.outputs.has_tests == 'true'
-        with:
-          name: Test-Logs
-          path: ${{ github.workspace }}/test-results/**/*.log
-
       - name: Codecov
         uses: codecov/codecov-action@v5.5.1
         if: steps.check-tests.outputs.has_tests == 'true'
-
-      - name: Upload test results to Codecov
-        if: steps.check-tests.outputs.has_tests == 'true' && !cancelled()
-        uses: codecov/test-results-action@v1
-        with:
-          files: test-results/**/*.xml
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
