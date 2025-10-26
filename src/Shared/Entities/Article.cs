@@ -15,6 +15,7 @@ namespace Shared.Entities;
 [Serializable]
 public class Article
 {
+
 	public Article()
 	{
 		Title = string.Empty;
@@ -32,14 +33,28 @@ public class Article
 		Author = null;
 	}
 
-	public Article(string title, string introduction, string content, string? coverImageUrl, AuthorInfo? author, Category? category) : this()
+	public Article(
+			string title,
+			string introduction,
+			string content,
+			string? coverImageUrl,
+			AuthorInfo? author,
+			Category? category) : this()
 	{
 		if (string.IsNullOrWhiteSpace(title))
+		{
 			throw new ArgumentException("Title cannot be null or whitespace.", nameof(title));
+		}
+
 		if (string.IsNullOrWhiteSpace(introduction))
+		{
 			throw new ArgumentException("Introduction cannot be null or whitespace.", nameof(introduction));
+		}
+
 		if (string.IsNullOrWhiteSpace(content))
+		{
 			throw new ArgumentException("Content cannot be null or whitespace.", nameof(content));
+		}
 
 		Title = title;
 		Introduction = introduction;
@@ -53,8 +68,17 @@ public class Article
 		IsArchived = false;
 	}
 
-	public Article(string title, string introduction, string content, string? coverImageUrl, AuthorInfo? author, Category? category, bool isPublished, DateTimeOffset? publishedOn, bool isArchived)
-		: this(title, introduction, content, coverImageUrl, author, category)
+	public Article(
+			string title,
+			string introduction,
+			string content,
+			string? coverImageUrl,
+			AuthorInfo? author,
+			Category? category,
+			bool isPublished,
+			DateTimeOffset? publishedOn,
+			bool isArchived)
+			: this(title, introduction, content, coverImageUrl, author, category)
 	{
 		IsPublished = isPublished;
 		PublishedOn = publishedOn;
@@ -77,7 +101,8 @@ public class Article
 	[BsonRepresentation(BsonType.String)]
 	[Required(ErrorMessage = "Slug is required")]
 	[MaxLength(200)]
-	[RegularExpression(@"^[a-z0-9_]+$", ErrorMessage = "Slug can only contain lowercase letters, numbers, and underscores")]
+	[RegularExpression(@"^[a-z0-9_]+$",
+			ErrorMessage = "Slug can only contain lowercase letters, numbers, and underscores")]
 	public string Slug { get; private set; }
 
 	/// <summary>
@@ -169,16 +194,50 @@ public class Article
 	public bool IsArchived { get; set; }
 
 	/// <summary>
+	///   Gets an empty article instance.
+	/// </summary>
+	public static Article Empty =>
+			new()
+			{
+					Id = ObjectId.Empty,
+					Title = string.Empty,
+					Introduction = string.Empty,
+					Content = string.Empty,
+					CoverImageUrl = string.Empty,
+					Slug = string.Empty,
+					Author = null,
+					Category = null,
+					IsPublished = false,
+					PublishedOn = null,
+					IsArchived = false
+			};
+
+	/// <summary>
 	///   Updates the article with new values.
 	/// </summary>
-	public void Update(string title, string introduction, string content, string coverImageUrl, bool isPublished, DateTimeOffset? publishedOn, bool isArchived)
+	public void Update(
+			string title,
+			string introduction,
+			string content,
+			string coverImageUrl,
+			bool isPublished,
+			DateTimeOffset? publishedOn,
+			bool isArchived)
 	{
 		if (string.IsNullOrWhiteSpace(title))
+		{
 			throw new ArgumentException("Title cannot be null or whitespace.", nameof(title));
+		}
+
 		if (string.IsNullOrWhiteSpace(introduction))
+		{
 			throw new ArgumentException("Introduction cannot be null or whitespace.", nameof(introduction));
+		}
+
 		if (string.IsNullOrWhiteSpace(content))
+		{
 			throw new ArgumentException("Content cannot be null or whitespace.", nameof(content));
+		}
 
 		Title = title;
 		Introduction = introduction;
@@ -211,36 +270,25 @@ public class Article
 		ModifiedOn = DateTimeOffset.UtcNow;
 	}
 
-	/// <summary>
-	///   Gets an empty article instance.
-	/// </summary>
-	public static Article Empty => new()
-	{
-		Id = ObjectId.Empty,
-		Title = string.Empty,
-		Introduction = string.Empty,
-		Content = string.Empty,
-		CoverImageUrl = string.Empty,
-		Slug = string.Empty,
-		Author = null,
-		Category = null,
-		IsPublished = false,
-		PublishedOn = null,
-		IsArchived = false
-	};
-
 	private static string GenerateSlug(string title)
 	{
 		if (string.IsNullOrWhiteSpace(title))
+		{
 			throw new ArgumentException("Title cannot be null or whitespace.", nameof(title));
+		}
+
 		// Lowercase, replace non-alphanumeric sequences with single underscore, collapse multiple underscores
-		var slug = title.ToLowerInvariant();
+		string slug = title.ToLowerInvariant();
+
 		// Replace any sequence of non-alphanumeric characters with underscore
-		slug = System.Text.RegularExpressions.Regex.Replace(slug, "[^a-z0-9]+", "_");
+		slug = Regex.Replace(slug, "[^a-z0-9]+", "_");
+
 		// Collapse multiple underscores into one
-		slug = System.Text.RegularExpressions.Regex.Replace(slug, "_+", "_");
+		slug = Regex.Replace(slug, "_+", "_");
+
 		// Trim leading/trailing underscores
 		slug = slug.Trim('_');
+
 		return slug;
 	}
 

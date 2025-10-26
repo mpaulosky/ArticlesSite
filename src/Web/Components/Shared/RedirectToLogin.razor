@@ -6,7 +6,7 @@
 	{
 		// Use the MVC AccountController Login action so OIDC challenge flows correctly
 		var returnUrl = Navigation.Uri;
-		Navigation.NavigateTo($"/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}", forceLoad: true);
+		Navigation.NavigateTo($"/Account/Login?returnUrl={Uri.EscapeDataString(returnUrl)}", true);
 	}
 
 }

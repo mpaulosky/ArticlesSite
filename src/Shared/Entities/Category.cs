@@ -15,6 +15,7 @@ namespace Shared.Entities;
 [Serializable]
 public class Category
 {
+
 	public Category()
 	{
 		Id = ObjectId.GenerateNewId();
@@ -36,7 +37,8 @@ public class Category
 	/// <summary>
 	///   The name of the category.
 	/// </summary>
-	[DisplayName("Category Name"), MaxLength(80)]
+	[ DisplayName("Category Name")]
+	[ MaxLength(80)]
 	public string CategoryName { get; set; }
 
 	/// <summary>
@@ -45,7 +47,8 @@ public class Category
 	[BsonElement("slug")]
 	[BsonRepresentation(BsonType.String)]
 	[MaxLength(200)]
-	[RegularExpression(@"^[a-z0-9_]+$", ErrorMessage = "Slug can only contain lowercase letters, numbers, and underscores")]
+	[RegularExpression(@"^[a-z0-9_]+$",
+			ErrorMessage = "Slug can only contain lowercase letters, numbers, and underscores")]
 	public string Slug { get; set; }
 
 	/// <summary>
@@ -70,7 +73,16 @@ public class Category
 	[BsonElement("isArchived")]
 	public bool IsArchived { get; set; }
 
-	public static Category Empty => new() { Id = ObjectId.Empty, CategoryName = string.Empty, Slug = string.Empty, CreatedOn = null, ModifiedOn = null, IsArchived = false };
+	public static Category Empty =>
+			new()
+			{
+					Id = ObjectId.Empty,
+					CategoryName = string.Empty,
+					Slug = string.Empty,
+					CreatedOn = null,
+					ModifiedOn = null,
+					IsArchived = false
+			};
 
 	/// <summary>
 	///   Updates the category with new values.
@@ -78,13 +90,19 @@ public class Category
 	public void Update(string categoryName, string slug, bool isArchived)
 	{
 		if (string.IsNullOrWhiteSpace(categoryName))
+		{
 			throw new ArgumentException("Category name cannot be null or whitespace.", nameof(categoryName));
+		}
+
 		if (string.IsNullOrWhiteSpace(slug))
+		{
 			throw new ArgumentException("Slug cannot be null or whitespace.", nameof(slug));
+		}
 
 		CategoryName = categoryName;
 		Slug = slug;
 		IsArchived = isArchived;
 		ModifiedOn = DateTimeOffset.UtcNow;
 	}
+
 }

@@ -3,7 +3,7 @@
 // File Name :     EditArticle.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
 
@@ -28,9 +28,9 @@ public static class EditArticle
 	public class Handler : IEditArticleHandler
 	{
 
-		private readonly IArticleRepository _repository;
-
 		private readonly ILogger<Handler> _logger;
+
+		private readonly IArticleRepository _repository;
 
 		/// <summary>
 		///   Initializes a new instance of the <see cref="Handler" /> class.
@@ -59,7 +59,7 @@ public static class EditArticle
 			{
 
 				// First check if the article exists
-				var getResult = await _repository.GetArticleByIdAsync(request.Id);
+				Result<Article?> getResult = await _repository.GetArticleByIdAsync(request.Id);
 
 				if (!getResult.Success || getResult.Value is null)
 				{
@@ -68,24 +68,28 @@ public static class EditArticle
 					return Result.Fail(getResult.Error ?? "Article not found.");
 				}
 
-				var existingArticle = getResult.Value;
+				Article? existingArticle = getResult.Value;
 
 				// Update the existing article using the Update method which regenerates the slug
 				existingArticle.Update(
-					request.Title,
-					request.Introduction,
-					request.Content,
-					request.CoverImageUrl,
-					request.IsPublished,
-					request.PublishedOn,
-					request.IsArchived
+						request.Title,
+						request.Introduction,
+						request.Content,
+						request.CoverImageUrl,
+						request.IsPublished,
+						request.PublishedOn,
+						request.IsArchived
 				);
+
 				existingArticle.Author = request.Author;
 				existingArticle.Category = request.Category;
 
-				var updateResult = await _repository.UpdateArticle(existingArticle); if (!updateResult.Success)
+				Result<Article> updateResult = await _repository.UpdateArticle(existingArticle);
+
+				if (!updateResult.Success)
 				{
 					_logger.LogError("Failed to update article: {Title}", request.Title);
+
 					return Result.Fail(updateResult.Error ?? "Failed to update article.");
 				}
 

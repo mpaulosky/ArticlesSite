@@ -6,14 +6,6 @@
 // Solution Name : ArticlesSite
 // Project Name :  Shared
 // =======================================================
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     ArticleDtoValidator.cs
-// Company :       mpaulosky
-// Author :        Matthew
-// Solution Name : ArticlesSite
-// Project Name :  Shared
-// =======================================================
 
 namespace Shared.Validators;
 
@@ -72,3 +64,4 @@ public class ArticleDtoValidator : AbstractValidator<ArticleDto>
 	}
 
 }
+

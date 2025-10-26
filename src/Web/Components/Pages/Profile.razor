@@ -1,11 +1,9 @@
 @page "/profile"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
 @attribute [Authorize]
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<PageHeadingComponent Level="1" HeaderText="@_pageTitle" />
+<PageHeadingComponent Level="1" HeaderText="@_pageTitle"/>
 <div class="container mx-auto">
 
 	<AuthorizeView>
@@ -37,6 +35,7 @@
 						<div class="space-y-2">
 							@{
 								var roles = context.User.FindAll(ClaimTypes.Role).ToList();
+
 							}
 							@if (roles.Any())
 							{
@@ -66,19 +65,19 @@
 				<div class="bg-gray-800 rounded p-4 overflow-auto">
 					<table class="w-full text-sm">
 						<thead>
-							<tr class="border-b border-gray-600">
-								<th class="text-left text-gray-300 pb-2">Claim Type</th>
-								<th class="text-left text-gray-300 pb-2">Value</th>
-							</tr>
+						<tr class="border-b border-gray-600">
+							<th class="text-left text-gray-300 pb-2">Claim Type</th>
+							<th class="text-left text-gray-300 pb-2">Value</th>
+						</tr>
 						</thead>
 						<tbody>
-							@foreach (var claim in context.User.Claims.OrderBy(c => c.Type))
-							{
-								<tr class="border-b border-gray-700">
-									<td class="py-1 text-gray-400">@claim.Type</td>
-									<td class="py-1 text-gray-300">@claim.Value</td>
-								</tr>
-							}
+						@foreach (var claim in context.User.Claims.OrderBy(c => c.Type))
+						{
+							<tr class="border-b border-gray-700">
+								<td class="py-1 text-gray-400">@claim.Type</td>
+								<td class="py-1 text-gray-300">@claim.Value</td>
+							</tr>
+						}
 						</tbody>
 					</table>
 				</div>
@@ -104,11 +103,14 @@
 		foreach (var claimType in claimTypes)
 		{
 			var claim = user.FindFirst(claimType);
+
 			if (claim != null && !string.IsNullOrEmpty(claim.Value))
 			{
 				return claim.Value;
 			}
 		}
+
 		return "N/A";
 	}
+
 }

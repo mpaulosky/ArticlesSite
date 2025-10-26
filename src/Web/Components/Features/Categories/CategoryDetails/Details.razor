@@ -2,17 +2,17 @@
 @using System.Security.Claims
 
 @inject NavigationManager Navigation
-@inject GetCategory.IGetCategoryHandler GetHandler
+@inject IGetCategoryHandler GetHandler
 @inject ILogger<Details> Logger
 @inject AuthenticationStateProvider AuthProvider
 
 @attribute [Authorize]
 
-<PageHeadingComponent HeaderText="Category Details" Level="1" TextColorClass="blue-500" />
+<PageHeadingComponent HeaderText="Category Details" Level="1" TextColorClass="blue-500"/>
 
 @if (_isLoading)
 {
-	<LoadingComponent />
+	<LoadingComponent/>
 }
 else if (_category is null)
 {
@@ -36,39 +36,39 @@ else
 @code {
 
 	/// <summary>
-	/// The unique identifier of the category to display.
+	///   The unique identifier of the category to display.
 	/// </summary>
 	[Parameter]
 	public string Id { get; set; } = string.Empty;
 
 	/// <summary>
-	/// The authentication state of the user.
+	///   The authentication state of the user.
 	/// </summary>
 	[CascadingParameter]
 	private Task<AuthenticationState>? AuthenticationState { get; set; }
 
 	/// <summary>
-	/// The category data to be displayed on the page.
+	///   The category data to be displayed on the page.
 	/// </summary>
 	private CategoryDto? _category;
 
 	/// <summary>
-	/// Error message returned by the handler when loading fails. Shown in the UI.
+	///   Error message returned by the handler when loading fails. Shown in the UI.
 	/// </summary>
 	private string? _errorMessage;
 
 	/// <summary>
-	/// Indicates whether the component is currently loading data.
+	///   Indicates whether the component is currently loading data.
 	/// </summary>
 	private bool _isLoading = true;
 
 	/// <summary>
-	/// Indicates whether the current user has permission to edit the category.
+	///   Indicates whether the current user has permission to edit the category.
 	/// </summary>
 	private bool _canEdit;
 
 	/// <summary>
-	/// Initializes the component by loading the category data using the CategoryService.
+	///   Initializes the component by loading the category data using the CategoryService.
 	/// </summary>
 	protected override async Task OnInitializedAsync()
 	{
@@ -130,14 +130,15 @@ else
 		user ??= userFromCascade ?? userFromProvider;
 
 		var result = user is not null && (user.IsInRole("Admin") || user.Claims.Any(c => (string.Equals(c.Type, ClaimTypes.Role,
-		StringComparison.OrdinalIgnoreCase) || string.Equals(c.Type, "role", StringComparison.OrdinalIgnoreCase)) &&
-		string.Equals(c.Value, "Admin", StringComparison.OrdinalIgnoreCase)));
+																																											 StringComparison.OrdinalIgnoreCase) || string.Equals(c.Type, "role", StringComparison.OrdinalIgnoreCase)) &&
+																																										 string.Equals(c.Value, "Admin", StringComparison.OrdinalIgnoreCase)));
+
 		_canEdit = result;
 
 	}
 
 	/// <summary>
-	/// Navigates to the edit page for the current category.
+	///   Navigates to the edit page for the current category.
 	/// </summary>
 	private void GoToEdit()
 	{
@@ -145,7 +146,7 @@ else
 	}
 
 	/// <summary>
-	/// Navigates back to the category list page.
+	///   Navigates back to the category list page.
 	/// </summary>
 	private void GoToList()
 	{

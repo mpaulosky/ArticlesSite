@@ -3,7 +3,7 @@
 // File Name :     MongoDbContextFactory.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
 
@@ -44,7 +44,7 @@ public sealed class MongoDbContextFactory : IMongoDbContextFactory
 													?? "ArticleSiteDb";
 
 		// Create MongoDB client from connection string
-		var mongoClient = new MongoClient(connectionString);
+		MongoClient mongoClient = new (connectionString);
 
 		return new MongoDbContext(mongoClient, databaseName);
 	}

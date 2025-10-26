@@ -25,9 +25,10 @@ public static class FakeArticle
 	public static Article GetNewArticle(bool useSeed = false)
 	{
 
-	var article = GenerateFake(useSeed).Generate();
-	// No AuthorId or CategoryId needed for MongoDB
-	return article;
+		Article? article = GenerateFake(useSeed).Generate();
+
+		// No AuthorId or CategoryId needed for MongoDB
+		return article;
 
 	}
 
@@ -56,6 +57,7 @@ public static class FakeArticle
 		for (int i = 0; i < numberRequested; i++)
 		{
 			Article? article = faker.Generate();
+
 			// No AuthorId or CategoryId needed for MongoDB
 			articles.Add(article);
 		}

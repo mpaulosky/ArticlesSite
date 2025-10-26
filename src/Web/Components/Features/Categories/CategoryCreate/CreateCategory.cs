@@ -3,7 +3,7 @@
 // File Name :     CreateCategory.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
 
@@ -28,9 +28,9 @@ public static class CreateCategory
 	public class Handler : ICreateCategoryHandler
 	{
 
-		private readonly ICategoryRepository _repository;
-
 		private readonly ILogger<Handler> _logger;
+
+		private readonly ICategoryRepository _repository;
 
 		/// <summary>
 		///   Initializes a new instance of the <see cref="Handler" /> class.
@@ -63,11 +63,12 @@ public static class CreateCategory
 
 				Category category = new() { CategoryName = request.CategoryName };
 
-				var result = await _repository.AddCategory(category);
+				Result<Category> result = await _repository.AddCategory(category);
 
 				if (!result.Success)
 				{
 					_logger.LogError("Failed to create category: {CategoryName}", request.CategoryName);
+
 					return Result.Fail(result.Error ?? "Failed to create category.");
 				}
 

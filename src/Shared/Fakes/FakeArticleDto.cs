@@ -52,18 +52,18 @@ public static class FakeArticleDto
 		// Create single fakers to share across all articles for proper seed behavior
 
 		Faker<ArticleDto>? fake = new Faker<ArticleDto>()
-				   .RuleFor(f => f.Id, _ => ObjectId.GenerateNewId())
-				   .RuleFor(f => f.Title, f => f.WaffleTitle())
-				   .RuleFor(f => f.Introduction, f => f.Lorem.Sentence())
-				   .RuleFor(f => f.Content, f => f.WaffleMarkdown(5))
-				   .RuleFor(f => f.Slug, (_, f) => f.Title.GetSlug())
-				   .RuleFor(f => f.CoverImageUrl, f => f.Image.PicsumUrl() ?? string.Empty)
-				   .RuleFor(f => f.IsPublished, f => f.Random.Bool())
-				   .RuleFor(f => f.PublishedOn, (_, f) => f.IsPublished ? DateTime.Now : null)
-				   .RuleFor(a => a.Category, FakeCategory.GetNewCategory(useSeed))
-				   .RuleFor(a => a.Author, FakeAuthorInfo.GetNewAuthorInfo(useSeed))
-				   .RuleFor(f => f.CreatedOn, _ => DateTime.Now)
-				   .RuleFor(f => f.ModifiedOn, _ => DateTime.Now);
+				.RuleFor(f => f.Id, _ => ObjectId.GenerateNewId())
+				.RuleFor(f => f.Title, f => f.WaffleTitle())
+				.RuleFor(f => f.Introduction, f => f.Lorem.Sentence())
+				.RuleFor(f => f.Content, f => f.WaffleMarkdown(5))
+				.RuleFor(f => f.Slug, (_, f) => f.Title.GetSlug())
+				.RuleFor(f => f.CoverImageUrl, f => f.Image.PicsumUrl() ?? string.Empty)
+				.RuleFor(f => f.IsPublished, f => f.Random.Bool())
+				.RuleFor(f => f.PublishedOn, (_, f) => f.IsPublished ? DateTime.Now : null)
+				.RuleFor(a => a.Category, FakeCategory.GetNewCategory(useSeed))
+				.RuleFor(a => a.Author, FakeAuthorInfo.GetNewAuthorInfo(useSeed))
+				.RuleFor(f => f.CreatedOn, _ => DateTime.Now)
+				.RuleFor(f => f.ModifiedOn, _ => DateTime.Now);
 
 
 		return useSeed ? fake.UseSeed(Seed) : fake;

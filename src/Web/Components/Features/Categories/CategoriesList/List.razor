@@ -1,17 +1,17 @@
 @page "/categories"
 
 @inject NavigationManager Navigation
-@inject GetCategories.IGetCategoriesHandler CategoriesHandler
+@inject IGetCategoriesHandler CategoriesHandler
 @inject ILogger<List> Logger
 
 @attribute [Authorize]
 
-<PageHeadingComponent HeaderText="Categories" Level="1" TextColorClass="blue-500" />
+<PageHeadingComponent HeaderText="Categories" Level="1" TextColorClass="blue-500"/>
 <p class="text-gray-600">Welcome @_username!</p>
 
 @if (_isLoading)
 {
-	<LoadingComponent />
+	<LoadingComponent/>
 }
 else if (_categories is null || !_categories.Any())
 {
@@ -26,29 +26,30 @@ else
 {
 	<table class="table">
 		<thead>
-			<tr>
-				<th>Category Name</th>
-				<th>Created On</th>
-				<th>Modified On</th>
-				<th>Archived</th>
-				<th>Actions</th>
-			</tr>
+		<tr>
+			<th>Category Name</th>
+			<th>Created On</th>
+			<th>Modified On</th>
+			<th>Archived</th>
+			<th>Actions</th>
+		</tr>
 		</thead>
 		<tbody>
-			@foreach (var category in _categories)
-			{
-				<tr>
-					<td>@category.CategoryName</td>
-					<td>@(category.CreatedOn.ToString("d"))</td>
-					<td>@(category.ModifiedOn.HasValue? category.ModifiedOn.Value.ToString("d") : "")</td>
-					<td>@category.IsArchived</td>
-					<td>
-						<button class="btn btn-primary btn-sm mx-1" @onclick="@(() => GoToEdit(category.Id.ToString()))">Edit</button>
-						<button class="btn btn-info btn-sm mx-1"
-							@onclick="@(() => GoToDetails(category.Id.ToString()))">Details</button>
-					</td>
-				</tr>
-			}
+		@foreach (var category in _categories)
+		{
+			<tr>
+				<td>@category.CategoryName</td>
+				<td>@(category.CreatedOn.ToString("d"))</td>
+				<td>@(category.ModifiedOn.HasValue ? category.ModifiedOn.Value.ToString("d") : "")</td>
+				<td>@category.IsArchived</td>
+				<td>
+					<button class="btn btn-primary btn-sm mx-1" @onclick="@(() => GoToEdit(category.Id.ToString()))">Edit</button>
+					<button class="btn btn-info btn-sm mx-1"
+									@onclick="@(() => GoToDetails(category.Id.ToString()))">Details
+					</button>
+				</td>
+			</tr>
+		}
 		</tbody>
 	</table>
 }
@@ -56,7 +57,7 @@ else
 @code {
 
 	/// <summary>
-	/// The list of categories displayed in the grid.
+	///   The list of categories displayed in the grid.
 	/// </summary>
 	private IQueryable<CategoryDto>? _categories;
 
@@ -65,19 +66,19 @@ else
 	private string _username = "";
 
 	/// <summary>
-	/// Indicates whether the page is loading data.
+	///   Indicates whether the page is loading data.
 	/// </summary>
 	private bool _isLoading = true;
 
 	/// <summary>
-	/// Stores error messages for display in the UI.
+	///   Stores error messages for display in the UI.
 	/// </summary>
 	private string? _errorMessage;
 
 	/// <summary>
-	/// Called when the component is initialized. Loads all categories for display.
-	/// Adds structured logging for success and error cases.
-	/// Also retrieves the authentication state.
+	///   Called when the component is initialized. Loads all categories for display.
+	///   Adds structured logging for success and error cases.
+	///   Also retrieves the authentication state.
 	/// </summary>
 	protected override async Task OnInitializedAsync()
 	{
@@ -108,7 +109,7 @@ else
 	}
 
 	/// <summary>
-	/// Navigates to the creation category page.
+	///   Navigates to the creation category page.
 	/// </summary>
 	private void GoToCreate()
 	{

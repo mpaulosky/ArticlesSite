@@ -1,18 +1,18 @@
 @page "/articles"
 
 @inject NavigationManager Navigation
-@inject GetArticles.IGetArticlesHandler ArticlesHandler
+@inject IGetArticlesHandler ArticlesHandler
 @inject ILogger<List> Logger
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [Authorize]
 
-<PageHeadingComponent HeaderText="Articles" Level="1" TextColorClass="blue-500" />
+<PageHeadingComponent HeaderText="Articles" Level="1" TextColorClass="blue-500"/>
 
 
 @if (_isLoading)
 {
-	<LoadingComponent />
+	<LoadingComponent/>
 }
 else if (_articles == null || !_articles.Any())
 {
@@ -29,42 +29,43 @@ else
 {
 	<table class="table">
 		<thead>
-			<tr>
-				<th>Title</th>
-				<th>Release Date</th>
-				<th>Content</th>
-				<th>Author</th>
-				<th>Category</th>
-				<th>Created On</th>
-				<th>Modified On</th>
-				<th>Published</th>
-				<th>Published On</th>
-				<th>Archived</th>
-				<th>Actions</th>
-			</tr>
+		<tr>
+			<th>Title</th>
+			<th>Release Date</th>
+			<th>Content</th>
+			<th>Author</th>
+			<th>Category</th>
+			<th>Created On</th>
+			<th>Modified On</th>
+			<th>Published</th>
+			<th>Published On</th>
+			<th>Archived</th>
+			<th>Actions</th>
+		</tr>
 		</thead>
 		<tbody>
-			@foreach (var article in _articles)
-			{
-				<tr>
-					<td>@article.Title</td>
-					<td>@article.Introduction</td>
-					<td>@article.Content</td>
-					<td>@article.Author?.Name</td>
-					<td>@article.Category?.CategoryName</td>
-					<td>@(article.CreatedOn?.ToString("d"))</td>
-					<td>@(article.ModifiedOn?.ToString("d") ?? "")</td>
-					<td>@article.IsPublished</td>
-					<td>@article.PublishedOn?.ToString("d")</td>
-					<td>@article.IsArchived</td>
-					<td>
-						<button class="btn btn-primary btn-sm mx-1" @onclick="@(() => GoToEdit(article.Id.ToString()))"
-							disabled="@(!article.CanEdit)">Edit
-						</button>
-						<button class="btn btn-info btn-sm mx-1" @onclick="@(() => GoToDetails(article.Id.ToString()))">Details</button>
-					</td>
-				</tr>
-			}
+		@foreach (var article in _articles)
+		{
+			<tr>
+				<td>@article.Title</td>
+				<td>@article.Introduction</td>
+				<td>@article.Content</td>
+				<td>@article.Author?.Name</td>
+				<td>@article.Category?.CategoryName</td>
+				<td>@(article.CreatedOn?.ToString("d"))</td>
+				<td>@(article.ModifiedOn?.ToString("d") ?? "")</td>
+				<td>@article.IsPublished</td>
+				<td>@article.PublishedOn?.ToString("d")</td>
+				<td>@article.IsArchived</td>
+				<td>
+					<button class="btn btn-primary btn-sm mx-1" @onclick="@(() => GoToEdit(article.Id.ToString()))"
+									disabled="@(!article.CanEdit)">Edit
+					</button>
+					<button class="btn btn-info btn-sm mx-1" @onclick="@(() => GoToDetails(article.Id.ToString()))">Details
+					</button>
+				</td>
+			</tr>
+		}
 		</tbody>
 	</table>
 }
@@ -75,30 +76,30 @@ else
 @code {
 
 	/// <summary>
-	/// The list of articles to display.
+	///   The list of articles to display.
 	/// </summary>
 	private IQueryable<ArticleDto>? _articles;
 
 	/// <summary>
-	/// Indicates whether the page is loading data.
+	///   Indicates whether the page is loading data.
 	/// </summary>
 	[CascadingParameter]
 	private Task<AuthenticationState>? AuthenticationState { get; set; }
 
 	/// <summary>
-	/// Indicates whether the page is loading data.
+	///   Indicates whether the page is loading data.
 	/// </summary>
 	private bool _isLoading = true;
 
 	/// <summary>
-	/// Stores error messages for display in the UI.
+	///   Stores error messages for display in the UI.
 	/// </summary>
 	private string? _errorMessage;
 
 	/// <summary>
-	/// Called when the component is initialized. Loads all articles for display.
-	/// Adds structured logging for success and error cases.
-	/// Determines per-article edit/delete permissions for the current user.
+	///   Called when the component is initialized. Loads all articles for display.
+	///   Adds structured logging for success and error cases.
+	///   Determines per-article edit/delete permissions for the current user.
 	/// </summary>
 	protected override Task OnInitializedAsync()
 	{
@@ -126,7 +127,7 @@ else
 				var user = authState.User;
 
 				var userId = user.FindFirst(c =>
-				c.Type is "sub" or "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
+					c.Type is "sub" or "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value;
 
 				var isAdmin = user?.IsInRole("Admin") ?? false;
 				var isAuthor = user?.IsInRole("Author") ?? false;
@@ -163,7 +164,7 @@ else
 	}
 
 	/// <summary>
-	/// Navigates to the creation category page.
+	///   Navigates to the creation category page.
 	/// </summary>
 	private void GoToCreate()
 	{

@@ -1,11 +1,13 @@
-// =======================================================
+﻿// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     GlobalUsings.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  AppHost
 // =======================================================
+
+#region
 
 global using System.Diagnostics;
 
@@ -14,3 +16,5 @@ global using Microsoft.Extensions.Diagnostics.HealthChecks;
 global using Microsoft.Extensions.Logging;
 
 global using static Shared.Constants.Constants;
+
+#endregion

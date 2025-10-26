@@ -1,20 +1,17 @@
 @page "/articles/edit/{id}"
 
-@using Web.Components.Features.Articles.ArticleDetails
-@using Web.Components.Features.Articles.ArticleEdit
-
 @inject NavigationManager Navigation
-@inject EditArticle.IEditArticleHandler ArticleHandler
-@inject GetArticle.IGetArticleHandler GetArticleHandler
+@inject IEditArticleHandler ArticleHandler
+@inject IGetArticleHandler GetArticleHandler
 @inject ILogger<Edit> Logger
 
 @attribute [Authorize(Roles = "Admin,Author")]
 
-<PageHeadingComponent HeaderText="Edit Article" Level="1" TextColorClass="blue-500" />
+<PageHeadingComponent HeaderText="Edit Article" Level="1" TextColorClass="blue-500"/>
 
 @if (_isLoading)
 {
-	<LoadingComponent />
+	<LoadingComponent/>
 }
 else if (_article is null)
 {
@@ -25,38 +22,38 @@ else if (_article is null)
 else
 {
 	<EditForm Model="_article" OnValidSubmit="HandleValidSubmit">
-		<DataAnnotationsValidator />
-		<ValidationSummary />
+		<DataAnnotationsValidator/>
+		<ValidationSummary/>
 		@if (!string.IsNullOrEmpty(_errorMessage))
 		{
 			<div class="alert alert-danger">@_errorMessage</div>
 		}
 		<div class="mb-3">
 			<label>Title</label>
-			<InputText class="form-control" @bind-Value="_article.Title" />
+			<InputText class="form-control" @bind-Value="_article.Title"/>
 		</div>
 		<div class="mb-3">
 			<label>Introduction</label>
-			<InputText class="form-control" @bind-Value="_article.Introduction" />
+			<InputText class="form-control" @bind-Value="_article.Introduction"/>
 		</div>
 		<div class="mb-3">
 			<label>Content</label>
-			<InputTextArea class="form-control" @bind-Value="_article.Content" Rows="6" />
+			<InputTextArea class="form-control" @bind-Value="_article.Content" Rows="6"/>
 		</div>
 		<div class="mb-3">
 			<label>Cover Image URL</label>
-			<InputText class="form-control" @bind-Value="_article.CoverImageUrl" />
+			<InputText class="form-control" @bind-Value="_article.CoverImageUrl"/>
 		</div>
 		<div class="mb-3">
 			<label>Published</label>
-			<InputCheckbox class="form-check-input" @bind-Value="_article.IsPublished" />
+			<InputCheckbox class="form-check-input" @bind-Value="_article.IsPublished"/>
 		</div>
 		<div class="mb-3">
 			<label>Archived</label>
-			<InputCheckbox class="form-check-input" @bind-Value="_article.IsArchived" />
+			<InputCheckbox class="form-check-input" @bind-Value="_article.IsArchived"/>
 		</div>
-		<button class="btn btn-success" type="submit" disabled="@_isSubmitting">@(_isSubmitting ? "Updating..." :
-					"Edit")</button>
+		<button class="btn btn-success" type="submit"
+						disabled="@_isSubmitting">@(_isSubmitting ? "Updating..." : "Edit")</button>
 		<button class="btn btn-light ms-2" type="button" @onclick="GoToList">Cancel</button>
 	</EditForm>
 }
@@ -64,39 +61,39 @@ else
 @code {
 
 	/// <summary>
-	/// Gets or sets the id of the article to edit.
+	///   Gets or sets the id of the article to edit.
 	/// </summary>
 	[Parameter]
 	public required string Id { get; set; } = string.Empty;
 
 	/// <summary>
-	/// Gets or sets the cascading authentication state.
+	///   Gets or sets the cascading authentication state.
 	/// </summary>
 	[CascadingParameter]
 	private Task<AuthenticationState>? AuthenticationState { get; set; }
 
 	/// <summary>
-	/// Indicates whether the article is currently being loaded.
+	///   Indicates whether the article is currently being loaded.
 	/// </summary>
 	private bool _isLoading = true;
 
 	/// <summary>
-	/// Indicates whether the form is currently being submitted.
+	///   Indicates whether the form is currently being submitted.
 	/// </summary>
 	private bool _isSubmitting;
 
 	/// <summary>
-	/// The article being edited, or null if not found.
+	///   The article being edited, or null if not found.
 	/// </summary>
 	private ArticleDto? _article;
 
 	/// <summary>
-	/// Stores error messages for display in the UI.
+	///   Stores error messages for display in the UI.
 	/// </summary>
 	private string? _errorMessage;
 
 	/// <summary>
-	/// Initializes the component by loading the article data.
+	///   Initializes the component by loading the article data.
 	/// </summary>
 	protected override Task OnInitializedAsync()
 	{
@@ -133,8 +130,8 @@ else
 	}
 
 	/// <summary>
-	/// Handles the submission of the edit form when valid.
-	/// Updates the article and navigates back to the article detail page.
+	///   Handles the submission of the edit form when valid.
+	///   Updates the article and navigates back to the article detail page.
 	/// </summary>
 	private async Task HandleValidSubmit()
 	{
@@ -171,7 +168,7 @@ else
 	}
 
 	/// <summary>
-	/// Navigates the user back to the article's list page.
+	///   Navigates the user back to the article's list page.
 	/// </summary>
 	private void GoToList()
 	{

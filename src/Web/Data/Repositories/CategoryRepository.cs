@@ -1,19 +1,26 @@
-// =======================================================
+﻿// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     CategoryRepository.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
+
+#region
+
+using System.Linq.Expressions;
+
+#endregion
 
 namespace Web.Data.Repositories;
 
 /// <summary>
-/// Category repository implementation using native MongoDB.Driver with factory pattern
+///   Category repository implementation using native MongoDB.Driver with factory pattern
 /// </summary>
 public class CategoryRepository : ICategoryRepository
 {
+
 	private readonly IMongoDbContextFactory _contextFactory;
 
 	public CategoryRepository(IMongoDbContextFactory contextFactory)
@@ -25,8 +32,9 @@ public class CategoryRepository : ICategoryRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
-			var category = await context.Categories.Find(c => c.Id == id).FirstOrDefaultAsync();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
+			Category? category = await context.Categories.Find(c => c.Id == id).FirstOrDefaultAsync();
+
 			return Result.Ok<Category?>(category);
 		}
 		catch (Exception ex)
@@ -39,8 +47,9 @@ public class CategoryRepository : ICategoryRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
-			var category = await context.Categories.Find(c => c.Slug == slug && !c.IsArchived).FirstOrDefaultAsync();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
+			Category? category = await context.Categories.Find(c => c.Slug == slug && !c.IsArchived).FirstOrDefaultAsync();
+
 			return Result.Ok<Category?>(category);
 		}
 		catch (Exception ex)
@@ -53,8 +62,9 @@ public class CategoryRepository : ICategoryRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
-			var categories = await context.Categories.Find(c => !c.IsArchived).ToListAsync();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
+			List<Category>? categories = await context.Categories.Find(c => !c.IsArchived).ToListAsync();
+
 			return Result.Ok<IEnumerable<Category>?>(categories);
 		}
 		catch (Exception ex)
@@ -67,8 +77,9 @@ public class CategoryRepository : ICategoryRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
-			var categories = await context.Categories.Find(where).ToListAsync();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
+			List<Category>? categories = await context.Categories.Find(where).ToListAsync();
+
 			return Result.Ok<IEnumerable<Category>?>(categories);
 		}
 		catch (Exception ex)
@@ -81,8 +92,9 @@ public class CategoryRepository : ICategoryRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
 			await context.Categories.InsertOneAsync(category);
+
 			return Result.Ok(category);
 		}
 		catch (Exception ex)
@@ -95,8 +107,9 @@ public class CategoryRepository : ICategoryRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
 			await context.Categories.ReplaceOneAsync(c => c.Id == category.Id, category);
+
 			return Result.Ok(category);
 		}
 		catch (Exception ex)
@@ -107,8 +120,9 @@ public class CategoryRepository : ICategoryRepository
 
 	public async Task ArchiveCategory(string slug)
 	{
-		var context = _contextFactory.CreateDbContext();
-		var update = Builders<Category>.Update.Set(c => c.IsArchived, true);
+		IMongoDbContext context = _contextFactory.CreateDbContext();
+		UpdateDefinition<Category>? update = Builders<Category>.Update.Set(c => c.IsArchived, true);
 		await context.Categories.UpdateOneAsync(c => c.Slug == slug, update);
 	}
+
 }

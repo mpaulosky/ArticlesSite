@@ -3,7 +3,7 @@
 // File Name :     GetCategory.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
 
@@ -28,9 +28,9 @@ public static class GetCategory
 	public class Handler : IGetCategoryHandler
 	{
 
-		private readonly ICategoryRepository _repository;
-
 		private readonly ILogger<Handler> _logger;
+
+		private readonly ICategoryRepository _repository;
 
 		/// <summary>
 		///   Initializes a new instance of the <see cref="Handler" /> class.
@@ -51,7 +51,7 @@ public static class GetCategory
 		public async Task<Result<CategoryDto>> HandleAsync(string id)
 		{
 
-			if (string.IsNullOrWhiteSpace(id) || !ObjectId.TryParse(id, out var objectId))
+			if (string.IsNullOrWhiteSpace(id) || !ObjectId.TryParse(id, out ObjectId objectId))
 			{
 				_logger.LogError("The ID is invalid or empty.");
 
@@ -61,11 +61,12 @@ public static class GetCategory
 			try
 			{
 
-				var result = await _repository.GetCategoryByIdAsync(objectId);
+				Result<Category?> result = await _repository.GetCategoryByIdAsync(objectId);
 
 				if (!result.Success || result.Value is null)
 				{
 					_logger.LogWarning("Category not found: {CategoryId}", id);
+
 					return Result.Fail<CategoryDto>(result.Error ?? "Category not found.");
 				}
 
@@ -73,11 +74,11 @@ public static class GetCategory
 
 				return Result<CategoryDto>.Ok(new CategoryDto
 				{
-					Id = result.Value.Id,
-					CategoryName = result.Value.CategoryName,
-					CreatedOn = result.Value.CreatedOn ?? DateTimeOffset.UtcNow,
-					ModifiedOn = result.Value.ModifiedOn,
-					IsArchived = result.Value.IsArchived
+						Id = result.Value.Id,
+						CategoryName = result.Value.CategoryName,
+						CreatedOn = result.Value.CreatedOn ?? DateTimeOffset.UtcNow,
+						ModifiedOn = result.Value.ModifiedOn,
+						IsArchived = result.Value.IsArchived
 				});
 			}
 			catch (Exception ex)

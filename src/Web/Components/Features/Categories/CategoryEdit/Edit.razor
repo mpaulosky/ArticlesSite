@@ -1,20 +1,17 @@
 @page "/categories/edit/{id}"
 
-@using Web.Components.Features.Categories.CategoryDetails
-@using Web.Components.Features.Categories.CategoryEdit
-
 @inject NavigationManager Navigation
-@inject EditCategory.IEditCategoryHandler EditHandler
-@inject GetCategory.IGetCategoryHandler GetHandler
+@inject IEditCategoryHandler EditHandler
+@inject IGetCategoryHandler GetHandler
 @inject ILogger<Edit> Logger
 
 @attribute [Authorize(Roles = "Admin")]
 
-<PageHeadingComponent HeaderText="Edit Category" Level="1" TextColorClass="blue-500" />
+<PageHeadingComponent HeaderText="Edit Category" Level="1" TextColorClass="blue-500"/>
 
 @if (_isLoading)
 {
-	<LoadingComponent />
+	<LoadingComponent/>
 }
 else if (_category is null)
 {
@@ -25,19 +22,19 @@ else if (_category is null)
 else
 {
 	<EditForm Model="_category" OnValidSubmit="HandleValidSubmit">
-		<DataAnnotationsValidator />
-		<ValidationSummary />
+		<DataAnnotationsValidator/>
+		<ValidationSummary/>
 		@if (!string.IsNullOrEmpty(_errorMessage))
 		{
 			<div class="alert alert-danger">@_errorMessage</div>
 		}
 		<div class="mb-3">
 			<label for="name">Category Name</label>
-			<InputText id="name" class="form-control" @bind-Value="_category.CategoryName" />
+			<InputText id="name" class="form-control" @bind-Value="_category.CategoryName"/>
 		</div>
 		<div class="mb-3">
 			<label for="archived">Archived</label>
-			<InputCheckbox id="archived" class="form-check-input" @bind-Value="_category.IsArchived" />
+			<InputCheckbox id="archived" class="form-check-input" @bind-Value="_category.IsArchived"/>
 		</div>
 		@if (_isSubmitting)
 		{
