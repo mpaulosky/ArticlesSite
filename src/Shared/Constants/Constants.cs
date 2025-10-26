@@ -1,4 +1,4 @@
-//=======================================================
+﻿// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     Constants.cs
 // Company :       mpaulosky
@@ -11,6 +11,7 @@ namespace Shared.Constants;
 
 public static class Constants
 {
+
 	public const string ArticleDatabase = "articlesdb";
 
 	public const string ArticleConnect = "mongodb";

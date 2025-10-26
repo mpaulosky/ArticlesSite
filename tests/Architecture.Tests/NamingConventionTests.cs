@@ -1,11 +1,21 @@
-// =======================================================
+﻿// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     NamingConventionTests.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
-// Project Name :  Architecture.Tests.Unit
+// Solution Name : ArticlesSite
+// Project Name :  Architecture.Tests
 // =======================================================
+
+#region
+
+using Shared.Entities;
+
+using Web;
+
+using TestResult = NetArchTest.Rules.TestResult;
+
+#endregion
 
 namespace Architecture.Tests.Unit;
 
@@ -16,19 +26,20 @@ namespace Architecture.Tests.Unit;
 public class NamingConventionTests
 {
 
-	private static readonly Assembly SharedAssembly = typeof(Shared.Entities.Article).Assembly;
-	private static readonly Assembly WebAssembly = typeof(Web.IAppMarker).Assembly;
+	private static readonly Assembly SharedAssembly = typeof(Article).Assembly;
+
+	private static readonly Assembly WebAssembly = typeof(IAppMarker).Assembly;
 
 	[Fact]
 	public void Entities_ShouldNotHaveDtoSuffix()
 	{
 		// Arrange & Act
-		var result = Types.InAssembly(SharedAssembly)
-			.That()
-			.ResideInNamespace("Shared.Entities")
-			.Should()
-			.NotHaveNameEndingWith("Dto")
-			.GetResult();
+		TestResult? result = Types.InAssembly(SharedAssembly)
+				.That()
+				.ResideInNamespace("Shared.Entities")
+				.Should()
+				.NotHaveNameEndingWith("Dto")
+				.GetResult();
 
 		// Assert
 		result.IsSuccessful.Should().BeTrue("Entities should not have 'Dto' suffix");
@@ -38,16 +49,16 @@ public class NamingConventionTests
 	public void DTOs_ShouldHaveDtoSuffix()
 	{
 		// Arrange & Act
-		var result = Types.InAssembly(SharedAssembly)
-			.That()
-			.ResideInNamespace("Shared.Models")
-			.And()
-			.AreClasses()
-			.And()
-			.DoNotHaveName("Result")
-			.Should()
-			.HaveNameEndingWith("Dto")
-			.GetResult();
+		TestResult? result = Types.InAssembly(SharedAssembly)
+				.That()
+				.ResideInNamespace("Shared.Models")
+				.And()
+				.AreClasses()
+				.And()
+				.DoNotHaveName("Result")
+				.Should()
+				.HaveNameEndingWith("Dto")
+				.GetResult();
 
 		// Assert
 		result.IsSuccessful.Should().BeTrue("DTOs in Models namespace should have 'Dto' suffix");
@@ -57,19 +68,19 @@ public class NamingConventionTests
 	public void Interfaces_ShouldStartWithI()
 	{
 		// Arrange & Act
-		var sharedResult = Types.InAssembly(SharedAssembly)
-			.That()
-			.AreInterfaces()
-			.Should()
-			.HaveNameStartingWith("I")
-			.GetResult();
+		TestResult? sharedResult = Types.InAssembly(SharedAssembly)
+				.That()
+				.AreInterfaces()
+				.Should()
+				.HaveNameStartingWith("I")
+				.GetResult();
 
-		var webResult = Types.InAssembly(WebAssembly)
-			.That()
-			.AreInterfaces()
-			.Should()
-			.HaveNameStartingWith("I")
-			.GetResult();
+		TestResult? webResult = Types.InAssembly(WebAssembly)
+				.That()
+				.AreInterfaces()
+				.Should()
+				.HaveNameStartingWith("I")
+				.GetResult();
 
 		// Assert
 		sharedResult.IsSuccessful.Should().BeTrue("Interfaces in Shared should start with 'I'");
@@ -80,18 +91,18 @@ public class NamingConventionTests
 	public void Repositories_ShouldHaveRepositorySuffix()
 	{
 		// Arrange & Act
-		var result = Types.InAssembly(SharedAssembly)
-			.That()
-			.ResideInNamespace("Shared.Interfaces")
-			.And()
-			.AreInterfaces()
-			.And()
-			.DoNotHaveName("IMongoDbContext")
-			.And()
-			.DoNotHaveName("IMongoDbContextFactory")
-			.Should()
-			.HaveNameEndingWith("Repository")
-			.GetResult();
+		TestResult? result = Types.InAssembly(SharedAssembly)
+				.That()
+				.ResideInNamespace("Shared.Interfaces")
+				.And()
+				.AreInterfaces()
+				.And()
+				.DoNotHaveName("IMongoDbContext")
+				.And()
+				.DoNotHaveName("IMongoDbContextFactory")
+				.Should()
+				.HaveNameEndingWith("Repository")
+				.GetResult();
 
 		// Assert
 		result.IsSuccessful.Should().BeTrue("Repository interfaces should have 'Repository' suffix");
@@ -101,12 +112,12 @@ public class NamingConventionTests
 	public void Validators_ShouldHaveValidatorSuffix()
 	{
 		// Arrange & Act
-		var result = Types.InAssembly(SharedAssembly)
-			.That()
-			.ResideInNamespace("Shared.Validators")
-			.Should()
-			.HaveNameEndingWith("Validator")
-			.GetResult();
+		TestResult? result = Types.InAssembly(SharedAssembly)
+				.That()
+				.ResideInNamespace("Shared.Validators")
+				.Should()
+				.HaveNameEndingWith("Validator")
+				.GetResult();
 
 		// Assert
 		result.IsSuccessful.Should().BeTrue("Validators should have 'Validator' suffix");
@@ -116,21 +127,26 @@ public class NamingConventionTests
 	public void RazorComponents_ShouldNotHaveComponentSuffix()
 	{
 		// Arrange & Act
-		var components = Types.InAssembly(WebAssembly)
-			.That()
-			.ResideInNamespace("Web.Components")
-			.And()
-			.AreClasses()
-			.GetTypes()
-			.Where(t => t.Name.EndsWith("Component"));
+		IEnumerable<Type> components = Types.InAssembly(WebAssembly)
+				.That()
+				.ResideInNamespace("Web.Components")
+				.And()
+				.AreClasses()
+				.GetTypes()
+				.Where(t => t.Name.EndsWith("Component"));
 
 		// Assert - Only specific shared components should have Component suffix
-		var allowedComponentNames = new[] { "NavMenuComponent", "ConnectWithUsComponent", "ComponentHeadingComponent",
-			"FooterComponent", "ErrorAlertComponent", "ErrorPageComponent", "LoginComponent", "PageHeaderComponent",
-			"RecentRelatedComponent", "PostInfoComponent", "LoadingComponent", "PageHeadingComponent" }; foreach (var component in components)
+		string[] allowedComponentNames = new[]
+		{
+				"NavMenuComponent", "ConnectWithUsComponent", "ComponentHeadingComponent", "FooterComponent",
+				"ErrorAlertComponent", "ErrorPageComponent", "LoginComponent", "PageHeaderComponent",
+				"RecentRelatedComponent", "PostInfoComponent", "LoadingComponent", "PageHeadingComponent"
+		};
+
+		foreach (Type component in components)
 		{
 			allowedComponentNames.Should().Contain(component.Name,
-				$"{component.Name} should be in the allowed list or renamed without 'Component' suffix");
+					$"{component.Name} should be in the allowed list or renamed without 'Component' suffix");
 		}
 	}
 

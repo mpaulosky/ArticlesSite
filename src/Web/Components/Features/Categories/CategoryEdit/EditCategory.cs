@@ -3,7 +3,7 @@
 // File Name :     EditCategory.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
 
@@ -25,9 +25,9 @@ public static class EditCategory
 	public class Handler : IEditCategoryHandler
 	{
 
-		private readonly ICategoryRepository _repository;
-
 		private readonly ILogger<Handler> _logger;
+
+		private readonly ICategoryRepository _repository;
 
 		/// <summary>
 		///   Initializes a new instance of the <see cref="Handler" /> class.
@@ -67,23 +67,25 @@ public static class EditCategory
 			try
 			{
 
-				var getResult = await _repository.GetCategoryByIdAsync(request.Id);
+				Result<Category?> getResult = await _repository.GetCategoryByIdAsync(request.Id);
 
 				if (!getResult.Success || getResult.Value == null)
 				{
 					_logger.LogWarning("No category found with ID: {CategoryId}", request.Id);
+
 					return Result.Fail(getResult.Error ?? "Category not found.");
 				}
 
-				var category = getResult.Value;
+				Category? category = getResult.Value;
 				category.CategoryName = request.CategoryName;
 				category.ModifiedOn = DateTime.UtcNow;
 
-				var updateResult = await _repository.UpdateCategory(category);
+				Result<Category> updateResult = await _repository.UpdateCategory(category);
 
 				if (!updateResult.Success)
 				{
 					_logger.LogError("Failed to update category: {CategoryName}", request.CategoryName);
+
 					return Result.Fail(updateResult.Error ?? "Failed to update category.");
 				}
 
@@ -104,6 +106,5 @@ public static class EditCategory
 		}
 
 	}
-
 
 }

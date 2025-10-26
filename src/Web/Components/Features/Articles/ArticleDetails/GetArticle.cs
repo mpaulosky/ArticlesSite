@@ -3,7 +3,7 @@
 // File Name :     GetArticle.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
 
@@ -31,9 +31,9 @@ public static class GetArticle
 	public class Handler : IGetArticleHandler
 	{
 
-		private readonly IArticleRepository _repository;
-
 		private readonly ILogger<Handler> _logger;
+
+		private readonly IArticleRepository _repository;
 
 		/// <summary>
 		///   Initializes a new instance of the <see cref="Handler" /> class.
@@ -54,7 +54,7 @@ public static class GetArticle
 		public async Task<Result<ArticleDto>> HandleAsync(string id)
 		{
 
-			if (string.IsNullOrWhiteSpace(id) || !ObjectId.TryParse(id, out var objectId))
+			if (string.IsNullOrWhiteSpace(id) || !ObjectId.TryParse(id, out ObjectId objectId))
 			{
 
 				_logger.LogError("The ID is invalid or empty.");
@@ -65,7 +65,7 @@ public static class GetArticle
 			try
 			{
 
-				var result = await _repository.GetArticleByIdAsync(objectId);
+				Result<Article?> result = await _repository.GetArticleByIdAsync(objectId);
 
 				if (!result.Success || result.Value is null)
 				{
@@ -75,23 +75,24 @@ public static class GetArticle
 				}
 
 				_logger.LogInformation("Article was found successfully: {ArticleId}", id);
+
 				ArticleDto dto = new(
-					result.Value.Id,
-					result.Value.Slug,
-					result.Value.Title,
-					result.Value.Introduction,
-					result.Value.Content,
-					result.Value.CoverImageUrl,
-					result.Value.Author,
-					result.Value.Category,
-					result.Value.IsPublished,
-					result.Value.PublishedOn,
-					result.Value.CreatedOn,
-					result.Value.ModifiedOn,
-					result.Value.IsArchived,
-					false
-				); 
-				
+						result.Value.Id,
+						result.Value.Slug,
+						result.Value.Title,
+						result.Value.Introduction,
+						result.Value.Content,
+						result.Value.CoverImageUrl,
+						result.Value.Author,
+						result.Value.Category,
+						result.Value.IsPublished,
+						result.Value.PublishedOn,
+						result.Value.CreatedOn,
+						result.Value.ModifiedOn,
+						result.Value.IsArchived,
+						false
+				);
+
 				return Result.Ok(dto);
 			}
 			catch (Exception ex)

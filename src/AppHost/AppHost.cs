@@ -1,13 +1,28 @@
+// =======================================================
+// Copyright (c) 2025. All rights reserved.
+// File Name :     AppHost.cs
+// Company :       mpaulosky
+// Author :        Matthew Paulosky
+// Solution Name : ArticlesSite
+// Project Name :  AppHost
+// =======================================================
+
+#region
+
 using AppHost;
 
-var builder = DistributedApplication.CreateBuilder(args);
+using Projects;
 
-var database = builder.AddMongoDbServices();
+#endregion
 
-var cache = builder.AddRedisServices();
+IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
+
+IResourceBuilder<MongoDBDatabaseResource> database = builder.AddMongoDbServices();
+
+IResourceBuilder<RedisResource> cache = builder.AddRedisServices();
 
 // Add a composite command that coordinates multiple operations
-builder.AddProject<Projects.Web>(Website)
+builder.AddProject<Web>(Website)
 		.WithExternalHttpEndpoints()
 		.WithHttpHealthCheck("/health")
 		.WithReference(database).WaitFor(database)

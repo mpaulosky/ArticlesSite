@@ -1,19 +1,26 @@
-// =======================================================
+﻿// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     ArticleRepository.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
+
+#region
+
+using System.Linq.Expressions;
+
+#endregion
 
 namespace Web.Data.Repositories;
 
 /// <summary>
-/// Article repository implementation using native MongoDB.Driver with factory pattern
+///   Article repository implementation using native MongoDB.Driver with factory pattern
 /// </summary>
 public class ArticleRepository : IArticleRepository
 {
+
 	private readonly IMongoDbContextFactory _contextFactory;
 
 	public ArticleRepository(IMongoDbContextFactory contextFactory)
@@ -25,10 +32,12 @@ public class ArticleRepository : IArticleRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
-			var article = await context.Articles
-				.Find(a => a.Id == id)
-				.FirstOrDefaultAsync();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
+
+			Article? article = await context.Articles
+					.Find(a => a.Id == id)
+					.FirstOrDefaultAsync();
+
 			return Result.Ok<Article?>(article);
 		}
 		catch (Exception ex)
@@ -41,10 +50,12 @@ public class ArticleRepository : IArticleRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
-			var article = await context.Articles
-				.Find(a => a.Slug == slug && !a.IsArchived)
-				.FirstOrDefaultAsync();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
+
+			Article? article = await context.Articles
+					.Find(a => a.Slug == slug && !a.IsArchived)
+					.FirstOrDefaultAsync();
+
 			return Result.Ok<Article?>(article);
 		}
 		catch (Exception ex)
@@ -57,10 +68,12 @@ public class ArticleRepository : IArticleRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
-			var articles = await context.Articles
-				.Find(a => !a.IsArchived)
-				.ToListAsync();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
+
+			List<Article>? articles = await context.Articles
+					.Find(a => !a.IsArchived)
+					.ToListAsync();
+
 			return Result.Ok<IEnumerable<Article>?>(articles);
 		}
 		catch (Exception ex)
@@ -73,10 +86,12 @@ public class ArticleRepository : IArticleRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
-			var articles = await context.Articles
-				.Find(where)
-				.ToListAsync();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
+
+			List<Article>? articles = await context.Articles
+					.Find(where)
+					.ToListAsync();
+
 			return Result.Ok<IEnumerable<Article>?>(articles);
 		}
 		catch (Exception ex)
@@ -89,8 +104,9 @@ public class ArticleRepository : IArticleRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
 			await context.Articles.InsertOneAsync(post);
+
 			return Result.Ok(post);
 		}
 		catch (Exception ex)
@@ -103,8 +119,9 @@ public class ArticleRepository : IArticleRepository
 	{
 		try
 		{
-			var context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = _contextFactory.CreateDbContext();
 			await context.Articles.ReplaceOneAsync(a => a.Id == post.Id, post);
+
 			return Result.Ok(post);
 		}
 		catch (Exception ex)
@@ -115,8 +132,9 @@ public class ArticleRepository : IArticleRepository
 
 	public async Task ArchiveArticle(string slug)
 	{
-		var context = _contextFactory.CreateDbContext();
-		var update = Builders<Article>.Update.Set(a => a.IsArchived, true);
+		IMongoDbContext context = _contextFactory.CreateDbContext();
+		UpdateDefinition<Article>? update = Builders<Article>.Update.Set(a => a.IsArchived, true);
 		await context.Articles.UpdateOneAsync(a => a.Slug == slug, update);
 	}
+
 }

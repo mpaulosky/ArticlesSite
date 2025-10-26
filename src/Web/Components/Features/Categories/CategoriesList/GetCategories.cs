@@ -3,7 +3,7 @@
 // File Name :     GetCategories.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
 
@@ -28,9 +28,9 @@ public static class GetCategories
 	public class Handler : IGetCategoriesHandler
 	{
 
-		private readonly ICategoryRepository _repository;
-
 		private readonly ILogger<Handler> _logger;
+
+		private readonly ICategoryRepository _repository;
 
 		/// <summary>
 		///   Initializes a new instance of the <see cref="Handler" /> class.
@@ -53,19 +53,21 @@ public static class GetCategories
 			try
 			{
 
-				var result = await _repository.GetCategories();
+				Result<IEnumerable<Category>?> result = await _repository.GetCategories();
 
 				if (!result.Success || result.Value is null)
 				{
 					_logger.LogWarning("No categories found.");
+
 					return Result<IEnumerable<CategoryDto>>.Fail(result.Error ?? "No categories found.");
 				}
 
-				var categories = result.Value.ToList();
+				List<Category> categories = result.Value.ToList();
 
 				if (categories.Count == 0)
 				{
 					_logger.LogWarning("No categories found.");
+
 					return Result<IEnumerable<CategoryDto>>.Fail("No categories found.");
 				}
 
@@ -73,11 +75,11 @@ public static class GetCategories
 
 				return Result<IEnumerable<CategoryDto>>.Ok(categories.Select(c => new CategoryDto
 				{
-					Id = c.Id,
-					CategoryName = c.CategoryName,
-					CreatedOn = c.CreatedOn ?? DateTimeOffset.UtcNow,
-					ModifiedOn = c.ModifiedOn,
-					IsArchived = c.IsArchived
+						Id = c.Id,
+						CategoryName = c.CategoryName,
+						CreatedOn = c.CreatedOn ?? DateTimeOffset.UtcNow,
+						ModifiedOn = c.ModifiedOn,
+						IsArchived = c.IsArchived
 				}));
 			}
 			catch (Exception ex)

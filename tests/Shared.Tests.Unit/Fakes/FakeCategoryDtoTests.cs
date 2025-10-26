@@ -1,11 +1,11 @@
 //=======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     FakeCategoryDtoTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     FakeCategoryDtoTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 
 namespace Shared.Tests.Unit.Fakes;
 
@@ -143,7 +143,8 @@ public class FakeCategoryDtoTests
 	public void GenerateFake_WithoutSeed_ShouldReturnConfiguredFaker()
 	{
 		// Arrange & Act
-		var result = FakeCategoryDto.GetNewCategoryDto();
+		var faker = FakeCategoryDto.GenerateFake();
+		CategoryDto result = faker.Generate();
 
 		// Assert
 		result.Should().NotBeNull();
@@ -155,7 +156,8 @@ public class FakeCategoryDtoTests
 	public void GenerateFake_WithSeed_ShouldProduceValidResults()
 	{
 		// Arrange & Act
-		var result = FakeCategoryDto.GetNewCategoryDto(useSeed: true);
+		var faker = FakeCategoryDto.GenerateFake(useSeed: true);
+		CategoryDto result = faker.Generate();
 
 		// Assert
 		result.Should().NotBeNull();

@@ -1,13 +1,15 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     CategoryTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     CategoryTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 
-using Shared.Entities;
+#region
+
+#endregion
 
 namespace Shared.Tests.Unit.Entities;
 
@@ -16,11 +18,12 @@ namespace Shared.Tests.Unit.Entities;
 /// </summary>
 public class CategoryTests
 {
+
 	[Fact]
 	public void Constructor_Parameterless_ShouldSetDefaultValues()
 	{
 		// Arrange & Act
-		var category = new Category();
+		Category category = new ();
 
 		// Assert
 		category.Id.Should().NotBe(ObjectId.Empty);
@@ -35,7 +38,7 @@ public class CategoryTests
 	public void Empty_ShouldReturnEmptyInstance()
 	{
 		// Arrange & Act
-		var empty = Category.Empty;
+		Category empty = Category.Empty;
 
 		// Assert
 		empty.Id.Should().Be(ObjectId.Empty);
@@ -50,13 +53,8 @@ public class CategoryTests
 	public void Update_WithValidData_ShouldUpdatePropertiesAndSetModifiedOn()
 	{
 		// Arrange
-		var category = new Category
-		{
-			CategoryName = "Old Name",
-			Slug = "old_slug",
-			IsArchived = false
-		};
-		var beforeModified = DateTimeOffset.UtcNow;
+		Category category = new() { CategoryName = "Old Name", Slug = "old_slug", IsArchived = false };
+		DateTimeOffset beforeModified = DateTimeOffset.UtcNow;
 
 		// Act
 		category.Update("New Name", "new_slug", true);
@@ -73,69 +71,69 @@ public class CategoryTests
 	public void Update_WithNullCategoryName_ShouldThrowArgumentException()
 	{
 		// Arrange
-		var category = new Category();
+		Category category = new ();
 
 		// Act
-		var act = () => category.Update(null!, "slug", false);
+		Action act = () => category.Update(null!, "slug", false);
 
 		// Assert
 		act.Should().Throw<ArgumentException>()
-			.WithMessage("Category name cannot be null or whitespace.*")
-			.And.ParamName.Should().Be("categoryName");
+				.WithMessage("Category name cannot be null or whitespace.*")
+				.And.ParamName.Should().Be("categoryName");
 	}
 
 	[Fact]
 	public void Update_WithEmptyCategoryName_ShouldThrowArgumentException()
 	{
 		// Arrange
-		var category = new Category();
+		Category category = new ();
 
 		// Act
-		var act = () => category.Update("  ", "slug", false);
+		Action act = () => category.Update("  ", "slug", false);
 
 		// Assert
 		act.Should().Throw<ArgumentException>()
-			.WithMessage("Category name cannot be null or whitespace.*")
-			.And.ParamName.Should().Be("categoryName");
+				.WithMessage("Category name cannot be null or whitespace.*")
+				.And.ParamName.Should().Be("categoryName");
 	}
 
 	[Fact]
 	public void Update_WithNullSlug_ShouldThrowArgumentException()
 	{
 		// Arrange
-		var category = new Category();
+		Category category = new ();
 
 		// Act
-		var act = () => category.Update("Category Name", null!, false);
+		Action act = () => category.Update("Category Name", null!, false);
 
 		// Assert
 		act.Should().Throw<ArgumentException>()
-			.WithMessage("Slug cannot be null or whitespace.*")
-			.And.ParamName.Should().Be("slug");
+				.WithMessage("Slug cannot be null or whitespace.*")
+				.And.ParamName.Should().Be("slug");
 	}
 
 	[Fact]
 	public void Update_WithEmptySlug_ShouldThrowArgumentException()
 	{
 		// Arrange
-		var category = new Category();
+		Category category = new ();
 
 		// Act
-		var act = () => category.Update("Category Name", "  ", false);
+		Action act = () => category.Update("Category Name", "  ", false);
 
 		// Assert
 		act.Should().Throw<ArgumentException>()
-			.WithMessage("Slug cannot be null or whitespace.*")
-			.And.ParamName.Should().Be("slug");
+				.WithMessage("Slug cannot be null or whitespace.*")
+				.And.ParamName.Should().Be("slug");
 	}
 
 	[Fact]
 	public void Properties_ShouldBeSettable()
 	{
 		// Arrange
-		var category = new Category();
-		var createdOn = DateTimeOffset.UtcNow;
-		var modifiedOn = DateTimeOffset.UtcNow.AddDays(1);
+		Category category = new ();
+		DateTimeOffset createdOn = DateTimeOffset.UtcNow;
+		DateTimeOffset modifiedOn = DateTimeOffset.UtcNow.AddDays(1);
 
 		// Act
 		category.CategoryName = "Test Category";
@@ -151,4 +149,5 @@ public class CategoryTests
 		category.ModifiedOn.Should().Be(modifiedOn);
 		category.IsArchived.Should().BeTrue();
 	}
+
 }

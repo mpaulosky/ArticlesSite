@@ -1,13 +1,17 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     HelpersTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     HelpersTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
+
+#region
 
 using Shared.Helpers;
+
+#endregion
 
 namespace Shared.Tests.Unit.Helpers;
 
@@ -16,15 +20,16 @@ namespace Shared.Tests.Unit.Helpers;
 /// </summary>
 public class HelpersTests
 {
+
 	[Fact]
 	public void GetStaticDate_ShouldReturnConsistentDate()
 	{
 		// Arrange
-		var expectedDate = new DateTimeOffset(2025, 1, 1, 8, 0, 0, TimeSpan.Zero);
+		DateTimeOffset expectedDate = new (2025, 1, 1, 8, 0, 0, TimeSpan.Zero);
 
 		// Act
-		var result1 = Shared.Helpers.Helpers.GetStaticDate();
-		var result2 = Shared.Helpers.Helpers.GetStaticDate();
+		DateTimeOffset result1 = Shared.Helpers.Helpers.GetStaticDate();
+		DateTimeOffset result2 = Shared.Helpers.Helpers.GetStaticDate();
 
 		// Assert
 		result1.Should().Be(expectedDate);
@@ -45,7 +50,7 @@ public class HelpersTests
 	public void GetSlug_ShouldConvertToUrlFriendlySlug(string input, string expected)
 	{
 		// Arrange & Act
-		var result = input.GetSlug();
+		string result = input.GetSlug();
 
 		// Assert
 		result.Should().Be(expected);
@@ -58,7 +63,7 @@ public class HelpersTests
 		const string input = "Test Article";
 
 		// Act
-		var result = input.GetSlug();
+		string result = input.GetSlug();
 
 		// Assert
 		result.Should().NotContain(" ");
@@ -69,21 +74,21 @@ public class HelpersTests
 	public void GetRandomCategoryName_ShouldReturnValidCategory()
 	{
 		// Arrange
-		var validCategories = new List<string>
+		List<string> validCategories = new()
 		{
-			MyCategories.First,
-			MyCategories.Second,
-			MyCategories.Third,
-			MyCategories.Fourth,
-			MyCategories.Fifth,
-			MyCategories.Sixth,
-			MyCategories.Seventh,
-			MyCategories.Eighth,
-			MyCategories.Ninth
+				MyCategories.First,
+				MyCategories.Second,
+				MyCategories.Third,
+				MyCategories.Fourth,
+				MyCategories.Fifth,
+				MyCategories.Sixth,
+				MyCategories.Seventh,
+				MyCategories.Eighth,
+				MyCategories.Ninth
 		};
 
 		// Act
-		var result = Shared.Helpers.Helpers.GetRandomCategoryName();
+		string result = Shared.Helpers.Helpers.GetRandomCategoryName();
 
 		// Assert
 		result.Should().NotBeNullOrEmpty();
@@ -94,30 +99,32 @@ public class HelpersTests
 	public void GetRandomCategoryName_CalledMultipleTimes_ShouldReturnValidCategories()
 	{
 		// Arrange
-		var validCategories = new List<string>
+		List<string> validCategories = new()
 		{
-			MyCategories.First,
-			MyCategories.Second,
-			MyCategories.Third,
-			MyCategories.Fourth,
-			MyCategories.Fifth,
-			MyCategories.Sixth,
-			MyCategories.Seventh,
-			MyCategories.Eighth,
-			MyCategories.Ninth
+				MyCategories.First,
+				MyCategories.Second,
+				MyCategories.Third,
+				MyCategories.Fourth,
+				MyCategories.Fifth,
+				MyCategories.Sixth,
+				MyCategories.Seventh,
+				MyCategories.Eighth,
+				MyCategories.Ninth
 		};
 
 		// Act - Call multiple times to test randomness
-		var results = new List<string>();
-		for (var i = 0; i < 20; i++)
+		List<string> results = new ();
+
+		for (int i = 0; i < 20; i++)
 		{
 			results.Add(Shared.Helpers.Helpers.GetRandomCategoryName());
 		}
 
 		// Assert - All results should be valid
-		foreach (var result in results)
+		foreach (string result in results)
 		{
 			validCategories.Should().Contain(result);
 		}
 	}
+
 }

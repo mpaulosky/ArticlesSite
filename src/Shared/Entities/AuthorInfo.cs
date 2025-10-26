@@ -1,4 +1,4 @@
-// =======================================================
+﻿// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     AuthorInfo.cs
 // Company :       mpaulosky
@@ -14,6 +14,7 @@ namespace Shared.Entities;
 /// </summary>
 public record AuthorInfo
 {
+
 	public AuthorInfo()
 	{
 		UserId = string.Empty;
@@ -45,9 +46,6 @@ public record AuthorInfo
 	/// <summary>
 	///   Gets an empty AuthorInfo instance.
 	/// </summary>
-	public static AuthorInfo Empty => new()
-	{
-		UserId = string.Empty,
-		Name = string.Empty
-	};
+	public static AuthorInfo Empty => new() { UserId = string.Empty, Name = string.Empty };
+
 }

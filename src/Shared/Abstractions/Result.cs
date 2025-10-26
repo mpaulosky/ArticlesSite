@@ -12,17 +12,17 @@ namespace Shared.Abstractions;
 public class Result
 {
 
-	public bool Success { get; }
-
-	public bool Failure => !Success;
-
-	public string? Error { get; }
-
 	protected Result(bool success, string? errorMessage = null)
 	{
 		Success = success;
 		Error = errorMessage;
 	}
+
+	public bool Success { get; }
+
+	public bool Failure => !Success;
+
+	public string? Error { get; }
 
 	public static Result Ok()
 	{
@@ -54,13 +54,13 @@ public class Result
 public sealed class Result<T> : Result
 {
 
-	public T? Value { get; }
-
 	internal Result(T? value, bool success, string? errorMessage = null)
 			: base(success, errorMessage)
 	{
 		Value = value;
 	}
+
+	public T? Value { get; }
 
 	private static Result<T> Ok(T value)
 	{

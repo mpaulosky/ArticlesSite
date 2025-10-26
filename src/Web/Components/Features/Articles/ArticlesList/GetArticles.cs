@@ -3,7 +3,7 @@
 // File Name :     GetArticles.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
 
@@ -31,9 +31,9 @@ public static class GetArticles
 	public class Handler : IGetArticlesHandler
 	{
 
-		private readonly IArticleRepository _repository;
-
 		private readonly ILogger<Handler> _logger;
+
+		private readonly IArticleRepository _repository;
 
 		/// <summary>
 		///   Initializes a new instance of the <see cref="Handler" /> class.
@@ -56,15 +56,16 @@ public static class GetArticles
 			try
 			{
 
-				var result = await _repository.GetArticles();
+				Result<IEnumerable<Article>?> result = await _repository.GetArticles();
 
 				if (!result.Success || result.Value is null)
 				{
 					_logger.LogWarning("No articles found.");
+
 					return Result<IEnumerable<ArticleDto>>.Fail(result.Error ?? "No articles found.");
 				}
 
-				var articles = result.Value.ToList();
+				List<Article> articles = result.Value.ToList();
 
 				if (articles.Count == 0)
 				{
@@ -76,8 +77,8 @@ public static class GetArticles
 				_logger.LogInformation("Articles retrieved successfully. Count: {Count}", articles.Count);
 
 				return Result<IEnumerable<ArticleDto>>.Ok(articles.Select(a => new ArticleDto(
-					a.Id, a.Slug, a.Title, a.Introduction, a.Content, a.CoverImageUrl,
-					a.Author, a.Category, a.IsPublished, a.PublishedOn, a.CreatedOn, a.ModifiedOn, a.IsArchived, false
+						a.Id, a.Slug, a.Title, a.Introduction, a.Content, a.CoverImageUrl,
+						a.Author, a.Category, a.IsPublished, a.PublishedOn, a.CreatedOn, a.ModifiedOn, a.IsArchived, false
 				)));
 			}
 			catch (Exception ex)

@@ -6,15 +6,23 @@ description: "Guidance and examples for writing robust C# xUnit integration test
 
 # XUnit Integration Testing Best Practices
 
-You are an expert test developer and yourur goal is to help me write robust integration tests for a .NET web application using xUnit v3 and related tooling. Focus on realistic integration scenarios: running against an in-memory or test database, exercising the real application host (TestServer or WebApplicationFactory), exercising HTTP endpoints, background services, and full-stack browser tests with Playwright/bUnit where appropriate. Provide clear examples, idiomatic patterns, and reusable fixtures.
+You are an expert test developer and yourur goal is to help me write robust integration tests for a .NET web application
+using xUnit v3 and related tooling. Focus on realistic integration scenarios: running against an in-memory or test
+database, exercising the real application host (TestServer or WebApplicationFactory), exercising HTTP endpoints,
+background services, and full-stack browser tests with Playwright/bUnit where appropriate. Provide clear examples,
+idiomatic patterns, and reusable fixtures.
 
 ## Quick Tips
 
 - Use a dedicated integration test project named `[ProjectName].Tests.Integration`.
-- Keep integration tests isolated and repeatable: reset or recreate test data between tests, use transactions with rollbacks, or run against ephemeral databases (SQLite in-memory, LocalDB, or containers).
-- Prefer `WebApplicationFactory<TEntryPoint>` / `TestServer` or `WebApplicationFactory`-derived factories to host the app in-process.
-- Use explicit environment configuration (e.g., `ASPNETCORE_ENVIRONMENT=Integration`) and separate `appsettings.Integration.json` when needed.
-- Use `IAsyncLifetime` / fixtures for setup and teardown of expensive resources (database, message brokers, Playwright browser). Use `CollectionFixture` to share expensive setup across tests.
+- Keep integration tests isolated and repeatable: reset or recreate test data between tests, use transactions with
+  rollbacks, or run against ephemeral databases (SQLite in-memory, LocalDB, or containers).
+- Prefer `WebApplicationFactory<TEntryPoint>` / `TestServer` or `WebApplicationFactory`-derived factories to host the
+  app in-process.
+- Use explicit environment configuration (e.g., `ASPNETCORE_ENVIRONMENT=Integration`) and separate
+  `appsettings.Integration.json` when needed.
+- Use `IAsyncLifetime` / fixtures for setup and teardown of expensive resources (database, message brokers, Playwright
+  browser). Use `CollectionFixture` to share expensive setup across tests.
 
 ## Project Setup
 
@@ -35,7 +43,8 @@ You are an expert test developer and yourur goal is to help me write robust inte
 
 ## Hosting the App In-Process
 
-- Derive from `WebApplicationFactory<TEntryPoint>` to customize configuration and DI for tests. Override `ConfigureWebHost` to replace real services with test doubles or add test-only configuration.
+- Derive from `WebApplicationFactory<TEntryPoint>` to customize configuration and DI for tests. Override
+  `ConfigureWebHost` to replace real services with test doubles or add test-only configuration.
 - Example factory pattern:
 
 ````csharp
@@ -59,15 +68,19 @@ public class TestAppFactory : WebApplicationFactory<Program>
 
 ## Database Strategies (Testcontainers-first)
 
-- Use real database instances running in containers for full fidelity and fewer surprises between test and production environments. Prefer `DotNet.Testcontainers` to spin up ephemeral containers during test setup.
+- Use real database instances running in containers for full fidelity and fewer surprises between test and production
+  environments. Prefer `DotNet.Testcontainers` to spin up ephemeral containers during test setup.
 - Recommended approach:
-  - Spin up a database container (Postgres, SQL Server, MySQL) in a shared collection fixture using `DotNet.Testcontainers`.
+  - Spin up a database container (Postgres, SQL Server, MySQL) in a shared collection fixture using
+    `DotNet.Testcontainers`.
   - Run EF Core migrations against the container database at fixture initialization.
-  - Use `Respawn` (or manual cleanup) between tests to ensure a clean state, or recreate the database/schema per test collection if faster.
+  - Use `Respawn` (or manual cleanup) between tests to ensure a clean state, or recreate the database/schema per test
+    collection if faster.
 - Advantages:
   - Tests run against a real engine, catching engine-specific behaviors (SQL nuances, collations, extensions).
   - Works consistently in CI when Docker is available.
-- CI notes: ensure the CI runner supports Docker or use a self-hosted runner; alternatively run the DB container as a service in the pipeline.
+- CI notes: ensure the CI runner supports Docker or use a self-hosted runner; alternatively run the DB container as a
+  service in the pipeline.
 
 ### Example: Testcontainers Database Fixture (Postgres)
 
@@ -109,7 +122,8 @@ public class TestPostgresFixture : IAsyncLifetime
 
 ### Wiring Testcontainers into WebApplicationFactory
 
-- In your `WebApplicationFactory` override, replace the application's DB connection string with the fixture-provided `ConnectionString` and ensure migrations run before tests execute.
+- In your `WebApplicationFactory` override, replace the application's DB connection string with the fixture-provided
+  `ConnectionString` and ensure migrations run before tests execute.
 - Example in `ConfigureServices`:
 
 ````csharp
@@ -121,13 +135,15 @@ builder.ConfigureServices(services =>
 
 ### Resetting DB state
 
-- Use `Respawn` against the Testcontainers database to truncate/reset between tests if you need to reuse the same DB instance.
-- For absolute isolation, consider creating a new schema or new database per test and dropping it afterwards (costlier but eliminates cross-test interference).
-
+- Use `Respawn` against the Testcontainers database to truncate/reset between tests if you need to reuse the same DB
+  instance.
+- For absolute isolation, consider creating a new schema or new database per test and dropping it afterwards (costlier
+  but eliminates cross-test interference).
 
 ## Reusable Fixtures and Lifetimes
 
-- For expensive shared resources, implement `IAsyncLifetime` in a fixture class and use `CollectionFixture<T>` to share across tests.
+- For expensive shared resources, implement `IAsyncLifetime` in a fixture class and use `CollectionFixture<T>` to share
+  across tests.
 - Example: shared `TestAppFactory` and `TestDatabaseFixture` used via a collection:
 
 ````csharp
@@ -170,14 +186,17 @@ public class ArticleTests
 
 ## Playwright and Browser-based E2E
 
-- For full-browser tests use Playwright; manage the browser lifecycle in a shared fixture to avoid expensive repeated startup.
-- Use `Playwright.CreateAsync()` and `IBrowser` shared across tests or per-collection. Close/dispose in fixture teardown.
+- For full-browser tests use Playwright; manage the browser lifecycle in a shared fixture to avoid expensive repeated
+  startup.
+- Use `Playwright.CreateAsync()` and `IBrowser` shared across tests or per-collection. Close/dispose in fixture
+  teardown.
 - Protect credentials and secrets: use CI-provided secrets and do not commit sensitive data.
 
 ## Environment and Configuration
 
 - Use explicit environment variables for integration tests (database connection strings, external service endpoints).
-- Provide a sample `appsettings.Integration.json` and a mechanism in the test factory to load it when `ASPNETCORE_ENVIRONMENT=Integration`.
+- Provide a sample `appsettings.Integration.json` and a mechanism in the test factory to load it when
+  `ASPNETCORE_ENVIRONMENT=Integration`.
 
 ## Example: Database-backed Integration Test (EF Core)
 
@@ -213,8 +232,10 @@ public class ArticlesEndpointTests
 ## Edge Cases and Guidance
 
 - Network/timeouts: set generous timeouts for integration tests but fail fast on obvious configuration errors.
-- Flaky external services: stub or run a local emulator where possible. Use service virtualization for dependencies like SMTP, queues, or external APIs.
-- Parallelization: run independent tests in parallel, but for shared resources (e.g., a single test DB) use collections to serialize tests when necessary.
+- Flaky external services: stub or run a local emulator where possible. Use service virtualization for dependencies like
+  SMTP, queues, or external APIs.
+- Parallelization: run independent tests in parallel, but for shared resources (e.g., a single test DB) use collections
+  to serialize tests when necessary.
 
 ## Test Naming and Structure
 
@@ -266,32 +287,41 @@ public class PlaywrightFixture : IAsyncLifetime
 - [ ] Add CI job/stage for integration tests
 
 Project setup (packages & templates)
-- Recommended packages: xunit, xunit.runner.visualstudio, Microsoft.NET.Test.Sdk, Microsoft.AspNetCore.Mvc.Testing, DotNet.Testcontainers, Npgsql.EntityFrameworkCore.PostgreSQL, FluentAssertions, Respawn (optional).
-- Recommended project template: create a new test project using the xUnit template (e.g., `dotnet new xunit -n Web.Tests.Integration`) and add the packages above.
+
+- Recommended packages: xunit, xunit.runner.visualstudio, Microsoft.NET.Test.Sdk, Microsoft.AspNetCore.Mvc.Testing,
+  DotNet.Testcontainers, Npgsql.EntityFrameworkCore.PostgreSQL, FluentAssertions, Respawn (optional).
+- Recommended project template: create a new test project using the xUnit template (e.g.,
+  `dotnet new xunit -n Web.Tests.Integration`) and add the packages above.
 
 # Aspire projects
-- If the solution is using the Aspire framework, create the integration test project from the "aspire-xunit" project template (e.g., `dotnet new aspire-xunit -n Web.Tests.Integration`) instead of the default xunit template. The "aspire-xunit" template ensures Aspire-specific test helpers, DI wiring, and conventions are present so the Testcontainers fixture and WebApplicationFactory integrate cleanly with the application's Aspire wiring.
+
+- If the solution is using the Aspire framework, create the integration test project from the "aspire-xunit" project
+  template (e.g., `dotnet new aspire-xunit -n Web.Tests.Integration`) instead of the default xunit template. The "
+  aspire-xunit" template ensures Aspire-specific test helpers, DI wiring, and conventions are present so the
+  Testcontainers fixture and WebApplicationFactory integrate cleanly with the application's Aspire wiring.
 
 # Database strategy (Testcontainers-first)
-- Use DotNet.Testcontainers to run a real Postgres (or other) container per suite and a unique database name per factory/test to isolate state.
+
+- Use DotNet.Testcontainers to run a real Postgres (or other) container per suite and a unique database name per
+  factory/test to isolate state.
 
 name: Integration Tests
 
 on:
-  workflow_dispatch:
-  push:
-    paths:
-      - 'tests/Web.Tests.Integration/**'
-      - '.github/workflows/integration-tests.yml'
+workflow_dispatch:
+push:
+paths:
+- 'tests/Web.Tests.Integration/**'
+- '.github/workflows/integration-tests.yml'
 
 jobs:
-  integration:
-    runs-on: ubuntu-latest
-    env:
-      DOTNET_CLI_TELEMETRY_OPTOUT: '1'
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+integration:
+runs-on: ubuntu-latest
+env:
+DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+steps:
+- name: Checkout repo
+uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -311,4 +341,5 @@ jobs:
         run: dotnet test tests/Web.Tests.Integration/Web.Tests.Integration.csproj --logger "trx;LogFileName=integration.trx" --verbosity normal --no-build
         env:
           DOTNET_TEST_CONTAINER_OVERRIDE: 'true'
+
 ``````

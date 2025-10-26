@@ -1,14 +1,19 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     ArticleValidatorTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     ArticleValidatorTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 
-using Shared.Entities;
+#region
+
+using FluentValidation.Results;
+
 using Shared.Validators;
+
+#endregion
 
 namespace Shared.Tests.Unit.Validators;
 
@@ -17,22 +22,19 @@ namespace Shared.Tests.Unit.Validators;
 /// </summary>
 public class ArticleValidatorTests
 {
+
 	private readonly ArticleValidator _validator = new();
 
 	[Fact]
 	public void Validate_WithValidArticle_ShouldPass()
 	{
 		// Arrange
-		var article = new Article("Test Article", "Test introduction", "Test content", "https://example.com/cover.jpg",
-			new AuthorInfo("auth0|123", "John Doe"),
-			new Category { CategoryName = "Technology" })
-		{
-			IsPublished = true,
-			PublishedOn = DateTimeOffset.UtcNow
-		};
+		Article article = new ("Test Article", "Test introduction", "Test content", "https://example.com/cover.jpg",
+				new AuthorInfo("auth0|123", "John Doe"),
+				new Category { CategoryName = "Technology" }) { IsPublished = true, PublishedOn = DateTimeOffset.UtcNow };
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeTrue();
@@ -43,10 +45,10 @@ public class ArticleValidatorTests
 	public void Validate_WithEmptyId_ShouldFail()
 	{
 		// Arrange
-		var article = Article.Empty;
+		Article article = Article.Empty;
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -60,18 +62,18 @@ public class ArticleValidatorTests
 	public void Validate_WithInvalidTitle_ShouldFail(string? invalidTitle)
 	{
 		// Arrange
-		var article = new Article
+		Article article = new()
 		{
-			Title = invalidTitle!,
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = invalidTitle!,
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -82,18 +84,18 @@ public class ArticleValidatorTests
 	public void Validate_WithTitleTooLong_ShouldFail()
 	{
 		// Arrange
-		var article = new Article
+		Article article = new()
 		{
-			Title = new string('A', 101),
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = new string('A', 101),
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -107,40 +109,42 @@ public class ArticleValidatorTests
 	public void Validate_WithInvalidIntroduction_ShouldFail(string? invalidIntroduction)
 	{
 		// Arrange
-		var article = new Article
+		Article article = new()
 		{
-			Title = "Valid Title",
-			Introduction = invalidIntroduction!,
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = invalidIntroduction!,
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "Introduction" && e.ErrorMessage == "Introduction is required");
+
+		result.Errors.Should()
+				.Contain(e => e.PropertyName == "Introduction" && e.ErrorMessage == "Introduction is required");
 	}
 
 	[Fact]
 	public void Validate_WithIntroductionTooLong_ShouldFail()
 	{
 		// Arrange
-		var article = new Article
+		Article article = new()
 		{
-			Title = "Valid Title",
-			Introduction = new string('A', 201),
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = new string('A', 201),
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -154,18 +158,18 @@ public class ArticleValidatorTests
 	public void Validate_WithInvalidContent_ShouldFail(string? invalidContent)
 	{
 		// Arrange
-		var article = new Article
+		Article article = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = invalidContent!,
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = invalidContent!,
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -176,22 +180,24 @@ public class ArticleValidatorTests
 	public void Validate_WithContentTooLong_ShouldFail()
 	{
 		// Arrange
-		var article = new Article
+		Article article = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = new string('A', 10001),
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = new string('A', 10001),
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "Content" && e.ErrorMessage == "Content cannot exceed 10000 characters");
+
+		result.Errors.Should().Contain(e =>
+				e.PropertyName == "Content" && e.ErrorMessage == "Content cannot exceed 10000 characters");
 	}
 
 	[Theory]
@@ -201,32 +207,34 @@ public class ArticleValidatorTests
 	public void Validate_WithInvalidCoverImageUrl_ShouldFail(string? invalidCoverImageUrl)
 	{
 		// Arrange
-		var article = new Article
+		Article article = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = invalidCoverImageUrl!,
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = invalidCoverImageUrl!,
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "CoverImageUrl" && e.ErrorMessage == "Cover image is required");
+
+		result.Errors.Should()
+				.Contain(e => e.PropertyName == "CoverImageUrl" && e.ErrorMessage == "Cover image is required");
 	}
 
 	[Fact]
 	public void Validate_WithInvalidSlug_ShouldFail()
 	{
 		// Arrange - Use Article.Empty which has empty slug
-		var article = Article.Empty;
+		Article article = Article.Empty;
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -237,10 +245,10 @@ public class ArticleValidatorTests
 	public void Validate_WithInvalidSlugFormat_ShouldFail()
 	{
 		// Arrange - Since Slug is generated from title and is read-only, we test with Article.Empty which has empty slug
-		var article = Article.Empty;
+		Article article = Article.Empty;
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -251,18 +259,18 @@ public class ArticleValidatorTests
 	public void Validate_WithNullAuthor_ShouldFail()
 	{
 		// Arrange
-		var article = new Article
+		Article article = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Author = null,
-			Category = new Category { CategoryName = "Tech" }
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Author = null,
+				Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -273,18 +281,18 @@ public class ArticleValidatorTests
 	public void Validate_WithNullCategory_ShouldFail()
 	{
 		// Arrange
-		var article = new Article
+		Article article = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = null
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = null
 		};
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
@@ -295,43 +303,42 @@ public class ArticleValidatorTests
 	public void Validate_WithPublishedButNoPublishedOn_ShouldFail()
 	{
 		// Arrange
-		var article = new Article
+		Article article = new()
 		{
-			Title = "Valid Title",
-			Introduction = "Valid intro",
-			Content = "Valid content",
-			CoverImageUrl = "https://example.com/cover.jpg",
-			Author = new AuthorInfo("auth0|123", "John Doe"),
-			Category = new Category { CategoryName = "Tech" },
-			IsPublished = true,
-			PublishedOn = null
+				Title = "Valid Title",
+				Introduction = "Valid intro",
+				Content = "Valid content",
+				CoverImageUrl = "https://example.com/cover.jpg",
+				Author = new AuthorInfo("auth0|123", "John Doe"),
+				Category = new Category { CategoryName = "Tech" },
+				IsPublished = true,
+				PublishedOn = null
 		};
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "PublishedOn" && e.ErrorMessage == "PublishedOn is required when IsPublished is true");
+
+		result.Errors.Should().Contain(e =>
+				e.PropertyName == "PublishedOn" && e.ErrorMessage == "PublishedOn is required when IsPublished is true");
 	}
 
 	[Fact]
 	public void Validate_WithNotPublishedAndNoPublishedOn_ShouldPass()
 	{
 		// Arrange
-		var article = new Article("Valid Title", "Valid intro", "Valid content", "https://example.com/cover.jpg",
-			new AuthorInfo("auth0|123", "John Doe"),
-			new Category { CategoryName = "Tech" })
-		{
-			IsPublished = false,
-			PublishedOn = null
-		};
+		Article article = new ("Valid Title", "Valid intro", "Valid content", "https://example.com/cover.jpg",
+				new AuthorInfo("auth0|123", "John Doe"),
+				new Category { CategoryName = "Tech" }) { IsPublished = false, PublishedOn = null };
 
 		// Act
-		var result = _validator.Validate(article);
+		ValidationResult? result = _validator.Validate(article);
 
 		// Assert
 		result.IsValid.Should().BeTrue();
 		result.Errors.Should().BeEmpty();
 	}
+
 }

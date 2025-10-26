@@ -1,13 +1,15 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     ArticleTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     ArticleTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 
-using Shared.Entities;
+#region
+
+#endregion
 
 namespace Shared.Tests.Unit.Entities;
 
@@ -16,11 +18,12 @@ namespace Shared.Tests.Unit.Entities;
 /// </summary>
 public class ArticleTests
 {
+
 	[Fact]
 	public void Constructor_Parameterless_ShouldSetDefaultValues()
 	{
 		// Arrange & Act
-		var article = new Article();
+		Article article = new ();
 
 		// Assert
 		article.Id.Should().NotBe(ObjectId.Empty);
@@ -46,11 +49,11 @@ public class ArticleTests
 		const string intro = "Test introduction";
 		const string content = "Test content";
 		const string coverImage = "https://example.com/image.jpg";
-		var author = new AuthorInfo("auth0|123", "John Doe");
-		var category = new Category { CategoryName = "Technology" };
+		AuthorInfo author = new ("auth0|123", "John Doe");
+		Category category = new()  { CategoryName = "Technology" };
 
 		// Act
-		var article = new Article(title, intro, content, coverImage, author, category);
+		Article article = new (title, intro, content, coverImage, author, category);
 
 		// Assert
 		article.Title.Should().Be(title);
@@ -69,7 +72,7 @@ public class ArticleTests
 	public void Constructor_WithNullCoverImageUrl_ShouldUseDefaultImage()
 	{
 		// Arrange & Act
-		var article = new Article("Title", "Intro", "Content", null, null, null);
+		Article article = new ("Title", "Intro", "Content", null, null, null);
 
 		// Assert
 		article.CoverImageUrl.Should().Be("https://example.com/image.jpg");
@@ -83,12 +86,12 @@ public class ArticleTests
 		const string intro = "Test introduction";
 		const string content = "Test content";
 		const string coverImage = "https://example.com/cover.jpg";
-		var author = new AuthorInfo("auth0|123", "John Doe");
-		var category = new Category { CategoryName = "Technology" };
-		var publishedOn = DateTimeOffset.UtcNow;
+		AuthorInfo author = new ("auth0|123", "John Doe");
+		Category category = new()  { CategoryName = "Technology" };
+		DateTimeOffset publishedOn = DateTimeOffset.UtcNow;
 
 		// Act
-		var article = new Article(title, intro, content, coverImage, author, category, true, publishedOn, true);
+		Article article = new (title, intro, content, coverImage, author, category, true, publishedOn, true);
 
 		// Assert
 		article.Title.Should().Be(title);
@@ -104,12 +107,12 @@ public class ArticleTests
 	public void Constructor_WithInvalidTitle_ShouldThrowArgumentException(string? invalidTitle)
 	{
 		// Arrange & Act
-		var act = () => new Article(invalidTitle!, "Intro", "Content", "cover.jpg", null, null);
+		Func<Article> act = () => new Article(invalidTitle!, "Intro", "Content", "cover.jpg", null, null);
 
 		// Assert
 		act.Should().Throw<ArgumentException>()
-			.WithMessage("Title cannot be null or whitespace.*")
-			.And.ParamName.Should().Be("title");
+				.WithMessage("Title cannot be null or whitespace.*")
+				.And.ParamName.Should().Be("title");
 	}
 
 	[Theory]
@@ -119,12 +122,12 @@ public class ArticleTests
 	public void Constructor_WithInvalidIntroduction_ShouldThrowArgumentException(string? invalidIntro)
 	{
 		// Arrange & Act
-		var act = () => new Article("Title", invalidIntro!, "Content", "cover.jpg", null, null);
+		Func<Article> act = () => new Article("Title", invalidIntro!, "Content", "cover.jpg", null, null);
 
 		// Assert
 		act.Should().Throw<ArgumentException>()
-			.WithMessage("Introduction cannot be null or whitespace.*")
-			.And.ParamName.Should().Be("introduction");
+				.WithMessage("Introduction cannot be null or whitespace.*")
+				.And.ParamName.Should().Be("introduction");
 	}
 
 	[Theory]
@@ -134,19 +137,19 @@ public class ArticleTests
 	public void Constructor_WithInvalidContent_ShouldThrowArgumentException(string? invalidContent)
 	{
 		// Arrange & Act
-		var act = () => new Article("Title", "Intro", invalidContent!, "cover.jpg", null, null);
+		Func<Article> act = () => new Article("Title", "Intro", invalidContent!, "cover.jpg", null, null);
 
 		// Assert
 		act.Should().Throw<ArgumentException>()
-			.WithMessage("Content cannot be null or whitespace.*")
-			.And.ParamName.Should().Be("content");
+				.WithMessage("Content cannot be null or whitespace.*")
+				.And.ParamName.Should().Be("content");
 	}
 
 	[Fact]
 	public void Empty_ShouldReturnEmptyInstance()
 	{
 		// Arrange & Act
-		var empty = Article.Empty;
+		Article empty = Article.Empty;
 
 		// Assert
 		empty.Id.Should().Be(ObjectId.Empty);
@@ -166,8 +169,8 @@ public class ArticleTests
 	public void Update_WithValidData_ShouldUpdatePropertiesAndSetModifiedOn()
 	{
 		// Arrange
-		var article = new Article("Old Title", "Old Intro", "Old Content", "old.jpg", null, null);
-		var beforeModified = DateTimeOffset.UtcNow;
+		Article article = new ("Old Title", "Old Intro", "Old Content", "old.jpg", null, null);
+		DateTimeOffset beforeModified = DateTimeOffset.UtcNow;
 
 		// Act
 		article.Update("New Title", "New Intro", "New Content", "new.jpg", true, DateTimeOffset.UtcNow, true);
@@ -191,24 +194,24 @@ public class ArticleTests
 	public void Update_WithInvalidTitle_ShouldThrowArgumentException(string? invalidTitle)
 	{
 		// Arrange
-		var article = new Article("Title", "Intro", "Content", "cover.jpg", null, null);
+		Article article = new ("Title", "Intro", "Content", "cover.jpg", null, null);
 
 		// Act
-		var act = () => article.Update(invalidTitle!, "Intro", "Content", "cover.jpg", false, null, false);
+		Action act = () => article.Update(invalidTitle!, "Intro", "Content", "cover.jpg", false, null, false);
 
 		// Assert
 		act.Should().Throw<ArgumentException>()
-			.WithMessage("Title cannot be null or whitespace.*")
-			.And.ParamName.Should().Be("title");
+				.WithMessage("Title cannot be null or whitespace.*")
+				.And.ParamName.Should().Be("title");
 	}
 
 	[Fact]
 	public void Publish_ShouldSetPublishedProperties()
 	{
 		// Arrange
-		var article = new Article("Title", "Intro", "Content", "cover.jpg", null, null);
-		var publishedOn = DateTimeOffset.UtcNow;
-		var beforeModified = DateTimeOffset.UtcNow;
+		Article article = new ("Title", "Intro", "Content", "cover.jpg", null, null);
+		DateTimeOffset publishedOn = DateTimeOffset.UtcNow;
+		DateTimeOffset beforeModified = DateTimeOffset.UtcNow;
 
 		// Act
 		article.Publish(publishedOn);
@@ -224,8 +227,8 @@ public class ArticleTests
 	public void Unpublish_ShouldClearPublishedProperties()
 	{
 		// Arrange
-		var article = new Article("Title", "Intro", "Content", "cover.jpg", null, null, true, DateTimeOffset.UtcNow, false);
-		var beforeModified = DateTimeOffset.UtcNow;
+		Article article = new ("Title", "Intro", "Content", "cover.jpg", null, null, true, DateTimeOffset.UtcNow, false);
+		DateTimeOffset beforeModified = DateTimeOffset.UtcNow;
 
 		// Act
 		article.Unpublish();
@@ -246,7 +249,7 @@ public class ArticleTests
 	public void SlugGeneration_ShouldConvertTitleToValidSlug(string title, string expectedSlug)
 	{
 		// Arrange & Act
-		var article = new Article(title, "Intro", "Content", "cover.jpg", null, null);
+		Article article = new (title, "Intro", "Content", "cover.jpg", null, null);
 
 		// Assert
 		article.Slug.Should().Be(expectedSlug);
@@ -256,9 +259,9 @@ public class ArticleTests
 	public void Properties_ShouldBeSettable()
 	{
 		// Arrange
-		var article = new Article();
-		var author = new AuthorInfo("auth0|123", "John Doe");
-		var category = new Category { CategoryName = "Tech" };
+		Article article = new ();
+		AuthorInfo author = new ("auth0|123", "John Doe");
+		Category category = new()  { CategoryName = "Tech" };
 
 		// Act
 		article.Title = "New Title";
@@ -282,4 +285,5 @@ public class ArticleTests
 		article.PublishedOn.Should().NotBeNull();
 		article.IsArchived.Should().BeTrue();
 	}
+
 }

@@ -1,48 +1,44 @@
 @page "/articles/create"
 @using System.Security.Claims
 
-@using global::Shared.Entities
-global::Shared.Entities;Security.Claims
-@using global::Shared.Models
-
 @inject NavigationManager NavMan
-@inject CreateArticle.ICreateArticleHandler ArticleService
+@inject ICreateArticleHandler ArticleService
 @inject ILogger<Create> Logger
 
 @attribute [Authorize(Roles = "Admin,Author")]
 
-<PageHeadingComponent HeaderText="Create Article" Level="1" TextColorClass="blue-500" />
+<PageHeadingComponent HeaderText="Create Article" Level="1" TextColorClass="blue-500"/>
 
 <EditForm Model="_article" OnValidSubmit="HandleValidSubmit">
-	<DataAnnotationsValidator />
-	<ValidationSummary />
+	<DataAnnotationsValidator/>
+	<ValidationSummary/>
 	@if (!string.IsNullOrEmpty(_errorMessage))
 	{
 		<div class="alert alert-danger">@_errorMessage</div>
 	}
 	<div class="mb-3">
 		<label>Title</label>
-		<InputText class="form-control" @bind-Value="_article.Title" />
+		<InputText class="form-control" @bind-Value="_article.Title"/>
 	</div>
 	<div class="mb-3">
 		<label>Introduction</label>
-		<InputText class="form-control" @bind-Value="_article.Introduction" />
+		<InputText class="form-control" @bind-Value="_article.Introduction"/>
 	</div>
 	<div class="mb-3">
 		<label>Content</label>
-		<InputTextArea class="form-control" @bind-Value="_article.Content" Rows="6" />
+		<InputTextArea class="form-control" @bind-Value="_article.Content" Rows="6"/>
 	</div>
 	<div class="mb-3">
 		<label>Cover Image URL</label>
-		<InputText class="form-control" @bind-Value="_article.CoverImageUrl" />
+		<InputText class="form-control" @bind-Value="_article.CoverImageUrl"/>
 	</div>
 	<div class="mb-3">
 		<label>URL Slug</label>
-		<InputText class="form-control" @bind-Value="_article.UrlSlug" />
+		<InputText class="form-control" @bind-Value="_article.UrlSlug"/>
 	</div>
 	<div class="mb-3">
 		<label>Published</label>
-		<InputCheckbox class="form-check-input" @bind-Value="_article.IsPublished" />
+		<InputCheckbox class="form-check-input" @bind-Value="_article.IsPublished"/>
 	</div>
 	<button class="btn btn-success" type="submit" disabled="@_isSubmitting">
 		@(_isSubmitting ? "Creating..." : "Article Create")
@@ -53,24 +49,24 @@ global::Shared.Entities;Security.Claims
 @code {
 
 	/// <summary>
-	/// The article model bound to the form.
+	///   The article model bound to the form.
 	/// </summary>
 	private readonly ArticleDto _article = new();
 
 	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
 
 	/// <summary>
-	/// Stores the error message to display in the UI.
+	///   Stores the error message to display in the UI.
 	/// </summary>
 	private string? _errorMessage;
 
 	/// <summary>
-	/// Indicates whether the form is currently submitting.
+	///   Indicates whether the form is currently submitting.
 	/// </summary>
 	private bool _isSubmitting;
 
 	/// <summary>
-	/// Handles the valid form submission event for creating an article.
+	///   Handles the valid form submission event for creating an article.
 	/// </summary>
 	/// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
 	private async Task HandleValidSubmit()
@@ -87,16 +83,16 @@ global::Shared.Entities;Security.Claims
 			if (user.Identity?.IsAuthenticated == true)
 			{
 				// Extract user ID from Auth0 'sub' claim or standard NameIdentifier
-				var userId = user.FindFirst("sub")?.Value 
-					?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value 
-					?? string.Empty;
+				var userId = user.FindFirst("sub")?.Value
+										 ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value
+										 ?? string.Empty;
 
 				// Extract user name from various possible claims
-				var userName = user.FindFirst("name")?.Value 
-					?? user.FindFirst("nickname")?.Value 
-					?? user.FindFirst(ClaimTypes.Name)?.Value 
-					?? user.Identity.Name 
-					?? "Unknown User";
+				var userName = user.FindFirst("name")?.Value
+											 ?? user.FindFirst("nickname")?.Value
+											 ?? user.FindFirst(ClaimTypes.Name)?.Value
+											 ?? user.Identity.Name
+											 ?? "Unknown User";
 
 				// Create the AuthorInfo record with captured user information
 				_article.Author = new AuthorInfo(userId, userName);
@@ -123,7 +119,7 @@ global::Shared.Entities;Security.Claims
 	}
 
 	/// <summary>
-	/// Navigates to the article list page.
+	///   Navigates to the article list page.
 	/// </summary>
 	private void GoToList()
 	{

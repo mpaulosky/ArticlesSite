@@ -1,19 +1,18 @@
 //=======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     FakeArticleTests.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
-
-using Shared.Entities;
+//Copyright (c) 2025. All rights reserved.
+//File Name :     FakeArticleTests.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
 
 namespace Shared.Tests.Unit.Fakes;
 
 [ExcludeFromCodeCoverage]
 public class FakeArticleTests
 {
+
 	[Fact]
 	public void GetNewArticle_WithoutSeed_ShouldReturnValidArticle()
 	{
@@ -37,7 +36,7 @@ public class FakeArticleTests
 	public void GetNewArticle_WithSeed_ShouldReturnValidArticle()
 	{
 		// Arrange & Act
-		Article result = FakeArticle.GetNewArticle(useSeed: true);
+		Article result = FakeArticle.GetNewArticle(true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -94,7 +93,7 @@ public class FakeArticleTests
 		const int count = 3;
 
 		// Act
-		List<Article> result = FakeArticle.GetArticles(count, useSeed: true);
+		List<Article> result = FakeArticle.GetArticles(count, true);
 
 		// Assert
 		result.Should().HaveCount(count);
@@ -200,7 +199,7 @@ public class FakeArticleTests
 	public void GenerateFake_WithSeed_ShouldProduceValidResults()
 	{
 		// Arrange & Act
-		var result = FakeArticle.GetNewArticle(useSeed: true);
+		Article result = FakeArticle.GetNewArticle(true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -216,7 +215,9 @@ public class FakeArticleTests
 
 		// Assert
 		result.Slug.Should().NotBeNullOrWhiteSpace();
-		result.Slug.Should().MatchRegex(@"^[a-z0-9_]+$", "slug should only contain lowercase letters, numbers, and underscores");
+
+		result.Slug.Should()
+				.MatchRegex(@"^[a-z0-9_]+$", "slug should only contain lowercase letters, numbers, and underscores");
 	}
 
 	[Fact]
@@ -232,4 +233,5 @@ public class FakeArticleTests
 		result.Should().HaveCount(count);
 		result.Should().OnlyContain(a => a.Id != ObjectId.Empty);
 	}
+
 }

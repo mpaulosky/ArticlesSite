@@ -1,11 +1,13 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     GlobalUsings.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Shared.Tests.Unit
-// =======================================================
+﻿//=======================================================
+//Copyright (c) 2025. All rights reserved.
+//File Name :     GlobalUsings.cs
+//Company :       mpaulosky
+//Author :        Matthew Paulosky
+//Solution Name : ArticlesSite
+//Project Name :  Shared.Tests.Unit
+//=======================================================
+
+#region
 
 global using System.Diagnostics.CodeAnalysis;
 
@@ -13,5 +15,8 @@ global using FluentAssertions;
 
 global using MongoDB.Bson;
 
+global using Shared.Entities;
 global using Shared.Fakes;
 global using Shared.Models;
+
+#endregion

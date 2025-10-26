@@ -1,3 +1,20 @@
+// =======================================================
+// Copyright (c) 2025. All rights reserved.
+// File Name :     Auth0AuthenticationStateProvider.cs
+// Company :       mpaulosky
+// Author :        Matthew Paulosky
+// Solution Name : ArticlesSite
+// Project Name :  Web
+// =======================================================
+
+#region
+
+using System.Security.Claims;
+
+using Microsoft.AspNetCore.Components.Authorization;
+
+#endregion
+
 namespace Web.Services;
 
 public class Auth0AuthenticationStateProvider : AuthenticationStateProvider
@@ -17,40 +34,40 @@ public class Auth0AuthenticationStateProvider : AuthenticationStateProvider
 
 	public override Task<AuthenticationState> GetAuthenticationStateAsync()
 	{
-		var httpContext = _httpContextAccessor.HttpContext;
+		HttpContext? httpContext = _httpContextAccessor.HttpContext;
 
 		if (httpContext?.User.Identity?.IsAuthenticated == true)
 		{
-			var user = httpContext.User;
+			ClaimsPrincipal user = httpContext.User;
 
 			// Log user claims for debugging
 			_logger.LogInformation("User authenticated with claims:");
 
-			foreach (var claim in user.Claims)
+			foreach (Claim claim in user.Claims)
 			{
 				_logger.LogInformation("Claim: {Type} = {Value}", claim.Type, claim.Value);
 			}
 
 			// Create a new ClaimsIdentity with the existing claims plus any additional processing
-			var identity = new ClaimsIdentity(user.Identity);
+			ClaimsIdentity identity = new (user.Identity);
 
 			// Add role claims if they exist
-			var rolesClaim = user.FindFirst("https://articlesite.com/roles")?.Value;
+			string? rolesClaim = user.FindFirst("https://articlesite.com/roles")?.Value;
 
 			if (!string.IsNullOrEmpty(rolesClaim))
 			{
-				var roles = rolesClaim.Split(',', StringSplitOptions.RemoveEmptyEntries);
+				string[] roles = rolesClaim.Split(',', StringSplitOptions.RemoveEmptyEntries);
 
-				foreach (var role in roles)
+				foreach (string role in roles)
 				{
 					identity.AddClaim(new Claim(ClaimTypes.Role, role.Trim()));
 				}
 			}
 
 			// Check for Auth0 roles in the standard location
-			var auth0Roles = user.FindAll("roles");
+			IEnumerable<Claim> auth0Roles = user.FindAll("roles");
 
-			foreach (var roleClaim in auth0Roles)
+			foreach (Claim roleClaim in auth0Roles)
 			{
 				if (!identity.HasClaim(ClaimTypes.Role, roleClaim.Value))
 				{
@@ -58,13 +75,13 @@ public class Auth0AuthenticationStateProvider : AuthenticationStateProvider
 				}
 			}
 
-			var claimsPrincipal = new ClaimsPrincipal(identity);
+			ClaimsPrincipal claimsPrincipal = new (identity);
 
 			return Task.FromResult(new AuthenticationState(claimsPrincipal));
 		}
 
 		// Return an anonymous user if not authenticated
-		var anonymous = new ClaimsPrincipal(new ClaimsIdentity());
+		ClaimsPrincipal anonymous = new (new ClaimsIdentity());
 
 		return Task.FromResult(new AuthenticationState(anonymous));
 	}

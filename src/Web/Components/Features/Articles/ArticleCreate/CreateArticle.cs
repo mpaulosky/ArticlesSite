@@ -3,7 +3,7 @@
 // File Name :     CreateArticle.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
+// Solution Name : ArticlesSite
 // Project Name :  Web
 // =======================================================
 
@@ -31,9 +31,9 @@ public static class CreateArticle
 	public class Handler : ICreateArticleHandler
 	{
 
-		private readonly IArticleRepository _repository;
-
 		private readonly ILogger<Handler> _logger;
+
+		private readonly IArticleRepository _repository;
 
 		/// <summary>
 		///   Initializes a new instance of the <see cref="Handler" /> class.
@@ -74,11 +74,12 @@ public static class CreateArticle
 						request.IsArchived
 				);
 
-				var result = await _repository.AddArticle(article);
+				Result<Article> result = await _repository.AddArticle(article);
 
 				if (!result.Success)
 				{
 					_logger.LogError("Failed to create article: {Title}", request.Title);
+
 					return Result.Fail(result.Error ?? "Failed to create article.");
 				}
 

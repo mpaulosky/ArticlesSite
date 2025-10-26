@@ -1,4 +1,3 @@
-
 # References Used In ArticleSite
 
 ## Technologies & Frameworks
@@ -14,7 +13,8 @@
 
 - [xUnit](https://xunit.net/) – Unit and integration tests (`tests/`)
 - [bUnit](https://bunit.dev/) – Blazor component testing (`tests/Web.Tests.Unit`)
-- [TestContainers for .NET](https://dotnet.testcontainers.org/) – Integration test containers (`tests/Api.Tests.Integration`)
+- [TestContainers for .NET](https://dotnet.testcontainers.org/) – Integration test containers (
+  `tests/Api.Tests.Integration`)
 - [Playwright for .NET](https://playwright.dev/dotnet/) – E2E browser testing (`tests/Web.Tests.Integration`)
 - [FluentAssertions](https://fluentassertions.com/) – Assertion library for all tests
 - [NSubstitute](https://nsubstitute.github.io/) – Mocking for unit tests
@@ -22,11 +22,13 @@
 
 ## Package Management
 
-- [Central Package Management (CPM)](https://learn.microsoft.com/nuget/consume-packages/central-package-management) – Centralized NuGet versioning (`Directory.Packages.props`)
+- [Central Package Management (CPM)](https://learn.microsoft.com/nuget/consume-packages/central-package-management) –
+  Centralized NuGet versioning (`Directory.Packages.props`)
 
 ## Workflows & Actions
 
-- [GitHub Actions](https://github.com/features/actions) – CI/CD for build, test, and deploy (`.github/workflows/dotnet.yml`)
+- [GitHub Actions](https://github.com/features/actions) – CI/CD for build, test, and deploy (
+  `.github/workflows/dotnet.yml`)
 - [Codecov](https://codecov.io/) – Code coverage tracking (`codecov.yml`)
 - [Test coverage report](https://github.com/marketplace/actions/test-coverage-report) – Generate coverage reports
 - [Publish Test Results](https://github.com/marketplace/actions/publish-test-results) – Publish test results to GitHub
@@ -40,6 +42,8 @@
 
 ## Architecture & Patterns
 
-- [CQRS Pattern](https://learn.microsoft.com/azure/architecture/patterns/cqrs) – Command Query Responsibility Segregation
-- [Repository Pattern](https://learn.microsoft.com/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design) – Data access abstraction
+- [CQRS Pattern](https://learn.microsoft.com/azure/architecture/patterns/cqrs) – Command Query Responsibility
+  Segregation
+- [Repository Pattern](https://learn.microsoft.com/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/infrastructure-persistence-layer-design) –
+  Data access abstraction
 - [Vertical Slice Architecture](https://www.jimmybogard.com/vertical-slice-architecture/) – Feature-focused organization
