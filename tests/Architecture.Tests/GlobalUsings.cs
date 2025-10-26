@@ -1,11 +1,13 @@
-// =======================================================
+﻿// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     GlobalUsings.cs
 // Company :       mpaulosky
 // Author :        Matthew Paulosky
-// Solution Name : ArticleSite
-// Project Name :  Architecture.Tests.Unit
+// Solution Name : ArticlesSite
+// Project Name :  Architecture.Tests
 // =======================================================
+
+#region
 
 global using System;
 global using System.Diagnostics.CodeAnalysis;
@@ -16,3 +18,5 @@ global using FluentAssertions;
 global using NetArchTest.Rules;
 
 global using Xunit;
+
+#endregion

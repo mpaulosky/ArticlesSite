@@ -12,11 +12,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
 	</ItemGroup>
 
 	<ItemGroup>
-		<Using Include="Xunit" />
+		<Using Include="Xunit"/>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -24,16 +24,16 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" />
-		<PackageReference Include="xunit.v3" />
-		<PackageReference Include="xunit.runner.visualstudio" />
-		<PackageReference Include="FluentAssertions" />
-		<PackageReference Include="NetArchTest.Rules" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk"/>
+		<PackageReference Include="xunit.v3"/>
+		<PackageReference Include="xunit.runner.visualstudio"/>
+		<PackageReference Include="FluentAssertions"/>
+		<PackageReference Include="NetArchTest.Rules"/>
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\Shared\Shared.csproj" />
-		<ProjectReference Include="..\..\src\Web\Web.csproj" />
+		<ProjectReference Include="..\..\src\Shared\Shared.csproj"/>
+		<ProjectReference Include="..\..\src\Web\Web.csproj"/>
 	</ItemGroup>
 
 </Project>
