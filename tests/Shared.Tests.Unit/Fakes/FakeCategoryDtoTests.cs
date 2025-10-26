@@ -6,6 +6,14 @@
 //Solution Name : ArticlesSite
 //Project Name :  Shared.Tests.Unit
 //=======================================================
+
+namespace Shared.Tests.Unit.Fakes;
+
+[ExcludeFromCodeCoverage]
+public class FakeCategoryDtoTests
+{
+	[Fact]
+	public void GetNewCategoryDto_WithoutSeed_ShouldReturnValidCategoryDto()
 	{
 		// Arrange & Act
 		CategoryDto result = FakeCategoryDto.GetNewCategoryDto();
@@ -22,7 +30,7 @@
 	public void GetNewCategoryDto_WithSeed_ShouldReturnValidCategoryDto()
 	{
 		// Arrange & Act
-		CategoryDto result = FakeCategoryDto.GetNewCategoryDto(true);
+		CategoryDto result = FakeCategoryDto.GetNewCategoryDto(useSeed: true);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -77,7 +85,7 @@
 		const int count = 3;
 
 		// Act
-		List<CategoryDto> result = FakeCategoryDto.GetCategoriesDto(count, true);
+		List<CategoryDto> result = FakeCategoryDto.GetCategoriesDto(count, useSeed: true);
 
 		// Assert
 		result.Should().HaveCount(count);
@@ -135,7 +143,8 @@
 	public void GenerateFake_WithoutSeed_ShouldReturnConfiguredFaker()
 	{
 		// Arrange & Act
-		CategoryDto result = FakeCategoryDto.GetNewCategoryDto();
+		var faker = FakeCategoryDto.GenerateFake();
+		CategoryDto result = faker.Generate();
 
 		// Assert
 		result.Should().NotBeNull();
@@ -147,7 +156,8 @@
 	public void GenerateFake_WithSeed_ShouldProduceValidResults()
 	{
 		// Arrange & Act
-		CategoryDto result = FakeCategoryDto.GetNewCategoryDto(true);
+		var faker = FakeCategoryDto.GenerateFake(useSeed: true);
+		CategoryDto result = faker.Generate();
 
 		// Assert
 		result.Should().NotBeNull();
@@ -217,14 +227,20 @@
 	public void GetNewCategoryDto_CategoryName_ShouldBeFromPredefinedList()
 	{
 		// Arrange
-		string[] validCategoryNames = new[]
+		var validCategoryNames = new[]
 		{
-				"ASP.NET Core", "Blazor Server", "Blazor WebAssembly", "C# Programming", "Entity Framework Core (EF Core)",
-				".NET MAUI", "General Programming", "Web Development", "Other .NET Topics"
+			"ASP.NET Core",
+			"Blazor Server",
+			"Blazor WebAssembly",
+			"C# Programming",
+			"Entity Framework Core (EF Core)",
+			".NET MAUI",
+			"General Programming",
+			"Web Development",
+			"Other .NET Topics"
 		};
-
 		const int iterations = 50;
-		List<string> categoryNames = new ();
+		var categoryNames = new List<string>();
 
 		// Act
 		for (int i = 0; i < iterations; i++)
@@ -236,5 +252,4 @@
 		// Assert
 		categoryNames.Should().OnlyContain(name => validCategoryNames.Contains(name));
 	}
-
 }

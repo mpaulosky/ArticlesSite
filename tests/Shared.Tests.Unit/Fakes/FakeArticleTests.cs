@@ -6,6 +6,9 @@
 //Solution Name : ArticlesSite
 //Project Name :  Shared.Tests.Unit
 //=======================================================
+
+namespace Shared.Tests.Unit.Fakes;
+
 [ExcludeFromCodeCoverage]
 public class FakeArticleTests
 {

@@ -13,4 +13,11 @@
 		<PackageReference Include="WaffleGenerator.Bogus"/>
 	</ItemGroup>
 
+	<ItemGroup>
+		<InternalsVisibleTo Include="Architecture.Tests"/>
+		<InternalsVisibleTo Include="Shared.Tests.Unit"/>
+		<InternalsVisibleTo Include="Web.Tests.Unit"/>
+		<InternalsVisibleTo Include="Web.Tests.Integration"/>
+	</ItemGroup>
+
 </Project>

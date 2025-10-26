@@ -11,7 +11,6 @@
 
 using FluentValidation.Results;
 
-using Shared.Entities;
 using Shared.Validators;
 
 #endregion

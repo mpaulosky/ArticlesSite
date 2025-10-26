@@ -9,8 +9,6 @@
 
 #region
 
-using Shared.Entities;
-
 #endregion
 
 namespace Shared.Tests.Unit.Models;
