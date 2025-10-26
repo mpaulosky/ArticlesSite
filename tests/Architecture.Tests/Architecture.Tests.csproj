@@ -28,6 +28,12 @@
 		<PackageReference Include="xunit.v3" />
 		<PackageReference Include="xunit.runner.visualstudio" />
 		<PackageReference Include="FluentAssertions" />
+		<PackageReference Include="NetArchTest.Rules" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Shared\Shared.csproj" />
+		<ProjectReference Include="..\..\src\Web\Web.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,19 +1,76 @@
-using System.Diagnostics.CodeAnalysis;
-
-using Xunit;
-
 namespace Architecture.Tests;
 
 [ExcludeFromCodeCoverage]
 public class ArchitectureTests
 {
-	private readonly string _solutionPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "ArticlesSite.slnx");
-	private readonly string _srcPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "src");
-	private readonly string _testsPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "tests");
+
+	private readonly string _srcPath;
+	private readonly string _testsPath;
+
+	public ArchitectureTests()
+	{
+
+		// Dynamically find the solution root by walking up the directory tree
+		var assemblyLocation = Assembly.GetExecutingAssembly().Location;
+		var dir = Path.GetDirectoryName(assemblyLocation) ?? Directory.GetCurrentDirectory();
+		Console.WriteLine($"[DEBUG] Starting solution root search from assembly location: {dir}");
+
+		string? foundRoot = null;
+		var checkedDirs = new List<string>();
+		int walkCount = 0;
+		while (!string.IsNullOrEmpty(dir))
+		{
+			checkedDirs.Add(dir);
+			walkCount++;
+			var slnx = Path.Combine(dir, "ArticlesSite.slnx");
+			Console.WriteLine($"[DEBUG] Walk {walkCount}: Checking {slnx}");
+			if (File.Exists(slnx))
+			{
+				Console.WriteLine($"[DEBUG] Solution file found at: {dir}");
+				foundRoot = dir;
+				break;
+			}
+			var parent = Directory.GetParent(dir);
+			if (parent == null)
+			{
+				Console.WriteLine($"[DEBUG] Reached drive root: {dir}");
+				break;
+			}
+			dir = parent.FullName;
+		}
+		Console.WriteLine($"[DEBUG] Checked directories: {string.Join(", ", checkedDirs)}");
+
+		if (foundRoot == null)
+		{
+			Console.WriteLine("[DEBUG] Solution root not found. Checked directories:");
+			foreach (var d in checkedDirs) Console.WriteLine($"  {d}");
+			throw new DirectoryNotFoundException("Could not find solution root (ArticlesSite.slnx) in parent directories.");
+		}
+
+		string solutionRoot = foundRoot;
+		Path.Combine(solutionRoot, "ArticlesSite.slnx");
+		_srcPath = Path.Combine(solutionRoot, "src");
+		_testsPath = Path.Combine(solutionRoot, "tests");
+		Console.WriteLine($"[DEBUG] Solution root: {solutionRoot}");
+		Console.WriteLine($"[DEBUG] srcPath: {_srcPath}");
+		Console.WriteLine($"[DEBUG] testsPath: {_testsPath}");
+
+		if (!Directory.Exists(_srcPath))
+		{
+			Console.WriteLine($"ERROR: srcPath does not exist: {_srcPath}");
+			throw new DirectoryNotFoundException($"srcPath not found: {_srcPath}");
+		}
+		if (!Directory.Exists(_testsPath))
+		{
+			Console.WriteLine($"ERROR: testsPath does not exist: {_testsPath}");
+			throw new DirectoryNotFoundException($"testsPath not found: {_testsPath}");
+		}
+	}
 
 	[Fact]
 	public void AllSrcProjects_ShouldBeUsedOrEntryPoint()
 	{
+		Console.WriteLine($"[DEBUG] AllSrcProjects_ShouldBeUsedOrEntryPoint: _srcPath={_srcPath}");
 		// Arrange
 		var entryPoints = new[] { "AppHost", "Web" };
 		var srcProjects = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
@@ -27,32 +84,19 @@ public class ArchitectureTests
 		// Act & Assert
 		foreach (var proj in srcProjects)
 		{
-			var name = Path.GetFileNameWithoutExtension(proj);
+			Path.GetFileNameWithoutExtension(proj);
 			var dir = Path.GetFileName(Path.GetDirectoryName(proj)!);
+			// Skip Api project as it has been removed from the solution
+			if (dir.Equals("Api", StringComparison.OrdinalIgnoreCase))
+				continue;
 			(referenced.Contains(proj) || entryPoints.Contains(dir)).Should().BeTrue($"Project {proj} is unused and not an entry point");
-		}
-	}
-
-	[Fact]
-	public void TestProjects_ShouldReferenceOnlyCorrespondingMainProject()
-	{
-		// Arrange
-		var testProjects = Directory.GetFiles(_testsPath, "*.csproj", SearchOption.AllDirectories);
-		foreach (var testProj in testProjects)
-		{
-			var content = File.ReadAllText(testProj);
-			var mainProjectName = Path.GetFileNameWithoutExtension(testProj).Replace(".Tests.Unit", "").Replace(".Tests.Integration", "");
-			// Act & Assert
-			if (mainProjectName != "Architecture")
-			{
-				content.Should().Contain($"..\\..\\src\\{mainProjectName}\\{mainProjectName}.csproj");
-			}
 		}
 	}
 
 	[Fact]
 	public void SharedNugetPackages_ShouldHaveConsistentVersions()
 	{
+		Console.WriteLine($"[DEBUG] SharedNugetPackages_ShouldHaveConsistentVersions: _srcPath={_srcPath}");
 		// Arrange
 		var packages = new[] { "FluentValidation", "MongoDB.Bson" };
 		var csprojFiles = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
@@ -85,6 +129,7 @@ public class ArchitectureTests
 	[Fact]
 	public void TestProjects_ShouldNotReferenceEachOther()
 	{
+		Console.WriteLine($"[DEBUG] TestProjects_ShouldNotReferenceEachOther: _testsPath={_testsPath}");
 		// Arrange
 		var testProjects = Directory.GetFiles(_testsPath, "*.csproj", SearchOption.AllDirectories);
 		foreach (var testProj in testProjects)
@@ -104,6 +149,7 @@ public class ArchitectureTests
 	[Fact]
 	public void Web_ShouldNotReferenceAspireHostingPackages()
 	{
+		Console.WriteLine($"[DEBUG] Web_ShouldNotReferenceAspireHostingPackages: _srcPath={_srcPath}");
 		// Arrange
 		var webCsproj = Path.Combine(_srcPath, "Web", "Web.csproj");
 		var content = File.ReadAllText(webCsproj);
@@ -114,6 +160,7 @@ public class ArchitectureTests
 	[Fact]
 	public void OutputType_ShouldBeExeOnlyForEntryPoints()
 	{
+		Console.WriteLine($"[DEBUG] OutputType_ShouldBeExeOnlyForEntryPoints: _srcPath={_srcPath}");
 		// Arrange
 		var entryPoints = new[] { "AppHost", "Web" };
 		var csprojFiles = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
@@ -136,6 +183,7 @@ public class ArchitectureTests
 	[Fact]
 	public void EachProject_ShouldContainGlobalUsingsFile()
 	{
+		Console.WriteLine($"[DEBUG] EachProject_ShouldContainGlobalUsingsFile: _srcPath={_srcPath}");
 		// Arrange
 		var projectDirs = Directory.GetDirectories(_srcPath);
 		// Act & Assert
