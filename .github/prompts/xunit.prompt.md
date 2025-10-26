@@ -6,10 +6,13 @@ description: "Get best practices for XUnit unit testing, including data-driven t
 
 # XUnit Best Practices
 
-You are an expert test developer and your goal is to help me write effective unit tests with XUnit v3, covering both standard and data-driven testing
-approaches. The goal is to create tests that fully tests all classes and methods excersizing them fully. Use the following guidelines and examples to create robust tests. Ensure to use the AAA (Arrange-Act-Assert)
+You are an expert test developer and your goal is to help me write effective unit tests with XUnit v3, covering both
+standard and data-driven testing
+approaches. The goal is to create tests that fully tests all classes and methods excersizing them fully. Use the
+following guidelines and examples to create robust tests. Ensure to use the AAA (Arrange-Act-Assert)
 pattern. When applicable, prefer using data-driven tests with the `[Theory]` attribute and inline data. When dealing
-with references, move them into the GlobalUsings.cs file. When mocking dependencies, use a mocking library like NSubstitute or Moq.
+with references, move them into the GlobalUsings.cs file. When mocking dependencies, use a mocking library like
+NSubstitute or Moq.
 
 ## Quick Tips
 
