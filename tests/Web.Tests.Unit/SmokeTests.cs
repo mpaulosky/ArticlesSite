@@ -7,6 +7,8 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
+using FluentAssertions;
+
 namespace Web.Tests.Unit;
 
 public class SmokeTests
@@ -15,7 +17,7 @@ public class SmokeTests
 	[Fact]
 	public void SmokeTest_ShouldPass()
 	{
-		Assert.True(true);
+		true.Should().BeTrue();
 	}
 
 }

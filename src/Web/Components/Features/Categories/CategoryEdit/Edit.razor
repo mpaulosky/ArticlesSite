@@ -1,8 +1,8 @@
 @page "/categories/edit/{id}"
 
 @inject NavigationManager Navigation
-@inject IGetCategoryHandler GetHandler
-@inject IEditCategoryHandler EditHandler
+@inject Web.Components.Features.Categories.CategoryDetails.GetCategory.IGetCategoryHandler GetHandler
+@inject Web.Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler EditHandler
 @inject ILogger<Edit> Logger
 
 @attribute [Authorize]

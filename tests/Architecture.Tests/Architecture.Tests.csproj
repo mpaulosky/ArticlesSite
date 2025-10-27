@@ -9,6 +9,7 @@
 		<IsTestProject>true</IsTestProject>
 		<UseMicrosoftTestingPlatformRunner>false</UseMicrosoftTestingPlatformRunner>
 		<TestingPlatformDotnetTestSupport>false</TestingPlatformDotnetTestSupport>
+		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>

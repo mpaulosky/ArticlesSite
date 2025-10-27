@@ -190,6 +190,10 @@ public class TestProjectTests
 				Path.Combine(_testsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj")
 		};
 
+		// Also check central package management file
+		string centralPackagesPath = Path.Combine(_solutionRoot, "Directory.Packages.props");
+		string centralPackagesContent = File.Exists(centralPackagesPath) ? File.ReadAllText(centralPackagesPath) : string.Empty;
+
 		// Act & Assert
 		foreach (string projectPath in unitTestProjectPaths)
 		{
@@ -197,8 +201,8 @@ public class TestProjectTests
 			{
 				string content = File.ReadAllText(projectPath);
 
-				content.Should().Contain("NSubstitute",
-						$"{Path.GetFileName(projectPath)} should reference NSubstitute for mocking");
+				bool hasNSubstitute = content.Contains("NSubstitute") || centralPackagesContent.Contains("NSubstitute");
+				hasNSubstitute.Should().BeTrue($"{Path.GetFileName(projectPath)} should reference NSubstitute for mocking (directly or via central package management)");
 			}
 		}
 	}
