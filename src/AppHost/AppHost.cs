@@ -7,23 +7,19 @@
 // Project Name :  AppHost
 // =======================================================
 
-#region
-
 using AppHost;
 
 using Projects;
 
-#endregion
-
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
-IResourceBuilder<MongoDBDatabaseResource> database = builder.AddMongoDbServices();
 
-IResourceBuilder<RedisResource> cache = builder.AddRedisServices();
+IResourceBuilder<MongoDBDatabaseResource> database = builder.AddMongoDbServices();
+// Explicitly use ServiceDefaults.RedisServices to avoid ambiguity
+IResourceBuilder<RedisResource> cache = ServiceDefaults.RedisServices.AddRedisServices(builder);
 
 // Add a composite command that coordinates multiple operations
-builder.AddProject<Web>(Website)
-		.WithExternalHttpEndpoints()
+var website = builder.AddProject("Web")
 		.WithHttpHealthCheck("/health")
 		.WithReference(database).WaitFor(database)
 		.WithReference(cache).WaitFor(cache);

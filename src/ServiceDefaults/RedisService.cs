@@ -10,10 +10,13 @@
 using Aspire.Hosting;
 using Aspire.Hosting.ApplicationModel;
 using Aspire.Hosting.Redis;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 using static Shared.Constants.Constants;
 
-namespace AppHost;
+namespace ServiceDefaults;
 
 /// <summary>
 /// Provides extension methods for configuring and managing Redis services within the distributed application.
@@ -80,7 +83,7 @@ public static class RedisServices
 	/// <returns>The new <see cref="ResourceCommandState"/> for the command.</returns>
 	private static ResourceCommandState OnUpdateResourceState(UpdateCommandStateContext context)
 	{
-		var logger = context.ServiceProvider.GetRequiredService<ILogger<Program>>();
+		var logger = context.ServiceProvider.GetRequiredService<ILogger<UpdateCommandStateContext>>();
 		if (logger.IsEnabled(LogLevel.Information))
 		{
 			logger.LogInformation("Updating resource state: {ResourceSnapshot}", context.ResourceSnapshot);

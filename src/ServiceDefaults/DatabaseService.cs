@@ -11,7 +11,7 @@ using Aspire.Hosting;
 using Aspire.Hosting.MongoDB;
 using static Shared.Constants.Constants;
 
-namespace AppHost;
+namespace ServiceDefaults;
 
 /// <summary>
 ///   Extension methods for adding and configuring MongoDB resources with Aspire 9.4.0 features.
