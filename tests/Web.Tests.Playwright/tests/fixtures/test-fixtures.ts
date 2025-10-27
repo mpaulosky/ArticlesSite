@@ -1,4 +1,4 @@
-import { test as base } from '@playwright/test';
+import { test as base, expect as baseExpect, Page } from '@playwright/test';
 
 /**
  * Custom test fixtures for ArticlesSite E2E tests
@@ -15,4 +15,4 @@ export const test = base.extend({
   // },
 });
 
-export { expect } from '@playwright/test';
+export const expect = baseExpect;

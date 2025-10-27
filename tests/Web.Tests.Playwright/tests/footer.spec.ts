@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/test-fixtures';
-import { BasePage } from '../pages/base.page';
+import { test, expect } from '@playwright/test';
+import { BasePage } from './pages/base.page';
 
 test.describe('Footer Component Tests', () => {
   let page: BasePage;

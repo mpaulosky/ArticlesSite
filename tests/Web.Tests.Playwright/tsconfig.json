@@ -8,13 +8,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
+    "types": ["node", "@playwright/test"],
     "baseUrl": ".",
-    "paths": {
-      "@tests/*": ["tests/*"],
-      "@pages/*": ["tests/pages/*"],
-      "@fixtures/*": ["tests/fixtures/*"]
-    }
+    "rootDir": "."
   },
-  "include": ["tests/**/*"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules", "test-results", "playwright-report"]
 }

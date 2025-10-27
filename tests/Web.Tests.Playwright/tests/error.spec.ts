@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/test-fixtures';
-import { ErrorPage } from '../pages/error.page';
+import { test, expect } from '@playwright/test';
+import { ErrorPage } from './pages/error.page';
 
 test.describe('Error Page Tests', () => {
   let errorPage: ErrorPage;

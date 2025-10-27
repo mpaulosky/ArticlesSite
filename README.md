@@ -116,6 +116,7 @@ ArticlesSite/
     ├── Api.Tests.Integration/    # API integration tests
     ├── Web.Tests.Unit/           # Web unit tests
     ├── Web.Tests.Integration/    # Web integration tests
+    ├── Web.Tests.Playwright/     # Playwright E2E tests
     ├── Shared.Tests.Unit/        # Shared unit tests
     └── Architecture.Tests/       # Architecture tests
 ```
@@ -164,11 +165,24 @@ ArticlesSite employs a comprehensive testing strategy:
 - Render testing and interaction testing
 - Example: `tests/ArticlesSite.Web.Tests.Bunit/`
 
-### End-to-End Tests
+### End-to-End Tests (Playwright)
 
-- Full application scenarios
-- Database and UI interaction
-- Located in `tests/ArticlesSite.Tests.E2E/`
+- Browser-based E2E testing with Playwright
+- Tests user workflows across multiple browsers (Chromium, Firefox, WebKit)
+- Page Object Model (POM) pattern for maintainability
+- Mobile and desktop viewport testing
+- Located in `tests/Web.Tests.Playwright/`
+
+To run Playwright E2E tests:
+
+```bash
+cd tests/Web.Tests.Playwright
+npm install
+npm run install-browsers
+npm test
+```
+
+See [tests/Web.Tests.Playwright/README.md](tests/Web.Tests.Playwright/README.md) for detailed documentation.
 
 ### Running Specific Tests
 
@@ -181,7 +195,6 @@ dotnet test --filter "FullyQualifiedName~Integration"
 
 # Run with coverage
 dotnet test /p:CollectCoverage=true
-For end-to-end browser tests with Playwright, see docs/E2E_TESTS.md.
 ```
 
 ## Code Standards

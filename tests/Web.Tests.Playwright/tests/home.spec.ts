@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/test-fixtures';
-import { HomePage } from '../pages/home.page';
+import { test, expect } from '@playwright/test';
+import { HomePage } from './pages/home.page';
 
 test.describe('Home Page Tests', () => {
   let homePage: HomePage;

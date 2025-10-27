@@ -1,5 +1,5 @@
-import { test, expect } from '../fixtures/test-fixtures';
-import { CategoriesListPage } from '../pages/categories-list.page';
+import { test, expect } from '@playwright/test';
+import { CategoriesListPage } from './pages/categories-list.page';
 
 test.describe('Categories List Page Tests', () => {
   let categoriesPage: CategoriesListPage;
