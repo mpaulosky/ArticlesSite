@@ -1,0 +1,141 @@
+@page "/categories"
+
+@inject NavigationManager Navigation
+@inject IGetCategoriesHandler GetHandler
+@inject ILogger<List> Logger
+
+@attribute [Authorize]
+
+<PageHeadingComponent HeaderText="Categories" Level="1" TextColorClass="blue-500"/>
+
+@if (_isLoading)
+{
+	<LoadingComponent/>
+}
+else if (_categories is null || !_categories.Any())
+{
+	<ErrorAlertComponent Title="No categories found">
+		@(_errorMessage ?? "No categories available.")
+	</ErrorAlertComponent>
+	<button class="btn btn-primary mt-3" @onclick="GoToCreate">Create New Category</button>
+}
+else
+{
+	<div class="mb-3">
+		<button class="btn btn-primary" @onclick="GoToCreate">Create New Category</button>
+	</div>
+	
+	<div class="table-responsive">
+		<table class="table table-striped table-hover">
+			<thead>
+				<tr>
+					<th>Category Name</th>
+					<th>Created On</th>
+					<th>Modified On</th>
+					<th>Status</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var category in _categories)
+				{
+					<tr>
+						<td>@category.CategoryName</td>
+						<td>@category.CreatedOn.ToString("d")</td>
+						<td>@(category.ModifiedOn?.ToString("d") ?? "N/A")</td>
+						<td>
+							@if (category.IsArchived)
+							{
+								<span class="badge bg-secondary">Archived</span>
+							}
+							else
+							{
+								<span class="badge bg-success">Active</span>
+							}
+						</td>
+						<td>
+							<button class="btn btn-sm btn-info" @onclick="() => GoToDetails(category.Id.ToString())">View</button>
+							<button class="btn btn-sm btn-secondary" @onclick="() => GoToEdit(category.Id.ToString())" disabled="@category.IsArchived">Edit</button>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+}
+
+@code {
+
+	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+	/// <summary>
+	///   The list of categories to be displayed.
+	/// </summary>
+	private IEnumerable<CategoryDto>? _categories;
+
+	/// <summary>
+	///   Indicates whether the component is currently loading data.
+	/// </summary>
+	private bool _isLoading = true;
+
+	/// <summary>
+	///   Error message returned by the handler when loading fails.
+	/// </summary>
+	private string? _errorMessage;
+
+	/// <summary>
+	///   Initializes the component by loading the categories data.
+	/// </summary>
+	protected override async Task OnInitializedAsync()
+	{
+		Logger?.LogInformation("Loading categories list");
+		_isLoading = true;
+
+		try
+		{
+			var result = await GetHandler.HandleAsync();
+
+			if (result is { Success: true })
+			{
+				_categories = result.Value;
+				_errorMessage = null;
+				Logger?.LogInformation("Categories loaded successfully. Count: {Count}", _categories?.Count() ?? 0);
+			}
+			else
+			{
+				_categories = null;
+				_errorMessage = result?.Error ?? "Failed to load categories.";
+				Logger?.LogWarning("Failed to load categories. Error: {Error}", _errorMessage);
+			}
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	/// <summary>
+	///   Navigates to the create category page.
+	/// </summary>
+	private void GoToCreate()
+	{
+		Navigation.NavigateTo("/categories/create");
+	}
+
+	/// <summary>
+	///   Navigates to the category details page.
+	/// </summary>
+	private void GoToDetails(string id)
+	{
+		Navigation.NavigateTo($"/categories/details/{id}");
+	}
+
+	/// <summary>
+	///   Navigates to the edit page for a specific category.
+	/// </summary>
+	private void GoToEdit(string id)
+	{
+		Navigation.NavigateTo($"/categories/edit/{id}");
+	}
+
+}
