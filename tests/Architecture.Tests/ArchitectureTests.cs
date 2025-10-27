@@ -26,7 +26,7 @@ public class ArchitectureTests
 		Console.WriteLine($"[DEBUG] Starting solution root search from assembly location: {dir}");
 
 		string? foundRoot = null;
-		List<string> checkedDirs = new ();
+		List<string> checkedDirs = [];
 		int walkCount = 0;
 
 		while (!string.IsNullOrEmpty(dir))
@@ -99,7 +99,7 @@ public class ArchitectureTests
 		Console.WriteLine($"[DEBUG] AllSrcProjects_ShouldBeUsedOrEntryPoint: _srcPath={_srcPath}");
 
 		// Arrange
-		string[] entryPoints = new[] { "AppHost", "Web" };
+		string[] entryPoints = ["AppHost", "Web"];
 		string[] srcProjects = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
 
 		HashSet<string> referenced = srcProjects.SelectMany(f => File.ReadAllText(f)
@@ -117,12 +117,6 @@ public class ArchitectureTests
 			Path.GetFileNameWithoutExtension(proj);
 			string dir = Path.GetFileName(Path.GetDirectoryName(proj)!);
 
-			// Skip Api project as it has been removed from the solution
-			if (dir.Equals("Api", StringComparison.OrdinalIgnoreCase))
-			{
-				continue;
-			}
-
 			(referenced.Contains(proj) || entryPoints.Contains(dir)).Should()
 					.BeTrue($"Project {proj} is unused and not an entry point");
 		}
@@ -134,7 +128,7 @@ public class ArchitectureTests
 		Console.WriteLine($"[DEBUG] SharedNugetPackages_ShouldHaveConsistentVersions: _srcPath={_srcPath}");
 
 		// Arrange
-		string[] packages = new[] { "FluentValidation", "MongoDB.Bson" };
+		string[] packages = ["FluentValidation", "MongoDB.Bson"];
 		string[] csprojFiles = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
 		Dictionary<string, HashSet<string>> versions = new ();
 
@@ -214,7 +208,7 @@ public class ArchitectureTests
 		Console.WriteLine($"[DEBUG] OutputType_ShouldBeExeOnlyForEntryPoints: _srcPath={_srcPath}");
 
 		// Arrange
-		string[] entryPoints = new[] { "AppHost", "Web" };
+		string[] entryPoints = ["AppHost", "Web"];
 		string[] csprojFiles = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
 
 		// Act & Assert
