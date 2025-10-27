@@ -12,30 +12,31 @@ namespace Web.Components.Features.Articles.ArticlesList;
 public static class GetArticles
 {
 
+	/// <summary>
+	/// Interface for handling get articles operations.
+	/// </summary>
 	public interface IGetArticlesHandler
 	{
+		/// <summary>
+		/// Handles retrieval of all articles.
+		/// </summary>
+		/// <returns>A <see cref="Result{IEnumerable{ArticleDto}}"/> representing the outcome.</returns>
 		Task<Result<IEnumerable<ArticleDto>>> HandleAsync();
 	}
 
-	public class Handler : IGetArticlesHandler
+	/// <summary>
+	/// Command handler for retrieving all articles.
+	/// </summary>
+	public class Handler(IArticleRepository repository, ILogger<Handler> logger) : IGetArticlesHandler
 	{
-
-		private readonly IArticleRepository _repository;
-		private readonly ILogger<Handler> _logger;
-
-		public Handler(IArticleRepository repository, ILogger<Handler> logger)
-		{
-			_repository = repository;
-			_logger = logger;
-		}
-
+		/// <inheritdoc />
 		public async Task<Result<IEnumerable<ArticleDto>>> HandleAsync()
 		{
-			Result<IEnumerable<Article>?> result = await _repository.GetArticles();
+			Result<IEnumerable<Article>?> result = await repository.GetArticles();
 
 			if (result.Failure || result.Value is null)
 			{
-				_logger.LogWarning("GetArticles: Failed to retrieve articles. Error: {Error}", result.Error);
+				logger.LogWarning("GetArticles: Failed to retrieve articles. Error: {Error}", result.Error);
 				return Result.Fail<IEnumerable<ArticleDto>>(result.Error ?? "Failed to retrieve articles");
 			}
 
@@ -56,10 +57,9 @@ public static class GetArticles
 				!article.IsArchived
 			)).ToList();
 
-			_logger.LogInformation("GetArticles: Successfully retrieved {Count} articles", dtos.Count);
+			logger.LogInformation("GetArticles: Successfully retrieved {Count} articles", dtos.Count);
 			return Result.Ok<IEnumerable<ArticleDto>>(dtos);
 		}
-
 	}
 
 }

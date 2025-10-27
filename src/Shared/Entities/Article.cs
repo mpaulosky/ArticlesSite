@@ -270,6 +270,7 @@ public class Article
 		ModifiedOn = DateTimeOffset.UtcNow;
 	}
 
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "URL slugs are conventionally lowercase for SEO and readability")]
 	private static string GenerateSlug(string title)
 	{
 		if (string.IsNullOrWhiteSpace(title))

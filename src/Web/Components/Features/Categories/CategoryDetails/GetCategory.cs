@@ -12,29 +12,39 @@ namespace Web.Components.Features.Categories.CategoryDetails;
 public static class GetCategory
 {
 
+	/// <summary>
+	/// Interface for handling category retrieval operations.
+	/// </summary>
 	public interface IGetCategoryHandler
 	{
+
+		/// <summary>
+		/// Handles retrieval of a category by identifier.
+		/// </summary>
+		/// <param name="identifier">The category identifier.</param>
+		/// <returns>A <see cref="Result{CategoryDto}"/> representing the outcome.</returns>
 		Task<Result<CategoryDto>> HandleAsync(string identifier);
+
+		/// <summary>
+		/// Handles retrieval of a category by ObjectId.
+		/// </summary>
+		/// <param name="id">The ObjectId of the category.</param>
+		/// <returns>A <see cref="Result{CategoryDto}"/> representing the outcome.</returns>
 		Task<Result<CategoryDto>> HandleByIdAsync(ObjectId id);
+
 	}
 
-	public class Handler : IGetCategoryHandler
+	/// <summary>
+	/// Command handler for retrieving a category.
+	/// </summary>
+	public class Handler(ICategoryRepository repository, ILogger<Handler> logger) : IGetCategoryHandler
 	{
-
-		private readonly ICategoryRepository _repository;
-		private readonly ILogger<Handler> _logger;
-
-		public Handler(ICategoryRepository repository, ILogger<Handler> logger)
-		{
-			_repository = repository;
-			_logger = logger;
-		}
-
+		/// <inheritdoc />
 		public async Task<Result<CategoryDto>> HandleAsync(string identifier)
 		{
 			if (string.IsNullOrWhiteSpace(identifier))
 			{
-				_logger.LogWarning("GetCategory: Invalid identifier provided");
+				logger.LogWarning("GetCategory: Invalid identifier provided");
 				return Result.Fail<CategoryDto>("Category identifier cannot be empty");
 			}
 
@@ -45,11 +55,11 @@ public static class GetCategory
 			}
 
 			// Otherwise treat as slug
-			Result<Category?> result = await _repository.GetCategory(identifier);
+			Result<Category?> result = await repository.GetCategory(identifier);
 
 			if (result.Failure || result.Value is null)
 			{
-				_logger.LogWarning("GetCategory: Category not found with slug: {Slug}", identifier);
+				logger.LogWarning("GetCategory: Category not found with slug: {Slug}", identifier);
 				return Result.Fail<CategoryDto>(result.Error ?? "Category not found");
 			}
 
@@ -64,17 +74,18 @@ public static class GetCategory
 				IsArchived = category.IsArchived
 			};
 
-			_logger.LogInformation("GetCategory: Successfully retrieved category with slug: {Slug}", identifier);
+			logger.LogInformation("GetCategory: Successfully retrieved category with slug: {Slug}", identifier);
 			return Result.Ok(dto);
 		}
 
+		/// <inheritdoc />
 		public async Task<Result<CategoryDto>> HandleByIdAsync(ObjectId id)
 		{
-			Result<Category?> result = await _repository.GetCategoryByIdAsync(id);
+			Result<Category?> result = await repository.GetCategoryByIdAsync(id);
 
 			if (result.Failure || result.Value is null)
 			{
-				_logger.LogWarning("GetCategory: Category not found with ID: {Id}", id);
+				logger.LogWarning("GetCategory: Category not found with ID: {Id}", id);
 				return Result.Fail<CategoryDto>(result.Error ?? "Category not found");
 			}
 
@@ -89,10 +100,9 @@ public static class GetCategory
 				IsArchived = category.IsArchived
 			};
 
-			_logger.LogInformation("GetCategory: Successfully retrieved category with ID: {Id}", id);
+			logger.LogInformation("GetCategory: Successfully retrieved category with ID: {Id}", id);
 			return Result.Ok(dto);
 		}
-
 	}
 
 }

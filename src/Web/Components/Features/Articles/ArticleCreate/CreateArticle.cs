@@ -12,28 +12,30 @@ namespace Web.Components.Features.Articles.ArticleCreate;
 public static class CreateArticle
 {
 
+	/// <summary>
+	/// Interface for handling article creation operations.
+	/// </summary>
 	public interface ICreateArticleHandler
 	{
+		/// <summary>
+		/// Handles creation of an article.
+		/// </summary>
+		/// <param name="dto">The article DTO containing data.</param>
+		/// <returns>A <see cref="Result{ArticleDto}"/> representing the outcome.</returns>
 		Task<Result<ArticleDto>> HandleAsync(ArticleDto dto);
 	}
 
-	public class Handler : ICreateArticleHandler
+	/// <summary>
+	/// Command handler for creating an article.
+	/// </summary>
+	public class Handler(IArticleRepository repository, ILogger<Handler> logger) : ICreateArticleHandler
 	{
-
-		private readonly IArticleRepository _repository;
-		private readonly ILogger<Handler> _logger;
-
-		public Handler(IArticleRepository repository, ILogger<Handler> logger)
-		{
-			_repository = repository;
-			_logger = logger;
-		}
-
+		/// <inheritdoc />
 		public async Task<Result<ArticleDto>> HandleAsync(ArticleDto dto)
 		{
 			if (dto is null)
 			{
-				_logger.LogWarning("CreateArticle: Article DTO cannot be null");
+				logger.LogWarning("CreateArticle: Article DTO cannot be null");
 				return Result.Fail<ArticleDto>("Article data cannot be null");
 			}
 
@@ -49,11 +51,11 @@ public static class CreateArticle
 				false
 			);
 
-			Result<Article> result = await _repository.AddArticle(article);
+			Result<Article> result = await repository.AddArticle(article);
 
 			if (result.Failure)
 			{
-				_logger.LogWarning("CreateArticle: Failed to create article. Error: {Error}", result.Error);
+				logger.LogWarning("CreateArticle: Failed to create article. Error: {Error}", result.Error);
 				return Result.Fail<ArticleDto>(result.Error ?? "Failed to create article");
 			}
 
@@ -74,10 +76,9 @@ public static class CreateArticle
 				true
 			);
 
-			_logger.LogInformation("CreateArticle: Successfully created article with ID: {Id}", article.Id);
+			logger.LogInformation("CreateArticle: Successfully created article with ID: {Id}", article.Id);
 			return Result.Ok(createdDto);
 		}
-
 	}
 
 }

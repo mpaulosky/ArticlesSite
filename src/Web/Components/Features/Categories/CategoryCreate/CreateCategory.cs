@@ -11,35 +11,40 @@ namespace Web.Components.Features.Categories.CategoryCreate;
 
 public static class CreateCategory
 {
-
+	/// <summary>
+	/// Interface for handling category creation operations.
+	/// </summary>
 	public interface ICreateCategoryHandler
 	{
+		/// <summary>
+		/// Handles creation of a category.
+		/// </summary>
+		/// <param name="dto">The category DTO containing data.</param>
+		/// <returns>A <see cref="Result{CategoryDto}"/> representing the outcome.</returns>
 		Task<Result<CategoryDto>> HandleAsync(CategoryDto dto);
 	}
 
-	public class Handler : ICreateCategoryHandler
+	/// <summary>
+	/// Command handler for creating a category.
+	/// </summary>
+	public class Handler(ICategoryRepository repository, ILogger<Handler> logger) : ICreateCategoryHandler
 	{
-
-		private readonly ICategoryRepository _repository;
-		private readonly ILogger<Handler> _logger;
-
-		public Handler(ICategoryRepository repository, ILogger<Handler> logger)
-		{
-			_repository = repository;
-			_logger = logger;
-		}
-
+		/// <summary>
+		/// Handles creation of a category.
+		/// </summary>
+		/// <param name="dto">The category DTO containing data.</param>
+		/// <returns>A <see cref="Result{CategoryDto}"/> representing the outcome.</returns>
 		public async Task<Result<CategoryDto>> HandleAsync(CategoryDto dto)
 		{
 			if (dto is null)
 			{
-				_logger.LogWarning("CreateCategory: Category DTO cannot be null");
+				logger.LogWarning("CreateCategory: Category DTO cannot be null");
 				return Result.Fail<CategoryDto>("Category data cannot be null");
 			}
 
 			if (string.IsNullOrWhiteSpace(dto.CategoryName))
 			{
-				_logger.LogWarning("CreateCategory: Category name cannot be empty");
+				logger.LogWarning("CreateCategory: Category name cannot be empty");
 				return Result.Fail<CategoryDto>("Category name is required");
 			}
 
@@ -53,11 +58,11 @@ public static class CreateCategory
 				IsArchived = false
 			};
 
-			Result<Category> result = await _repository.AddCategory(category);
+			Result<Category> result = await repository.AddCategory(category);
 
 			if (result.Failure)
 			{
-				_logger.LogWarning("CreateCategory: Failed to create category. Error: {Error}", result.Error);
+				logger.LogWarning("CreateCategory: Failed to create category. Error: {Error}", result.Error);
 				return Result.Fail<CategoryDto>(result.Error ?? "Failed to create category");
 			}
 
@@ -70,10 +75,15 @@ public static class CreateCategory
 				IsArchived = category.IsArchived
 			};
 
-			_logger.LogInformation("CreateCategory: Successfully created category with ID: {Id}", category.Id);
+			logger.LogInformation("CreateCategory: Successfully created category with ID: {Id}", category.Id);
 			return Result.Ok(createdDto);
 		}
 
+		/// <summary>
+		/// Generates a slug from the category name.
+		/// </summary>
+		/// <param name="categoryName">The category name.</param>
+		/// <returns>A slug-friendly string.</returns>
 		private static string GenerateSlug(string categoryName)
 		{
 			return categoryName
@@ -81,7 +91,6 @@ public static class CreateCategory
 				.Replace(" ", "_")
 				.Replace("-", "_");
 		}
-
 	}
-
 }
+
