@@ -11,6 +11,9 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
+// Add MongoDB services
+builder.AddMongoDb();
+
 // Add services to the container.
 builder.Services.AddRazorComponents()
 		.AddInteractiveServerComponents();
