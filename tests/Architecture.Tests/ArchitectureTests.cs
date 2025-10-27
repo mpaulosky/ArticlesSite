@@ -101,14 +101,15 @@ public class ArchitectureTests
 		// Arrange
 		string[] entryPoints = ["AppHost", "Web"];
 		string[] srcProjects = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
+		string[] testProjects = Directory.GetFiles(_testsPath, "*.csproj", SearchOption.AllDirectories);
 
-		HashSet<string> referenced = srcProjects.SelectMany(f => File.ReadAllText(f)
+		// Collect all referenced project paths from src and tests
+		IEnumerable<string> allProjects = srcProjects.Concat(testProjects);
+		HashSet<string> referenced = allProjects.SelectMany(f => File.ReadAllText(f)
 				.Split("<ProjectReference Include=\"")
 				.Skip(1)
 				.Select(x => x.Split('"')[0])
-				.Select(r =>
-						Path.GetFullPath(Path.Combine(Path.GetDirectoryName(f)!,
-								r.Replace("/", Path.DirectorySeparatorChar.ToString()))))
+				.Select(r => Path.GetFullPath(Path.Combine(Path.GetDirectoryName(f)!, r.Replace("/", Path.DirectorySeparatorChar.ToString()))))
 		).ToHashSet();
 
 		// Act & Assert
@@ -124,12 +125,15 @@ public class ArchitectureTests
 				continue;
 			}
 
-			if (!(referenced.Contains(proj) || entryPoints.Contains(dir)))
+			// Normalize paths for comparison
+			string projFullPath = Path.GetFullPath(proj);
+			bool isReferenced = referenced.Contains(projFullPath);
+			if (!(isReferenced || entryPoints.Contains(dir)))
 			{
 				unusedProjects.Add(proj);
 			}
 
-			(referenced.Contains(proj) || entryPoints.Contains(dir)).Should()
+			(isReferenced || entryPoints.Contains(dir)).Should()
 					.BeTrue($"Project {proj} is unused and not an entry point");
 		}
 		if (unusedProjects.Count > 0)
