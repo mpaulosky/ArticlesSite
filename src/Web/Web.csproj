@@ -9,8 +9,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" />
 		<ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj"/>
 		<ProjectReference Include="..\Shared\Shared.csproj"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
 	</ItemGroup>
 
 	<ItemGroup>
