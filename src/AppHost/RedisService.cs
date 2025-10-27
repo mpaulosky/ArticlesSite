@@ -7,11 +7,7 @@
 // Project Name :  AppHost
 // =======================================================
 
-#region
-
 using StackExchange.Redis;
-
-#endregion
 
 namespace AppHost;
 

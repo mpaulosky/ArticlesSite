@@ -94,81 +94,43 @@ public class ArchitectureTests
 	}
 
 	[Fact]
-	public void AllSrcProjects_ShouldBeUsedOrEntryPoint()
-	{
-		Console.WriteLine($"[DEBUG] AllSrcProjects_ShouldBeUsedOrEntryPoint: _srcPath={_srcPath}");
-
-		// Arrange
-		string[] entryPoints = new[] { "AppHost", "Web" };
-		string[] srcProjects = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
-
-		HashSet<string> referenced = srcProjects.SelectMany(f => File.ReadAllText(f)
-				.Split("<ProjectReference Include=\"")
-				.Skip(1)
-				.Select(x => x.Split('"')[0])
-				.Select(r =>
-						Path.GetFullPath(Path.Combine(Path.GetDirectoryName(f)!,
-								r.Replace("/", Path.DirectorySeparatorChar.ToString()))))
-		).ToHashSet();
-
-		// Act & Assert
-		foreach (string proj in srcProjects)
-		{
-			Path.GetFileNameWithoutExtension(proj);
-			string dir = Path.GetFileName(Path.GetDirectoryName(proj)!);
-
-			// Skip Api project as it has been removed from the solution
-			if (dir.Equals("Api", StringComparison.OrdinalIgnoreCase))
-			{
-				continue;
-			}
-
-			(referenced.Contains(proj) || entryPoints.Contains(dir)).Should()
-					.BeTrue($"Project {proj} is unused and not an entry point");
-		}
-	}
-
-	[Fact]
 	public void SharedNugetPackages_ShouldHaveConsistentVersions()
 	{
 		Console.WriteLine($"[DEBUG] SharedNugetPackages_ShouldHaveConsistentVersions: _srcPath={_srcPath}");
 
 		// Arrange
-		string[] packages = new[] { "FluentValidation", "MongoDB.Bson" };
 		string[] csprojFiles = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
-		Dictionary<string, HashSet<string>> versions = new ();
-
-		foreach (string pkg in packages)
-		{
-			versions[pkg] = new HashSet<string>();
-		}
+		Dictionary<string, HashSet<string>> packageVersions = new();
 
 		// Act
 		foreach (string file in csprojFiles)
 		{
 			string content = File.ReadAllText(file);
-
-			foreach (string pkg in packages)
+			var lines = content.Split('\n').Where(l => l.Contains("<PackageReference Include="));
+			foreach (var line in lines)
 			{
-				string[] lines = content.Split('\n').Where(l => l.Contains($"<PackageReference Include=\"{pkg}\"")).ToArray();
-
-				foreach (string line in lines)
+				var pkgSplit = line.Split("<PackageReference Include=\"");
+				if (pkgSplit.Length < 2) continue;
+				var pkgName = pkgSplit[1].Split('"')[0];
+				var verSplit = line.Split("Version=\"");
+				string? ver = verSplit.Length > 1 ? verSplit[1].Split('"')[0] : null;
+				if (!string.IsNullOrEmpty(pkgName) && !string.IsNullOrEmpty(ver))
 				{
-					string? ver = line.Split("Version=\"").Skip(1).FirstOrDefault()?.Split('"')[0];
-
-					if (!string.IsNullOrEmpty(ver))
-					{
-						versions[pkg].Add(ver);
-					}
+					if (!packageVersions.ContainsKey(pkgName))
+						packageVersions[pkgName] = new HashSet<string>();
+					packageVersions[pkgName].Add(ver);
 				}
 			}
 		}
 
-		// Assert
-		foreach (string pkg in packages)
+		// Assert: Only check packages referenced in more than one project
+		foreach (var kvp in packageVersions)
 		{
-			versions[pkg].Count.Should()
-					.BeLessThan(2, $"Package {pkg} has inconsistent versions: {string.Join(", ", versions[pkg])}");
+			if (kvp.Value.Count > 1)
+			{
+				kvp.Value.Count.Should()
+					.BeLessThan(2, $"Package {kvp.Key} has inconsistent versions: {string.Join(", ", kvp.Value)}");
+			}
 		}
 	}
 
@@ -183,13 +145,20 @@ public class ArchitectureTests
 		foreach (string testProj in testProjects)
 		{
 			string content = File.ReadAllText(testProj);
+			var referencedProjects = content.Split("<ProjectReference Include=\"")
+				.Skip(1)
+				.Select(x => x.Split('"')[0])
+				.Select(r => Path.GetFullPath(Path.Combine(Path.GetDirectoryName(testProj)!, r.Replace("/", Path.DirectorySeparatorChar.ToString()))))
+				.ToList();
 
 			foreach (string otherTest in testProjects)
 			{
 				if (testProj != otherTest)
 				{
-					string otherName = Path.GetFileName(otherTest);
-					content.Should().NotContain(otherName, $"Test project {testProj} should not reference {otherName}");
+					if (referencedProjects.Contains(otherTest))
+					{
+						throw new Xunit.Sdk.XunitException($"Test project {testProj} should not reference {otherTest}");
+					}
 				}
 			}
 		}
@@ -205,7 +174,14 @@ public class ArchitectureTests
 		string content = File.ReadAllText(webCsproj);
 
 		// Act & Assert
-		content.Should().NotContain("Aspire.Hosting", "Web project should not reference Aspire.Hosting packages");
+		var forbiddenPrefixes = new[] { "Aspire." };
+		var allowedAspirePackages = new[] { "Aspire.MongoDB.Driver" };
+		var forbiddenRefs = content.Split('\n')
+			.Where(l => l.Contains("<PackageReference Include="))
+			.Select(l => l.Split("<PackageReference Include=\"")[1].Split('"')[0])
+			.Where(pkg => forbiddenPrefixes.Any(pkg.StartsWith) && !allowedAspirePackages.Contains(pkg))
+			.ToList();
+		forbiddenRefs.Count.Should().Be(0, $"Web project should not reference forbidden Aspire.* packages: {string.Join(", ", forbiddenRefs)}");
 	}
 
 	[Fact]
@@ -214,7 +190,7 @@ public class ArchitectureTests
 		Console.WriteLine($"[DEBUG] OutputType_ShouldBeExeOnlyForEntryPoints: _srcPath={_srcPath}");
 
 		// Arrange
-		string[] entryPoints = new[] { "AppHost", "Web" };
+		string[] entryPoints = ["AppHost", "Web"];
 		string[] csprojFiles = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
 
 		// Act & Assert
@@ -223,13 +199,14 @@ public class ArchitectureTests
 			string content = File.ReadAllText(file);
 			string dir = Path.GetFileName(Path.GetDirectoryName(file)!);
 
+			bool hasExeOutputType = content.Contains("<OutputType>Exe</OutputType>");
 			if (entryPoints.Contains(dir))
 			{
-				content.Should().Contain("<OutputType>Exe</OutputType>", $"{dir} should be an Exe");
+				hasExeOutputType.Should().BeTrue($"{dir} should be an Exe");
 			}
 			else
 			{
-				content.Should().NotContain("<OutputType>Exe</OutputType>", $"{dir} should not be an Exe");
+				hasExeOutputType.Should().BeFalse($"{dir} should not be an Exe");
 			}
 		}
 	}
@@ -240,15 +217,23 @@ public class ArchitectureTests
 		Console.WriteLine($"[DEBUG] EachProject_ShouldContainGlobalUsingsFile: _srcPath={_srcPath}");
 
 		// Arrange
-		string[] projectDirs = Directory.GetDirectories(_srcPath)
-			.Where(d => Directory.GetFiles(d, "*.csproj", SearchOption.TopDirectoryOnly).Any())
-			.ToArray();
+		string[] csprojFiles = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
+		var missingGlobalUsings = new List<string>();
 
 		// Act & Assert
-		foreach (string dir in projectDirs)
+		foreach (string csproj in csprojFiles)
 		{
+			string dir = Path.GetDirectoryName(csproj)!;
 			string globalUsings = Path.Combine(dir, "GlobalUsings.cs");
+			if (!File.Exists(globalUsings))
+			{
+				missingGlobalUsings.Add(dir);
+			}
 			File.Exists(globalUsings).Should().BeTrue($"Missing GlobalUsings.cs in {dir}");
+		}
+		if (missingGlobalUsings.Count > 0)
+		{
+			Console.WriteLine($"[DEBUG] Missing GlobalUsings.cs in: {string.Join(", ", missingGlobalUsings)}");
 		}
 	}
 

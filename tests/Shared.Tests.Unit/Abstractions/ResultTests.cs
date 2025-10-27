@@ -7,11 +7,7 @@
 //Project Name :  Shared.Tests.Unit
 //=======================================================
 
-#region
-
 using Shared.Abstractions;
-
-#endregion
 
 namespace Shared.Tests.Unit.Abstractions;
 

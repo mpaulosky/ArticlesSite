@@ -7,11 +7,7 @@
 // Project Name :  Web
 // =======================================================
 
-#region
-
 using System.Linq.Expressions;
-
-#endregion
 
 namespace Web.Data.Repositories;
 

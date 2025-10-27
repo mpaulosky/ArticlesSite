@@ -11,13 +11,6 @@
 // GlobalUsings for ServiceDefaults project
 // =======================================================
 
-#region
-
-global using System;
-global using System.Threading.Tasks;
-
 // Aspire types for ServiceDefaults
 global using Aspire.Hosting;
 global using Aspire.Hosting.ApplicationModel;
-
-#endregion

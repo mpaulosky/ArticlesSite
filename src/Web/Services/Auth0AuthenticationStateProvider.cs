@@ -7,13 +7,9 @@
 // Project Name :  Web
 // =======================================================
 
-#region
-
 using System.Security.Claims;
 
 using Microsoft.AspNetCore.Components.Authorization;
-
-#endregion
 
 namespace Web.Services;
 

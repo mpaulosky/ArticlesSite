@@ -7,8 +7,6 @@
 // Project Name :  Shared
 // =======================================================
 
-#region
-
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.Linq.Expressions;
@@ -28,5 +26,3 @@ global using Shared.Models;
 global using Shared.Validators;
 
 global using static Shared.Helpers.Helpers;
-
-#endregion

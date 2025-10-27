@@ -7,13 +7,9 @@
 //Project Name :  Shared.Tests.Unit
 //=======================================================
 
-#region
-
 using FluentValidation.Results;
 
 using Shared.Validators;
-
-#endregion
 
 namespace Shared.Tests.Unit.Validators;
 

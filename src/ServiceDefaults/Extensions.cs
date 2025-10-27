@@ -7,8 +7,6 @@
 // Project Name :  ServiceDefaults
 // =======================================================
 
-#region
-
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,8 +16,6 @@ using Microsoft.Extensions.Logging;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-
-#endregion
 
 namespace Microsoft.Extensions.Hosting;
 
