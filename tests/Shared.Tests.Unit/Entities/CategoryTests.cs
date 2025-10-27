@@ -7,10 +7,6 @@
 //Project Name :  Shared.Tests.Unit
 //=======================================================
 
-#region
-
-#endregion
-
 namespace Shared.Tests.Unit.Entities;
 
 /// <summary>

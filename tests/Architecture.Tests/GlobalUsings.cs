@@ -7,8 +7,6 @@
 // Project Name :  Architecture.Tests
 // =======================================================
 
-#region
-
 global using System;
 global using System.Diagnostics.CodeAnalysis;
 global using System.Reflection;
@@ -24,5 +22,3 @@ global using Web;
 global using Xunit;
 
 global using TestResult = NetArchTest.Rules.TestResult;
-
-#endregion

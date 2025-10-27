@@ -7,10 +7,6 @@
 // Project Name :  Architecture.Tests
 // =======================================================
 
-#region
-
-#endregion
-
 namespace Architecture.Tests.Unit;
 
 /// <summary>
