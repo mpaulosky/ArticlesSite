@@ -73,8 +73,19 @@ public static class MongoDbServiceExtensions
 		services.AddScoped<IArticleRepository, ArticleRepository>();
 		services.AddScoped<ICategoryRepository, CategoryRepository>();
 
-		// Articles
-		// Handler registrations removed due to missing types
+		// Category Handlers
+		services.AddScoped(
+			typeof(Web.Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler),
+			typeof(Web.Components.Features.Categories.CategoryEdit.EditCategory.Handler));
+		services.AddScoped(
+			typeof(Web.Components.Features.Categories.CategoryDetails.GetCategory.IGetCategoryHandler),
+			typeof(Web.Components.Features.Categories.CategoryDetails.GetCategory.Handler));
+		services.AddScoped(
+			typeof(Web.Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler),
+			typeof(Web.Components.Features.Categories.CategoryCreate.CreateCategory.Handler));
+		services.AddScoped(
+			typeof(Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler),
+			typeof(Web.Components.Features.Categories.CategoriesList.GetCategories.Handler));
 	}
 
 	/// <summary>

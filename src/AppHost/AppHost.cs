@@ -9,7 +9,7 @@
 
 using AppHost;
 
-using Projects;
+
 
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
@@ -19,7 +19,7 @@ IResourceBuilder<MongoDBDatabaseResource> database = builder.AddMongoDbServices(
 IResourceBuilder<RedisResource> cache = AppHost.RedisServices.AddRedisServices(builder);
 
 // Add a composite command that coordinates multiple operations
-var website = builder.AddProject<Projects.Web>("Website")
+var website = builder.AddProject("Web", "Website")
 		.WithHttpHealthCheck("/health")
 		.WithReference(database).WaitFor(database)
 		.WithReference(cache).WaitFor(cache);
