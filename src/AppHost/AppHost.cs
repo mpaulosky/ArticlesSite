@@ -9,8 +9,6 @@
 
 using AppHost;
 
-
-
 IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
 
 
