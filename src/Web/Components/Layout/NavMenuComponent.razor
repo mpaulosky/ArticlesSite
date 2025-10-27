@@ -11,6 +11,9 @@
 				<a href="/articles/create" class="p-1 hover:text-blue-700">Create Article</a>
 			</AuthorizeView>
 			<a href="/categories" class="p-1 hover:text-blue-700">Categories</a>
+			<AuthorizeView Roles="Admin">
+				<a href="/categories/create" class="p-1 hover:text-blue-700">Create Category</a>
+			</AuthorizeView>
 			<a href="/about" class="p-1 hover:text-blue-700">About</a>
 			<a href="/contact" class="p-1 hover:text-blue-700">Contacts</a>
 			<AuthorizeView>

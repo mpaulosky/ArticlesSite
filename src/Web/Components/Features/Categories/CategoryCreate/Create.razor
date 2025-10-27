@@ -1,0 +1,110 @@
+@page "/categories/create"
+
+@inject NavigationManager Navigation
+@inject ICreateCategoryHandler CreateHandler
+@inject ILogger<Create> Logger
+
+@attribute [Authorize]
+
+<PageHeadingComponent HeaderText="Create New Category" Level="1" TextColorClass="blue-500"/>
+
+<div class="card">
+	<div class="card-body">
+		<EditForm Model="@_category" OnValidSubmit="HandleSubmit">
+			<DataAnnotationsValidator/>
+			<ValidationSummary/>
+
+			@if (!string.IsNullOrEmpty(_errorMessage))
+			{
+				<ErrorAlertComponent Title="Error creating category">
+					@_errorMessage
+				</ErrorAlertComponent>
+			}
+
+			<div class="mb-3">
+				<label for="categoryName" class="form-label">Category Name</label>
+				<InputText id="categoryName" class="form-control" @bind-Value="_category.CategoryName" placeholder="Enter category name"/>
+				<ValidationMessage For="@(() => _category.CategoryName)"/>
+			</div>
+
+			<div class="mb-3">
+				<button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+					@if (_isSubmitting)
+					{
+						<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+						<span>Creating...</span>
+					}
+					else
+					{
+						<span>Create Category</span>
+					}
+				</button>
+				<button type="button" class="btn btn-light ms-2" @onclick="GoToList" disabled="@_isSubmitting">Cancel</button>
+			</div>
+		</EditForm>
+	</div>
+</div>
+
+@code {
+
+	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+	/// <summary>
+	///   The category data being created.
+	/// </summary>
+	private CategoryDto _category = new();
+
+	/// <summary>
+	///   Indicates whether the form is currently being submitted.
+	/// </summary>
+	private bool _isSubmitting;
+
+	/// <summary>
+	///   Error message to display if creation fails.
+	/// </summary>
+	private string? _errorMessage;
+
+	/// <summary>
+	///   Handles the form submission to create a new category.
+	/// </summary>
+	private async Task HandleSubmit()
+	{
+		Logger?.LogInformation("Creating new category: {CategoryName}", _category.CategoryName);
+		_isSubmitting = true;
+		_errorMessage = null;
+
+		try
+		{
+			var result = await CreateHandler.HandleAsync(_category);
+
+			if (result is { Success: true })
+			{
+				Logger?.LogInformation("Category created successfully with ID: {CategoryId}", result.Value?.Id);
+				Navigation.NavigateTo("/categories");
+			}
+			else
+			{
+				_errorMessage = result?.Error ?? "Failed to create category.";
+				Logger?.LogWarning("Failed to create category. Error: {Error}", _errorMessage);
+			}
+		}
+		catch (Exception ex)
+		{
+			_errorMessage = $"An unexpected error occurred: {ex.Message}";
+			Logger?.LogError(ex, "Exception while creating category");
+		}
+		finally
+		{
+			_isSubmitting = false;
+		}
+	}
+
+	/// <summary>
+	///   Navigates back to the category list page.
+	/// </summary>
+	private void GoToList()
+	{
+		Navigation.NavigateTo("/categories");
+	}
+
+}
