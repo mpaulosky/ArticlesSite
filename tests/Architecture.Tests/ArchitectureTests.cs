@@ -130,7 +130,7 @@ public class ArchitectureTests
 		// Arrange
 		string[] packages = ["FluentValidation", "MongoDB.Bson"];
 		string[] csprojFiles = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
-		Dictionary<string, HashSet<string>> versions = new ();
+		Dictionary<string, HashSet<string>> versions = [];
 
 		foreach (string pkg in packages)
 		{
