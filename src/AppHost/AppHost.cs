@@ -16,10 +16,10 @@ IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(ar
 
 IResourceBuilder<MongoDBDatabaseResource> database = builder.AddMongoDbServices();
 // Explicitly use ServiceDefaults.RedisServices to avoid ambiguity
-IResourceBuilder<RedisResource> cache = ServiceDefaults.RedisServices.AddRedisServices(builder);
+IResourceBuilder<RedisResource> cache = AppHost.RedisServices.AddRedisServices(builder);
 
 // Add a composite command that coordinates multiple operations
-var website = builder.AddProject<Projects.Web>("Website")
+var website = builder.AddProject("Web", "Website")
 		.WithHttpHealthCheck("/health")
 		.WithReference(database).WaitFor(database)
 		.WithReference(cache).WaitFor(cache);
