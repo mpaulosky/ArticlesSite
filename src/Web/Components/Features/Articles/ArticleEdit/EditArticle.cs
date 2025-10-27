@@ -12,36 +12,38 @@ namespace Web.Components.Features.Articles.ArticleEdit;
 public static class EditArticle
 {
 
+	/// <summary>
+	/// Interface for handling article edit operations.
+	/// </summary>
 	public interface IEditArticleHandler
 	{
+		/// <summary>
+		/// Handles the edit operation for an article.
+		/// </summary>
+		/// <param name="dto">The article DTO containing updated data.</param>
+		/// <returns>A <see cref="Result{ArticleDto}"/> representing the outcome.</returns>
 		Task<Result<ArticleDto>> HandleAsync(ArticleDto dto);
 	}
 
-	public class Handler : IEditArticleHandler
+	/// <summary>
+	/// Command handler for editing an article.
+	/// </summary>
+	public class Handler(IArticleRepository repository, ILogger<Handler> logger) : IEditArticleHandler
 	{
-
-		private readonly IArticleRepository _repository;
-		private readonly ILogger<Handler> _logger;
-
-		public Handler(IArticleRepository repository, ILogger<Handler> logger)
-		{
-			_repository = repository;
-			_logger = logger;
-		}
-
+		/// <inheritdoc />
 		public async Task<Result<ArticleDto>> HandleAsync(ArticleDto dto)
 		{
 			if (dto is null)
 			{
-				_logger.LogWarning("EditArticle: Article DTO cannot be null");
+				logger.LogWarning("EditArticle: Article DTO cannot be null");
 				return Result.Fail<ArticleDto>("Article data cannot be null");
 			}
 
-			Result<Article?> existingResult = await _repository.GetArticleByIdAsync(dto.Id);
+			Result<Article?> existingResult = await repository.GetArticleByIdAsync(dto.Id);
 
 			if (existingResult.Failure || existingResult.Value is null)
 			{
-				_logger.LogWarning("EditArticle: Article not found with ID: {Id}", dto.Id);
+				logger.LogWarning("EditArticle: Article not found with ID: {Id}", dto.Id);
 				return Result.Fail<ArticleDto>(existingResult.Error ?? "Article not found");
 			}
 
@@ -60,11 +62,11 @@ public static class EditArticle
 			article.Author = dto.Author;
 			article.Category = dto.Category;
 
-			Result<Article> result = await _repository.UpdateArticle(article);
+			Result<Article> result = await repository.UpdateArticle(article);
 
 			if (result.Failure)
 			{
-				_logger.LogWarning("EditArticle: Failed to update article. Error: {Error}", result.Error);
+				logger.LogWarning("EditArticle: Failed to update article. Error: {Error}", result.Error);
 				return Result.Fail<ArticleDto>(result.Error ?? "Failed to update article");
 			}
 
@@ -85,10 +87,9 @@ public static class EditArticle
 				!article.IsArchived
 			);
 
-			_logger.LogInformation("EditArticle: Successfully updated article with ID: {Id}", article.Id);
+			logger.LogInformation("EditArticle: Successfully updated article with ID: {Id}", article.Id);
 			return Result.Ok(updatedDto);
 		}
-
 	}
 
 }

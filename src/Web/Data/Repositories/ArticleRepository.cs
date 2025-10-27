@@ -1,4 +1,4 @@
-﻿// =======================================================
+// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     ArticleRepository.cs
 // Company :       mpaulosky
@@ -12,23 +12,20 @@ using System.Linq.Expressions;
 namespace Web.Data.Repositories;
 
 /// <summary>
-///   Article repository implementation using native MongoDB.Driver with factory pattern
+/// Article repository implementation using native MongoDB.Driver with factory pattern.
 /// </summary>
-public class ArticleRepository : IArticleRepository
+public class ArticleRepository(IMongoDbContextFactory contextFactory) : IArticleRepository
 {
-
-	private readonly IMongoDbContextFactory _contextFactory;
-
-	public ArticleRepository(IMongoDbContextFactory contextFactory)
-	{
-		_contextFactory = contextFactory;
-	}
-
+	/// <summary>
+	/// Gets an article by its unique identifier.
+	/// </summary>
+	/// <param name="id">The ObjectId of the article.</param>
+	/// <returns>A <see cref="Result{Article}"/> containing the article if found, or an error message.</returns>
 	public async Task<Result<Article?>> GetArticleByIdAsync(ObjectId id)
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 
 			Article? article = await context.Articles
 					.Find(a => a.Id == id)
@@ -42,11 +39,17 @@ public class ArticleRepository : IArticleRepository
 		}
 	}
 
+	/// <summary>
+	/// Gets an article by its date string and slug.
+	/// </summary>
+	/// <param name="dateString">The date string of the article.</param>
+	/// <param name="slug">The slug of the article.</param>
+	/// <returns>A <see cref="Result{Article}"/> containing the article if found, or an error message.</returns>
 	public async Task<Result<Article?>> GetArticle(string dateString, string slug)
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 
 			Article? article = await context.Articles
 					.Find(a => a.Slug == slug && !a.IsArchived)
@@ -60,11 +63,15 @@ public class ArticleRepository : IArticleRepository
 		}
 	}
 
+	/// <summary>
+	/// Gets all non-archived articles.
+	/// </summary>
+	/// <returns>A <see cref="Result{IEnumerable{Article}}"/> containing the articles or an error message.</returns>
 	public async Task<Result<IEnumerable<Article>?>> GetArticles()
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 
 			List<Article>? articles = await context.Articles
 					.Find(a => !a.IsArchived)
@@ -78,11 +85,16 @@ public class ArticleRepository : IArticleRepository
 		}
 	}
 
+	/// <summary>
+	/// Gets articles matching a specified predicate.
+	/// </summary>
+	/// <param name="where">The predicate to filter articles.</param>
+	/// <returns>A <see cref="Result{IEnumerable{Article}}"/> containing the filtered articles or an error message.</returns>
 	public async Task<Result<IEnumerable<Article>?>> GetArticles(Expression<Func<Article, bool>> where)
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 
 			List<Article>? articles = await context.Articles
 					.Find(where)
@@ -96,11 +108,16 @@ public class ArticleRepository : IArticleRepository
 		}
 	}
 
+	/// <summary>
+	/// Adds a new article to the database.
+	/// </summary>
+	/// <param name="post">The article to add.</param>
+	/// <returns>A <see cref="Result{Article}"/> containing the added article or an error message.</returns>
 	public async Task<Result<Article>> AddArticle(Article post)
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 			await context.Articles.InsertOneAsync(post);
 
 			return Result.Ok(post);
@@ -111,11 +128,16 @@ public class ArticleRepository : IArticleRepository
 		}
 	}
 
+	/// <summary>
+	/// Updates an existing article in the database.
+	/// </summary>
+	/// <param name="post">The article to update.</param>
+	/// <returns>A <see cref="Result{Article}"/> containing the updated article or an error message.</returns>
 	public async Task<Result<Article>> UpdateArticle(Article post)
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 			await context.Articles.ReplaceOneAsync(a => a.Id == post.Id, post);
 
 			return Result.Ok(post);
@@ -126,9 +148,13 @@ public class ArticleRepository : IArticleRepository
 		}
 	}
 
+	/// <summary>
+	/// Archives an article by its slug.
+	/// </summary>
+	/// <param name="slug">The slug of the article to archive.</param>
 	public async Task ArchiveArticle(string slug)
 	{
-		IMongoDbContext context = _contextFactory.CreateDbContext();
+		IMongoDbContext context = contextFactory.CreateDbContext();
 		UpdateDefinition<Article>? update = Builders<Article>.Update.Set(a => a.IsArchived, true);
 		await context.Articles.UpdateOneAsync(a => a.Slug == slug, update);
 	}

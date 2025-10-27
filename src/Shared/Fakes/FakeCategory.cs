@@ -12,7 +12,7 @@ namespace Shared.Fakes;
 /// <summary>
 ///   Provides fake data generation methods for the <see cref="Category" /> entity.
 /// </summary>
-public class FakeCategory
+public static class FakeCategory
 {
 
 	private const int Seed = 621;

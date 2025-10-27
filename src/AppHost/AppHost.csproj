@@ -7,6 +7,13 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<UserSecretsId>7ba1d641-ccb2-4f7e-ac3e-d583a1321b71</UserSecretsId>
+		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<AnalysisLevel>latest-all</AnalysisLevel>
+		<!-- CA1515: Types are public for Aspire tooling and discoverability -->
+		<!-- CA1848: LoggerMessage delegates are performance optimization, current logging is adequate -->
+		<!-- CA2007: ConfigureAwait not needed in ASP.NET Core (no SynchronizationContext) -->
+		<NoWarn>$(NoWarn);CA1515;CA1848;CA2007</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -74,6 +74,7 @@ public sealed class Result<T> : Result
 
 	public static implicit operator T?(Result<T> result)
 	{
+		ArgumentNullException.ThrowIfNull(result);
 		return result.Value;
 	}
 

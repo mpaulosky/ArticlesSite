@@ -12,42 +12,44 @@ namespace Web.Components.Features.Articles.ArticleDetails;
 public static class GetArticle
 {
 
+	/// <summary>
+	/// Interface for handling article retrieval operations.
+	/// </summary>
 	public interface IGetArticleHandler
 	{
+		/// <summary>
+		/// Handles retrieval of an article by identifier.
+		/// </summary>
+		/// <param name="id">The article identifier.</param>
+		/// <returns>A <see cref="Result{ArticleDto}"/> representing the outcome.</returns>
 		Task<Result<ArticleDto>> HandleAsync(string id);
 	}
 
-	public class Handler : IGetArticleHandler
+	/// <summary>
+	/// Command handler for retrieving an article.
+	/// </summary>
+	public class Handler(IArticleRepository repository, ILogger<Handler> logger) : IGetArticleHandler
 	{
-
-		private readonly IArticleRepository _repository;
-		private readonly ILogger<Handler> _logger;
-
-		public Handler(IArticleRepository repository, ILogger<Handler> logger)
-		{
-			_repository = repository;
-			_logger = logger;
-		}
-
+		/// <inheritdoc />
 		public async Task<Result<ArticleDto>> HandleAsync(string id)
 		{
 			if (string.IsNullOrWhiteSpace(id))
 			{
-				_logger.LogWarning("GetArticle: Invalid article ID provided");
+				logger.LogWarning("GetArticle: Invalid article ID provided");
 				return Result.Fail<ArticleDto>("Article ID cannot be empty");
 			}
 
 			if (!ObjectId.TryParse(id, out ObjectId objectId))
 			{
-				_logger.LogWarning("GetArticle: Invalid ObjectId format: {Id}", id);
+				logger.LogWarning("GetArticle: Invalid ObjectId format: {Id}", id);
 				return Result.Fail<ArticleDto>("Invalid article ID format");
 			}
 
-			Result<Article?> result = await _repository.GetArticleByIdAsync(objectId);
+			Result<Article?> result = await repository.GetArticleByIdAsync(objectId);
 
 			if (result.Failure || result.Value is null)
 			{
-				_logger.LogWarning("GetArticle: Article not found with ID: {Id}", id);
+				logger.LogWarning("GetArticle: Article not found with ID: {Id}", id);
 				return Result.Fail<ArticleDto>(result.Error ?? "Article not found");
 			}
 
@@ -70,10 +72,9 @@ public static class GetArticle
 				!article.IsArchived
 			);
 
-			_logger.LogInformation("GetArticle: Successfully retrieved article {Id}", id);
+			logger.LogInformation("GetArticle: Successfully retrieved article {Id}", id);
 			return Result.Ok(dto);
 		}
-
 	}
 
 }

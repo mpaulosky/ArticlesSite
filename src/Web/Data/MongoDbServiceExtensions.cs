@@ -1,4 +1,4 @@
-﻿// =======================================================
+// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     MongoDbServiceExtensions.cs
 // Company :       mpaulosky

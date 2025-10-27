@@ -9,11 +9,20 @@
 
 global using MongoDB.Bson;
 global using MongoDB.Driver;
+
 global using Shared.Abstractions;
 global using Shared.Entities;
 global using Shared.Interfaces;
 global using Shared.Models;
+
 global using Web.Components;
 global using Web.Data;
 global using Web.Data.Repositories;
+global using Web.Services;
 
+global using Auth0.AspNetCore.Authentication;
+
+global using Microsoft.AspNetCore.Authentication;
+global using Microsoft.AspNetCore.Authentication.Cookies;
+global using Microsoft.AspNetCore.Components.Authorization;
+global using Microsoft.Extensions.DependencyInjection;

@@ -33,8 +33,9 @@ public static partial class Helpers
 	/// <returns>A URL-encoded slug.</returns>
 	public static string GetSlug(this string item)
 	{
+		ArgumentNullException.ThrowIfNull(item);
 
-		string slug = MyRegex().Replace(item.Trim().ToLower(), "_");
+		string slug = MyRegex().Replace(item.Trim().ToLowerInvariant(), "_");
 
 		return HttpUtility.UrlEncode(slug);
 	}
@@ -45,6 +46,7 @@ public static partial class Helpers
 	///   Gets a random category name from predefined categories.
 	/// </summary>
 	/// <returns>A random category name.</returns>
+	[System.Diagnostics.CodeAnalysis.SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Used only for test data generation, not security-sensitive operations")]
 	public static string GetRandomCategoryName()
 	{
 
@@ -61,7 +63,7 @@ public static partial class Helpers
 				MyCategories.Ninth
 		];
 
-		return categories[new Random().Next(categories.Count)];
+		return categories[Random.Shared.Next(categories.Count)];
 
 	}
 
