@@ -1,16 +1,16 @@
 @page "/articles/details/{id}"
 
 @inject NavigationManager Navigation
-@inject IGetArticleHandler GetHandler
+@inject IArticleRepository ArticleRepository
 @inject ILogger<Details> Logger
 
 @attribute [Authorize]
 
-<PageHeadingComponent HeaderText="Article Details" Level="1" TextColorClass="blue-500"/>
+<PageHeadingComponent HeaderText="Article Details" Level="1" TextColorClass="blue-500" />
 
 @if (_isLoading)
 {
-	<LoadingComponent/>
+	<LoadingComponent />
 }
 else if (_article is null)
 {
@@ -21,7 +21,7 @@ else if (_article is null)
 else
 {
 	<div class="card">
-		<img src="@_article.CoverImageUrl" alt="Cover" class="card-img-top" style="max-height:200px;object-fit:cover;"/>
+		<img src="@_article.CoverImageUrl" alt="Cover" class="card-img-top" style="max-height:200px;object-fit:cover;" />
 		<div class="card-body">
 			<h2>@_article.Title</h2>
 			<p>@_article.Introduction</p>
@@ -40,7 +40,7 @@ else
 @code {
 
 	/// <summary>
-	///   The unique identifier of the article to display.
+	/// The unique identifier of the article to display.
 	/// </summary>
 	[Parameter]
 	public required string Id { get; set; } = string.Empty;
@@ -48,22 +48,22 @@ else
 	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
 
 	/// <summary>
-	///   The article data to be displayed on the page.
+	/// The article data to be displayed on the page.
 	/// </summary>
 	private ArticleDto? _article;
 
 	/// <summary>
-	///   Indicates whether the component is currently loading data.
+	/// Indicates whether the component is currently loading data.
 	/// </summary>
 	private bool _isLoading = true;
 
 	/// <summary>
-	///   Error message returned by the handler when loading fails. Shown in the UI.
+	/// Error message returned by the handler when loading fails. Shown in the UI.
 	/// </summary>
 	private string? _errorMessage;
 
 	/// <summary>
-	///   Initializes the component by loading the article data using the ArticleHandler.
+	/// Initializes the component by loading the article data using the ArticleHandler.
 	/// </summary>
 	protected override async Task OnInitializedAsync()
 	{
@@ -73,11 +73,28 @@ else
 
 		try
 		{
-			var result = await GetHandler.HandleAsync(Id);
+			var objectId = MongoDB.Bson.ObjectId.Parse(Id);
+			var result = await ArticleRepository.GetArticleByIdAsync(objectId);
 
 			if (result is { Success: true })
 			{
-				_article = result.Value;
+				var a = result.Value;
+				_article = a == null ? null : new ArticleDto(
+				a.Id,
+				a.Slug,
+				a.Title,
+				a.Introduction,
+				a.Content,
+				a.CoverImageUrl,
+				a.Author,
+				a.Category,
+				a.IsPublished,
+				a.PublishedOn,
+				a.CreatedOn,
+				a.ModifiedOn,
+				a.IsArchived,
+				true // CanEdit: adjust as needed
+				);
 				_errorMessage = null;
 				Logger?.LogInformation("Article loaded successfully: {ArticleId}", Id);
 			}
@@ -96,7 +113,7 @@ else
 	}
 
 	/// <summary>
-	///   Navigates to the edit page for the current article.
+	/// Navigates to the edit page for the current article.
 	/// </summary>
 	private void GoToEdit()
 	{
@@ -104,7 +121,7 @@ else
 	}
 
 	/// <summary>
-	///   Navigates back to the article list page.
+	/// Navigates back to the article list page.
 	/// </summary>
 	private void GoToList()
 	{
