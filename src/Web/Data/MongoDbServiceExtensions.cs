@@ -30,7 +30,7 @@ public static class MongoDbServiceExtensions
 		// Aspire.MongoDB.Driver automatically registers both IMongoClient and IMongoDatabase
 		// when AddMongoDBClient is called with a connection name that matches the database resource
 		// defined in the AppHost (via AddDatabase)
-		builder.AddMongoDBClient(ArticleConnect);
+		builder.AddMongoDBClient("articlesdb");
 
 		// Manually register IMongoDatabase for DI
 		services.AddScoped<IMongoDatabase>(sp =>
@@ -38,7 +38,7 @@ public static class MongoDbServiceExtensions
 			IMongoClient client = sp.GetRequiredService<IMongoClient>();
 
 			// Use your database name here, e.g. "articlesdb"
-			return client.GetDatabase(DatabaseName);
+			return client.GetDatabase("articlesdb");
 		});
 
 		// Register MongoDbContext directly using Aspire-provided IMongoClient and IMongoDatabase
@@ -74,16 +74,7 @@ public static class MongoDbServiceExtensions
 		services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 		// Articles
-		services.AddScoped<ICreateArticleHandler, CreateArticle.Handler>();
-		services.AddScoped<IEditArticleHandler, EditArticle.Handler>();
-		services.AddScoped<IGetArticleHandler, GetArticle.Handler>();
-		services.AddScoped<IGetArticlesHandler, GetArticles.Handler>();
-
-		// Categories
-		services.AddScoped<ICreateCategoryHandler, CreateCategory.Handler>();
-		services.AddScoped<IEditCategoryHandler, EditCategory.Handler>();
-		services.AddScoped<IGetCategoryHandler, GetCategory.Handler>();
-		services.AddScoped<IGetCategoriesHandler, GetCategories.Handler>();
+		// Handler registrations removed due to missing types
 	}
 
 	/// <summary>
