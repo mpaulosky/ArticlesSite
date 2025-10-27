@@ -11,14 +11,13 @@ namespace Web.Data;
 
 /// <summary>
 ///   Provides extension methods for registering MongoDB-related services, context factories, and repositories
-///   in a Blazor/ASP.NET Core application using Aspire service discovery and Aspire.MongoDB.Driver.
+///   in a Blazor/ASP.NET Core application using Aspire service discovery.
 /// </summary>
 public static class MongoDbServiceExtensions
 {
 
 	/// <summary>
-	///   Adds MongoDB services to the application's dependency injection container using Aspire service discovery and
-	///   Aspire.MongoDB.Driver.
+	///   Adds MongoDB services to the application's dependency injection container using Aspire service discovery.
 	///   Registers IMongoClient, IMongoDatabase, MongoDbContext, and related repositories and handlers.
 	/// </summary>
 	/// <param name="builder">The <see cref="WebApplicationBuilder" /> to configure.</param>
@@ -27,10 +26,13 @@ public static class MongoDbServiceExtensions
 	{
 		IServiceCollection services = builder.Services;
 
-		// Aspire.MongoDB.Driver automatically registers both IMongoClient and IMongoDatabase
-		// when AddMongoDBClient is called with a connection name that matches the database resource
-		// defined in the AppHost (via AddDatabase)
-		builder.AddMongoDBClient("articlesdb");
+		// Register IMongoClient using connection string from configuration
+		services.AddSingleton<IMongoClient>(sp =>
+		{
+			var connectionString = builder.Configuration.GetConnectionString("articlesdb")
+				?? throw new InvalidOperationException("MongoDB connection string 'articlesdb' not found.");
+			return new MongoClient(connectionString);
+		});
 
 		// Manually register IMongoDatabase for DI
 		services.AddScoped<IMongoDatabase>(sp =>
@@ -41,7 +43,7 @@ public static class MongoDbServiceExtensions
 			return client.GetDatabase("articlesdb");
 		});
 
-		// Register MongoDbContext directly using Aspire-provided IMongoClient and IMongoDatabase
+		// Register MongoDbContext directly using IMongoClient and IMongoDatabase
 		services.AddScoped<IMongoDbContext>(sp =>
 		{
 			IMongoClient client = sp.GetRequiredService<IMongoClient>();

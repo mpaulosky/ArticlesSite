@@ -25,7 +25,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspire.MongoDB.Driver"/>
 		<PackageReference Include="Auth0.AspNetCore.Authentication"/>
 		<PackageReference Include="MongoDB.Driver"/>
 	</ItemGroup>
