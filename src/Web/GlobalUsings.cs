@@ -22,6 +22,7 @@ global using Web.Components.Features.Categories.CategoriesList;
 global using Web.Components.Features.Categories.CategoryCreate;
 global using Web.Components.Features.Categories.CategoryDetails;
 global using Web.Components.Features.Categories.CategoryEdit;
+global using Web.Data;
 global using Web.Data.Repositories;
 
 global using static Shared.Abstractions.Result<Shared.Models.ArticleDto>;
