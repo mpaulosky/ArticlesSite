@@ -20,7 +20,7 @@
     <PackageVersion Include="FluentValidation" Version="12.0.0" />
     <PackageVersion Include="Mapster" Version="7.4.0" />
     <PackageVersion Include="MongoDB.Bson" Version="3.5.0" />
-    <PackageVersion Include="MongoDB.Driver" Version="3.5.0" />
+    <PackageVersion Include="MongoDB.Driver" Version="3.4.3" />
     <PackageVersion Include="WaffleGenerator.Bogus" Version="4.2.2" />
     <PackageVersion Include="PSC.Blazor.Components.MarkdownEditor" Version="8.0.5" />
     <!-- Microsoft Extensions -->
