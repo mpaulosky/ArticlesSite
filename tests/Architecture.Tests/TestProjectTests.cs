@@ -16,15 +16,59 @@ namespace Architecture.Tests;
 public class TestProjectTests
 {
 
-	private const string SolutionRoot = @"e:/github/ArticleSite/src";
+	private readonly string _solutionRoot;
 
-	private const string TestsFolder = @"e:/github/ArticleSite/tests";
+	private readonly string _testsFolder;
+
+	public TestProjectTests()
+	{
+
+		// Dynamically find the solution root by walking up the directory tree
+		string assemblyLocation = Assembly.GetExecutingAssembly().Location;
+		string dir = Path.GetDirectoryName(assemblyLocation) ?? Directory.GetCurrentDirectory();
+
+		string? foundRoot = null;
+
+		while (!string.IsNullOrEmpty(dir))
+		{
+			string slnx = Path.Combine(dir, "ArticlesSite.slnx");
+
+			if (File.Exists(slnx))
+			{
+				foundRoot = dir;
+
+				break;
+			}
+
+			DirectoryInfo? parent = Directory.GetParent(dir);
+
+			if (parent == null)
+			{
+				break;
+			}
+
+			dir = parent.FullName;
+		}
+
+		if (foundRoot == null)
+		{
+			throw new DirectoryNotFoundException("Could not find solution root (ArticlesSite.slnx) in parent directories.");
+		}
+
+		_solutionRoot = foundRoot;
+		_testsFolder = Path.Combine(foundRoot, "tests");
+
+		if (!Directory.Exists(_testsFolder))
+		{
+			throw new DirectoryNotFoundException($"testsFolder not found: {_testsFolder}");
+		}
+	}
 
 	[Fact]
 	public void SharedTestsUnit_ShouldExist()
 	{
 		// Arrange
-		string projectPath = Path.Combine(TestsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj");
+		string projectPath = Path.Combine(_testsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj");
 
 		// Act & Assert
 		File.Exists(projectPath).Should().BeTrue("Shared.Tests.Unit project should exist");
@@ -34,7 +78,7 @@ public class TestProjectTests
 	public void WebTestsUnit_ShouldExist()
 	{
 		// Arrange
-		string projectPath = Path.Combine(TestsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj");
+		string projectPath = Path.Combine(_testsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj");
 
 		// Act & Assert
 		File.Exists(projectPath).Should().BeTrue("Web.Tests.Unit project should exist");
@@ -44,17 +88,17 @@ public class TestProjectTests
 	public void ArchitectureTestsUnit_ShouldExist()
 	{
 		// Arrange
-		string projectPath = Path.Combine(TestsFolder, "Architecture.Tests.Unit", "Architecture.Tests.Unit.csproj");
+		string projectPath = Path.Combine(_testsFolder, "Architecture.Tests", "Architecture.Tests.csproj");
 
 		// Act & Assert
-		File.Exists(projectPath).Should().BeTrue("Architecture.Tests.Unit project should exist");
+		File.Exists(projectPath).Should().BeTrue("Architecture.Tests project should exist");
 	}
 
 	[Fact]
 	public void WebTestsIntegration_ShouldExist()
 	{
 		// Arrange
-		string projectPath = Path.Combine(TestsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj");
+		string projectPath = Path.Combine(_testsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj");
 
 		// Act & Assert
 		File.Exists(projectPath).Should().BeTrue("Web.Tests.Integration project should exist");
@@ -66,11 +110,11 @@ public class TestProjectTests
 		// Arrange
 		string[] testProjectPaths = new[]
 		{
-				Path.Combine(TestsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Architecture.Tests.Unit", "Architecture.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj"),
-				Path.Combine(SolutionRoot, "ArticleSite.E2E", "ArticleSite.E2E.csproj")
+				Path.Combine(_testsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"),
+				Path.Combine(_testsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj"),
+				Path.Combine(_testsFolder, "Architecture.Tests", "Architecture.Tests.csproj"),
+				Path.Combine(_testsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj"),
+				Path.Combine(_solutionRoot, "src", "ArticleSite.E2E", "ArticleSite.E2E.csproj")
 		};
 
 		// Act & Assert
@@ -92,10 +136,10 @@ public class TestProjectTests
 		// Arrange
 		string[] testProjectPaths = new[]
 		{
-				Path.Combine(TestsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Architecture.Tests.Unit", "Architecture.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj")
+				Path.Combine(_testsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"),
+				Path.Combine(_testsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj"),
+				Path.Combine(_testsFolder, "Architecture.Tests", "Architecture.Tests.csproj"),
+				Path.Combine(_testsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj")
 		};
 
 		// Act & Assert
@@ -117,10 +161,10 @@ public class TestProjectTests
 		// Arrange
 		string[] testProjectPaths = new[]
 		{
-				Path.Combine(TestsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Architecture.Tests.Unit", "Architecture.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj")
+				Path.Combine(_testsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"),
+				Path.Combine(_testsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj"),
+				Path.Combine(_testsFolder, "Architecture.Tests", "Architecture.Tests.csproj"),
+				Path.Combine(_testsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj")
 		};
 
 		// Act & Assert
@@ -142,8 +186,8 @@ public class TestProjectTests
 		// Arrange
 		string[] unitTestProjectPaths = new[]
 		{
-				Path.Combine(TestsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj")
+				Path.Combine(_testsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"),
+				Path.Combine(_testsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj")
 		};
 
 		// Act & Assert
@@ -163,21 +207,21 @@ public class TestProjectTests
 	public void ArchitectureTests_ShouldReferenceNetArchTest()
 	{
 		// Arrange
-		string projectPath = Path.Combine(TestsFolder, "Architecture.Tests.Unit", "Architecture.Tests.Unit.csproj");
+		string projectPath = Path.Combine(_testsFolder, "Architecture.Tests", "Architecture.Tests.csproj");
 
 		// Act
 		string content = File.ReadAllText(projectPath);
 
 		// Assert
 		content.Should().Contain("NetArchTest.Rules",
-				"Architecture.Tests.Unit should reference NetArchTest.Rules");
+				"Architecture.Tests should reference NetArchTest.Rules");
 	}
 
 	[Fact]
 	public void IntegrationTests_ShouldReferenceTestcontainers()
 	{
 		// Arrange
-		string projectPath = Path.Combine(TestsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj");
+		string projectPath = Path.Combine(_testsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj");
 
 		// Act
 		string content = File.ReadAllText(projectPath);
@@ -191,7 +235,7 @@ public class TestProjectTests
 	public void E2ETests_ShouldReferenceMicrosoftPlaywright()
 	{
 		// Arrange
-		string projectPath = Path.Combine(SolutionRoot, "ArticleSite.E2E", "ArticleSite.E2E.csproj");
+		string projectPath = Path.Combine(_solutionRoot, "src", "ArticleSite.E2E", "ArticleSite.E2E.csproj");
 
 		// Act & Assert
 		if (File.Exists(projectPath))
@@ -209,8 +253,8 @@ public class TestProjectTests
 		// Arrange
 		string[] testProjectFolders = new[]
 		{
-				Path.Combine(TestsFolder, "Shared.Tests.Unit"), Path.Combine(TestsFolder, "Web.Tests.Unit"),
-				Path.Combine(TestsFolder, "Architecture.Tests.Unit"), Path.Combine(TestsFolder, "Web.Tests.Integration")
+				Path.Combine(_testsFolder, "Shared.Tests.Unit"), Path.Combine(_testsFolder, "Web.Tests.Unit"),
+				Path.Combine(_testsFolder, "Architecture.Tests"), Path.Combine(_testsFolder, "Web.Tests.Integration")
 		};
 
 		// Act & Assert
@@ -232,11 +276,11 @@ public class TestProjectTests
 		// Arrange
 		string[] testProjectPaths = new[]
 		{
-				Path.Combine(TestsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Architecture.Tests.Unit", "Architecture.Tests.Unit.csproj"),
-				Path.Combine(TestsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj"),
-				Path.Combine(SolutionRoot, "ArticleSite.E2E", "ArticleSite.E2E.csproj")
+				Path.Combine(_testsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"),
+				Path.Combine(_testsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj"),
+				Path.Combine(_testsFolder, "Architecture.Tests", "Architecture.Tests.csproj"),
+				Path.Combine(_testsFolder, "Web.Tests.Integration", "Web.Tests.Integration.csproj"),
+				Path.Combine(_solutionRoot, "src", "ArticleSite.E2E", "ArticleSite.E2E.csproj")
 		};
 
 		// Act & Assert
@@ -257,10 +301,10 @@ public class TestProjectTests
 	{
 		// Arrange & Act
 		string sharedTestsContent = File.ReadAllText(
-				Path.Combine(TestsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"));
+				Path.Combine(_testsFolder, "Shared.Tests.Unit", "Shared.Tests.Unit.csproj"));
 
 		string webTestsContent = File.ReadAllText(
-				Path.Combine(TestsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj"));
+				Path.Combine(_testsFolder, "Web.Tests.Unit", "Web.Tests.Unit.csproj"));
 
 		// Assert
 		sharedTestsContent.Should().Contain("Shared.csproj",
