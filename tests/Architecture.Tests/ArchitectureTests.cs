@@ -240,7 +240,9 @@ public class ArchitectureTests
 		Console.WriteLine($"[DEBUG] EachProject_ShouldContainGlobalUsingsFile: _srcPath={_srcPath}");
 
 		// Arrange
-		string[] projectDirs = Directory.GetDirectories(_srcPath);
+		string[] projectDirs = Directory.GetDirectories(_srcPath)
+			.Where(d => Directory.GetFiles(d, "*.csproj", SearchOption.TopDirectoryOnly).Any())
+			.ToArray();
 
 		// Act & Assert
 		foreach (string dir in projectDirs)
