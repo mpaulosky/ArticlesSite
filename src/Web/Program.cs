@@ -9,7 +9,12 @@
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+IConfiguration configuration = builder.Configuration;
+
 builder.AddServiceDefaults();
+
+// Add Output Cache
+builder.Services.AddOutputCache();
 
 // Add MongoDB services
 builder.AddMongoDb();
@@ -17,6 +22,9 @@ builder.AddMongoDb();
 // Add services to the container.
 builder.Services.AddRazorComponents()
 		.AddInteractiveServerComponents();
+
+// Configure authentication, authorization, and CORS via an extension method
+builder.Services.AddAuthenticationAndAuthorization(configuration);
 
 WebApplication app = builder.Build();
 
@@ -39,6 +47,30 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseAntiforgery();
+
+app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
+{
+	var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
+			.WithRedirectUri(returnUrl)
+			.Build();
+
+	await httpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
+});
+
+app.MapGet("/Account/Logout", async httpContext =>
+{
+	var authenticationProperties = new LogoutAuthenticationPropertiesBuilder()
+			.WithRedirectUri("/")
+			.Build();
+
+	await httpContext.SignOutAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
+	await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+});
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseOutputCache();
 
 app.MapStaticAssets();
 

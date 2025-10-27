@@ -12,23 +12,20 @@ using System.Linq.Expressions;
 namespace Web.Data.Repositories;
 
 /// <summary>
-///   Category repository implementation using native MongoDB.Driver with factory pattern
+/// Category repository implementation using native MongoDB.Driver with factory pattern.
 /// </summary>
-public class CategoryRepository : ICategoryRepository
+public class CategoryRepository(IMongoDbContextFactory contextFactory) : ICategoryRepository
 {
-
-	private readonly IMongoDbContextFactory _contextFactory;
-
-	public CategoryRepository(IMongoDbContextFactory contextFactory)
-	{
-		_contextFactory = contextFactory;
-	}
-
+	/// <summary>
+	/// Gets a category by its unique identifier.
+	/// </summary>
+	/// <param name="id">The ObjectId of the category.</param>
+	/// <returns>A <see cref="Result{Category}"/> containing the category if found, or an error message.</returns>
 	public async Task<Result<Category?>> GetCategoryByIdAsync(ObjectId id)
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 			Category? category = await context.Categories.Find(c => c.Id == id).FirstOrDefaultAsync();
 
 			return Result.Ok<Category?>(category);
@@ -39,11 +36,16 @@ public class CategoryRepository : ICategoryRepository
 		}
 	}
 
+	/// <summary>
+	/// Gets a category by its slug.
+	/// </summary>
+	/// <param name="slug">The slug of the category.</param>
+	/// <returns>A <see cref="Result{Category}"/> containing the category if found, or an error message.</returns>
 	public async Task<Result<Category?>> GetCategory(string slug)
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 			Category? category = await context.Categories.Find(c => c.Slug == slug && !c.IsArchived).FirstOrDefaultAsync();
 
 			return Result.Ok<Category?>(category);
@@ -54,11 +56,15 @@ public class CategoryRepository : ICategoryRepository
 		}
 	}
 
+	/// <summary>
+	/// Gets all non-archived categories.
+	/// </summary>
+	/// <returns>A <see cref="Result{IEnumerable{Category}}"/> containing the categories or an error message.</returns>
 	public async Task<Result<IEnumerable<Category>?>> GetCategories()
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 			List<Category>? categories = await context.Categories.Find(c => !c.IsArchived).ToListAsync();
 
 			return Result.Ok<IEnumerable<Category>?>(categories);
@@ -69,11 +75,16 @@ public class CategoryRepository : ICategoryRepository
 		}
 	}
 
+	/// <summary>
+	/// Gets categories matching a specified predicate.
+	/// </summary>
+	/// <param name="where">The predicate to filter categories.</param>
+	/// <returns>A <see cref="Result{IEnumerable{Category}}"/> containing the filtered categories or an error message.</returns>
 	public async Task<Result<IEnumerable<Category>?>> GetCategories(Expression<Func<Category, bool>> where)
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 			List<Category>? categories = await context.Categories.Find(where).ToListAsync();
 
 			return Result.Ok<IEnumerable<Category>?>(categories);
@@ -84,11 +95,16 @@ public class CategoryRepository : ICategoryRepository
 		}
 	}
 
+	/// <summary>
+	/// Adds a new category to the database.
+	/// </summary>
+	/// <param name="category">The category to add.</param>
+	/// <returns>A <see cref="Result{Category}"/> containing the added category or an error message.</returns>
 	public async Task<Result<Category>> AddCategory(Category category)
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 			await context.Categories.InsertOneAsync(category);
 
 			return Result.Ok(category);
@@ -99,11 +115,16 @@ public class CategoryRepository : ICategoryRepository
 		}
 	}
 
+	/// <summary>
+	/// Updates an existing category in the database.
+	/// </summary>
+	/// <param name="category">The category to update.</param>
+	/// <returns>A <see cref="Result{Category}"/> containing the updated category or an error message.</returns>
 	public async Task<Result<Category>> UpdateCategory(Category category)
 	{
 		try
 		{
-			IMongoDbContext context = _contextFactory.CreateDbContext();
+			IMongoDbContext context = contextFactory.CreateDbContext();
 			await context.Categories.ReplaceOneAsync(c => c.Id == category.Id, category);
 
 			return Result.Ok(category);
@@ -114,9 +135,13 @@ public class CategoryRepository : ICategoryRepository
 		}
 	}
 
+	/// <summary>
+	/// Archives a category by its slug.
+	/// </summary>
+	/// <param name="slug">The slug of the category to archive.</param>
 	public async Task ArchiveCategory(string slug)
 	{
-		IMongoDbContext context = _contextFactory.CreateDbContext();
+		IMongoDbContext context = contextFactory.CreateDbContext();
 		UpdateDefinition<Category>? update = Builders<Category>.Update.Set(c => c.IsArchived, true);
 		await context.Categories.UpdateOneAsync(c => c.Slug == slug, update);
 	}
