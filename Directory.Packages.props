@@ -5,11 +5,14 @@
   <ItemGroup>
     <!-- Aspire -->
     <PackageVersion Include="Aspire.Hosting.AppHost" Version="9.5.2" />
+    <PackageVersion Include="Aspire.Hosting" Version="9.5.2" />
     <PackageVersion Include="Aspire.Hosting.MongoDB" Version="9.5.2" />
     <PackageVersion Include="Aspire.Hosting.Redis" Version="9.5.2" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="9.5.1" />
     <PackageVersion Include="Aspire.MongoDB.Driver" Version="9.5.2" />
     <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.5.1" />
+    <PackageVersion Include="AspNetCore.HealthChecks.MongoDb" Version="8.1.1" />
+    <PackageVersion Include="StackExchange.Redis" Version="2.9.99-gfe04f9c406" />
     <!-- Authentication -->
     <PackageVersion Include="Auth0.AspNetCore.Authentication" Version="1.5.0" />
     <!-- Core Libraries -->
