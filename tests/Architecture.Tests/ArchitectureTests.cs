@@ -99,7 +99,7 @@ public class ArchitectureTests
 		Console.WriteLine($"[DEBUG] AllSrcProjects_ShouldBeUsedOrEntryPoint: _srcPath={_srcPath}");
 
 		// Arrange
-		string[] entryPoints = new[] { "AppHost", "Web" };
+		string[] entryPoints = ["AppHost", "Web"];
 		string[] srcProjects = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
 
 		HashSet<string> referenced = srcProjects.SelectMany(f => File.ReadAllText(f)
@@ -224,7 +224,7 @@ public class ArchitectureTests
 		var forbiddenRefs = content.Split('\n')
 			.Where(l => l.Contains("<PackageReference Include="))
 			.Select(l => l.Split("<PackageReference Include=\"")[1].Split('"')[0])
-			.Where(pkg => forbiddenPrefixes.Any(prefix => pkg.StartsWith(prefix)) && !allowedAspirePackages.Contains(pkg))
+			.Where(pkg => forbiddenPrefixes.Any(pkg.StartsWith) && !allowedAspirePackages.Contains(pkg))
 			.ToList();
 		forbiddenRefs.Count.Should().Be(0, $"Web project should not reference forbidden Aspire.* packages: {string.Join(", ", forbiddenRefs)}");
 	}
@@ -235,7 +235,7 @@ public class ArchitectureTests
 		Console.WriteLine($"[DEBUG] OutputType_ShouldBeExeOnlyForEntryPoints: _srcPath={_srcPath}");
 
 		// Arrange
-		string[] entryPoints = new[] { "AppHost", "Web" };
+		string[] entryPoints = ["AppHost", "Web"];
 		string[] csprojFiles = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
 
 		// Act & Assert
