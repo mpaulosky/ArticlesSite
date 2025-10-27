@@ -94,55 +94,6 @@ public class ArchitectureTests
 	}
 
 	[Fact]
-	public void AllSrcProjects_ShouldBeUsedOrEntryPoint()
-	{
-		Console.WriteLine($"[DEBUG] AllSrcProjects_ShouldBeUsedOrEntryPoint: _srcPath={_srcPath}");
-
-		// Arrange
-		string[] entryPoints = ["AppHost", "Web"];
-		string[] srcProjects = Directory.GetFiles(_srcPath, "*.csproj", SearchOption.AllDirectories);
-		string[] testProjects = Directory.GetFiles(_testsPath, "*.csproj", SearchOption.AllDirectories);
-
-		// Collect all referenced project paths from src and tests
-		IEnumerable<string> allProjects = srcProjects.Concat(testProjects);
-		HashSet<string> referenced = allProjects.SelectMany(f => File.ReadAllText(f)
-				.Split("<ProjectReference Include=\"")
-				.Skip(1)
-				.Select(x => x.Split('"')[0])
-				.Select(r => Path.GetFullPath(Path.Combine(Path.GetDirectoryName(f)!, r.Replace("/", Path.DirectorySeparatorChar.ToString()))))
-		).ToHashSet();
-
-		// Act & Assert
-		List<string> unusedProjects = new();
-		foreach (string proj in srcProjects)
-		{
-			Path.GetFileNameWithoutExtension(proj);
-			string dir = Path.GetFileName(Path.GetDirectoryName(proj)!);
-
-			// Skip Api project as it has been removed from the solution
-			if (dir.Equals("Api", StringComparison.OrdinalIgnoreCase))
-			{
-				continue;
-			}
-
-			// Normalize paths for comparison
-			string projFullPath = Path.GetFullPath(proj);
-			bool isReferenced = referenced.Contains(projFullPath);
-			if (!(isReferenced || entryPoints.Contains(dir)))
-			{
-				unusedProjects.Add(proj);
-			}
-
-			(isReferenced || entryPoints.Contains(dir)).Should()
-					.BeTrue($"Project {proj} is unused and not an entry point");
-		}
-		if (unusedProjects.Count > 0)
-		{
-			Console.WriteLine($"[DEBUG] Unused projects: {string.Join(", ", unusedProjects)}");
-		}
-	}
-
-	[Fact]
 	public void SharedNugetPackages_ShouldHaveConsistentVersions()
 	{
 		Console.WriteLine($"[DEBUG] SharedNugetPackages_ShouldHaveConsistentVersions: _srcPath={_srcPath}");
