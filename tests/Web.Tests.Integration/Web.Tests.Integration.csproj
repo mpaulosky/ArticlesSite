@@ -13,8 +13,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MongoDB.Driver" />
-		<PackageReference Include="MongoDB.Bson" />
 		<Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
 	</ItemGroup>
 
@@ -28,18 +26,23 @@
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
 		<PackageReference Include="FluentAssertions" />
-		<PackageReference Include="Microsoft.NET.Test.Sdk"/>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="NSubstitute" />
+		<PackageReference Include="Testcontainers" />
+		<PackageReference Include="Testcontainers.MongoDb" />
 		<PackageReference Include="xunit.v3"/>
 		<PackageReference Include="xunit.runner.visualstudio"/>
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\..\src\Web\Web.csproj"/>
-	</ItemGroup>
-
-	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
+		<PackageReference Include="MongoDB.Driver" />
+		<PackageReference Include="Aspire.MongoDB.Driver" />
+		<PackageReference Include="Auth0.AspNetCore.Authentication" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" />
 		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
-		<PackageReference Include="Testcontainers" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\Web\Web.csproj" />
+		<ProjectReference Include="..\..\src\Shared\Shared.csproj" />
 	</ItemGroup>
 
 </Project>

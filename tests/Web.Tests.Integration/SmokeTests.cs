@@ -7,10 +7,10 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-using FluentAssertions;
 
 namespace Web.Tests.Integration;
 
+[ExcludeFromCodeCoverage]
 public class SmokeTests
 {
 
