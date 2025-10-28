@@ -1,12 +1,3 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     Program.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  Web
-// =======================================================
-
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 IConfiguration configuration = builder.Configuration;
