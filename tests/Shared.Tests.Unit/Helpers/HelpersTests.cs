@@ -21,7 +21,7 @@ public class HelpersTests
 	public void GetStaticDate_ShouldReturnConsistentDate()
 	{
 		// Arrange
-		DateTimeOffset expectedDate = new (2025, 1, 1, 8, 0, 0, TimeSpan.Zero);
+		DateTimeOffset expectedDate = new(2025, 1, 1, 8, 0, 0, TimeSpan.Zero);
 
 		// Act
 		DateTimeOffset result1 = Shared.Helpers.Helpers.GetStaticDate();
@@ -109,7 +109,7 @@ public class HelpersTests
 		};
 
 		// Act - Call multiple times to test randomness
-		List<string> results = new ();
+		List<string> results = new();
 
 		for (int i = 0; i < 20; i++)
 		{

@@ -27,8 +27,8 @@ public class CategoryValidatorTests
 		// Arrange
 		Category category = new()
 		{
-				CategoryName = "Technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddSeconds(-1) // Set it slightly in the past to avoid timing issues
+			CategoryName = "Technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddSeconds(-1) // Set it slightly in the past to avoid timing issues
 		};
 
 		// Act
@@ -127,8 +127,8 @@ public class CategoryValidatorTests
 		// Arrange
 		Category category = new()
 		{
-				CategoryName = "Technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddSeconds(-1) // Set it slightly in the past to avoid timing issues
+			CategoryName = "Technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddSeconds(-1) // Set it slightly in the past to avoid timing issues
 		};
 
 		// Act

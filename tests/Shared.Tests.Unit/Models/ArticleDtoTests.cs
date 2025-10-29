@@ -19,7 +19,7 @@ public class ArticleDtoTests
 	public void Constructor_Parameterless_ShouldSetDefaultValues()
 	{
 		// Arrange & Act
-		ArticleDto dto = new ();
+		ArticleDto dto = new();
 
 		// Assert
 		dto.Id.Should().Be(ObjectId.Empty);
@@ -48,8 +48,8 @@ public class ArticleDtoTests
 		const string intro = "Test introduction";
 		const string content = "Test content";
 		const string coverImageUrl = "https://example.com/cover.jpg";
-		AuthorInfo author = new ("auth0|123", "John Doe");
-		Category category = new()  { CategoryName = "Technology" };
+		AuthorInfo author = new("auth0|123", "John Doe");
+		Category category = new() { CategoryName = "Technology" };
 		const bool isPublished = true;
 		DateTimeOffset publishedOn = DateTimeOffset.UtcNow;
 		DateTimeOffset createdOn = DateTimeOffset.UtcNow.AddDays(-1);
@@ -58,7 +58,7 @@ public class ArticleDtoTests
 		const bool canEdit = true;
 
 		// Act
-		ArticleDto dto = new (id, slug, title, intro, content, coverImageUrl, author, category,
+		ArticleDto dto = new(id, slug, title, intro, content, coverImageUrl, author, category,
 				isPublished, publishedOn, createdOn, modifiedOn, isArchived, canEdit);
 
 		// Assert
@@ -105,7 +105,7 @@ public class ArticleDtoTests
 	public void UrlSlug_ShouldGetAndSetSlug()
 	{
 		// Arrange
-		ArticleDto dto = new ();
+		ArticleDto dto = new();
 		const string slug = "test_url_slug";
 
 		// Act
@@ -120,7 +120,7 @@ public class ArticleDtoTests
 	public void UrlSlug_Get_ShouldReturnSlugValue()
 	{
 		// Arrange
-		ArticleDto dto = new()  { Slug = "test_slug" };
+		ArticleDto dto = new() { Slug = "test_slug" };
 
 		// Act
 		string urlSlug = dto.UrlSlug;
@@ -133,9 +133,9 @@ public class ArticleDtoTests
 	public void Properties_ShouldBeSettable()
 	{
 		// Arrange
-		ArticleDto dto = new ();
-		AuthorInfo author = new ("auth0|123", "John Doe");
-		Category category = new()  { CategoryName = "Tech" };
+		ArticleDto dto = new();
+		AuthorInfo author = new("auth0|123", "John Doe");
+		Category category = new() { CategoryName = "Tech" };
 
 		// Act
 		dto.Slug = "new_slug";
