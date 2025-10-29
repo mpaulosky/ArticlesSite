@@ -1,25 +1,15 @@
-// =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     AppHost.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
-// Solution Name : ArticlesSite
-// Project Name :  AppHost
-// =======================================================
-
 using AppHost;
 
-IDistributedApplicationBuilder builder = DistributedApplication.CreateBuilder(args);
+var builder = DistributedApplication.CreateBuilder(args);
 
+var redisCache = builder.AddRedisServices();
 
-IResourceBuilder<MongoDBDatabaseResource> database = builder.AddMongoDbServices();
-// Explicitly use ServiceDefaults.RedisServices to avoid ambiguity
-IResourceBuilder<RedisResource> cache = AppHost.RedisServices.AddRedisServices(builder);
+var mongoDb = builder.AddMongoDbServices();
 
-// Add a composite command that coordinates multiple operations
-var website = builder.AddProject("Web", "Website")
-		.WithHttpHealthCheck("/health")
-		.WithReference(database).WaitFor(database)
-		.WithReference(cache).WaitFor(cache);
-
+var webProject = builder.AddProject<Projects.Web>(Website)
+	.WithExternalHttpEndpoints()
+	.WithHttpHealthCheck("/health")
+	.WithReference(redisCache).WaitFor(redisCache)
+	.WithReference(mongoDb).WaitFor(mongoDb);
+	
 builder.Build().Run();
