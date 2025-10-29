@@ -30,15 +30,15 @@ public static class MongoDbServiceExtensions
 		// Aspire.MongoDB.Driver automatically registers both IMongoClient and IMongoDatabase
 		// when AddMongoDBClient is called with a connection name that matches the database resource
 		// defined in the AppHost (via AddDatabase)
-		builder.AddMongoDBClient("articlesdb");
+		builder.AddMongoDBClient(ArticleConnect);
 
 		// Manually register IMongoDatabase for DI
-		services.AddScoped<IMongoDatabase>(sp =>
+		services.AddScoped(sp =>
 		{
 			IMongoClient client = sp.GetRequiredService<IMongoClient>();
 
 			// Use your database name here, e.g. "articlesdb"
-			return client.GetDatabase("articlesdb");
+			return client.GetDatabase(DatabaseName);
 		});
 
 		// Register MongoDbContext directly using Aspire-provided IMongoClient and IMongoDatabase
@@ -75,17 +75,20 @@ public static class MongoDbServiceExtensions
 
 		// Category Handlers
 		services.AddScoped(
-			typeof(Web.Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler),
-			typeof(Web.Components.Features.Categories.CategoryEdit.EditCategory.Handler));
+				typeof(Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler),
+				typeof(Components.Features.Categories.CategoryEdit.EditCategory.Handler));
+
 		services.AddScoped(
-			typeof(Web.Components.Features.Categories.CategoryDetails.GetCategory.IGetCategoryHandler),
-			typeof(Web.Components.Features.Categories.CategoryDetails.GetCategory.Handler));
+				typeof(Components.Features.Categories.CategoryDetails.GetCategory.IGetCategoryHandler),
+				typeof(Components.Features.Categories.CategoryDetails.GetCategory.Handler));
+
 		services.AddScoped(
-			typeof(Web.Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler),
-			typeof(Web.Components.Features.Categories.CategoryCreate.CreateCategory.Handler));
+				typeof(Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler),
+				typeof(Components.Features.Categories.CategoryCreate.CreateCategory.Handler));
+
 		services.AddScoped(
-			typeof(Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler),
-			typeof(Web.Components.Features.Categories.CategoriesList.GetCategories.Handler));
+				typeof(Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler),
+				typeof(Components.Features.Categories.CategoriesList.GetCategories.Handler));
 	}
 
 	/// <summary>

@@ -340,6 +340,9 @@
   .h-8 {
     height: calc(var(--spacing) * 8);
   }
+  .h-24 {
+    height: calc(var(--spacing) * 24);
+  }
   .h-48 {
     height: calc(var(--spacing) * 48);
   }
@@ -351,6 +354,9 @@
   }
   .w-8 {
     width: calc(var(--spacing) * 8);
+  }
+  .w-24 {
+    width: calc(var(--spacing) * 24);
   }
   .w-full {
     width: 100%;
@@ -435,6 +441,9 @@
   }
   .rounded {
     border-radius: 0.25rem;
+  }
+  .rounded-full {
+    border-radius: calc(infinity * 1px);
   }
   .rounded-lg {
     border-radius: var(--radius-lg);
@@ -694,9 +703,6 @@
   }
   .text-yellow-400 {
     color: var(--color-yellow-400);
-  }
-  .lowercase {
-    text-transform: lowercase;
   }
   .underline {
     text-decoration-line: underline;

@@ -8,53 +8,37 @@
 		<BlazorDisableThrowNavigationException>true</BlazorDisableThrowNavigationException>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<AnalysisLevel>latest-all</AnalysisLevel>
-		<!-- CA1031: Generic exception catch appropriate for repository error handling -->
-		<!-- CA1034: Nested Handler types are intentional for vertical slice architecture -->
-		<!-- CA1040: IAppMarker is intentionally empty marker interface for assembly scanning -->
-		<!-- CA1062: Null checks handled by framework/DI in most cases -->
-		<!-- CA1307: String.Replace culture parameter not applicable for slug generation -->
-		<!-- CA1308: URL slugs conventionally use lowercase for SEO -->
-		<!-- CA1515: Types are public for testability via InternalsVisibleTo -->
-		<!-- CA1848: LoggerMessage delegates are performance optimization, current logging is adequate -->
-		<!-- CA2000: MongoClient lifetime managed by DI container, not disposed in factory -->
-		<!-- CA2007: ConfigureAwait not needed in ASP.NET Core (no SynchronizationContext) -->
-		<!-- CA2263: Non-generic AddScoped used for dynamic handler registration -->
-		<NoWarn>$(NoWarn);CA1031;CA1034;CA1040;CA1062;CA1307;CA1308;CA1515;CA1848;CA2000;CA2007;CA2263</NoWarn>
+		<UserSecretsId>9f19aa7d-1776-4ecc-9232-49061aafd9f2</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="OpenTelemetry.Extensions.Hosting" />
-		<ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj"/>
-		<ProjectReference Include="..\Shared\Shared.csproj"/>
-	</ItemGroup>
-	<ItemGroup>
-		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
+		<ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
+		<ProjectReference Include="..\Shared\Shared.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="Architecture.Tests"/>
-		<InternalsVisibleTo Include="Shared.Tests.Unit"/>
-		<InternalsVisibleTo Include="Web.Tests.Unit"/>
-		<InternalsVisibleTo Include="Web.Tests.Integration"/>
+		<InternalsVisibleTo Include="Architecture.Tests" />
+		<InternalsVisibleTo Include="Shared.Tests.Unit" />
+		<InternalsVisibleTo Include="Web.Tests.Unit" />
+		<InternalsVisibleTo Include="Web.Tests.Integration" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Aspire.MongoDB.Driver"/>
-		<PackageReference Include="Auth0.AspNetCore.Authentication"/>
-		<PackageReference Include="MongoDB.Driver"/>
+		<PackageReference Include="Aspire.MongoDB.Driver" />
+		<PackageReference Include="MongoDB.Driver" />
+		<PackageReference Include="Auth0.AspNetCore.Authentication" />
 	</ItemGroup>
 
 	<!-- Optimized CSS build - only runs when source CSS changes -->
 	<Target Name="BuildTailwindCSS" BeforeTargets="PreBuildEvent" Condition="'$(SkipTailwindBuild)' != 'true'">
-		<Exec Command="npm run build:css"/>
-		<Message Importance="high" Text="TailwindCSS compiled successfully"/>
+		<Exec Command="npm run build:css" />
+		<Message Importance="high" Text="TailwindCSS compiled successfully" />
 	</Target>
 
 	<!-- Ensure npm packages are installed -->
 	<Target Name="EnsureNodeModules" BeforeTargets="BuildTailwindCSS" Condition="'$(SkipTailwindBuild)' != 'true'">
-		<Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)" Condition="!Exists('node_modules')"/>
-		<Message Importance="high" Text="Node modules installed successfully"/>
+		<Exec Command="npm install" WorkingDirectory="$(MSBuildProjectDirectory)" Condition="!Exists('node_modules')" />
+		<Message Importance="high" Text="Node modules installed successfully" />
 	</Target>
 
 </Project>

@@ -4,6 +4,17 @@ IConfiguration configuration = builder.Configuration;
 
 builder.AddServiceDefaults();
 
+// Configure authentication, authorization, and CORS via an extension method
+
+builder.Services.AddAuth0WebAppAuthentication(options =>
+{
+	options.Domain = builder.Configuration["Auth0:Domain"] ?? throw new InvalidOperationException("Auth0:Domain configuration is missing.");
+	options.ClientId = builder.Configuration["Auth0:ClientId"] ?? throw new InvalidOperationException("Auth0:ClientId configuration is missing.");
+	options.Scope = "openid profile email";
+});
+
+//builder.Services.AddAuthenticationAndAuthorization(configuration);
+
 // Add Output Cache
 builder.Services.AddOutputCache();
 
@@ -14,8 +25,7 @@ builder.AddMongoDb();
 builder.Services.AddRazorComponents()
 		.AddInteractiveServerComponents();
 
-// Configure authentication, authorization, and CORS via an extension method
-builder.Services.AddAuthenticationAndAuthorization(configuration);
+builder.Services.AddScoped<TokenProvider>();
 
 WebApplication app = builder.Build();
 
