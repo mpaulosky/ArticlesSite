@@ -199,17 +199,17 @@ public class Article
 	public static Article Empty =>
 			new()
 			{
-					Id = ObjectId.Empty,
-					Title = string.Empty,
-					Introduction = string.Empty,
-					Content = string.Empty,
-					CoverImageUrl = string.Empty,
-					Slug = string.Empty,
-					Author = null,
-					Category = null,
-					IsPublished = false,
-					PublishedOn = null,
-					IsArchived = false
+				Id = ObjectId.Empty,
+				Title = string.Empty,
+				Introduction = string.Empty,
+				Content = string.Empty,
+				CoverImageUrl = string.Empty,
+				Slug = string.Empty,
+				Author = null,
+				Category = null,
+				IsPublished = false,
+				PublishedOn = null,
+				IsArchived = false
 			};
 
 	/// <summary>
