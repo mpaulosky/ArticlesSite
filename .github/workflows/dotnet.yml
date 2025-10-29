@@ -11,12 +11,12 @@ permissions:
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
     paths:
       - "src/**"
       - "tests/**"
   pull_request:
-    branches: [ "*" ]
+    branches: ["*"]
     paths:
       - "src/**"
       - "tests/**"
@@ -34,15 +34,6 @@ jobs:
 
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
-      E2E_HEADLESS: "true"
-      E2E_BASE_URL: "https://127.0.0.1:7180"
-      AUTH0_E2E_USERNAME: ${{ secrets.AUTH0_E2E_USERNAME }}
-      AUTH0_E2E_PASSWORD: ${{ secrets.AUTH0_E2E_PASSWORD }}
-      AUTH0_E2E_USERNAME_ADMIN: ${{ secrets.AUTH0_E2E_USERNAME_ADMIN }}
-      AUTH0_E2E_PASSWORD_ADMIN: ${{ secrets.AUTH0_E2E_PASSWORD_ADMIN }}
-      AUTH0_E2E_PASSWORD_AUTHOR: ${{ secrets.AUTH0_E2E_PASSWORD_AUTHOR }}
-      AUTH0_E2E_USERNAME_USER: ${{ secrets.AUTH0_E2E_USERNAME_USER }}
-      AUTH0_E2E_PASSWORD_USER: ${{ secrets.AUTH0_E2E_PASSWORD_USER }}
 
     steps:
       - uses: actions/checkout@v5
