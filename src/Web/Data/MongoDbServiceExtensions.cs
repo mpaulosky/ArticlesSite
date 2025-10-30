@@ -26,40 +26,34 @@ public static class MongoDbServiceExtensions
 	public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder)
 	{
 		IServiceCollection services = builder.Services;
+		var configuration = builder.Configuration;
 
-		// Aspire.MongoDB.Driver automatically registers both IMongoClient and IMongoDatabase
-		// when AddMongoDBClient is called with a connection name that matches the database resource
-		// defined in the AppHost (via AddDatabase)
-		builder.AddMongoDBClient(ArticleConnect);
+		// Get MongoDB connection string from an environment variable or configuration
+		string connectionString = configuration["ConnectionStrings:articlesdb"] ?? Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING") ?? throw new InvalidOperationException("MongoDB connection string not found.");
+		string databaseName = configuration["MongoDb:DatabaseName"] ?? Environment.GetEnvironmentVariable("MONGODB_DATABASE_NAME") ?? "articlesdb";
 
-		// Manually register IMongoDatabase for DI
+		// Register IMongoClient and IMongoDatabase manually
+		services.AddSingleton<IMongoClient>(_ => new MongoClient(connectionString));
 		services.AddScoped(sp =>
 		{
 			IMongoClient client = sp.GetRequiredService<IMongoClient>();
-
-			// Use your database name here, e.g. "articlesdb"
-			return client.GetDatabase(DatabaseName);
+			return client.GetDatabase(databaseName);
 		});
 
-		// Register MongoDbContext directly using Aspire-provided IMongoClient and IMongoDatabase
 		services.AddScoped<IMongoDbContext>(sp =>
 		{
 			IMongoClient client = sp.GetRequiredService<IMongoClient>();
 			IMongoDatabase database = sp.GetRequiredService<IMongoDatabase>();
-
 			return new MongoDbContext(client, database.DatabaseNamespace.DatabaseName);
 		});
 
-		// Register a factory wrapper for the factory interface
 		services.AddScoped<IMongoDbContextFactory>(sp =>
 		{
 			IMongoDbContext context = sp.GetRequiredService<IMongoDbContext>();
-
 			return new RuntimeMongoDbContextFactory(context);
 		});
 
 		RegisterRepositoriesAndHandlers(services);
-
 		return builder;
 	}
 

@@ -21,7 +21,7 @@
 					<a href="/profile" class="p-1 hover:text-blue-700">Profile</a>
 				</Authorized>
 			</AuthorizeView>
-			<LoginComponent/>
+			<LoginComponent />
 		</div>
 	</div>
 </header>
@@ -31,18 +31,5 @@
 	private const string _siteName = "Article Site";
 
 	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
-
-	private string _username = "";
-
-	protected override async Task OnInitializedAsync()
-	{
-
-		if (AuthenticationState is not null)
-		{
-			var state = await AuthenticationState;
-
-			_username = state.User.Identity?.Name ?? string.Empty;
-		}
-	}
 
 }

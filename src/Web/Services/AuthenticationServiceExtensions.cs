@@ -12,58 +12,37 @@ namespace Web.Services;
 /// <summary>
 /// Extension methods for configuring authentication and authorization services.
 /// </summary>
-//public static class AuthenticationServiceExtensions
-//{
+public static class AuthenticationServiceExtensions
+{
 
-//	/// <summary>
-//	/// Adds and configures authentication, authorization, and CORS services.
-//	/// </summary>
-//	public static IServiceCollection AddAuthenticationAndAuthorization(
-//			this IServiceCollection services,
-//			IConfiguration configuration)
-//	{
-//		// Configure authentication: use cookies as the default authenticate/sign-in scheme
-//		// and Auth0 as the default challenge scheme for external login flows.
-//		// Note: Do not call AddCookie explicitly here because the Auth0 integration
-//		// already registers the cookie scheme. Registering it twice throws a "Scheme already exists" error.
-//		// Register IHttpContextAccessor for DI (required by Auth0AuthenticationStateProvider)
-//		services.AddHttpContextAccessor();
+	/// <summary>
+	/// Adds and configures authentication, authorization, and CORS services.
+	/// </summary>
+	public static void AddAuthenticationAndAuthorization(
+			this IServiceCollection services,
+			IConfiguration configuration)
+	{
 
-//		services.AddAuthentication(options =>
-//				{
-//					options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//					options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-//					options.DefaultChallengeScheme = Auth0Constants.AuthenticationScheme;
-//				});
+		services.AddHttpContextAccessor();
 
-//		// Configure Auth0 authentication
-//		services.AddAuth0WebAppAuthentication(options =>
-//		{
-//			options.Domain = configuration["Auth0:Domain"] ?? string.Empty;
-//			options.ClientId = configuration["Auth0:ClientId"] ?? string.Empty;
-//			options.Scope = "openid profile email";
-//		});
+		services.AddAuth0WebAppAuthentication(options =>
+		{
 
-//		// Configure authentication state services
-//		services.AddScoped<AuthenticationStateProvider, Auth0AuthenticationStateProvider>();
-//		services.AddCascadingAuthenticationState();
+			options.Domain = configuration["Auth0:Domain"] ??
+											throw new InvalidOperationException("Auth0:Domain configuration is missing.");
 
-//		// Add authorization services
-//		services.AddAuthorizationBuilder()
-//				.AddPolicy("RequireAdminRole", policy =>
-//						policy.RequireRole("Admin"))
-//				.AddPolicy("RequireUserRole", policy =>
-//						policy.RequireRole("User", "Author", "Admin"));
+			options.ClientId = configuration["Auth0:ClientId"] ??
+												throw new InvalidOperationException("Auth0:ClientId configuration is missing.");
 
-//		services.AddCors(options =>
-//		{
-//			options.AddDefaultPolicy(policy => policy
-//					.WithOrigins("https://localhost:7180")
-//					.AllowAnyHeader()
-//					.AllowAnyMethod());
-//		});
+			options.Scope = "openid profile email";
 
-//		return services;
-//	}
+		});
 
-//}
+		// Configure authentication state services
+		services.AddScoped<AuthenticationStateProvider, Auth0AuthenticationStateProvider>();
+
+		services.AddCascadingAuthenticationState();
+
+	}
+
+}
