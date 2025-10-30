@@ -17,41 +17,58 @@ public static class GetCategories
 	/// </summary>
 	public interface IGetCategoriesHandler
 	{
+
 		/// <summary>
 		/// Handles retrieval of all categories.
 		/// </summary>
-		/// <returns>A <see cref="Result{IEnumerable{CategoryDto}}"/> representing the outcome.</returns>
+		/// <returns>A Result containing a collection of CategoryDto representing the outcome.</returns>
 		Task<Result<IEnumerable<CategoryDto>>> HandleAsync();
+
 	}
 
 	/// <summary>
 	/// Command handler for retrieving all categories.
 	/// </summary>
-	public class Handler(ICategoryRepository repository, ILogger<Handler> logger) : IGetCategoriesHandler
+	public class Handler
+	(
+			ICategoryRepository repository,
+			ILogger<Handler> logger
+	) : IGetCategoriesHandler
 	{
+
 		/// <inheritdoc />
 		public async Task<Result<IEnumerable<CategoryDto>>> HandleAsync()
 		{
-			Result<IEnumerable<Category>?> result = await repository.GetCategories();
+			Result<IEnumerable<Category>> result = await repository.GetCategories();
 
-			if (result.Failure || result.Value is null)
+			if (result.Failure)
 			{
 				logger.LogWarning("GetCategories: Failed to retrieve categories. Error: {Error}", result.Error);
+
 				return Result.Fail<IEnumerable<CategoryDto>>(result.Error ?? "Failed to retrieve categories");
+			}
+
+			if (result.Value is null)
+			{
+				logger.LogWarning("GetCategories: No categories found.");
+
+				return Result.Fail<IEnumerable<CategoryDto>>("No categories found");
 			}
 
 			var dtos = result.Value.Select(category => new CategoryDto
 			{
-				Id = category.Id,
-				CategoryName = category.CategoryName,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				ModifiedOn = category.ModifiedOn,
-				IsArchived = category.IsArchived
+					Id = category.Id,
+					CategoryName = category.CategoryName,
+					CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+					ModifiedOn = category.ModifiedOn,
+					IsArchived = category.IsArchived
 			}).ToList();
 
 			logger.LogInformation("GetCategories: Successfully retrieved {Count} categories", dtos.Count);
+
 			return Result.Ok<IEnumerable<CategoryDto>>(dtos);
 		}
+
 	}
 
 }

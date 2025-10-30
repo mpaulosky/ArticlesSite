@@ -5,15 +5,19 @@ namespace Web.Tests.Playwright.Fixtures;
 /// </summary>
 public class PlaywrightTestBase : IAsyncLifetime
 {
+
 	private IPlaywright? _playwright;
+
 	private IBrowser? _browser;
+
 	protected IPage Page { get; private set; } = null!;
+
 	protected IBrowserContext Context { get; private set; } = null!;
 
 	/// <summary>
 	/// Gets the base URL for tests from environment variable or uses default
 	/// </summary>
-	protected string BaseUrl => Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost:5000";
+	protected string BaseUrl => Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost:5057";
 
 	public async Task InitializeAsync()
 	{
@@ -22,18 +26,19 @@ public class PlaywrightTestBase : IAsyncLifetime
 		// Launch browser (use Chromium by default)
 		_browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
 		{
-			Headless = true,
-			// Set to false for debugging
-			// Headless = false,
-			// SlowMo = 100
+				Headless = true,
+
+				// Set to false for debugging
+				// Headless = false,
+				// SlowMo = 100
 		});
 
 		// Create a new context with base URL
 		Context = await _browser.NewContextAsync(new BrowserNewContextOptions
 		{
-			BaseURL = BaseUrl,
-			ViewportSize = new ViewportSize { Width = 1280, Height = 720 },
-			ScreenSize = new ScreenSize { Width = 1280, Height = 720 },
+				BaseURL = BaseUrl,
+				ViewportSize = new ViewportSize { Width = 1280, Height = 720 },
+				ScreenSize = new ScreenSize { Width = 1280, Height = 720 },
 		});
 
 		// Create a new page
@@ -62,5 +67,7 @@ public class PlaywrightTestBase : IAsyncLifetime
 
 	// Explicit interface implementations for xUnit v3 compatibility
 	ValueTask IAsyncLifetime.InitializeAsync() => new(InitializeAsync());
+
 	ValueTask IAsyncDisposable.DisposeAsync() => new(DisposeAsync());
+
 }

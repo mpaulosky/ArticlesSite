@@ -149,4 +149,21 @@
 		.ToList();
 	}
 
+	// Private static method for test reflection: GetClaimValue
+	private static string GetClaimValue(ClaimsPrincipal user, params string[] claimTypes)
+	{
+		foreach (var type in claimTypes)
+		{
+			var claim = user.Claims.FirstOrDefault(c => c.Type == type);
+			if (claim != null && claim.Value != null)
+			{
+				// Skip empty string, continue to next claim type
+				if (claim.Value == "")
+					continue;
+				return claim.Value;
+			}
+		}
+		return "N/A";
+	}
+
 }

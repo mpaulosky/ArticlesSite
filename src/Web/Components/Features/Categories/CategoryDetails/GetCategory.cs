@@ -37,14 +37,20 @@ public static class GetCategory
 	/// <summary>
 	/// Command handler for retrieving a category.
 	/// </summary>
-	public class Handler(ICategoryRepository repository, ILogger<Handler> logger) : IGetCategoryHandler
+	public class Handler
+	(
+			ICategoryRepository repository,
+			ILogger<Handler> logger
+	) : IGetCategoryHandler
 	{
+
 		/// <inheritdoc />
 		public async Task<Result<CategoryDto>> HandleAsync(string identifier)
 		{
 			if (string.IsNullOrWhiteSpace(identifier))
 			{
 				logger.LogWarning("GetCategory: Invalid identifier provided");
+
 				return Result.Fail<CategoryDto>("Category identifier cannot be empty");
 			}
 
@@ -55,54 +61,73 @@ public static class GetCategory
 			}
 
 			// Otherwise treat as slug
-			Result<Category?> result = await repository.GetCategory(identifier);
+			Result<Category> result = await repository.GetCategory(identifier);
 
-			if (result.Failure || result.Value is null)
+			if (result.Failure)
 			{
 				logger.LogWarning("GetCategory: Category not found with slug: {Slug}", identifier);
+
 				return Result.Fail<CategoryDto>(result.Error ?? "Category not found");
 			}
 
-			Category category = result.Value;
+			if (result.Value is null)
+			{
+				logger.LogWarning("GetCategory: Category not found with slug: {Slug}", identifier);
+
+				return Result.Fail<CategoryDto>("Category not found");
+			}
+
+			var category = result.Value;
 
 			var dto = new CategoryDto
 			{
-				Id = category.Id,
-				CategoryName = category.CategoryName,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				ModifiedOn = category.ModifiedOn,
-				IsArchived = category.IsArchived
+					Id = category.Id,
+					CategoryName = category.CategoryName,
+					CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+					ModifiedOn = category.ModifiedOn,
+					IsArchived = category.IsArchived
 			};
 
 			logger.LogInformation("GetCategory: Successfully retrieved category with slug: {Slug}", identifier);
+
 			return Result.Ok(dto);
 		}
 
 		/// <inheritdoc />
 		public async Task<Result<CategoryDto>> HandleByIdAsync(ObjectId id)
 		{
-			Result<Category?> result = await repository.GetCategoryByIdAsync(id);
+			Result<Category> result = await repository.GetCategoryByIdAsync(id);
 
-			if (result.Failure || result.Value is null)
+			if (result.Failure)
 			{
 				logger.LogWarning("GetCategory: Category not found with ID: {Id}", id);
+
 				return Result.Fail<CategoryDto>(result.Error ?? "Category not found");
 			}
 
-			Category category = result.Value;
+			if (result.Value is null)
+			{
+				logger.LogWarning("GetCategory: Category not found with ID: {Id}", id);
+
+				return Result.Fail<CategoryDto>("Category not found");
+			}
+
+			var category = result.Value;
 
 			var dto = new CategoryDto
 			{
-				Id = category.Id,
-				CategoryName = category.CategoryName,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				ModifiedOn = category.ModifiedOn,
-				IsArchived = category.IsArchived
+					Id = category.Id,
+					CategoryName = category.CategoryName,
+					CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+					ModifiedOn = category.ModifiedOn,
+					IsArchived = category.IsArchived
 			};
 
 			logger.LogInformation("GetCategory: Successfully retrieved category with ID: {Id}", id);
+
 			return Result.Ok(dto);
 		}
+
 	}
 
 }

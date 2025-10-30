@@ -24,6 +24,13 @@
 			],
 			"dependsOrder": "sequence",
 			"group": "none"
+		},
+		{
+			"label": "run-web-app",
+			"type": "shell",
+			"command": "dotnet run --project src/Web/Web.csproj",
+			"isBackground": true,
+			"group": "none"
 		}
 	]
 }

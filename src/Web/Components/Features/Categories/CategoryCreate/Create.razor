@@ -1,18 +1,18 @@
 @page "/categories/create"
 
 @inject NavigationManager Navigation
-@inject Web.Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler CreateHandler
+@inject CreateCategory.ICreateCategoryHandler CreateHandler
 @inject ILogger<Create> Logger
 
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
 
-<PageHeadingComponent HeaderText="Create New Category" Level="1" TextColorClass="blue-500"/>
+<PageHeadingComponent HeaderText="Create New Category" Level="1" TextColorClass="blue-500" />
 
 <div class="card">
 	<div class="card-body">
 		<EditForm Model="@_category" OnValidSubmit="HandleSubmit">
-			<DataAnnotationsValidator/>
-			<ValidationSummary/>
+			<DataAnnotationsValidator />
+			<ValidationSummary />
 
 			@if (!string.IsNullOrEmpty(_errorMessage))
 			{
@@ -23,8 +23,9 @@
 
 			<div class="mb-3">
 				<label for="categoryName" class="form-label">Category Name</label>
-				<InputText id="categoryName" class="form-control" @bind-Value="_category.CategoryName" placeholder="Enter category name"/>
-				<ValidationMessage For="@(() => _category.CategoryName)"/>
+				<InputText id="categoryName" class="form-control" @bind-Value="_category.CategoryName"
+					placeholder="Enter category name" />
+				<ValidationMessage For="@(() => _category.CategoryName)" />
 			</div>
 
 			<div class="mb-3">
@@ -50,22 +51,22 @@
 	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
 
 	/// <summary>
-	///   The category data being created.
+	/// The category data being created.
 	/// </summary>
 	private CategoryDto _category = new();
 
 	/// <summary>
-	///   Indicates whether the form is currently being submitted.
+	/// Indicates whether the form is currently being submitted.
 	/// </summary>
 	private bool _isSubmitting;
 
 	/// <summary>
-	///   Error message to display if creation fails.
+	/// Error message to display if creation fails.
 	/// </summary>
 	private string? _errorMessage;
 
 	/// <summary>
-	///   Handles the form submission to create a new category.
+	/// Handles the form submission to create a new category.
 	/// </summary>
 	private async Task HandleSubmit()
 	{
@@ -84,7 +85,7 @@
 			}
 			else
 			{
-				_errorMessage = result?.Error ?? "Failed to create category.";
+				_errorMessage = result.Error ?? "Failed to create category.";
 				Logger?.LogWarning("Failed to create category. Error: {Error}", _errorMessage);
 			}
 		}
@@ -100,7 +101,7 @@
 	}
 
 	/// <summary>
-	///   Navigates back to the category list page.
+	/// Navigates back to the category list page.
 	/// </summary>
 	private void GoToList()
 	{

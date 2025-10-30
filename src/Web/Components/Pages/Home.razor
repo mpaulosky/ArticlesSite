@@ -3,7 +3,7 @@
 @* @inject GetArticles.IGetArticlesHandler ArticlesHandler *@
 @inject ILogger<Home> Logger
 
-<PageHeadingComponent Level="1" HeaderText="@_pageTitle"/>
+<PageHeadingComponent Level="1" HeaderText="@_pageTitle" />
 
 <!-- Hero Section -->
 <section class="relative bg-gradient-to-r from-blue-600 to-blue-800 rounded-lg shadow-xl overflow-hidden mb-8">
@@ -18,11 +18,11 @@
 		</p>
 		<div class="flex flex-wrap justify-center gap-4">
 			<a href="/articles"
-				 class="inline-block bg-white text-blue-600 font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-50 transition-colors duration-200">
+				class="inline-block bg-white text-blue-600 font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-50 transition-colors duration-200">
 				Browse All Articles
 			</a>
 			<a href="/about"
-				 class="inline-block bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-200 border-2 border-white">
+				class="inline-block bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-200 border-2 border-white">
 				Learn More
 			</a>
 		</div>
@@ -39,7 +39,7 @@
 	@if (_isLoading)
 	{
 		<div class="flex justify-center items-center py-12">
-			<LoadingComponent/>
+			<LoadingComponent />
 		</div>
 	}
 	else if (_recentArticles == null || !_recentArticles.Any())
@@ -54,11 +54,10 @@
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 			@foreach (var article in _recentArticles)
 			{
-				<article
-					class="bg-gray-700 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+				<article class="bg-gray-700 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
 					@if (!string.IsNullOrEmpty(article.CoverImageUrl))
 					{
-						<img src="@article.CoverImageUrl" alt="@article.Title" class="w-full h-48 object-cover"/>
+						<img src="@article.CoverImageUrl" alt="@article.Title" style="width:100%;height:33%;object-fit:cover;" />
 					}
 					else
 					{
@@ -84,7 +83,7 @@
 							@article.Introduction
 						</p>
 						<a href="/articles/details/@article.Id"
-							 class="inline-block text-blue-400 font-semibold hover:text-blue-300 transition-colors duration-200">
+							class="inline-block text-blue-400 font-semibold hover:text-blue-300 transition-colors duration-200">
 							Read More →
 						</a>
 					</div>
@@ -102,7 +101,7 @@
 		community.
 	</p>
 	<a href="/contact"
-		 class="inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200">
+		class="inline-block bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200">
 		Get in Touch
 	</a>
 </section>
@@ -123,19 +122,19 @@
 			//
 			// if (result.Success && result.Value != null)
 			// {
-			// 	// Get published articles, ordered by published date, take top 6
-			// 	_recentArticles = result.Value
-			// 	.Where(a => a.IsPublished && !a.IsArchived)
-			// 	.OrderByDescending(a => a.PublishedOn ?? a.CreatedOn)
-			// 	.Take(6)
-			// 	.ToList();
+			// // Get published articles, ordered by published date, take top 6
+			// _recentArticles = result.Value
+			// .Where(a => a.IsPublished && !a.IsArchived)
+			// .OrderByDescending(a => a.PublishedOn ?? a.CreatedOn)
+			// .Take(6)
+			// .ToList();
 			//
-			// 	Logger.LogInformation("Loaded {Count} recent articles for home page", _recentArticles.Count);
+			// Logger.LogInformation("Loaded {Count} recent articles for home page", _recentArticles.Count);
 			// }
 			// else
 			// {
-			// 	_recentArticles = new List<ArticleDto>();
-			// 	Logger.LogWarning("Failed to load articles: {Error}", result.Error);
+			// _recentArticles = new List<ArticleDto>();
+			// Logger.LogWarning("Failed to load articles: {Error}", result.Error);
 			// }
 		}
 		catch (Exception ex)

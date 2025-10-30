@@ -6,6 +6,55 @@ namespace Web.Tests.Playwright.Tests;
 
 public class ArticlesListTests : PlaywrightTestBase
 {
+
+	[Fact]
+	public async Task ShouldFilterByArchivedStatus()
+	{
+		var articlesPage = new ArticlesListPage(Page);
+		await articlesPage.GotoAsync();
+
+		// Find and toggle the 'Include Archived' checkbox
+		var includeArchivedCheckbox = Page.Locator("input[type='checkbox']", new() { HasText = "Include Archived" });
+		await includeArchivedCheckbox.CheckAsync();
+		await Page.WaitForTimeoutAsync(500);
+
+		// Verify that archived articles are now visible (by checking for 'Archived: Yes')
+		var archivedLabels =
+				await Page.Locator(".container-card span", new() { HasText = "Archived:" }).AllTextContentsAsync();
+
+		archivedLabels.Should().Contain(label => label.Contains("Yes"));
+
+		// Uncheck to hide archived articles
+		await includeArchivedCheckbox.UncheckAsync();
+		await Page.WaitForTimeoutAsync(500);
+		archivedLabels = await Page.Locator(".container-card span", new() { HasText = "Archived:" }).AllTextContentsAsync();
+		archivedLabels.Should().NotContain(label => label.Contains("Yes"));
+	}
+
+	[Fact]
+	public async Task ShouldFilterByUserArticles()
+	{
+		var articlesPage = new ArticlesListPage(Page);
+		await articlesPage.GotoAsync();
+
+		// Find and toggle the 'Show My Articles Only' checkbox
+		var myArticlesCheckbox = Page.Locator("input[type='checkbox']", new() { HasText = "Show My Articles Only" });
+		await myArticlesCheckbox.CheckAsync();
+		await Page.WaitForTimeoutAsync(500);
+
+		// Verify that only articles authored by the current user are shown
+		var authorLabels = await Page.Locator(".container-card span", new() { HasText = "Author:" }).AllTextContentsAsync();
+
+		// This assumes the test user is set up; adjust as needed for your test environment
+		authorLabels.Should().AllSatisfy(label => label.Contains("User"));
+
+		// Uncheck to show all articles
+		await myArticlesCheckbox.UncheckAsync();
+		await Page.WaitForTimeoutAsync(500);
+		authorLabels = await Page.Locator(".container-card span", new() { HasText = "Author:" }).AllTextContentsAsync();
+		authorLabels.Should().NotBeEmpty();
+	}
+
 	[Fact]
 	public async Task ShouldLoadArticlesListPageSuccessfully()
 	{
@@ -121,6 +170,7 @@ public class ArticlesListTests : PlaywrightTestBase
 		{
 			// Replace obsolete HasArticlesListAsync with a check for articles count
 			var count = await articlesPage.GetArticlesCountAsync();
+
 			if (count > 0)
 			{
 				// If SearchInput is available, type into it and trigger search
@@ -130,6 +180,7 @@ public class ArticlesListTests : PlaywrightTestBase
 					await articlesPage.SearchInput.PressAsync("Enter");
 				}
 			}
+
 			// If search works, just verify page is still loaded
 			articlesPage.GetCurrentUrl().Should().Contain("/articles");
 		}
@@ -139,4 +190,5 @@ public class ArticlesListTests : PlaywrightTestBase
 			true.Should().BeTrue();
 		}
 	}
+
 }

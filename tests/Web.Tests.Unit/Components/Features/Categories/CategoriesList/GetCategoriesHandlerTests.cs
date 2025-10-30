@@ -46,8 +46,8 @@ public class GetCategoriesHandlerTests
 		// Arrange
 		var categories = new List<Category>
 		{
-			new() { CategoryName = "Tech", Slug = "tech", IsArchived = false },
-			new() { CategoryName = "Business", Slug = "business", IsArchived = false }
+				new() { CategoryName = "Tech", Slug = "tech", IsArchived = false },
+				new() { CategoryName = "Business", Slug = "business", IsArchived = false }
 		};
 
 		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(categories)));
@@ -60,7 +60,7 @@ public class GetCategoriesHandlerTests
 		result.Value.Should().NotBeNull();
 		result.Value.Should().HaveCount(2);
 
-		var firstDto = result.Value!.First();
+		var firstDto = result.Value.First();
 		firstDto.CategoryName.Should().Be("Tech");
 		firstDto.IsArchived.Should().BeFalse();
 	}
@@ -69,21 +69,21 @@ public class GetCategoriesHandlerTests
 	public async Task HandleAsync_WithEmptyList_ShouldReturnFailure()
 	{
 		// Arrange
-		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(new List<Category>())));
+		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Fail<IEnumerable<Category>>("No categories found")));
 
 		// Act
 		var result = await _handler.HandleAsync();
 
 		// Assert
-		result.Success.Should().BeTrue();
-		result.Error.Should().BeNull();
+		result.Success.Should().BeFalse();
+		result.Error.Should().Be("No categories found");
 	}
 
 	[Fact]
 	public async Task HandleAsync_WhenRepositoryReturnsNull_ShouldReturnFailure()
 	{
 		// Arrange
-		_mockRepository.GetCategories().Returns(Task.FromResult(Result<IEnumerable<Category>?>.Fail("Database error")));
+		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Fail<IEnumerable<Category>>("Database error")));
 
 		// Act
 		var result = await _handler.HandleAsync();
@@ -102,22 +102,22 @@ public class GetCategoriesHandlerTests
 
 		var category = new Category
 		{
-			CategoryName = "Test Category",
-			Slug = "test-category",
-			CreatedOn = createdOn,
-			ModifiedOn = modifiedOn,
-			IsArchived = false
+				CategoryName = "Test Category",
+				Slug = "test-category",
+				CreatedOn = createdOn,
+				ModifiedOn = modifiedOn,
+				IsArchived = false
 		};
 
-		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(new List<Category> { category })));
+		_mockRepository.GetCategories()
+				.Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(new List<Category> { category })));
 
 		// Act
 		var result = await _handler.HandleAsync();
 
 		// Assert
 		result.Success.Should().BeTrue();
-		var dto = result.Value!.First();
-
+		var dto = result.Value.First();
 		dto.CategoryName.Should().Be("Test Category");
 		dto.CreatedOn.Should().Be(createdOn);
 		dto.ModifiedOn.Should().Be(modifiedOn);
@@ -130,9 +130,9 @@ public class GetCategoriesHandlerTests
 		// Arrange
 		var categories = new List<Category>
 		{
-			new() { CategoryName = "First", Slug = "first" },
-			new() { CategoryName = "Second", Slug = "second" },
-			new() { CategoryName = "Third", Slug = "third" }
+				new() { CategoryName = "First", Slug = "first" },
+				new() { CategoryName = "Second", Slug = "second" },
+				new() { CategoryName = "Third", Slug = "third" }
 		};
 
 		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(categories)));
@@ -144,7 +144,7 @@ public class GetCategoriesHandlerTests
 		result.Success.Should().BeTrue();
 		result.Value.Should().HaveCount(3);
 
-		var dtos = result.Value!.ToList();
+		var dtos = result.Value.ToList();
 		dtos[0].CategoryName.Should().Be("First");
 		dtos[1].CategoryName.Should().Be("Second");
 		dtos[2].CategoryName.Should().Be("Third");
