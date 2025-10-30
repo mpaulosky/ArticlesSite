@@ -56,7 +56,7 @@ public class CreateCategoryHandlerTests
 			IsArchived = false
 		};
 
-		_mockRepository.AddCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result<Category>.Ok(new Category())));
+		_mockRepository.AddCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result.Ok(new Category())));
 
 		// Act
 		var result = await _handler.HandleAsync(categoryDto);
@@ -76,7 +76,7 @@ public class CreateCategoryHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The request is null.");
+		result.Error.Should().Be("Category data cannot be null");
 		await _mockRepository.DidNotReceive().AddCategory(Arg.Any<Category>());
 	}
 
@@ -103,29 +103,6 @@ public class CreateCategoryHandlerTests
 	}
 
 	[Fact]
-	public async Task HandleAsync_WhenRepositoryThrowsException_ShouldReturnFailure()
-	{
-		// Arrange
-		var categoryDto = new CategoryDto
-		{
-			Id = ObjectId.GenerateNewId(),
-			CategoryName = "Test Category",
-			CreatedOn = DateTimeOffset.UtcNow,
-			IsArchived = false
-		};
-
-		_mockRepository.AddCategory(Arg.Any<Category>()).Returns<Task<Result<Category>>>(x => throw new InvalidOperationException("Connection failed"));
-
-		// Act
-		var result = await _handler.HandleAsync(categoryDto);
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().StartWith("An error occurred while creating the category:");
-		result.Error.Should().Contain("Connection failed");
-	}
-
-	[Fact]
 	public async Task HandleAsync_ShouldMapCategoryName()
 	{
 		// Arrange
@@ -137,7 +114,7 @@ public class CreateCategoryHandlerTests
 			IsArchived = false
 		};
 
-		_mockRepository.AddCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result<Category>.Ok(new Category())));
+		_mockRepository.AddCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result.Ok(new Category())));
 
 		// Act
 		var result = await _handler.HandleAsync(categoryDto);

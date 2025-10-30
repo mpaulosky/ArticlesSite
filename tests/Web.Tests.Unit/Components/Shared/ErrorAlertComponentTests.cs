@@ -19,6 +19,7 @@ namespace Web.Tests.Unit.Components.Shared;
 /// Unit tests for ErrorAlertComponent using Bunit
 /// </summary>
 [ExcludeFromCodeCoverage]
+[Obsolete]
 public class ErrorAlertComponentTests : Bunit.TestContext
 {
 	[Fact]

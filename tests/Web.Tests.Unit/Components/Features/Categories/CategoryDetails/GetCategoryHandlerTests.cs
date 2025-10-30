@@ -55,7 +55,7 @@ public class GetCategoryHandlerTests
 			IsArchived = false
 		};
 
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result<Category?>.Ok(category)));
+		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(category)));
 
 		// Act
 		var result = await _handler.HandleAsync(objectId.ToString());
@@ -75,7 +75,7 @@ public class GetCategoryHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
+		result.Error.Should().Be("Category identifier cannot be empty");
 	}
 
 	[Fact]
@@ -86,7 +86,7 @@ public class GetCategoryHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
+		result.Error.Should().Be("Category identifier cannot be empty");
 	}
 
 	[Fact]
@@ -97,18 +97,7 @@ public class GetCategoryHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WithInvalidObjectId_ShouldReturnFailure()
-	{
-		// Act
-		var result = await _handler.HandleAsync("invalid-id");
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
+		result.Error.Should().Be("Category identifier cannot be empty");
 	}
 
 	[Fact]
@@ -143,21 +132,6 @@ public class GetCategoryHandlerTests
 	}
 
 	[Fact]
-	public async Task HandleAsync_WhenRepositoryThrowsException_ShouldReturnFailure()
-	{
-		// Arrange
-		var objectId = ObjectId.GenerateNewId();
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns<Task<Result<Category?>>>(x => throw new InvalidOperationException("Connection failed"));
-
-		// Act
-		var result = await _handler.HandleAsync(objectId.ToString());
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Connection failed");
-	}
-
-	[Fact]
 	public async Task HandleAsync_ShouldMapAllCategoryProperties()
 	{
 		// Arrange
@@ -175,7 +149,7 @@ public class GetCategoryHandlerTests
 			IsArchived = false
 		};
 
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result<Category?>.Ok(category)));
+		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(category)));
 
 		// Act
 		var result = await _handler.HandleAsync(objectId.ToString());

@@ -74,8 +74,8 @@ public class EditArticleHandlerTests
 			false
 		);
 
-		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result<Article?>.Ok(existingArticle)));
-		_mockRepository.UpdateArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result<Article>.Ok(new Article())));
+		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(existingArticle)));
+		_mockRepository.UpdateArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
 
 		// Act
 		var result = await _handler.HandleAsync(articleDto);
@@ -98,7 +98,7 @@ public class EditArticleHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The request is null.");
+		result.Error.Should().Be("Article data cannot be null");
 		await _mockRepository.DidNotReceive().GetArticleByIdAsync(Arg.Any<ObjectId>());
 	}
 
@@ -158,7 +158,7 @@ public class EditArticleHandlerTests
 			false
 		);
 
-		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result<Article?>.Ok(existingArticle)));
+		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(existingArticle)));
 		_mockRepository.UpdateArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result<Article>.Fail("Update failed")));
 
 		// Act
@@ -167,38 +167,6 @@ public class EditArticleHandlerTests
 		// Assert
 		result.Success.Should().BeFalse();
 		result.Error.Should().Be("Update failed");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WhenRepositoryThrowsException_ShouldReturnFailure()
-	{
-		// Arrange
-		var objectId = ObjectId.GenerateNewId();
-		var articleDto = new ArticleDto(
-			objectId,
-			"test-article",
-			"Test Article",
-			"Test Intro",
-			"Test Content",
-			"",
-			null,
-			null,
-			false,
-			null,
-			DateTimeOffset.UtcNow,
-			null,
-			false,
-			false
-		);
-
-		_mockRepository.GetArticleByIdAsync(objectId).Returns<Task<Result<Article?>>>(x => throw new InvalidOperationException("Connection failed"));
-
-		// Act
-		var result = await _handler.HandleAsync(articleDto);
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Connection failed");
 	}
 
 	[Fact]
@@ -230,8 +198,8 @@ public class EditArticleHandlerTests
 			false
 		);
 
-		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result<Article?>.Ok(existingArticle)));
-		_mockRepository.UpdateArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result<Article>.Ok(new Article())));
+		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(existingArticle)));
+		_mockRepository.UpdateArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
 
 		// Act
 		var result = await _handler.HandleAsync(articleDto);

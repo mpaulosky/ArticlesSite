@@ -38,6 +38,9 @@
 		<PackageReference Include="NSubstitute.Analyzers.CSharp" />
 		<PackageReference Include="xunit.v3"/>
 		<PackageReference Include="xunit.runner.visualstudio"/>
+		<PackageReference Include="MongoDB.Driver" />
+		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
+		<PackageReference Include="Auth0.AspNetCore.Authentication" />
 	</ItemGroup>
 
 	<ItemGroup>

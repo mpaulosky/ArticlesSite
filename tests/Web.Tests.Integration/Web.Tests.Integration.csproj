@@ -34,7 +34,6 @@
 		<PackageReference Include="xunit.runner.visualstudio"/>
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
 		<PackageReference Include="MongoDB.Driver" />
-		<PackageReference Include="Aspire.MongoDB.Driver" />
 		<PackageReference Include="Auth0.AspNetCore.Authentication" />
 		<PackageReference Include="OpenTelemetry.Extensions.Hosting" />
 		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />

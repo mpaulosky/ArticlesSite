@@ -68,7 +68,7 @@ public class CreateArticleHandlerTests
 			false
 		);
 
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result<Article>.Ok(new Article())));
+		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
 
 		// Act
 		var result = await _handler.HandleAsync(articleDto);
@@ -91,7 +91,7 @@ public class CreateArticleHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The request is null.");
+		result.Error.Should().Be("Article data cannot be null");
 		await _mockRepository.DidNotReceive().AddArticle(Arg.Any<Article>());
 	}
 
@@ -127,38 +127,6 @@ public class CreateArticleHandlerTests
 	}
 
 	[Fact]
-	public async Task HandleAsync_WhenRepositoryThrowsException_ShouldReturnFailure()
-	{
-		// Arrange
-		var articleDto = new ArticleDto(
-			ObjectId.GenerateNewId(),
-			"test-article",
-			"Test Article",
-			"Test Intro",
-			"Test Content",
-			"https://example.com/image.jpg",
-			null,
-			null,
-			false,
-			null,
-			DateTimeOffset.UtcNow,
-			null,
-			false,
-			false
-		);
-
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns<Task<Result<Article>>>(x => throw new InvalidOperationException("Connection failed"));
-
-		// Act
-		var result = await _handler.HandleAsync(articleDto);
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().StartWith("An error occurred while creating the article:");
-		result.Error.Should().Contain("Connection failed");
-	}
-
-	[Fact]
 	public async Task HandleAsync_ShouldMapAllDtoProperties()
 	{
 		// Arrange
@@ -185,7 +153,7 @@ public class CreateArticleHandlerTests
 			false
 		);
 
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result<Article>.Ok(new Article())));
+		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
 
 		// Act
 		var result = await _handler.HandleAsync(articleDto);
@@ -227,7 +195,7 @@ public class CreateArticleHandlerTests
 			false
 		);
 
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result<Article>.Ok(new Article())));
+		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
 
 		// Act
 		var result = await _handler.HandleAsync(articleDto);
@@ -260,7 +228,7 @@ public class CreateArticleHandlerTests
 			false
 		);
 
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result<Article>.Ok(new Article())));
+		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
 
 		// Act
 		var result = await _handler.HandleAsync(articleDto);

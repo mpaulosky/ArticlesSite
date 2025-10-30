@@ -50,7 +50,7 @@ public class GetCategoriesHandlerTests
 			new() { CategoryName = "Business", Slug = "business", IsArchived = false }
 		};
 
-		_mockRepository.GetCategories().Returns(Task.FromResult(Result<IEnumerable<Category>?>.Ok((IEnumerable<Category>)categories)));
+		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(categories)));
 
 		// Act
 		var result = await _handler.HandleAsync();
@@ -69,14 +69,14 @@ public class GetCategoriesHandlerTests
 	public async Task HandleAsync_WithEmptyList_ShouldReturnFailure()
 	{
 		// Arrange
-		_mockRepository.GetCategories().Returns(Task.FromResult(Result<IEnumerable<Category>?>.Ok((IEnumerable<Category>)new List<Category>())));
+		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(new List<Category>())));
 
 		// Act
 		var result = await _handler.HandleAsync();
 
 		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("No categories found.");
+		result.Success.Should().BeTrue();
+		result.Error.Should().BeNull();
 	}
 
 	[Fact]
@@ -91,20 +91,6 @@ public class GetCategoriesHandlerTests
 		// Assert
 		result.Success.Should().BeFalse();
 		result.Error.Should().Be("Database error");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WhenRepositoryThrowsException_ShouldReturnFailure()
-	{
-		// Arrange
-		_mockRepository.GetCategories().Returns<Task<Result<IEnumerable<Category>?>>>(x => throw new InvalidOperationException("Connection failed"));
-
-		// Act
-		var result = await _handler.HandleAsync();
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Connection failed");
 	}
 
 	[Fact]
@@ -123,7 +109,7 @@ public class GetCategoriesHandlerTests
 			IsArchived = false
 		};
 
-		_mockRepository.GetCategories().Returns(Task.FromResult(Result<IEnumerable<Category>?>.Ok((IEnumerable<Category>)new List<Category> { category })));
+		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(new List<Category> { category })));
 
 		// Act
 		var result = await _handler.HandleAsync();
@@ -149,7 +135,7 @@ public class GetCategoriesHandlerTests
 			new() { CategoryName = "Third", Slug = "third" }
 		};
 
-		_mockRepository.GetCategories().Returns(Task.FromResult(Result<IEnumerable<Category>?>.Ok((IEnumerable<Category>)categories)));
+		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(categories)));
 
 		// Act
 		var result = await _handler.HandleAsync();

@@ -17,6 +17,7 @@ namespace Web.Tests.Unit.Components.Shared;
 /// Unit tests for LoadingComponent using Bunit
 /// </summary>
 [ExcludeFromCodeCoverage]
+[Obsolete]
 public class LoadingComponentTests : Bunit.TestContext
 {
 	[Fact]

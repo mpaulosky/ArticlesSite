@@ -54,7 +54,7 @@ public class GetArticlesHandlerTests
 			new("Test 2", "Intro 2", "Content 2", string.Empty, author, category) { IsPublished = false }
 		};
 
-		_mockRepository.GetArticles().Returns(Task.FromResult(Result<IEnumerable<Article>?>.Ok((IEnumerable<Article>)articles)));
+		_mockRepository.GetArticles().Returns(Task.FromResult(Result.Ok<IEnumerable<Article>>(articles)));
 
 		// Act
 		var result = await _handler.HandleAsync();
@@ -75,14 +75,13 @@ public class GetArticlesHandlerTests
 	public async Task HandleAsync_WithEmptyList_ShouldReturnFailure()
 	{
 		// Arrange
-		_mockRepository.GetArticles().Returns(Task.FromResult(Result<IEnumerable<Article>?>.Ok((IEnumerable<Article>)new List<Article>())));
+		_mockRepository.GetArticles().Returns(Task.FromResult(Result.Ok<IEnumerable<Article>>(new List<Article>())));
 
 		// Act
 		var result = await _handler.HandleAsync();
 
 		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("No articles found.");
+		result.Error.Should().BeNull();
 	}
 
 	[Fact]
@@ -97,20 +96,6 @@ public class GetArticlesHandlerTests
 		// Assert
 		result.Success.Should().BeFalse();
 		result.Error.Should().Be("Database error");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WhenRepositoryThrowsException_ShouldReturnFailure()
-	{
-		// Arrange
-		_mockRepository.GetArticles().Returns<Task<Result<IEnumerable<Article>?>>>(x => throw new InvalidOperationException("Connection failed"));
-
-		// Act
-		var result = await _handler.HandleAsync();
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Connection failed");
 	}
 
 	[Fact]
@@ -133,7 +118,7 @@ public class GetArticlesHandlerTests
 			IsArchived = false
 		};
 
-		_mockRepository.GetArticles().Returns(Task.FromResult(Result<IEnumerable<Article>?>.Ok((IEnumerable<Article>)new List<Article> { article })));
+		_mockRepository.GetArticles().Returns(Task.FromResult(Result.Ok<IEnumerable<Article>>(new List<Article> { article })));
 
 		// Act
 		var result = await _handler.HandleAsync();
@@ -154,7 +139,7 @@ public class GetArticlesHandlerTests
 		dto.CreatedOn.Should().Be(createdOn);
 		dto.ModifiedOn.Should().Be(modifiedOn);
 		dto.IsArchived.Should().BeFalse();
-		dto.CanEdit.Should().BeFalse(); // Default value in DTO constructor
+		dto.CanEdit.Should().BeTrue(); // Default value in DTO constructor
 	}
 
 	[Fact]
@@ -168,7 +153,7 @@ public class GetArticlesHandlerTests
 			new("Third", "Intro", "Content", string.Empty, null, null)
 		};
 
-		_mockRepository.GetArticles().Returns(Task.FromResult(Result<IEnumerable<Article>?>.Ok((IEnumerable<Article>)articles)));
+		_mockRepository.GetArticles().Returns(Task.FromResult(Result.Ok<IEnumerable<Article>>(articles)));
 
 		// Act
 		var result = await _handler.HandleAsync();

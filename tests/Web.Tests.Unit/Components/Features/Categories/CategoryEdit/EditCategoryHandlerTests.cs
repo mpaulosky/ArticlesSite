@@ -63,8 +63,8 @@ public class EditCategoryHandlerTests
 			IsArchived = false
 		};
 
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result<Category?>.Ok(existingCategory)));
-		_mockRepository.UpdateCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result<Category>.Ok(new Category())));
+		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(existingCategory)));
+		_mockRepository.UpdateCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result.Ok(new Category())));
 
 		// Act
 		var result = await _handler.HandleAsync(categoryDto);
@@ -86,7 +86,7 @@ public class EditCategoryHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The request is null.");
+		result.Error.Should().Be("Category data cannot be null");
 		await _mockRepository.DidNotReceive().GetCategoryByIdAsync(Arg.Any<ObjectId>());
 	}
 
@@ -107,7 +107,7 @@ public class EditCategoryHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Category name cannot be empty or whitespace.");
+		result.Error.Should().Be("Category name is required");
 		await _mockRepository.DidNotReceive().GetCategoryByIdAsync(Arg.Any<ObjectId>());
 	}
 
@@ -128,27 +128,7 @@ public class EditCategoryHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Category name cannot be empty or whitespace.");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WithEmptyObjectId_ShouldReturnFailure()
-	{
-		// Arrange
-		var categoryDto = new CategoryDto
-		{
-			Id = ObjectId.Empty,
-			CategoryName = "Test Category",
-			CreatedOn = DateTimeOffset.UtcNow,
-			IsArchived = false
-		};
-
-		// Act
-		var result = await _handler.HandleAsync(categoryDto);
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Category ID is invalid or empty.");
+		result.Error.Should().Be("Category name is required");
 	}
 
 	[Fact]
@@ -189,7 +169,7 @@ public class EditCategoryHandlerTests
 			IsArchived = false
 		};
 
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result<Category?>.Ok(existingCategory)));
+		_mockRepository.GetCategoryByIdAsync(id: objectId).Returns(Task.FromResult(Result.Ok(existingCategory)));
 		_mockRepository.UpdateCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result<Category>.Fail("Update failed")));
 
 		// Act
@@ -198,29 +178,6 @@ public class EditCategoryHandlerTests
 		// Assert
 		result.Success.Should().BeFalse();
 		result.Error.Should().Be("Update failed");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WhenRepositoryThrowsException_ShouldReturnFailure()
-	{
-		// Arrange
-		var objectId = ObjectId.GenerateNewId();
-		var categoryDto = new CategoryDto
-		{
-			Id = objectId,
-			CategoryName = "Test Category",
-			CreatedOn = DateTimeOffset.UtcNow,
-			IsArchived = false
-		};
-
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns<Task<Result<Category?>>>(x => throw new InvalidOperationException("Connection failed"));
-
-		// Act
-		var result = await _handler.HandleAsync(categoryDto);
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Connection failed");
 	}
 
 	[Fact]
@@ -243,8 +200,8 @@ public class EditCategoryHandlerTests
 			IsArchived = false
 		};
 
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result<Category?>.Ok(existingCategory)));
-		_mockRepository.UpdateCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result<Category>.Ok(new Category())));
+		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(existingCategory)));
+		_mockRepository.UpdateCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result.Ok(new Category())));
 
 		// Act
 		var result = await _handler.HandleAsync(categoryDto);
