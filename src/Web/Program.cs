@@ -18,9 +18,19 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<TokenProvider>();
 
+// Register DatabaseSeeder
+builder.Services.AddScoped<DatabaseSeeder>();
+
 WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
+
+// Seed database on startup
+using (var scope = app.Services.CreateScope())
+{
+	var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+	await seeder.SeedAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -1,0 +1,122 @@
+@page "/articles"
+@using global::Shared.Models
+@inject GetArticles.IGetArticlesHandler ArticlesHandler
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+<div class="container-card mb-4 flex items-center justify-between">
+	<h1 class="text-2xl font-bold text-gray-100">All Articles</h1>
+	<button class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700" @onclick="CreateNewArticle"
+		disabled="@(!_canCreate)">Create
+		New Article</button>
+</div>
+
+@if (_isLoading)
+{
+	<LoadingComponent />
+}
+else if (_errorMessage != null)
+{
+	<ErrorAlertComponent Title="Error loading articles">
+		@_errorMessage
+	</ErrorAlertComponent>
+}
+else if (_articles == null || !_articles.Any())
+{
+	<div class="bg-gray-700 rounded-lg p-8 text-center">
+		<p class="text-gray-300 text-lg mb-4">No articles available yet.</p>
+		<p class="text-gray-400">Check back soon for new content!</p>
+	</div>
+}
+else
+{
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		@foreach (var article in _articles)
+		{
+			<div class="container-card bg-gray-700 rounded-lg shadow-lg p-6 flex flex-col justify-between min-h-[260px]">
+				<div>
+					<h2 class="text-xl font-bold text-blue-300 mb-2">@article.Title</h2>
+					<p class="text-gray-200 mb-2" title="@article.Introduction">
+						<span class="font-semibold text-gray-400">Intro:</span> @article.Introduction
+					</p>
+					<div class="mb-2">
+						<span class="font-semibold text-gray-400">Author:</span> <span
+							class="text-gray-100">@article.Author?.Name</span>
+					</div>
+					<div class="mb-2">
+						<span class="font-semibold text-gray-400">Category:</span> <span
+							class="text-gray-100">@article.Category?.CategoryName</span>
+					</div>
+					<div class="mb-2">
+						<span class="font-semibold text-gray-400">Published:</span> <span class="text-gray-100">@(article.IsPublished ?
+												"Yes" : "No")</span>
+					</div>
+					<div class="mb-2">
+						<span class="font-semibold text-gray-400">Archived:</span> <span class="text-gray-100">@(article.IsArchived ?
+												"Yes" : "No")</span>
+					</div>
+				</div>
+				<div class="mt-4 flex gap-2">
+					<button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+						@onclick="() => GoToDetails(article.Id)">Details</button>
+					<button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" @onclick="() => GoToEdit(article.Id)"
+						disabled="@(!article.CanEdit)">Edit</button>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+@code {
+	private IEnumerable<ArticleDto>? _articles;
+	private bool _isLoading = true;
+	private string? _errorMessage;
+	private bool _canCreate;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_isLoading = true;
+		_errorMessage = null;
+		try
+		{
+			// Get current user for authorization
+			var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+			var user = authState.User;
+
+			// Determine if user is Admin or Author
+			var isAdmin = user.IsInRole("Admin");
+			var isAuthor = user.IsInRole("Author");
+			_canCreate = isAdmin || isAuthor;
+
+			var result = await ArticlesHandler.HandleAsync(user);
+			if (result.Success)
+			{
+				_articles = result.Value;
+			}
+			else
+			{
+				_errorMessage = result.Error ?? "Failed to load articles.";
+			}
+		}
+		catch (Exception ex)
+		{
+			_errorMessage = $"Unexpected error: {ex.Message}";
+		}
+		_isLoading = false;
+	}
+
+	private void GoToDetails(object id)
+	{
+		Navigation.NavigateTo($"/articles/details/{id}");
+	}
+
+	private void GoToEdit(object id)
+	{
+		Navigation.NavigateTo($"/articles/edit/{id}");
+	}
+
+	private void CreateNewArticle()
+	{
+		Navigation.NavigateTo("/articles/create");
+	}
+}

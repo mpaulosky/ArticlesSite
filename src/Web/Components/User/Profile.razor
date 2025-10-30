@@ -12,7 +12,7 @@
 			<div class="container-card">
 				<h2 class="text-2xl font-semibold text-gray-100 mb-4">Profile Information</h2>
 
-				<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
 					<div>
 						<h3 class="text-lg font-semibold text-gray-100 mb-2">Basic Information</h3>
 						<div class="space-y-2">
@@ -55,21 +55,21 @@
 							}
 						</div>
 					</div>
-				</div>
-				<div class="mt-4">
-					<span class="font-medium text-gray-300">Profile Picture:</span>
-					@if (!string.IsNullOrEmpty(_picture))
-					{
-						<img src="@_picture" alt="Profile Picture"
-								class="mt-2 rounded-full w-24 h-24 object-cover border-2 border-gray-600"/>
-					}
-					else
-					{
-						<div
-							class="mt-2 rounded-full w-24 h-24 bg-gray-700 flex items-center justify-center border-2 border-gray-600">
-							<span class="text-gray-400 text-2xl">?</span>
-						</div>
-					}
+
+					<div class="flex flex-col items-center justify-start">
+						<span class="font-medium text-gray-300 mb-2">Profile Picture:</span>
+						@if (!string.IsNullOrEmpty(_picture))
+						{
+							<img src="@_picture" alt="Profile Picture"
+								class="rounded-full w-24 h-24 object-cover border-2 border-gray-600" />
+						}
+						else
+						{
+							<div class="rounded-full w-24 h-24 bg-gray-700 flex items-center justify-center border-2 border-gray-600">
+								<span class="text-gray-400 text-2xl">?</span>
+							</div>
+						}
+					</div>
 				</div>
 			</div>
 
@@ -108,47 +108,45 @@
 	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
 
 	private string _userId = "";
-
 	private string _username = "";
-
 	private string _emailAddress = "";
-
 	private string _picture = "";
-
-	private List<string> _roles = [];
+	private List<string> _roles = new();
 
 	protected override async Task OnInitializedAsync()
 	{
-
 		if (AuthenticationState is not null)
 		{
 			var state = await AuthenticationState;
 
 			_username = state.User.Identity?.Name ?? string.Empty;
-
 			_userId = state.User.Claims
-					.Where(c => c.Type.Equals(ClaimTypes.NameIdentifier))
-					.Select(c => c.Value)
-					.FirstOrDefault() ?? string.Empty;
-
+			.Where(c => c.Type.Equals(ClaimTypes.NameIdentifier))
+			.Select(c => c.Value)
+			.FirstOrDefault() ?? string.Empty;
 			_emailAddress = state.User.Claims
-					.Where(c => c.Type.Equals(ClaimTypes.Email))
-					.Select(c => c.Value)
-					.FirstOrDefault() ?? string.Empty;
-
+			.Where(c => c.Type.Equals(ClaimTypes.Email))
+			.Select(c => c.Value)
+			.FirstOrDefault() ?? string.Empty;
 			_picture = state.User.Claims
-					.Where(c => c.Type.Equals("picture"))
-					.Select(c => c.Value)
-					.FirstOrDefault() ?? string.Empty;
-
-			_roles = state.User.Claims
-					.Where(c => c.Type == "role" || c.Type == "roles")
-					.Select(c => c.Value)
-					.ToList();
-
-			await base.OnInitializedAsync();
+			.Where(c => c.Type.Equals("picture"))
+			.Select(c => c.Value)
+			.FirstOrDefault() ?? string.Empty;
+			_roles = GetAllRoleClaims(state.User);
 		}
+		await base.OnInitializedAsync();
+	}
 
+	// Helper to get all role claims for a user
+	private static List<string> GetAllRoleClaims(ClaimsPrincipal user)
+	{
+		var roleTypes = new[] { ClaimTypes.Role, "role", "roles" };
+		return user.Claims
+		.Where(c => roleTypes.Contains(c.Type, StringComparer.OrdinalIgnoreCase))
+		.Select(c => c.Value)
+		.Where(v => !string.IsNullOrWhiteSpace(v))
+		.Distinct()
+		.ToList();
 	}
 
 }

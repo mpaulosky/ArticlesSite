@@ -23,20 +23,26 @@ public static class MongoDbServiceExtensions
 	/// </summary>
 	/// <param name="builder">The <see cref="WebApplicationBuilder" /> to configure.</param>
 	/// <returns>The configured <see cref="WebApplicationBuilder" /> for chaining.</returns>
-	public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder)
+	public static void AddMongoDb(this WebApplicationBuilder builder)
 	{
 		IServiceCollection services = builder.Services;
 		var configuration = builder.Configuration;
 
 		// Get MongoDB connection string from an environment variable or configuration
-		string connectionString = configuration["ConnectionStrings:articlesdb"] ?? Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING") ?? throw new InvalidOperationException("MongoDB connection string not found.");
-		string databaseName = configuration["MongoDb:DatabaseName"] ?? Environment.GetEnvironmentVariable("MONGODB_DATABASE_NAME") ?? "articlesdb";
+		string connectionString = configuration["ConnectionStrings:articlesdb"] ??
+															Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING") ??
+															throw new InvalidOperationException("MongoDB connection string not found.");
+
+		string databaseName = configuration["MongoDb:DatabaseName"] ??
+													Environment.GetEnvironmentVariable("MONGODB_DATABASE_NAME") ?? "articlesdb";
 
 		// Register IMongoClient and IMongoDatabase manually
 		services.AddSingleton<IMongoClient>(_ => new MongoClient(connectionString));
+
 		services.AddScoped(sp =>
 		{
 			IMongoClient client = sp.GetRequiredService<IMongoClient>();
+
 			return client.GetDatabase(databaseName);
 		});
 
@@ -44,17 +50,19 @@ public static class MongoDbServiceExtensions
 		{
 			IMongoClient client = sp.GetRequiredService<IMongoClient>();
 			IMongoDatabase database = sp.GetRequiredService<IMongoDatabase>();
+
 			return new MongoDbContext(client, database.DatabaseNamespace.DatabaseName);
 		});
 
 		services.AddScoped<IMongoDbContextFactory>(sp =>
 		{
 			IMongoDbContext context = sp.GetRequiredService<IMongoDbContext>();
+
 			return new RuntimeMongoDbContextFactory(context);
 		});
 
 		RegisterRepositoriesAndHandlers(services);
-		return builder;
+
 	}
 
 	/// <summary>
@@ -66,6 +74,11 @@ public static class MongoDbServiceExtensions
 		// Register repositories
 		services.AddScoped<IArticleRepository, ArticleRepository>();
 		services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+		// Article Handlers
+		services.AddScoped(
+				typeof(Components.Features.Articles.ArticlesList.GetArticles.IGetArticlesHandler),
+				typeof(Components.Features.Articles.ArticlesList.GetArticles.Handler));
 
 		// Category Handlers
 		services.AddScoped(
