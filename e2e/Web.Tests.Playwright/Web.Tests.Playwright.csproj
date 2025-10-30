@@ -25,6 +25,9 @@
 		<PackageReference Include="xunit.v3"/>
 		<PackageReference Include="xunit.runner.visualstudio"/>
 		<PackageReference Include="FluentAssertions" />
+		<PackageReference Include="MongoDB.Driver" />
+		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
+		<PackageReference Include="Auth0.AspNetCore.Authentication" />
 	</ItemGroup>
 
 	<ItemGroup>
