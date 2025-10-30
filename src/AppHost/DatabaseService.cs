@@ -26,12 +26,19 @@ public static class DatabaseService
 	public static IResourceBuilder<MongoDBDatabaseResource> AddMongoDbServices(
 		this IDistributedApplicationBuilder builder)
 	{
+
+		var mongoDbConnection = builder.AddParameter("mongoDb-connection", secret: true);
+		var databaseName = builder.AddParameter("mongoDb-database", secret: true);
+
 		// Use a valid resource name, not the connection string
-		var database = builder.AddMongoDB(Server)
+		var server = builder.AddMongoDB(Server)
 				.WithLifetime(ContainerLifetime.Persistent)
 				.WithDataVolume($"{Server}-data", isReadOnly: false)
-				.WithMongoExpress()
-				.AddDatabase(DatabaseName);
+				.WithEnvironment("MONGODB-CONNECTION-STRING", mongoDbConnection)
+				.WithEnvironment("MONGODB-DATABASE-NAME", databaseName)
+				.WithMongoExpress();
+
+		var database = server.AddDatabase(DatabaseName);
 
 		return database;
 	}
