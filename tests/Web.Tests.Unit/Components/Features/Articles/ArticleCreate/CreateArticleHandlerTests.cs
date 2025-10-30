@@ -35,7 +35,7 @@ public class CreateArticleHandlerTests
 
 	private readonly ILogger<CreateArticle.Handler> _mockLogger;
 
-	private readonly CreateArticle.Handler _handler;
+	private readonly CreateArticle.ICreateArticleHandler _handler;
 
 	public CreateArticleHandlerTests()
 	{
@@ -52,34 +52,50 @@ public class CreateArticleHandlerTests
 		var category = new Category { CategoryName = "Tech" };
 
 		var articleDto = new ArticleDto(
-			ObjectId.GenerateNewId(),
-			"test-article",
-			"Test Article",
-			"Test Intro",
-			"Test Content",
-			"https://example.com/image.jpg",
-			author,
-			category,
-			false,
-			null,
-			DateTimeOffset.UtcNow,
-			null,
-			false,
-			false
+				ObjectId.GenerateNewId(),
+				"test-article",
+				"Test Article",
+				"Test Intro",
+				"Test Content",
+				"https://example.com/image.jpg",
+				author,
+				category,
+				false,
+				null,
+				DateTimeOffset.UtcNow,
+				null,
+				false,
+				false
 		);
 
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
+		var createdArticle = new Article(
+				articleDto.Title,
+				articleDto.Introduction,
+				articleDto.Content,
+				articleDto.CoverImageUrl,
+				articleDto.Author,
+				articleDto.Category,
+				articleDto.IsPublished,
+				articleDto.PublishedOn,
+				false
+		);
+
+		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(createdArticle)));
 
 		// Act
 		var result = await _handler.HandleAsync(articleDto);
 
 		// Assert
 		result.Success.Should().BeTrue();
+		result.Value.Should().NotBeNull();
+		result.Value.Title.Should().Be("Test Article");
+		result.Value.Introduction.Should().Be("Test Intro");
+		result.Value.Content.Should().Be("Test Content");
+
 		await _mockRepository.Received(1).AddArticle(Arg.Is<Article>(a =>
-			a.Title == "Test Article" &&
-			a.Introduction == "Test Intro" &&
-			a.Content == "Test Content" &&
-			a.Slug == "test_article"
+				a.Title == "Test Article" &&
+				a.Introduction == "Test Intro" &&
+				a.Content == "Test Content"
 		));
 	}
 
@@ -92,6 +108,7 @@ public class CreateArticleHandlerTests
 		// Assert
 		result.Success.Should().BeFalse();
 		result.Error.Should().Be("Article data cannot be null");
+		result.Value.Should().BeNull();
 		await _mockRepository.DidNotReceive().AddArticle(Arg.Any<Article>());
 	}
 
@@ -100,20 +117,20 @@ public class CreateArticleHandlerTests
 	{
 		// Arrange
 		var articleDto = new ArticleDto(
-			ObjectId.GenerateNewId(),
-			"test-article",
-			"Test Article",
-			"Test Intro",
-			"Test Content",
-			"https://example.com/image.jpg",
-			null,
-			null,
-			false,
-			null,
-			DateTimeOffset.UtcNow,
-			null,
-			false,
-			false
+				ObjectId.GenerateNewId(),
+				"test-article",
+				"Test Article",
+				"Test Intro",
+				"Test Content",
+				"https://example.com/image.jpg",
+				null,
+				null,
+				false,
+				null,
+				DateTimeOffset.UtcNow,
+				null,
+				false,
+				false
 		);
 
 		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result<Article>.Fail("Database error")));
@@ -124,6 +141,7 @@ public class CreateArticleHandlerTests
 		// Assert
 		result.Success.Should().BeFalse();
 		result.Error.Should().Be("Database error");
+		result.Value.Should().BeNull();
 	}
 
 	[Fact]
@@ -137,40 +155,62 @@ public class CreateArticleHandlerTests
 		var category = new Category { Id = ObjectId.GenerateNewId(), CategoryName = "Tech" };
 
 		var articleDto = new ArticleDto(
-			ObjectId.GenerateNewId(),
-			"test-slug",
-			"Test Title",
-			"Test Intro",
-			"Test Content",
-			"https://example.com/image.jpg",
-			author,
-			category,
-			true,
-			publishedOn,
-			createdOn,
-			null,
-			false,
-			false
+				ObjectId.GenerateNewId(),
+				"test-slug",
+				"Test Title",
+				"Test Intro",
+				"Test Content",
+				"https://example.com/image.jpg",
+				author,
+				category,
+				true,
+				publishedOn,
+				createdOn,
+				null,
+				false,
+				false
 		);
 
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
+		var createdArticle = new Article(
+				articleDto.Title,
+				articleDto.Introduction,
+				articleDto.Content,
+				articleDto.CoverImageUrl,
+				articleDto.Author,
+				articleDto.Category,
+				articleDto.IsPublished,
+				articleDto.PublishedOn,
+				false
+		);
+
+		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(createdArticle)));
 
 		// Act
 		var result = await _handler.HandleAsync(articleDto);
 
 		// Assert
 		result.Success.Should().BeTrue();
+		result.Value.Should().NotBeNull();
+		result.Value.Title.Should().Be("Test Title");
+		result.Value.Introduction.Should().Be("Test Intro");
+		result.Value.Content.Should().Be("Test Content");
+		result.Value.CoverImageUrl.Should().Be("https://example.com/image.jpg");
+		result.Value.Author.Should().Be(author);
+		result.Value.Category.Should().Be(category);
+		result.Value.IsPublished.Should().BeTrue();
+		result.Value.PublishedOn.Should().Be(publishedOn);
+		result.Value.IsArchived.Should().BeFalse();
+
 		await _mockRepository.Received(1).AddArticle(Arg.Is<Article>(a =>
-			a.Slug == "test_title" &&
-			a.Title == "Test Title" &&
-			a.Introduction == "Test Intro" &&
-			a.Content == "Test Content" &&
-			a.CoverImageUrl == "https://example.com/image.jpg" &&
-			a.Author == author &&
-			a.Category == category &&
-			a.IsPublished == true &&
-			a.PublishedOn == publishedOn &&
-			a.IsArchived == false
+				a.Title == "Test Title" &&
+				a.Introduction == "Test Intro" &&
+				a.Content == "Test Content" &&
+				a.CoverImageUrl == "https://example.com/image.jpg" &&
+				a.Author == author &&
+				a.Category == category &&
+				a.IsPublished == true &&
+				a.PublishedOn == publishedOn &&
+				a.IsArchived == false
 		));
 	}
 
@@ -179,31 +219,46 @@ public class CreateArticleHandlerTests
 	{
 		// Arrange
 		var articleDto = new ArticleDto(
-			ObjectId.GenerateNewId(),
-			"test-article",
-			"Test Article",
-			"Test Intro",
-			"Test Content",
-			"",
-			null, // Null author
-			null,
-			false,
-			null,
-			DateTimeOffset.UtcNow,
-			null,
-			false,
-			false
+				ObjectId.GenerateNewId(),
+				"test-article",
+				"Test Article",
+				"Test Intro",
+				"Test Content",
+				"",
+				null, // Null author
+				null,
+				false,
+				null,
+				DateTimeOffset.UtcNow,
+				null,
+				false,
+				false
 		);
 
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
+		var createdArticle = new Article(
+				articleDto.Title,
+				articleDto.Introduction,
+				articleDto.Content,
+				articleDto.CoverImageUrl,
+				null,
+				articleDto.Category,
+				articleDto.IsPublished,
+				articleDto.PublishedOn,
+				false
+		);
+
+		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(createdArticle)));
 
 		// Act
 		var result = await _handler.HandleAsync(articleDto);
 
 		// Assert
 		result.Success.Should().BeTrue();
+		result.Value.Should().NotBeNull();
+		result.Value.Author.Should().BeNull();
+
 		await _mockRepository.Received(1).AddArticle(Arg.Is<Article>(a =>
-			a.Author == null
+				a.Author == null
 		));
 	}
 
@@ -212,31 +267,46 @@ public class CreateArticleHandlerTests
 	{
 		// Arrange
 		var articleDto = new ArticleDto(
-			ObjectId.GenerateNewId(),
-			"test-article",
-			"Test Article",
-			"Test Intro",
-			"Test Content",
-			"",
-			null,
-			null, // Null category
-			false,
-			null,
-			DateTimeOffset.UtcNow,
-			null,
-			false,
-			false
+				ObjectId.GenerateNewId(),
+				"test-article",
+				"Test Article",
+				"Test Intro",
+				"Test Content",
+				"",
+				null,
+				null, // Null category
+				false,
+				null,
+				DateTimeOffset.UtcNow,
+				null,
+				false,
+				false
 		);
 
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
+		var createdArticle = new Article(
+				articleDto.Title,
+				articleDto.Introduction,
+				articleDto.Content,
+				articleDto.CoverImageUrl,
+				articleDto.Author,
+				null,
+				articleDto.IsPublished,
+				articleDto.PublishedOn,
+				false
+		);
+
+		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(createdArticle)));
 
 		// Act
 		var result = await _handler.HandleAsync(articleDto);
 
 		// Assert
 		result.Success.Should().BeTrue();
+		result.Value.Should().NotBeNull();
+		result.Value.Category.Should().BeNull();
+
 		await _mockRepository.Received(1).AddArticle(Arg.Is<Article>(a =>
-			a.Category == null
+				a.Category == null
 		));
 	}
 
