@@ -1,0 +1,14 @@
+# <type>(optional scope): <short summary>
+#
+# Example:
+# feat(auth): add JWT authentication
+#
+# <body>
+# Explain what and why, if needed. Wrap at 72 chars.
+#
+# <footer>
+# Reference issues, breaking changes, etc.
+#
+# Example:
+# Closes #123
+#- BREAKING CHANGE: API endpoint changed
