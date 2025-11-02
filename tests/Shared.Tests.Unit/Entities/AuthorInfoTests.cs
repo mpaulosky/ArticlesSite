@@ -12,6 +12,7 @@ namespace Shared.Tests.Unit.Entities;
 /// <summary>
 ///   Unit tests for the <see cref="AuthorInfo" /> record.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class AuthorInfoTests
 {
 

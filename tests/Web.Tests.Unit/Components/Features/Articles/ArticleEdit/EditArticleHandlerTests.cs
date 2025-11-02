@@ -8,6 +8,7 @@ using Shared.Interfaces;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleEdit;
 
+[ExcludeFromCodeCoverage]
 public class EditArticleHandlerTests
 {
 

@@ -5,6 +5,7 @@ using Web.Components.Features.Categories.CategoriesList;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleCreate;
 
+[ExcludeFromCodeCoverage]
 public class CreateComponentTests : TestContext
 {
 

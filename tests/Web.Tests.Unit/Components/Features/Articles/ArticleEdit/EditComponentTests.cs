@@ -14,6 +14,7 @@ using NSubstitute;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleEdit;
 
+[ExcludeFromCodeCoverage]
 public class EditComponentTests : TestContext
 {
 

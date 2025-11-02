@@ -2,6 +2,7 @@ using Web.Components.Features.Articles.ArticlesList;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticlesList;
 
+[ExcludeFromCodeCoverage]
 public class ArticlesListComponentTests
 {
 

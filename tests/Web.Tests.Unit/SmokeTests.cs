@@ -11,6 +11,7 @@ using FluentAssertions;
 
 namespace Web.Tests.Unit;
 
+[ExcludeFromCodeCoverage]
 public class SmokeTests
 {
 

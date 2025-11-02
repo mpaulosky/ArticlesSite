@@ -16,6 +16,7 @@ namespace Shared.Tests.Unit.Validators;
 /// <summary>
 ///   Unit tests for the <see cref="ArticleDtoValidator" /> class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class ArticleDtoValidatorTests
 {
 

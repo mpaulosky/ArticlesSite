@@ -14,6 +14,7 @@ namespace Shared.Tests.Unit.Helpers;
 /// <summary>
 ///   Unit tests for the <see cref="Helpers" /> class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class HelpersTests
 {
 

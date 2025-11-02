@@ -12,6 +12,7 @@ namespace Shared.Tests.Unit.Entities;
 /// <summary>
 ///   Unit tests for the <see cref="Category" /> entity.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class CategoryTests
 {
 

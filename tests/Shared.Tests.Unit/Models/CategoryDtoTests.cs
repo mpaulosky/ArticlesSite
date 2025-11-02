@@ -12,6 +12,7 @@ namespace Shared.Tests.Unit.Models;
 /// <summary>
 ///   Unit tests for the <see cref="CategoryDto" /> class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class CategoryDtoTests
 {
 
