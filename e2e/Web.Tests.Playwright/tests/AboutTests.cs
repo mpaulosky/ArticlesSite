@@ -1,9 +1,8 @@
-using FluentAssertions;
-
 using Web.Tests.Playwright.PageObjects;
 
 namespace Web.Tests.Playwright.Tests;
 
+[ExcludeFromCodeCoverage]
 public class AboutTests : PlaywrightTestBase
 {
 	[Fact]

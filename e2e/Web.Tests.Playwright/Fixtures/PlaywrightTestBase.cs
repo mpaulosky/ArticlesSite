@@ -3,6 +3,7 @@ namespace Web.Tests.Playwright.Fixtures;
 /// <summary>
 /// Base class for Playwright tests providing common setup and teardown
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class PlaywrightTestBase : IAsyncLifetime
 {
 

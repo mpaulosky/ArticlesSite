@@ -4,6 +4,7 @@ namespace Web.Tests.Playwright.PageObjects;
 /// Base Page Object Model
 /// Contains common methods and locators shared across all pages
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class BasePage
 {
 	protected readonly IPage Page;

@@ -3,6 +3,7 @@ namespace Web.Tests.Playwright.PageObjects;
 /// <summary>
 /// Articles List Page Object Model
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class ArticlesListPage : BasePage
 {
 	private readonly ILocator _pageHeading;

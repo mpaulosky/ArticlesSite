@@ -1,5 +1,3 @@
-using FluentAssertions;
-
 using Web.Tests.Playwright.PageObjects;
 
 using Microsoft.Playwright;
@@ -8,6 +6,7 @@ using Xunit;
 
 namespace Web.Tests.Playwright.Tests;
 
+[ExcludeFromCodeCoverage]
 public class CategoryEditTests : PlaywrightTestBase
 {
 

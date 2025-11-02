@@ -3,6 +3,7 @@ namespace Web.Tests.Playwright.PageObjects;
 /// <summary>
 /// Contact Page Object Model
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class ContactPage : BasePage
 {
 	private readonly ILocator _pageHeading;

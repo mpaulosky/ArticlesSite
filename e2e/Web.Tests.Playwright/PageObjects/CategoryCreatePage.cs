@@ -3,6 +3,7 @@ namespace Web.Tests.Playwright.PageObjects;
 /// <summary>
 /// Category Create Page Object Model
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class CategoryCreatePage : BasePage
 {
 

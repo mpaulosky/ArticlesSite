@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 namespace Web.Tests.Playwright.PageObjects;
 
+[ExcludeFromCodeCoverage]
 public class CategoryDetailsPage : BasePage
 {
 

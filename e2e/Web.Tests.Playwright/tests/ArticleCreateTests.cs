@@ -1,13 +1,6 @@
-using System.Threading.Tasks;
-
-using FluentAssertions;
-
-using Microsoft.Playwright;
-
-using Xunit;
-
 namespace Web.Tests.Playwright.Tests;
 
+[ExcludeFromCodeCoverage]
 public class ArticleCreateTests : PlaywrightTestBase
 {
 

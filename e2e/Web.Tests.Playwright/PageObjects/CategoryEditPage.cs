@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 namespace Web.Tests.Playwright.PageObjects;
 
+[ExcludeFromCodeCoverage]
 public class CategoryEditPage : BasePage
 {
 	public CategoryEditPage(IPage page) : base(page) { }

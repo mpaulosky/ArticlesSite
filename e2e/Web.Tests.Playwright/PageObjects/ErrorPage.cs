@@ -3,6 +3,7 @@ namespace Web.Tests.Playwright.PageObjects;
 /// <summary>
 /// Error Page Object Model
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class ErrorPage : BasePage
 {
 	private readonly ILocator _errorHeading;
