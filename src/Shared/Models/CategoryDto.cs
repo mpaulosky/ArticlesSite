@@ -18,25 +18,28 @@ public class CategoryDto
 	/// <summary>
 	///   Parameterless constructor for serialization and test data generation.
 	/// </summary>
-	public CategoryDto() : this(ObjectId.Empty, string.Empty, DateTime.UtcNow, null, false) { }
+	public CategoryDto() : this(ObjectId.Empty, string.Empty, string.Empty, DateTime.UtcNow, null, false) { }
 
 	/// <summary>
 	///   Initializes a new instance of the <see cref="CategoryDto" /> class.
 	/// </summary>
 	/// <param name="id"></param>
 	/// <param name="categoryName"></param>
+	/// <param name="slug"></param>
 	/// <param name="createdOn"></param>
 	/// <param name="modifiedOn"></param>
 	/// <param name="isArchived">Indicates whether the category is archived.</param>
 	private CategoryDto(
 			ObjectId id,
 			string categoryName,
+			string slug,
 			DateTime createdOn,
 			DateTime? modifiedOn,
 			bool isArchived)
 	{
 		Id = id;
 		CategoryName = categoryName;
+		Slug = slug;
 		CreatedOn = createdOn;
 		ModifiedOn = modifiedOn;
 		IsArchived = isArchived;
@@ -51,7 +54,17 @@ public class CategoryDto
 	///   Gets the name of the category.
 	/// </summary>
 	[Display(Name = "Category Name")]
+	[Required(ErrorMessage = "Category name is required")]
+	[StringLength(80, ErrorMessage = "Category name cannot exceed 80 characters")]
 	public string CategoryName { get; set; }
+
+	/// <summary>
+	///   Gets or sets the slug for the category, used in the category's URL.
+	/// </summary>
+	[Display(Name = "Slug")]
+	[StringLength(200, ErrorMessage = "Slug cannot exceed200 characters")]
+	[RegularExpression(@"^[a-z0-9_]+$", ErrorMessage = "Slug can only contain lowercase letters, numbers, and underscores")]
+	public string Slug { get; set; }
 
 	/// <summary>
 	///   Gets the date and time when this entity was created.
@@ -75,6 +88,6 @@ public class CategoryDto
 	/// <summary>
 	///   Gets an empty singleton category instance.
 	/// </summary>
-	public static CategoryDto Empty { get; } = new(ObjectId.Empty, string.Empty, DateTime.UtcNow, null, false);
+	public static CategoryDto Empty { get; } = new(ObjectId.Empty, string.Empty, string.Empty, DateTime.UtcNow, null, false);
 
 }

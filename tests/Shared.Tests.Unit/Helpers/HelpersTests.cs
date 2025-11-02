@@ -14,6 +14,7 @@ namespace Shared.Tests.Unit.Helpers;
 /// <summary>
 ///   Unit tests for the <see cref="Helpers" /> class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class HelpersTests
 {
 
@@ -21,7 +22,7 @@ public class HelpersTests
 	public void GetStaticDate_ShouldReturnConsistentDate()
 	{
 		// Arrange
-		DateTimeOffset expectedDate = new (2025, 1, 1, 8, 0, 0, TimeSpan.Zero);
+		DateTimeOffset expectedDate = new(2025, 1, 1, 8, 0, 0, TimeSpan.Zero);
 
 		// Act
 		DateTimeOffset result1 = Shared.Helpers.Helpers.GetStaticDate();
@@ -46,7 +47,7 @@ public class HelpersTests
 	public void GetSlug_ShouldConvertToUrlFriendlySlug(string input, string expected)
 	{
 		// Arrange & Act
-		string result = input.GetSlug();
+		string result = input.GenerateSlug();
 
 		// Assert
 		result.Should().Be(expected);
@@ -59,7 +60,7 @@ public class HelpersTests
 		const string input = "Test Article";
 
 		// Act
-		string result = input.GetSlug();
+		string result = input.GenerateSlug();
 
 		// Assert
 		result.Should().NotContain(" ");
@@ -109,7 +110,7 @@ public class HelpersTests
 		};
 
 		// Act - Call multiple times to test randomness
-		List<string> results = new ();
+		List<string> results = new();
 
 		for (int i = 0; i < 20; i++)
 		{

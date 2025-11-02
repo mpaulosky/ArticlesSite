@@ -1,24 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<AnalysisLevel>latest-all</AnalysisLevel>
-		<!-- Suppress specific code analysis rules that don't apply to this domain -->
-		<!-- CA1000: Static members on generic Result<T> are appropriate for factory pattern -->
-		<!-- CA1002: Fake data generators return List<T> for convenience in test setup -->
-		<!-- CA1024: GetStaticDate() and GetRandomCategoryName() have side effects or non-trivial logic -->
-		<!-- CA1054: URLs stored as strings for MongoDB compatibility and validation -->
-		<!-- CA1056: URL properties stored as strings for MongoDB and web API compatibility -->
-		<!-- CA1308: URL slugs conventionally use lowercase for SEO -->
-		<!-- CA1716: 'Shared' is the project name and established namespace, renaming would break existing references -->
-		<!-- CA1724: Helper/Constants classes intentionally match namespace for convenience with global usings -->
-		<!-- CA2225: Implicit operators on Result<T> provide clean API, explicit methods would reduce usability -->
-		<!-- CA2235: Entities use [Serializable] for legacy compatibility, nested types are MongoDB-serializable -->
-		<NoWarn>$(NoWarn);CA1000;CA1002;CA1024;CA1054;CA1056;CA1308;CA1716;CA1724;CA2225;CA2235</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

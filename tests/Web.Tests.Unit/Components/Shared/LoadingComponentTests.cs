@@ -17,13 +17,15 @@ namespace Web.Tests.Unit.Components.Shared;
 /// Unit tests for LoadingComponent using Bunit
 /// </summary>
 [ExcludeFromCodeCoverage]
-public class LoadingComponentTests : Bunit.TestContext
+[Obsolete]
+public class LoadingComponentTests : TestContext
 {
+
 	[Fact]
 	public void LoadingComponent_ShouldRender_WithLoadingText()
 	{
 		// Act
-		var cut = Render<LoadingComponent>();
+		var cut = RenderComponent<LoadingComponent>();
 
 		// Assert
 		cut.Find("h3").TextContent.Should().Be("Loading...");
@@ -33,7 +35,7 @@ public class LoadingComponentTests : Bunit.TestContext
 	public void LoadingComponent_ShouldHave_SpinningIcon()
 	{
 		// Act
-		var cut = Render<LoadingComponent>();
+		var cut = RenderComponent<LoadingComponent>();
 
 		// Assert
 		var svg = cut.Find("svg");
@@ -44,11 +46,12 @@ public class LoadingComponentTests : Bunit.TestContext
 	public void LoadingComponent_ShouldHave_CorrectStyling()
 	{
 		// Act
-		var cut = Render<LoadingComponent>();
+		var cut = RenderComponent<LoadingComponent>();
 
 		// Assert
 		var container = cut.Find("div");
 		container.ClassList.Should().Contain("bg-gray-800");
 		container.ClassList.Should().Contain("rounded-md");
 	}
+
 }

@@ -16,6 +16,7 @@ namespace Shared.Tests.Unit.Validators;
 /// <summary>
 ///   Unit tests for the <see cref="CategoryValidator" /> class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class CategoryValidatorTests
 {
 
@@ -27,8 +28,8 @@ public class CategoryValidatorTests
 		// Arrange
 		Category category = new()
 		{
-				CategoryName = "Technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddSeconds(-1) // Set it slightly in the past to avoid timing issues
+			CategoryName = "Technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddSeconds(-1) // Set it slightly in the past to avoid timing issues
 		};
 
 		// Act
@@ -127,8 +128,8 @@ public class CategoryValidatorTests
 		// Arrange
 		Category category = new()
 		{
-				CategoryName = "Technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddSeconds(-1) // Set it slightly in the past to avoid timing issues
+			CategoryName = "Technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddSeconds(-1) // Set it slightly in the past to avoid timing issues
 		};
 
 		// Act

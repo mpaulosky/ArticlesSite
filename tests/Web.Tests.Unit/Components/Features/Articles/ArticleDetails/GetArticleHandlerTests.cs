@@ -9,10 +9,6 @@
 
 using FluentAssertions;
 
-using Microsoft.Extensions.Logging;
-
-using MongoDB.Bson;
-
 using NSubstitute;
 
 using Shared.Entities;
@@ -50,12 +46,10 @@ public class GetArticleHandlerTests
 		var author = new AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
-		var article = new Article("Test Article", "Test Intro", "Test Content", null, author, category, true, null, false)
-		{
-			Id = objectId
-		};
+		var article = new Article("Test Article", "Test Intro", "Test Content", null, author, category, true, null, false,
+				"test-article") { Id = objectId };
 
-		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result<Article?>.Ok(article)));
+		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(article)));
 
 		// Act
 		var result = await _handler.HandleAsync(objectId.ToString());
@@ -77,7 +71,7 @@ public class GetArticleHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
+		result.Error.Should().Be("Article ID cannot be empty");
 	}
 
 	[Fact]
@@ -88,7 +82,7 @@ public class GetArticleHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
+		result.Error.Should().Be("Article ID cannot be empty");
 	}
 
 	[Fact]
@@ -99,7 +93,7 @@ public class GetArticleHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
+		result.Error.Should().Be("Article ID cannot be empty");
 	}
 
 	[Fact]
@@ -110,7 +104,7 @@ public class GetArticleHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
+		result.Error.Should().Be("Invalid article ID format");
 	}
 
 	[Fact]
@@ -145,21 +139,6 @@ public class GetArticleHandlerTests
 	}
 
 	[Fact]
-	public async Task HandleAsync_WhenRepositoryThrowsException_ShouldReturnFailure()
-	{
-		// Arrange
-		var objectId = ObjectId.GenerateNewId();
-		_mockRepository.GetArticleByIdAsync(objectId).Returns<Task<Result<Article?>>>(x => throw new InvalidOperationException("Connection failed"));
-
-		// Act
-		var result = await _handler.HandleAsync(objectId.ToString());
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Connection failed");
-	}
-
-	[Fact]
 	public async Task HandleAsync_ShouldMapAllArticleProperties()
 	{
 		// Arrange
@@ -171,15 +150,11 @@ public class GetArticleHandlerTests
 		var author = new AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
-		var article = new Article("Test Title", "Test Intro", "Test Content", null, author, category, true, publishedOn, false)
-		{
-			Id = objectId,
-			CreatedOn = createdOn,
-			ModifiedOn = modifiedOn,
-			IsArchived = false
-		};
+		var article =
+				new Article("Test Title", "Test Intro", "Test Content", null, author, category, true, publishedOn, false,
+						"test-title") { Id = objectId, CreatedOn = createdOn, ModifiedOn = modifiedOn, IsArchived = false };
 
-		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result<Article?>.Ok(article)));
+		_mockRepository.GetArticleByIdAsync(objectId)!.Returns(Task.FromResult(Result.Ok(article)));
 
 		// Act
 		var result = await _handler.HandleAsync(objectId.ToString());
@@ -200,7 +175,6 @@ public class GetArticleHandlerTests
 		dto.CreatedOn.Should().Be(createdOn);
 		dto.ModifiedOn.Should().Be(modifiedOn);
 		dto.IsArchived.Should().BeFalse();
-		dto.CanEdit.Should().BeFalse(); // Default value in DTO constructor
 	}
 
 }

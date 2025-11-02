@@ -12,6 +12,7 @@ namespace Shared.Tests.Unit.Models;
 /// <summary>
 ///   Unit tests for the <see cref="CategoryDto" /> class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class CategoryDtoTests
 {
 
@@ -19,7 +20,7 @@ public class CategoryDtoTests
 	public void Constructor_Parameterless_ShouldSetDefaultValues()
 	{
 		// Arrange & Act
-		CategoryDto dto = new ();
+		CategoryDto dto = new();
 
 		// Assert
 		dto.Id.Should().Be(ObjectId.Empty);
@@ -47,7 +48,7 @@ public class CategoryDtoTests
 	public void Properties_ShouldBeSettable()
 	{
 		// Arrange
-		CategoryDto dto = new ();
+		CategoryDto dto = new();
 		ObjectId id = ObjectId.GenerateNewId();
 		DateTimeOffset createdOn = DateTimeOffset.UtcNow;
 		DateTimeOffset modifiedOn = DateTimeOffset.UtcNow.AddDays(1);
@@ -73,11 +74,11 @@ public class CategoryDtoTests
 		// Arrange & Act
 		CategoryDto dto = new()
 		{
-				Id = ObjectId.GenerateNewId(),
-				CategoryName = "Programming",
-				CreatedOn = DateTimeOffset.UtcNow,
-				ModifiedOn = DateTimeOffset.UtcNow,
-				IsArchived = false
+			Id = ObjectId.GenerateNewId(),
+			CategoryName = "Programming",
+			CreatedOn = DateTimeOffset.UtcNow,
+			ModifiedOn = DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Assert

@@ -1,16 +1,17 @@
 @page "/categories/details/{id}"
 
 @inject NavigationManager Navigation
-@inject Web.Components.Features.Categories.CategoryDetails.GetCategory.IGetCategoryHandler GetHandler
+@inject GetCategory.IGetCategoryHandler GetHandler
 @inject ILogger<Details> Logger
 
 @attribute [Authorize]
 
-<PageHeadingComponent HeaderText="Category Details" Level="1" TextColorClass="blue-500"/>
+
+<PageHeadingComponent HeaderText="Category Details" Level="1" TextColorClass="blue-500" />
 
 @if (_isLoading)
 {
-	<LoadingComponent/>
+	<LoadingComponent />
 }
 else if (_category is null)
 {
@@ -20,22 +21,29 @@ else if (_category is null)
 }
 else
 {
-	<div class="card">
-		<div class="card-body">
-			<h2>@_category.CategoryName</h2>
-			<hr/>
-			<dl class="row">
-				<dt class="col-sm-3">Category ID</dt>
-				<dd class="col-sm-9">@_category.Id</dd>
-
-				<dt class="col-sm-3">Created On</dt>
-				<dd class="col-sm-9">@_category.CreatedOn.ToString("F")</dd>
-
-				<dt class="col-sm-3">Modified On</dt>
-				<dd class="col-sm-9">@(_category.ModifiedOn?.ToString("F") ?? "Never")</dd>
-
-				<dt class="col-sm-3">Status</dt>
-				<dd class="col-sm-9">
+	<div class="container-card bg-gray-700 rounded-lg shadow-lg p-8 max-w-2xl mx-auto mt-6">
+		<div class="flex flex-col gap-2">
+			<h2 class="text-2xl font-bold text-blue-300 mb-2">@_category.CategoryName</h2>
+			<hr class="border-blue-500 mb-4" />
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+				<div>
+					<span class="font-semibold text-gray-400">Category Slug:</span>
+					<span class="text-gray-100">@_category.Slug</span>
+				</div>
+				<div>
+					<span class="font-semibold text-gray-400">Category ID:</span>
+					<span class="text-gray-100">@_category.Id</span>
+				</div>
+				<div>
+					<span class="font-semibold text-gray-400">Created On:</span>
+					<span class="text-gray-100">@_category.CreatedOn.ToString("f")</span>
+				</div>
+				<div>
+					<span class="font-semibold text-gray-400">Modified On:</span>
+					<span class="text-gray-100">@(_category.ModifiedOn?.ToString("f") ?? "Never")</span>
+				</div>
+				<div>
+					<span class="font-semibold text-gray-400">Status:</span>
 					@if (_category.IsArchived)
 					{
 						<span class="badge bg-secondary">Archived</span>
@@ -44,11 +52,13 @@ else
 					{
 						<span class="badge bg-success">Active</span>
 					}
-				</dd>
-			</dl>
-			<div class="mt-3">
-				<button class="btn btn-secondary" @onclick="GoToEdit" disabled="@_category.IsArchived">Edit</button>
-				<button class="btn btn-light" @onclick="GoToList">Back to List</button>
+				</div>
+			</div>
+			<div class="mt-6 flex gap-3 justify-end">
+				<button class="bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition-all duration-150"
+					@onclick="GoToEdit" disabled="@_category.IsArchived">Edit</button>
+				<button class="bg-gray-500 text-white px-4 py-2 rounded shadow hover:bg-gray-600 transition-all duration-150"
+					@onclick="GoToList">Back to List</button>
 			</div>
 		</div>
 	</div>
@@ -57,7 +67,7 @@ else
 @code {
 
 	/// <summary>
-	///   The unique identifier of the category to display.
+	/// The unique identifier of the category to display.
 	/// </summary>
 	[Parameter]
 	public required string Id { get; set; } = string.Empty;
@@ -65,22 +75,22 @@ else
 	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
 
 	/// <summary>
-	///   The category data to be displayed on the page.
+	/// The category data to be displayed on the page.
 	/// </summary>
 	private CategoryDto? _category;
 
 	/// <summary>
-	///   Indicates whether the component is currently loading data.
+	/// Indicates whether the component is currently loading data.
 	/// </summary>
 	private bool _isLoading = true;
 
 	/// <summary>
-	///   Error message returned by the handler when loading fails. Shown in the UI.
+	/// Error message returned by the handler when loading fails. Shown in the UI.
 	/// </summary>
 	private string? _errorMessage;
 
 	/// <summary>
-	///   Initializes the component by loading the category data using the GetCategoryHandler.
+	/// Initializes the component by loading the category data using the GetCategoryHandler.
 	/// </summary>
 	protected override async Task OnInitializedAsync()
 	{
@@ -111,7 +121,7 @@ else
 	}
 
 	/// <summary>
-	///   Navigates to the edit page for the current category.
+	/// Navigates to the edit page for the current category.
 	/// </summary>
 	private void GoToEdit()
 	{
@@ -119,7 +129,7 @@ else
 	}
 
 	/// <summary>
-	///   Navigates back to the category list page.
+	/// Navigates back to the category list page.
 	/// </summary>
 	private void GoToList()
 	{

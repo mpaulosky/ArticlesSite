@@ -13,8 +13,6 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MongoDB.Driver" />
-		<PackageReference Include="MongoDB.Bson" />
 		<Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
 	</ItemGroup>
 
@@ -40,7 +38,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="MongoDB.Driver" />
 		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
+		<PackageReference Include="Auth0.AspNetCore.Authentication" />
 	</ItemGroup>
 
 </Project>

@@ -16,6 +16,7 @@ namespace Shared.Tests.Unit.Validators;
 /// <summary>
 ///   Unit tests for the <see cref="ArticleValidator" /> class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class ArticleValidatorTests
 {
 
@@ -25,9 +26,10 @@ public class ArticleValidatorTests
 	public void Validate_WithValidArticle_ShouldPass()
 	{
 		// Arrange
-		Article article = new ("Test Article", "Test introduction", "Test content", "https://example.com/cover.jpg",
+		Article article = new("Test Article", "Test introduction", "Test content", "https://example.com/cover.jpg",
 				new AuthorInfo("auth0|123", "John Doe"),
-				new Category { CategoryName = "Technology" }) { IsPublished = true, PublishedOn = DateTimeOffset.UtcNow };
+				new Category { CategoryName = "Technology" })
+		{ IsPublished = true, PublishedOn = DateTimeOffset.UtcNow };
 
 		// Act
 		ValidationResult? result = _validator.Validate(article);
@@ -60,12 +62,12 @@ public class ArticleValidatorTests
 		// Arrange
 		Article article = new()
 		{
-				Title = invalidTitle!,
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = invalidTitle!,
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -82,12 +84,12 @@ public class ArticleValidatorTests
 		// Arrange
 		Article article = new()
 		{
-				Title = new string('A', 101),
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = new string('A', 101),
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -107,12 +109,12 @@ public class ArticleValidatorTests
 		// Arrange
 		Article article = new()
 		{
-				Title = "Valid Title",
-				Introduction = invalidIntroduction!,
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = invalidIntroduction!,
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -131,12 +133,12 @@ public class ArticleValidatorTests
 		// Arrange
 		Article article = new()
 		{
-				Title = "Valid Title",
-				Introduction = new string('A', 201),
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = new string('A', 201),
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -156,12 +158,12 @@ public class ArticleValidatorTests
 		// Arrange
 		Article article = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = invalidContent!,
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = invalidContent!,
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -178,12 +180,12 @@ public class ArticleValidatorTests
 		// Arrange
 		Article article = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = new string('A', 10001),
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = new string('A', 10001),
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -205,12 +207,12 @@ public class ArticleValidatorTests
 		// Arrange
 		Article article = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = invalidCoverImageUrl!,
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = invalidCoverImageUrl!,
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -257,12 +259,12 @@ public class ArticleValidatorTests
 		// Arrange
 		Article article = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Author = null,
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Author = null,
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -279,12 +281,12 @@ public class ArticleValidatorTests
 		// Arrange
 		Article article = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = null
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = null
 		};
 
 		// Act
@@ -301,14 +303,14 @@ public class ArticleValidatorTests
 		// Arrange
 		Article article = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" },
-				IsPublished = true,
-				PublishedOn = null
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" },
+			IsPublished = true,
+			PublishedOn = null
 		};
 
 		// Act
@@ -325,9 +327,10 @@ public class ArticleValidatorTests
 	public void Validate_WithNotPublishedAndNoPublishedOn_ShouldPass()
 	{
 		// Arrange
-		Article article = new ("Valid Title", "Valid intro", "Valid content", "https://example.com/cover.jpg",
+		Article article = new("Valid Title", "Valid intro", "Valid content", "https://example.com/cover.jpg",
 				new AuthorInfo("auth0|123", "John Doe"),
-				new Category { CategoryName = "Tech" }) { IsPublished = false, PublishedOn = null };
+				new Category { CategoryName = "Tech" })
+		{ IsPublished = false, PublishedOn = null };
 
 		// Act
 		ValidationResult? result = _validator.Validate(article);

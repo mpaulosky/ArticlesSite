@@ -26,7 +26,7 @@ public class ArchitectureTests
 		Console.WriteLine($"[DEBUG] Starting solution root search from assembly location: {dir}");
 
 		string? foundRoot = null;
-		List<string> checkedDirs = new ();
+		List<string> checkedDirs = new();
 		int walkCount = 0;
 
 		while (!string.IsNullOrEmpty(dir))

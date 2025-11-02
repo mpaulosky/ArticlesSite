@@ -14,6 +14,7 @@ namespace Shared.Tests.Unit.Abstractions;
 /// <summary>
 ///   Unit tests for the <see cref="Result" /> class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class ResultTests
 {
 
@@ -61,6 +62,7 @@ public class ResultTests
 /// <summary>
 ///   Unit tests for the <see cref="Result{T}" /> class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class ResultOfTTests
 {
 

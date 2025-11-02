@@ -15,15 +15,12 @@ namespace Web.Tests.Unit.Components.Pages;
 [ExcludeFromCodeCoverage]
 public class ProfileTests
 {
+
 	[Fact]
 	public void GetClaimValue_WithFirstClaimType_ShouldReturnValue()
 	{
 		// Arrange
-		var claims = new[]
-		{
-			new Claim("name", "John Doe"),
-			new Claim("email", "john@example.com")
-		};
+		var claims = new[] { new Claim("name", "John Doe"), new Claim("email", "john@example.com") };
 		var identity = new ClaimsIdentity(claims, "TestAuth");
 		var user = new ClaimsPrincipal(identity);
 
@@ -38,11 +35,7 @@ public class ProfileTests
 	public void GetClaimValue_WithSecondClaimType_ShouldReturnValue()
 	{
 		// Arrange
-		var claims = new[]
-		{
-			new Claim("nickname", "Johnny"),
-			new Claim("email", "john@example.com")
-		};
+		var claims = new[] { new Claim("nickname", "Johnny"), new Claim("email", "john@example.com") };
 		var identity = new ClaimsIdentity(claims, "TestAuth");
 		var user = new ClaimsPrincipal(identity);
 
@@ -57,10 +50,7 @@ public class ProfileTests
 	public void GetClaimValue_WhenNoMatchingClaim_ShouldReturnNA()
 	{
 		// Arrange
-		var claims = new[]
-		{
-			new Claim("email", "john@example.com")
-		};
+		var claims = new[] { new Claim("email", "john@example.com") };
 		var identity = new ClaimsIdentity(claims, "TestAuth");
 		var user = new ClaimsPrincipal(identity);
 
@@ -75,11 +65,7 @@ public class ProfileTests
 	public void GetClaimValue_WithEmptyClaimValue_ShouldContinueToNextClaimType()
 	{
 		// Arrange
-		var claims = new[]
-		{
-			new Claim("name", ""),
-			new Claim("nickname", "Johnny")
-		};
+		var claims = new[] { new Claim("name", ""), new Claim("nickname", "Johnny") };
 		var identity = new ClaimsIdentity(claims, "TestAuth");
 		var user = new ClaimsPrincipal(identity);
 
@@ -94,10 +80,7 @@ public class ProfileTests
 	public void GetClaimValue_WithNullClaimValue_ShouldContinueToNextClaimType()
 	{
 		// Arrange
-		var claims = new[]
-		{
-			new Claim("nickname", "Johnny")
-		};
+		var claims = new[] { new Claim("nickname", "Johnny") };
 		var identity = new ClaimsIdentity(claims, "TestAuth");
 		var user = new ClaimsPrincipal(identity);
 
@@ -112,10 +95,7 @@ public class ProfileTests
 	public void GetClaimValue_WithSingleClaimType_ShouldReturnValue()
 	{
 		// Arrange
-		var claims = new[]
-		{
-			new Claim(ClaimTypes.Email, "john@example.com")
-		};
+		var claims = new[] { new Claim(ClaimTypes.Email, "john@example.com") };
 		var identity = new ClaimsIdentity(claims, "TestAuth");
 		var user = new ClaimsPrincipal(identity);
 
@@ -132,10 +112,9 @@ public class ProfileTests
 		// Arrange
 		var claims = new[]
 		{
-			new Claim("given_name", "John"),
-			new Claim(ClaimTypes.Name, "John Doe"),
-			new Claim("nickname", "Johnny")
+				new Claim("given_name", "John"), new Claim(ClaimTypes.Name, "John Doe"), new Claim("nickname", "Johnny")
 		};
+
 		var identity = new ClaimsIdentity(claims, "TestAuth");
 		var user = new ClaimsPrincipal(identity);
 
@@ -150,11 +129,7 @@ public class ProfileTests
 	public void GetClaimValue_WithWhitespaceClaimValue_ShouldReturnWhitespace()
 	{
 		// Arrange
-		var claims = new[]
-		{
-			new Claim("name", "   "),
-			new Claim("nickname", "Johnny")
-		};
+		var claims = new[] { new Claim("name", "   "), new Claim("nickname", "Johnny") };
 		var identity = new ClaimsIdentity(claims, "TestAuth");
 		var user = new ClaimsPrincipal(identity);
 
@@ -169,13 +144,16 @@ public class ProfileTests
 	// Helper method to test the private static GetClaimValue method via reflection
 	private static string InvokeGetClaimValue(ClaimsPrincipal user, params string[] claimTypes)
 	{
-		var profileType = typeof(Web.Components.Pages.Profile);
+		var profileType = typeof(Web.Components.User.Profile);
+
 		var method = profileType.GetMethod("GetClaimValue",
-			System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+				BindingFlags.NonPublic | BindingFlags.Static);
 
 		method.Should().NotBeNull("GetClaimValue method should exist");
 
 		var result = method!.Invoke(null, new object[] { user, claimTypes });
+
 		return (string)result!;
 	}
+
 }

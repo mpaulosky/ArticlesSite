@@ -23,25 +23,29 @@ public static class MongoDbServiceExtensions
 	/// </summary>
 	/// <param name="builder">The <see cref="WebApplicationBuilder" /> to configure.</param>
 	/// <returns>The configured <see cref="WebApplicationBuilder" /> for chaining.</returns>
-	public static WebApplicationBuilder AddMongoDb(this WebApplicationBuilder builder)
+	public static void AddMongoDb(this WebApplicationBuilder builder)
 	{
 		IServiceCollection services = builder.Services;
+		var configuration = builder.Configuration;
 
-		// Aspire.MongoDB.Driver automatically registers both IMongoClient and IMongoDatabase
-		// when AddMongoDBClient is called with a connection name that matches the database resource
-		// defined in the AppHost (via AddDatabase)
-		builder.AddMongoDBClient("articlesdb");
+		// Get MongoDB connection string from an environment variable or configuration
+		string connectionString = configuration["ConnectionStrings:articlesdb"] ??
+															Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING") ??
+															throw new InvalidOperationException("MongoDB connection string not found.");
 
-		// Manually register IMongoDatabase for DI
-		services.AddScoped<IMongoDatabase>(sp =>
+		string databaseName = configuration["MongoDb:DatabaseName"] ??
+													Environment.GetEnvironmentVariable("MONGODB_DATABASE_NAME") ?? "articlesdb";
+
+		// Register IMongoClient and IMongoDatabase manually
+		services.AddSingleton<IMongoClient>(_ => new MongoClient(connectionString));
+
+		services.AddScoped(sp =>
 		{
 			IMongoClient client = sp.GetRequiredService<IMongoClient>();
 
-			// Use your database name here, e.g. "articlesdb"
-			return client.GetDatabase("articlesdb");
+			return client.GetDatabase(databaseName);
 		});
 
-		// Register MongoDbContext directly using Aspire-provided IMongoClient and IMongoDatabase
 		services.AddScoped<IMongoDbContext>(sp =>
 		{
 			IMongoClient client = sp.GetRequiredService<IMongoClient>();
@@ -50,7 +54,6 @@ public static class MongoDbServiceExtensions
 			return new MongoDbContext(client, database.DatabaseNamespace.DatabaseName);
 		});
 
-		// Register a factory wrapper for the factory interface
 		services.AddScoped<IMongoDbContextFactory>(sp =>
 		{
 			IMongoDbContext context = sp.GetRequiredService<IMongoDbContext>();
@@ -60,7 +63,6 @@ public static class MongoDbServiceExtensions
 
 		RegisterRepositoriesAndHandlers(services);
 
-		return builder;
 	}
 
 	/// <summary>
@@ -73,19 +75,30 @@ public static class MongoDbServiceExtensions
 		services.AddScoped<IArticleRepository, ArticleRepository>();
 		services.AddScoped<ICategoryRepository, CategoryRepository>();
 
+		// Register validators
+		services.AddScoped<IValidator<CategoryDto>, Shared.Validators.CategoryDtoValidator>();
+
+		// Article Handlers
+		services.AddScoped(
+				typeof(Components.Features.Articles.ArticlesList.GetArticles.IGetArticlesHandler),
+				typeof(Components.Features.Articles.ArticlesList.GetArticles.Handler));
+
 		// Category Handlers
 		services.AddScoped(
-			typeof(Web.Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler),
-			typeof(Web.Components.Features.Categories.CategoryEdit.EditCategory.Handler));
+				typeof(Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler),
+				typeof(Components.Features.Categories.CategoryEdit.EditCategory.Handler));
+
 		services.AddScoped(
-			typeof(Web.Components.Features.Categories.CategoryDetails.GetCategory.IGetCategoryHandler),
-			typeof(Web.Components.Features.Categories.CategoryDetails.GetCategory.Handler));
+				typeof(Components.Features.Categories.CategoryDetails.GetCategory.IGetCategoryHandler),
+				typeof(Components.Features.Categories.CategoryDetails.GetCategory.Handler));
+
 		services.AddScoped(
-			typeof(Web.Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler),
-			typeof(Web.Components.Features.Categories.CategoryCreate.CreateCategory.Handler));
+				typeof(Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler),
+				typeof(Components.Features.Categories.CategoryCreate.CreateCategory.Handler));
+
 		services.AddScoped(
-			typeof(Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler),
-			typeof(Web.Components.Features.Categories.CategoriesList.GetCategories.Handler));
+				typeof(Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler),
+				typeof(Components.Features.Categories.CategoriesList.GetCategories.Handler));
 	}
 
 	/// <summary>

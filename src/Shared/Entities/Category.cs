@@ -89,6 +89,7 @@ public class Category
 	/// </summary>
 	public void Update(string categoryName, string slug, bool isArchived)
 	{
+
 		if (string.IsNullOrWhiteSpace(categoryName))
 		{
 			throw new ArgumentException("Category name cannot be null or whitespace.", nameof(categoryName));
@@ -103,6 +104,7 @@ public class Category
 		Slug = slug;
 		IsArchived = isArchived;
 		ModifiedOn = DateTimeOffset.UtcNow;
+
 	}
 
 }

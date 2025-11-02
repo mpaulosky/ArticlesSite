@@ -4,6 +4,8 @@ IConfiguration configuration = builder.Configuration;
 
 builder.AddServiceDefaults();
 
+builder.Services.AddAuthenticationAndAuthorization(configuration);
+
 // Add Output Cache
 builder.Services.AddOutputCache();
 
@@ -14,12 +16,19 @@ builder.AddMongoDb();
 builder.Services.AddRazorComponents()
 		.AddInteractiveServerComponents();
 
-// Configure authentication, authorization, and CORS via an extension method
-builder.Services.AddAuthenticationAndAuthorization(configuration);
+// Register DatabaseSeeder
+builder.Services.AddScoped<DatabaseSeeder>();
 
 WebApplication app = builder.Build();
 
 app.MapDefaultEndpoints();
+
+// Seed database on startup
+using (var scope = app.Services.CreateScope())
+{
+	var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+	await seeder.SeedAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -38,6 +47,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseAntiforgery();
+
+app.UseStaticFiles(); // <-- Add this line to serve CSS and other static files
 
 app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
 {

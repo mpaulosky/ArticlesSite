@@ -18,6 +18,7 @@ public class CategoryRepositoryIntegrationTests
 {
 
 	private readonly MongoDbFixture _fixture;
+
 	private readonly ICategoryRepository _repository;
 
 	public CategoryRepositoryIntegrationTests(MongoDbFixture fixture)
@@ -48,16 +49,19 @@ public class CategoryRepositoryIntegrationTests
 		await _fixture.ClearCollectionsAsync();
 
 		var categories = FakeCategory.GetCategories(2, useSeed: true);
+
 		// Generate archived category without seed to avoid CategoryName collision
 		var archivedCategory = FakeCategory.GetNewCategory(useSeed: false);
+
 		// Force a unique name to avoid collision
 		archivedCategory = new Category
 		{
-			CategoryName = "ARCHIVED_" + Guid.NewGuid().ToString(),
-			Slug = archivedCategory.Slug,
-			IsArchived = false,
-			CreatedOn = DateTimeOffset.UtcNow
+				CategoryName = "ARCHIVED_" + Guid.NewGuid().ToString(),
+				Slug = archivedCategory.Slug,
+				IsArchived = false,
+				CreatedOn = DateTimeOffset.UtcNow
 		};
+
 		archivedCategory.Update(archivedCategory.CategoryName, archivedCategory.Slug, isArchived: true);
 
 		var allCategories = categories.Concat(new[] { archivedCategory }).ToArray();
@@ -73,8 +77,10 @@ public class CategoryRepositoryIntegrationTests
 		result.Should().NotBeNull();
 		result.Success.Should().BeTrue();
 		result.Value.Should().NotBeNull().And.HaveCount(2);
+
 		// Verify the two non-archived categories are present
 		result.Value.Should().Contain(c => categoryNames.Contains(c.CategoryName));
+
 		// Verify archived category is NOT present
 		result.Value.Should().NotContain(c => c.CategoryName == archivedCategory.CategoryName);
 	}
@@ -97,11 +103,13 @@ public class CategoryRepositoryIntegrationTests
 		result.Should().NotBeNull();
 		result.Success.Should().BeTrue();
 		result.Value.Should().NotBeNull();
-		result.Value!.Id.Should().Be(category.Id);
+		result.Value.Should().NotBeNull();
+		result.Value.Id.Should().Be(category.Id);
 		result.Value.CategoryName.Should().Be(category.CategoryName);
 	}
+
 	[Fact]
-	public async Task GetCategoryByIdAsync_WithInvalidId_ReturnsNull()
+	public async Task GetCategoryByIdAsync_WithInvalidId_ReturnsFailure()
 	{
 		// Arrange
 		await _fixture.ClearCollectionsAsync();
@@ -112,8 +120,9 @@ public class CategoryRepositoryIntegrationTests
 
 		// Assert
 		result.Should().NotBeNull();
-		result.Success.Should().BeTrue();
+		result.Success.Should().BeFalse();
 		result.Value.Should().BeNull();
+		result.Error.Should().NotBeNullOrEmpty();
 	}
 
 	[Fact]
@@ -134,12 +143,13 @@ public class CategoryRepositoryIntegrationTests
 		result.Should().NotBeNull();
 		result.Success.Should().BeTrue();
 		result.Value.Should().NotBeNull();
-		result.Value!.CategoryName.Should().Be(category.CategoryName);
+		result.Value.Should().NotBeNull();
+		result.Value.CategoryName.Should().Be(category.CategoryName);
 		result.Value.Slug.Should().Be(category.Slug);
 	}
 
 	[Fact]
-	public async Task GetCategory_WithInvalidSlug_ReturnsNull()
+	public async Task GetCategory_WithInvalidSlug_ReturnsFailure()
 	{
 		// Arrange
 		await _fixture.ClearCollectionsAsync();
@@ -149,12 +159,13 @@ public class CategoryRepositoryIntegrationTests
 
 		// Assert
 		result.Should().NotBeNull();
-		result.Success.Should().BeTrue();
+		result.Success.Should().BeFalse();
 		result.Value.Should().BeNull();
+		result.Error.Should().NotBeNullOrEmpty();
 	}
 
 	[Fact]
-	public async Task GetCategory_WithArchivedCategory_ReturnsNull()
+	public async Task GetCategory_WithArchivedCategory_ReturnsFailure()
 	{
 		// Arrange
 		await _fixture.ClearCollectionsAsync();
@@ -170,8 +181,9 @@ public class CategoryRepositoryIntegrationTests
 
 		// Assert
 		result.Should().NotBeNull();
-		result.Success.Should().BeTrue();
+		result.Success.Should().BeFalse();
 		result.Value.Should().BeNull("archived categories should not be returned");
+		result.Error.Should().NotBeNullOrEmpty();
 	}
 
 	[Fact]
@@ -194,9 +206,13 @@ public class CategoryRepositoryIntegrationTests
 
 		// Verify in database
 		var collection = _fixture.Database.GetCollection<Category>("Categories");
-		var dbCategory = await collection.Find(c => c.Id == result.Value.Id).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+
+		var dbCategory = await collection.Find(c => c.Id == result.Value.Id)
+				.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+
 		dbCategory.Should().NotBeNull();
-		dbCategory!.CategoryName.Should().Be(category.CategoryName);
+		dbCategory.Should().NotBeNull();
+		dbCategory.CategoryName.Should().Be(category.CategoryName);
 	}
 
 	[Fact]
@@ -222,9 +238,13 @@ public class CategoryRepositoryIntegrationTests
 		result.Value.Should().NotBeNull();
 		result.Value.CategoryName.Should().Be("Updated Name");
 		result.Value.Slug.Should().Be("updated-slug");    // Verify in database
-		var dbCategory = await collection.Find(c => c.Id == category.Id).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+
+		var dbCategory = await collection.Find(c => c.Id == category.Id)
+				.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+
 		dbCategory.Should().NotBeNull();
-		dbCategory!.CategoryName.Should().Be("Updated Name");
+		dbCategory.Should().NotBeNull();
+		dbCategory.CategoryName.Should().Be("Updated Name");
 	}
 
 	[Fact]
@@ -242,9 +262,12 @@ public class CategoryRepositoryIntegrationTests
 		await _repository.ArchiveCategory(category.Slug);
 
 		// Assert - Verify in database
-		var dbCategory = await collection.Find(c => c.Slug == category.Slug).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+		var dbCategory = await collection.Find(c => c.Slug == category.Slug)
+				.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+
 		dbCategory.Should().NotBeNull();
-		dbCategory!.IsArchived.Should().BeTrue();
+		dbCategory.Should().NotBeNull();
+		dbCategory.IsArchived.Should().BeTrue();
 	}
 
 	[Fact]

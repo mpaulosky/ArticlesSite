@@ -14,25 +14,32 @@ namespace Web.Data.Repositories;
 /// <summary>
 /// Category repository implementation using native MongoDB.Driver with factory pattern.
 /// </summary>
-public class CategoryRepository(IMongoDbContextFactory contextFactory) : ICategoryRepository
+public class CategoryRepository
+(
+		IMongoDbContextFactory contextFactory
+) : ICategoryRepository
 {
+
 	/// <summary>
 	/// Gets a category by its unique identifier.
 	/// </summary>
 	/// <param name="id">The ObjectId of the category.</param>
 	/// <returns>A <see cref="Result{Category}"/> containing the category if found, or an error message.</returns>
-	public async Task<Result<Category?>> GetCategoryByIdAsync(ObjectId id)
+	public async Task<Result<Category>> GetCategoryByIdAsync(ObjectId id)
 	{
 		try
 		{
 			IMongoDbContext context = contextFactory.CreateDbContext();
 			Category? category = await context.Categories.Find(c => c.Id == id).FirstOrDefaultAsync();
 
-			return Result.Ok<Category?>(category);
+			if (category is null)
+				return Result.Fail<Category>("Category not found");
+
+			return Result.Ok(category);
 		}
 		catch (Exception ex)
 		{
-			return Result.Fail<Category?>($"Error getting category by id: {ex.Message}");
+			return Result.Fail<Category>($"Error getting category by id: {ex.Message}");
 		}
 	}
 
@@ -41,37 +48,43 @@ public class CategoryRepository(IMongoDbContextFactory contextFactory) : ICatego
 	/// </summary>
 	/// <param name="slug">The slug of the category.</param>
 	/// <returns>A <see cref="Result{Category}"/> containing the category if found, or an error message.</returns>
-	public async Task<Result<Category?>> GetCategory(string slug)
+	public async Task<Result<Category>> GetCategory(string slug)
 	{
 		try
 		{
 			IMongoDbContext context = contextFactory.CreateDbContext();
 			Category? category = await context.Categories.Find(c => c.Slug == slug && !c.IsArchived).FirstOrDefaultAsync();
 
-			return Result.Ok<Category?>(category);
+			if (category is null)
+				return Result.Fail<Category>("Category not found");
+
+			return Result.Ok(category);
 		}
 		catch (Exception ex)
 		{
-			return Result.Fail<Category?>($"Error getting category: {ex.Message}");
+			return Result.Fail<Category>($"Error getting category: {ex.Message}");
 		}
 	}
 
 	/// <summary>
 	/// Gets all non-archived categories.
 	/// </summary>
-	/// <returns>A <see cref="Result{IEnumerable{Category}}"/> containing the categories or an error message.</returns>
-	public async Task<Result<IEnumerable<Category>?>> GetCategories()
+	/// <returns>A <see cref="Result{T}"/> containing a collection of Category or an error message.</returns>
+	public async Task<Result<IEnumerable<Category>>> GetCategories()
 	{
 		try
 		{
 			IMongoDbContext context = contextFactory.CreateDbContext();
 			List<Category>? categories = await context.Categories.Find(c => !c.IsArchived).ToListAsync();
 
-			return Result.Ok<IEnumerable<Category>?>(categories);
+			if (categories is null)
+				return Result.Fail<IEnumerable<Category>>("No categories found");
+
+			return Result.Ok<IEnumerable<Category>>(categories);
 		}
 		catch (Exception ex)
 		{
-			return Result.Fail<IEnumerable<Category>?>($"Error getting categories: {ex.Message}");
+			return Result.Fail<IEnumerable<Category>>($"Error getting categories: {ex.Message}");
 		}
 	}
 
@@ -79,19 +92,22 @@ public class CategoryRepository(IMongoDbContextFactory contextFactory) : ICatego
 	/// Gets categories matching a specified predicate.
 	/// </summary>
 	/// <param name="where">The predicate to filter categories.</param>
-	/// <returns>A <see cref="Result{IEnumerable{Category}}"/> containing the filtered categories or an error message.</returns>
-	public async Task<Result<IEnumerable<Category>?>> GetCategories(Expression<Func<Category, bool>> where)
+	/// <returns>A <see cref="Result{T}"/> containing a filtered collection of Category or an error message.</returns>
+	public async Task<Result<IEnumerable<Category>>> GetCategories(Expression<Func<Category, bool>> where)
 	{
 		try
 		{
 			IMongoDbContext context = contextFactory.CreateDbContext();
 			List<Category>? categories = await context.Categories.Find(where).ToListAsync();
 
-			return Result.Ok<IEnumerable<Category>?>(categories);
+			if (categories is null)
+				return Result.Fail<IEnumerable<Category>>("No categories found");
+
+			return Result.Ok<IEnumerable<Category>>(categories);
 		}
 		catch (Exception ex)
 		{
-			return Result.Fail<IEnumerable<Category>?>($"Error getting categories: {ex.Message}");
+			return Result.Fail<IEnumerable<Category>>($"Error getting categories: {ex.Message}");
 		}
 	}
 

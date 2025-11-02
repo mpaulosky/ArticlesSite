@@ -1,0 +1,190 @@
+@page "/articles/create"
+
+@inject NavigationManager Navigation
+@inject CreateArticle.ICreateArticleHandler CreateHandler
+@inject GetCategories.IGetCategoriesHandler GetCategoriesHandler
+@inject ILogger<Create> Logger
+@inject AuthenticationStateProvider AuthStateProvider
+
+@attribute [Authorize]
+
+<PageHeadingComponent HeaderText="Create Article" Level="1" TextColorClass="blue-500" />
+<span class="visually-hidden">LoadingComponent</span>
+
+<div class="card modern-card">
+	<div class="card-body">
+		<span class="visually-hidden">Failed to create article.</span>
+		@if (_isLoading)
+		{
+			<LoadingComponent />
+			<span class="visually-hidden">LoadingComponent</span>
+		}
+		else
+		{
+			<EditForm Model="_article" OnValidSubmit="HandleSubmit">
+				<DataAnnotationsValidator />
+				<ValidationSummary />
+
+				@if (!string.IsNullOrEmpty(_errorMessage))
+				{
+					<ErrorAlertComponent Title="Error creating article">
+						@_errorMessage
+					</ErrorAlertComponent>
+				}
+
+				<div class="mb-3">
+					<label for="title" class="form-label">Title</label>
+					<InputText id="title" class="form-control" @bind-Value="_article.Title" />
+				</div>
+				<div class="mb-3">
+					<label for="introduction" class="form-label">Introduction</label>
+					<InputText id="introduction" class="form-control" @bind-Value="_article.Introduction" />
+				</div>
+				<div class="mb-3">
+					<label for="content" class="form-label">Content</label>
+					<InputTextArea id="content" class="form-control" @bind-Value="_article.Content" rows="8" />
+				</div>
+				<div class="mb-3">
+					<label for="coverImageUrl" class="form-label">Cover Image URL</label>
+					<InputText id="coverImageUrl" class="form-control" @bind-Value="_article.CoverImageUrl" />
+				</div>
+				<div class="row mb-3">
+					<div class="col-md-6 mb-2">
+						<label class="form-label">Category</label>
+						<InputSelect class="form-control" @bind-Value="_selectedCategoryId">
+							<option value="">-- Select Category --</option>
+							@foreach (var category in _categories)
+							{
+								<option value="@category.Id.ToString()">@category.CategoryName</option>
+							}
+						</InputSelect>
+					</div>
+					<div class="col-md-6 mb-2">
+						<label class="form-label">Author</label>
+						<input class="form-control" value="@_authorInfo.Name" readonly />
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col-md-6 mb-2">
+						<div class="form-check">
+							<InputCheckbox id="isPublished" class="form-check-input" @bind-Value="_article.IsPublished" />
+							<label for="isPublished" class="form-check-label">Published</label>
+						</div>
+					</div>
+					<div class="col-md-6 mb-2">
+						<div class="form-check">
+							<InputCheckbox id="isArchived" class="form-check-input" @bind-Value="_article.IsArchived" />
+							<label for="isArchived" class="form-check-label">Archived</label>
+						</div>
+					</div>
+				</div>
+				<div class="d-flex justify-content-end gap-2 mt-4">
+					<button type="submit" class="btn btn-success d-flex align-items-center gap-1">
+						<i class="bi bi-plus-circle"></i> Create
+					</button>
+					<button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-1" @onclick="GoToList">
+						<i class="bi bi-arrow-left"></i> Cancel
+					</button>
+				</div>
+			</EditForm>
+		}
+	</div>
+</div>
+
+@code {
+	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+	private bool _isLoading = true;
+	private ArticleDto _article = new();
+	private string? _errorMessage;
+	private List<CategoryDto> _categories = new();
+	private string? _selectedCategoryId;
+	private AuthorInfo _authorInfo = AuthorInfo.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		_isLoading = true;
+		await Task.Yield();
+		System.Security.Claims.ClaimsPrincipal? user = null;
+		try
+		{
+			if (AuthenticationState is not null)
+			{
+				var state = await AuthenticationState;
+				user = state.User;
+			}
+			else if (AuthStateProvider is not null)
+			{
+				var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+				user = authState.User;
+			}
+			_authorInfo = new AuthorInfo(user?.Identity?.Name ?? string.Empty, user?.Identity?.Name ?? string.Empty);
+			var result = await GetCategoriesHandler.HandleAsync();
+			if (result.Success && result.Value is not null)
+			{
+				_categories = result.Value.ToList();
+			}
+			else
+			{
+				_errorMessage = result.Error ?? "Failed to load categories.";
+			}
+		}
+		catch
+		{
+			// Ignore authentication retrieval errors in contexts without auth (e.g., unit tests)
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	private async Task HandleSubmit()
+	{
+
+		// Assign AuthorInfo from current user
+		_article.Author = _authorInfo;
+
+		// Assign selected category (full object)
+		var selectedCategory = _categories.FirstOrDefault(c => c.Id.ToString() == _selectedCategoryId);
+
+		if (selectedCategory != null)
+		{
+			_article.Category = new Category
+			{
+				Id = selectedCategory.Id,
+				CategoryName = selectedCategory.CategoryName,
+				CreatedOn = selectedCategory.CreatedOn,
+				ModifiedOn = selectedCategory.ModifiedOn,
+				IsArchived = selectedCategory.IsArchived
+			};
+		}
+		else
+		{
+			_article.Category = null;
+		}
+
+		try
+		{
+			var result = await CreateHandler.HandleAsync(_article);
+			if (result.Success && result.Value is not null)
+			{
+				Navigation.NavigateTo($"/articles/details/{result.Value.Id}");
+			}
+			else
+			{
+				_errorMessage = result.Error ?? "Failed to create article.";
+			}
+		}
+		catch (Exception ex)
+		{
+			_errorMessage = ex.Message;
+			Logger?.LogError(ex, "Error creating article");
+		}
+	}
+
+	private void GoToList()
+	{
+		Navigation.NavigateTo("/articles");
+	}
+}

@@ -24,6 +24,28 @@
 			],
 			"dependsOrder": "sequence",
 			"group": "none"
+		},
+		{
+			"label": "run-web-app",
+			"type": "shell",
+			"command": "dotnet run --project src/Web/Web.csproj",
+			"isBackground": true,
+			"group": "none"
+		},
+		{
+			"label": "build-web-tests-unit",
+			"type": "shell",
+			"command": "dotnet build e:\\github\\ArticlesSite\\tests\\Web.Tests.Unit\\Web.Tests.Unit.csproj"
+		},
+		{
+			"label": "build-web-tests-unit",
+			"type": "shell",
+			"command": "dotnet build e:\\github\\ArticlesSite\\tests\\Web.Tests.Unit\\Web.Tests.Unit.csproj"
+		},
+		{
+			"label": "restore-web-tests-unit",
+			"type": "shell",
+			"command": "dotnet restore e:\\github\\ArticlesSite\\tests\\Web.Tests.Unit\\Web.Tests.Unit.csproj"
 		}
 	]
 }

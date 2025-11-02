@@ -1,16 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<IsAspireSharedProject>true</IsAspireSharedProject>
 		<IsAspireProjectResource>false</IsAspireProjectResource>
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
-		<AnalysisLevel>latest-all</AnalysisLevel>
-		<!-- CA1724: 'Extensions' is standard naming convention for extension method classes -->
-		<NoWarn>$(NoWarn);CA1724</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

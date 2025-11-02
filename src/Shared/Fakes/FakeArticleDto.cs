@@ -56,7 +56,7 @@ public static class FakeArticleDto
 				.RuleFor(f => f.Title, f => f.WaffleTitle())
 				.RuleFor(f => f.Introduction, f => f.Lorem.Sentence())
 				.RuleFor(f => f.Content, f => f.WaffleMarkdown(5))
-				.RuleFor(f => f.Slug, (_, f) => f.Title.GetSlug())
+				.RuleFor(f => f.Slug, (_, f) => f.Title.GenerateSlug())
 				.RuleFor(f => f.CoverImageUrl, f => f.Image.PicsumUrl() ?? string.Empty)
 				.RuleFor(f => f.IsPublished, f => f.Random.Bool())
 				.RuleFor(f => f.PublishedOn, (_, f) => f.IsPublished ? DateTime.Now : null)

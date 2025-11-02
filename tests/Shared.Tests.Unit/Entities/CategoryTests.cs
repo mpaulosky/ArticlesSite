@@ -12,6 +12,7 @@ namespace Shared.Tests.Unit.Entities;
 /// <summary>
 ///   Unit tests for the <see cref="Category" /> entity.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class CategoryTests
 {
 
@@ -19,7 +20,7 @@ public class CategoryTests
 	public void Constructor_Parameterless_ShouldSetDefaultValues()
 	{
 		// Arrange & Act
-		Category category = new ();
+		Category category = new();
 
 		// Assert
 		category.Id.Should().NotBe(ObjectId.Empty);
@@ -67,7 +68,7 @@ public class CategoryTests
 	public void Update_WithNullCategoryName_ShouldThrowArgumentException()
 	{
 		// Arrange
-		Category category = new ();
+		Category category = new();
 
 		// Act
 		Action act = () => category.Update(null!, "slug", false);
@@ -82,7 +83,7 @@ public class CategoryTests
 	public void Update_WithEmptyCategoryName_ShouldThrowArgumentException()
 	{
 		// Arrange
-		Category category = new ();
+		Category category = new();
 
 		// Act
 		Action act = () => category.Update("  ", "slug", false);
@@ -97,7 +98,7 @@ public class CategoryTests
 	public void Update_WithNullSlug_ShouldThrowArgumentException()
 	{
 		// Arrange
-		Category category = new ();
+		Category category = new();
 
 		// Act
 		Action act = () => category.Update("Category Name", null!, false);
@@ -112,7 +113,7 @@ public class CategoryTests
 	public void Update_WithEmptySlug_ShouldThrowArgumentException()
 	{
 		// Arrange
-		Category category = new ();
+		Category category = new();
 
 		// Act
 		Action act = () => category.Update("Category Name", "  ", false);
@@ -127,7 +128,7 @@ public class CategoryTests
 	public void Properties_ShouldBeSettable()
 	{
 		// Arrange
-		Category category = new ();
+		Category category = new();
 		DateTimeOffset createdOn = DateTimeOffset.UtcNow;
 		DateTimeOffset modifiedOn = DateTimeOffset.UtcNow.AddDays(1);
 

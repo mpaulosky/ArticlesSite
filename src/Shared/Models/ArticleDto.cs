@@ -192,20 +192,20 @@ public sealed class ArticleDto
 	public static ArticleDto Empty =>
 			new()
 			{
-					Id = ObjectId.Empty,
-					Slug = string.Empty,
-					Title = string.Empty,
-					Introduction = string.Empty,
-					Content = string.Empty,
-					CoverImageUrl = string.Empty,
-					Author = null,
-					Category = null,
-					IsPublished = false,
-					PublishedOn = null,
-					CreatedOn = null,
-					ModifiedOn = null,
-					IsArchived = false,
-					CanEdit = false
+				Id = ObjectId.Empty,
+				Slug = string.Empty,
+				Title = string.Empty,
+				Introduction = string.Empty,
+				Content = string.Empty,
+				CoverImageUrl = string.Empty,
+				Author = null,
+				Category = null,
+				IsPublished = false,
+				PublishedOn = null,
+				CreatedOn = null,
+				ModifiedOn = null,
+				IsArchived = false,
+				CanEdit = false
 			};
 
 }

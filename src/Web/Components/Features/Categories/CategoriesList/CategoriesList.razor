@@ -1,0 +1,159 @@
+@page "/categories"
+
+@inject NavigationManager Navigation
+@inject GetCategories.IGetCategoriesHandler GetHandler
+@inject ILogger<CategoriesList> Logger
+@inject AuthenticationStateProvider AuthStateProvider
+
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="container-card mb-4 flex items-center justify-between">
+
+	<h1 class="text-2xl font-bold text-gray-100">All Categories</h1>
+
+	@if (@_canCreate)
+	{
+		<button class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700" @onclick="CreateNewCategory">Create
+			New Category</button>
+	}
+
+</div>
+
+@if (_isLoading)
+{
+
+	<LoadingComponent />
+
+}
+else if (_errorMessage != null)
+{
+
+	<ErrorAlertComponent Title="Error loading articles">
+		@_errorMessage
+	</ErrorAlertComponent>
+
+}
+else if (_categories == null || !_categories.Any())
+{
+
+	<div class="bg-gray-700 rounded-lg p-8 text-center">
+		<p class="text-gray-300 text-lg mb-4">No articles available yet.</p>
+		<p class="text-gray-400">Check back soon for new content!</p>
+	</div>
+
+}
+else
+{
+
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		@foreach (var category in _categories)
+		{
+			<div class="container-card bg-gray-700 rounded-lg shadow-lg p-6 flex flex-col justify-between min-h-[180px]">
+				<div>
+					<h2 class="text-xl font-bold text-blue-300 mb-2">@category.CategoryName</h2>
+					<hr class="border-blue-500 mb-4" />
+					<div class="mb-2">
+						<span class="font-semibold text-gray-400">Category Slug:</span> <span class="text-gray-100">@category.Slug</span>
+					</div>
+					<div class="mb-2">
+						<span class="font-semibold text-gray-400">Created On:</span> <span
+							class="text-gray-100">@category.CreatedOn.ToString("d")</span>
+					</div>
+					<div class="mb-2">
+						<span class="font-semibold text-gray-400">Modified On:</span> <span
+							class="text-gray-100">@(category.ModifiedOn?.ToString("d") ?? "N/A")</span>
+					</div>
+					<div class="mb-2">
+						<span class="font-semibold text-gray-400">Status:</span>
+						@if (category.IsArchived)
+						{
+							<span class="badge bg-secondary">Archived</span>
+						}
+						else
+						{
+							<span class="badge bg-success">Active</span>
+						}
+					</div>
+				</div>
+				<div class="mt-4 flex gap-2">
+					<button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+						@onclick="() => GoToDetails(category.Id.ToString())">View</button>
+					<button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
+						@onclick="() => GoToEdit(category.Id.ToString())" disabled="@category.IsArchived">Edit</button>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+@code {
+
+	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+	private IEnumerable<CategoryDto>? _categories;
+	private bool _isLoading = true;
+	private string? _errorMessage;
+
+	private bool _canCreate;
+
+	protected override async Task OnInitializedAsync()
+	{
+
+		Logger?.LogInformation("Loading categories list");
+		_isLoading = true;
+		_errorMessage = null;
+
+		try
+		{
+
+			// Get current user for authorization
+			var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+			var user = authState.User;
+
+			// Determine if user is Admin
+			var isAdmin = user.IsInRole("Admin");
+			_canCreate = isAdmin;
+
+			var result = await GetHandler.HandleAsync();
+
+			if (result is { Success: true })
+			{
+				_categories = result.Value;
+				_errorMessage = null;
+
+				Logger?.LogInformation("Categories loaded successfully. Count: {Count}", _categories?.Count() ?? 0);
+			}
+			else
+			{
+				_categories = null;
+				_errorMessage = result?.Error ?? "Failed to load categories.";
+
+				Logger?.LogWarning("Failed to load categories. Error: {Error}", _errorMessage);
+			}
+		}
+		finally
+		{
+			_isLoading = false;
+		}
+	}
+
+	private void GoToCreate()
+	{
+		Navigation.NavigateTo("/categories/create");
+	}
+
+	private void GoToDetails(string id)
+	{
+		Navigation.NavigateTo($"/categories/details/{id}");
+	}
+
+	private void GoToEdit(string id)
+	{
+		Navigation.NavigateTo($"/categories/edit/{id}");
+	}
+
+	private void CreateNewCategory()
+	{
+		Navigation.NavigateTo("/categories/create");
+	}
+
+}

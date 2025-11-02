@@ -12,6 +12,7 @@ namespace Shared.Tests.Unit.Entities;
 /// <summary>
 ///   Unit tests for the <see cref="AuthorInfo" /> record.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class AuthorInfoTests
 {
 
@@ -23,7 +24,7 @@ public class AuthorInfoTests
 		const string name = "John Doe";
 
 		// Act
-		AuthorInfo authorInfo = new (userId, name);
+		AuthorInfo authorInfo = new(userId, name);
 
 		// Assert
 		authorInfo.UserId.Should().Be(userId);
@@ -34,7 +35,7 @@ public class AuthorInfoTests
 	public void Constructor_Parameterless_ShouldSetDefaultValues()
 	{
 		// Arrange & Act
-		AuthorInfo authorInfo = new ();
+		AuthorInfo authorInfo = new();
 
 		// Assert
 		authorInfo.UserId.Should().Be(string.Empty);
@@ -56,9 +57,9 @@ public class AuthorInfoTests
 	public void Record_Equality_ShouldCompareBothProperties()
 	{
 		// Arrange
-		AuthorInfo author1 = new ("auth0|123", "John Doe");
-		AuthorInfo author2 = new ("auth0|123", "John Doe");
-		AuthorInfo author3 = new ("auth0|456", "Jane Doe");
+		AuthorInfo author1 = new("auth0|123", "John Doe");
+		AuthorInfo author2 = new("auth0|123", "John Doe");
+		AuthorInfo author3 = new("auth0|456", "Jane Doe");
 
 		// Act & Assert
 		author1.Should().Be(author2);
@@ -69,7 +70,7 @@ public class AuthorInfoTests
 	public void With_Expression_ShouldCreateNewInstance()
 	{
 		// Arrange
-		AuthorInfo original = new ("auth0|123", "John Doe");
+		AuthorInfo original = new("auth0|123", "John Doe");
 
 		// Act
 		AuthorInfo modified = original with { Name = "Jane Doe" };

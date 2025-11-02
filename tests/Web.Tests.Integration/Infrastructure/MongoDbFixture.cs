@@ -12,6 +12,7 @@ namespace Web.Tests.Integration.Infrastructure;
 /// <summary>
 ///   Provides a MongoDB container for integration tests using Testcontainers
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class MongoDbFixture : IAsyncLifetime
 {
 
@@ -120,4 +121,3 @@ public sealed class MongoDbFixture : IAsyncLifetime
 	}
 
 }
-

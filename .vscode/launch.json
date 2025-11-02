@@ -5,6 +5,14 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "C#: AppHost Watch",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "prelaunch-all",
+			"program": "${workspaceFolder}/src/AppHost/bin/Debug/net9.0/AppHost.dll",
+			"cwd": "${workspaceFolder}/src/AppHost"
+		},
+		{
 			"name": "C#: ArticlesSite Debug",
 			"type": "dotnet",
 			"request": "launch",

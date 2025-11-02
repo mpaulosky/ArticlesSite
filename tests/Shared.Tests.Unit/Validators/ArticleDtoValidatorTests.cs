@@ -16,6 +16,7 @@ namespace Shared.Tests.Unit.Validators;
 /// <summary>
 ///   Unit tests for the <see cref="ArticleDtoValidator" /> class.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class ArticleDtoValidatorTests
 {
 
@@ -27,15 +28,15 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Slug = "test_article",
-				Title = "Test Article",
-				Introduction = "Test introduction",
-				Content = "Test content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Technology" },
-				IsPublished = true,
-				PublishedOn = DateTimeOffset.UtcNow
+			Slug = "test_article",
+			Title = "Test Article",
+			Introduction = "Test introduction",
+			Content = "Test content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Technology" },
+			IsPublished = true,
+			PublishedOn = DateTimeOffset.UtcNow
 		};
 
 		// Act
@@ -70,13 +71,13 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = invalidTitle!,
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = "valid_slug",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = invalidTitle!,
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = "valid_slug",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -93,13 +94,13 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = new string('A', 101),
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = "valid_slug",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = new string('A', 101),
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = "valid_slug",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -119,13 +120,13 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = "Valid Title",
-				Introduction = invalidIntro!,
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = "valid_slug",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = invalidIntro!,
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = "valid_slug",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -147,13 +148,13 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = invalidContent!,
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = "valid_slug",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = invalidContent!,
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = "valid_slug",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -170,13 +171,13 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = new string('A', 4001),
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = "valid_slug",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = new string('A', 4001),
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = "valid_slug",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -198,13 +199,13 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = invalidCoverImageUrl!,
-				Slug = "valid_slug",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = invalidCoverImageUrl!,
+			Slug = "valid_slug",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -226,13 +227,13 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = invalidSlug!,
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = invalidSlug!,
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -252,13 +253,13 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = invalidSlug,
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = invalidSlug,
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -278,13 +279,13 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = "valid_slug",
-				Author = null,
-				Category = new Category { CategoryName = "Tech" }
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = "valid_slug",
+			Author = null,
+			Category = new Category { CategoryName = "Tech" }
 		};
 
 		// Act
@@ -301,13 +302,13 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = "valid_slug",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = null
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = "valid_slug",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = null
 		};
 
 		// Act
@@ -324,15 +325,15 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = "valid_slug",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" },
-				IsPublished = true,
-				PublishedOn = null
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = "valid_slug",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" },
+			IsPublished = true,
+			PublishedOn = null
 		};
 
 		// Act
@@ -351,15 +352,15 @@ public class ArticleDtoValidatorTests
 		// Arrange
 		ArticleDto dto = new()
 		{
-				Title = "Valid Title",
-				Introduction = "Valid intro",
-				Content = "Valid content",
-				CoverImageUrl = "https://example.com/cover.jpg",
-				Slug = "valid_slug",
-				Author = new AuthorInfo("auth0|123", "John Doe"),
-				Category = new Category { CategoryName = "Tech" },
-				IsPublished = false,
-				PublishedOn = null
+			Title = "Valid Title",
+			Introduction = "Valid intro",
+			Content = "Valid content",
+			CoverImageUrl = "https://example.com/cover.jpg",
+			Slug = "valid_slug",
+			Author = new AuthorInfo("auth0|123", "John Doe"),
+			Category = new Category { CategoryName = "Tech" },
+			IsPublished = false,
+			PublishedOn = null
 		};
 
 		// Act

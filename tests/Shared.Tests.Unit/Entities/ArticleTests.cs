@@ -12,6 +12,7 @@ namespace Shared.Tests.Unit.Entities;
 /// <summary>
 ///   Unit tests for the <see cref="Article" /> entity.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public class ArticleTests
 {
 
@@ -19,7 +20,7 @@ public class ArticleTests
 	public void Constructor_Parameterless_ShouldSetDefaultValues()
 	{
 		// Arrange & Act
-		Article article = new ();
+		Article article = new();
 
 		// Assert
 		article.Id.Should().NotBe(ObjectId.Empty);
@@ -45,11 +46,11 @@ public class ArticleTests
 		const string intro = "Test introduction";
 		const string content = "Test content";
 		const string coverImage = "https://example.com/image.jpg";
-		AuthorInfo author = new ("auth0|123", "John Doe");
-		Category category = new()  { CategoryName = "Technology" };
+		AuthorInfo author = new("auth0|123", "John Doe");
+		Category category = new() { CategoryName = "Technology" };
 
 		// Act
-		Article article = new (title, intro, content, coverImage, author, category);
+		Article article = new(title, intro, content, coverImage, author, category);
 
 		// Assert
 		article.Title.Should().Be(title);
@@ -68,7 +69,7 @@ public class ArticleTests
 	public void Constructor_WithNullCoverImageUrl_ShouldUseDefaultImage()
 	{
 		// Arrange & Act
-		Article article = new ("Title", "Intro", "Content", null, null, null);
+		Article article = new("Title", "Intro", "Content", null, null, null);
 
 		// Assert
 		article.CoverImageUrl.Should().Be("https://example.com/image.jpg");
@@ -82,12 +83,13 @@ public class ArticleTests
 		const string intro = "Test introduction";
 		const string content = "Test content";
 		const string coverImage = "https://example.com/cover.jpg";
-		AuthorInfo author = new ("auth0|123", "John Doe");
-		Category category = new()  { CategoryName = "Technology" };
+		AuthorInfo author = new("auth0|123", "John Doe");
+		Category category = new() { CategoryName = "Technology" };
 		DateTimeOffset publishedOn = DateTimeOffset.UtcNow;
-
+		const string slug = "test_article";
+	
 		// Act
-		Article article = new (title, intro, content, coverImage, author, category, true, publishedOn, true);
+		Article article = new(title, intro, content, coverImage, author, category, true, publishedOn, true, slug);
 
 		// Assert
 		article.Title.Should().Be(title);
@@ -165,7 +167,7 @@ public class ArticleTests
 	public void Update_WithValidData_ShouldUpdatePropertiesAndSetModifiedOn()
 	{
 		// Arrange
-		Article article = new ("Old Title", "Old Intro", "Old Content", "old.jpg", null, null);
+		Article article = new("Old Title", "Old Intro", "Old Content", "old.jpg", null, null);
 		DateTimeOffset beforeModified = DateTimeOffset.UtcNow;
 
 		// Act
@@ -190,7 +192,7 @@ public class ArticleTests
 	public void Update_WithInvalidTitle_ShouldThrowArgumentException(string? invalidTitle)
 	{
 		// Arrange
-		Article article = new ("Title", "Intro", "Content", "cover.jpg", null, null);
+		Article article = new("Title", "Intro", "Content", "cover.jpg", null, null);
 
 		// Act
 		Action act = () => article.Update(invalidTitle!, "Intro", "Content", "cover.jpg", false, null, false);
@@ -205,7 +207,7 @@ public class ArticleTests
 	public void Publish_ShouldSetPublishedProperties()
 	{
 		// Arrange
-		Article article = new ("Title", "Intro", "Content", "cover.jpg", null, null);
+		Article article = new("Title", "Intro", "Content", "cover.jpg", null, null);
 		DateTimeOffset publishedOn = DateTimeOffset.UtcNow;
 		DateTimeOffset beforeModified = DateTimeOffset.UtcNow;
 
@@ -223,7 +225,7 @@ public class ArticleTests
 	public void Unpublish_ShouldClearPublishedProperties()
 	{
 		// Arrange
-		Article article = new ("Title", "Intro", "Content", "cover.jpg", null, null, true, DateTimeOffset.UtcNow, false);
+		Article article = new("Title", "Intro", "Content", "cover.jpg", null, null, true, DateTimeOffset.UtcNow, false, "title");
 		DateTimeOffset beforeModified = DateTimeOffset.UtcNow;
 
 		// Act
@@ -245,7 +247,7 @@ public class ArticleTests
 	public void SlugGeneration_ShouldConvertTitleToValidSlug(string title, string expectedSlug)
 	{
 		// Arrange & Act
-		Article article = new (title, "Intro", "Content", "cover.jpg", null, null);
+		Article article = new(title, "Intro", "Content", "cover.jpg", null, null);
 
 		// Assert
 		article.Slug.Should().Be(expectedSlug);
@@ -255,9 +257,9 @@ public class ArticleTests
 	public void Properties_ShouldBeSettable()
 	{
 		// Arrange
-		Article article = new ();
-		AuthorInfo author = new ("auth0|123", "John Doe");
-		Category category = new()  { CategoryName = "Tech" };
+		Article article = new();
+		AuthorInfo author = new("auth0|123", "John Doe");
+		Category category = new() { CategoryName = "Tech" };
 
 		// Act
 		article.Title = "New Title";

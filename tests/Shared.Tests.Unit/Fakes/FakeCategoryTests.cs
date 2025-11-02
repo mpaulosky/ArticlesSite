@@ -219,7 +219,7 @@ public class FakeCategoryTests
 		};
 
 		const int iterations = 50;
-		List<string> categoryNames = new ();
+		List<string> categoryNames = new();
 
 		// Act
 		for (int i = 0; i < iterations; i++)

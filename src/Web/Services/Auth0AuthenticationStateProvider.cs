@@ -9,8 +9,6 @@
 
 using System.Security.Claims;
 
-using Microsoft.AspNetCore.Components.Authorization;
-
 namespace Web.Services;
 
 public class Auth0AuthenticationStateProvider : AuthenticationStateProvider
@@ -45,7 +43,7 @@ public class Auth0AuthenticationStateProvider : AuthenticationStateProvider
 			}
 
 			// Create a new ClaimsIdentity with the existing claims plus any additional processing
-			ClaimsIdentity identity = new (user.Identity);
+			ClaimsIdentity identity = new(user.Identity);
 
 			// Add role claims if they exist
 			string? rolesClaim = user.FindFirst("https://articlesite.com/roles")?.Value;
@@ -71,13 +69,13 @@ public class Auth0AuthenticationStateProvider : AuthenticationStateProvider
 				}
 			}
 
-			ClaimsPrincipal claimsPrincipal = new (identity);
+			ClaimsPrincipal claimsPrincipal = new(identity);
 
 			return Task.FromResult(new AuthenticationState(claimsPrincipal));
 		}
 
 		// Return an anonymous user if not authenticated
-		ClaimsPrincipal anonymous = new (new ClaimsIdentity());
+		ClaimsPrincipal anonymous = new(new ClaimsIdentity());
 
 		return Task.FromResult(new AuthenticationState(anonymous));
 	}

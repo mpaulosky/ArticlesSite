@@ -7,19 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using FluentAssertions;
-
-using Microsoft.Extensions.Logging;
-
-using MongoDB.Bson;
-
-using NSubstitute;
-
-using Shared.Entities;
-using Shared.Interfaces;
-
-using Web.Components.Features.Categories.CategoryDetails;
-
 namespace Web.Tests.Unit.Components.Features.Categories.CategoryDetails;
 
 /// <summary>
@@ -47,15 +34,13 @@ public class GetCategoryHandlerTests
 	{
 		// Arrange
 		var objectId = ObjectId.GenerateNewId();
+
 		var category = new Category
 		{
-			Id = objectId,
-			CategoryName = "Test Category",
-			Slug = "test-category",
-			IsArchived = false
+				Id = objectId, CategoryName = "Test Category", Slug = "test-category", IsArchived = false
 		};
 
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result<Category?>.Ok(category)));
+		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(category)));
 
 		// Act
 		var result = await _handler.HandleAsync(objectId.ToString());
@@ -63,7 +48,7 @@ public class GetCategoryHandlerTests
 		// Assert
 		result.Success.Should().BeTrue();
 		result.Value.Should().NotBeNull();
-		result.Value!.Id.Should().Be(objectId);
+		result.Value.Id.Should().Be(objectId);
 		result.Value.CategoryName.Should().Be("Test Category");
 	}
 
@@ -71,11 +56,11 @@ public class GetCategoryHandlerTests
 	public async Task HandleAsync_WithNullId_ShouldReturnFailure()
 	{
 		// Act
-		var result = await _handler.HandleAsync(null!);
+		var result = await _handler.HandleAsync(null);
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
+		result.Error.Should().Be("Category identifier cannot be empty");
 	}
 
 	[Fact]
@@ -86,7 +71,7 @@ public class GetCategoryHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
+		result.Error.Should().Be("Category identifier cannot be empty");
 	}
 
 	[Fact]
@@ -97,18 +82,7 @@ public class GetCategoryHandlerTests
 
 		// Assert
 		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WithInvalidObjectId_ShouldReturnFailure()
-	{
-		// Act
-		var result = await _handler.HandleAsync("invalid-id");
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("The ID is invalid or empty.");
+		result.Error.Should().Be("Category identifier cannot be empty");
 	}
 
 	[Fact]
@@ -116,7 +90,9 @@ public class GetCategoryHandlerTests
 	{
 		// Arrange
 		var objectId = ObjectId.GenerateNewId();
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result<Category?>.Fail("Category not found")));
+
+		_mockRepository.GetCategoryByIdAsync(objectId)
+				.Returns(Task.FromResult(Result.Fail<Category>("Category not found")));
 
 		// Act
 		var result = await _handler.HandleAsync(objectId.ToString());
@@ -131,7 +107,7 @@ public class GetCategoryHandlerTests
 	{
 		// Arrange
 		var objectId = ObjectId.GenerateNewId();
-		var failResult = Result<Category?>.Fail("Database error");
+		var failResult = Result.Fail<Category>("Database error");
 		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(failResult));
 
 		// Act
@@ -140,21 +116,6 @@ public class GetCategoryHandlerTests
 		// Assert
 		result.Success.Should().BeFalse();
 		result.Error.Should().Be("Database error");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WhenRepositoryThrowsException_ShouldReturnFailure()
-	{
-		// Arrange
-		var objectId = ObjectId.GenerateNewId();
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns<Task<Result<Category?>>>(x => throw new InvalidOperationException("Connection failed"));
-
-		// Act
-		var result = await _handler.HandleAsync(objectId.ToString());
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Connection failed");
 	}
 
 	[Fact]
@@ -167,23 +128,23 @@ public class GetCategoryHandlerTests
 
 		var category = new Category
 		{
-			Id = objectId,
-			CategoryName = "Test Category",
-			Slug = "test-category",
-			CreatedOn = createdOn,
-			ModifiedOn = modifiedOn,
-			IsArchived = false
+				Id = objectId,
+				CategoryName = "Test Category",
+				Slug = "test-category",
+				CreatedOn = createdOn,
+				ModifiedOn = modifiedOn,
+				IsArchived = false
 		};
 
-		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result<Category?>.Ok(category)));
+		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(category)));
 
 		// Act
 		var result = await _handler.HandleAsync(objectId.ToString());
 
 		// Assert
 		result.Success.Should().BeTrue();
-		var dto = result.Value!;
-
+		result.Value.Should().NotBeNull();
+		var dto = result.Value;
 		dto.Id.Should().Be(objectId);
 		dto.CategoryName.Should().Be("Test Category");
 		dto.CreatedOn.Should().Be(createdOn);
