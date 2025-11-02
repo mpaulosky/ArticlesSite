@@ -7,19 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using FluentAssertions;
-
-using Microsoft.Extensions.Logging;
-
-using MongoDB.Bson;
-
-using NSubstitute;
-
-using Shared.Entities;
-using Shared.Interfaces;
-
-using Web.Components.Features.Categories.CategoryDetails;
-
 namespace Web.Tests.Unit.Components.Features.Categories.CategoryDetails;
 
 /// <summary>

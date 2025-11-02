@@ -46,7 +46,7 @@ public class HelpersTests
 	public void GetSlug_ShouldConvertToUrlFriendlySlug(string input, string expected)
 	{
 		// Arrange & Act
-		string result = input.GetSlug();
+		string result = input.GenerateSlug();
 
 		// Assert
 		result.Should().Be(expected);
@@ -59,7 +59,7 @@ public class HelpersTests
 		const string input = "Test Article";
 
 		// Act
-		string result = input.GetSlug();
+		string result = input.GenerateSlug();
 
 		// Assert
 		result.Should().NotContain(" ");

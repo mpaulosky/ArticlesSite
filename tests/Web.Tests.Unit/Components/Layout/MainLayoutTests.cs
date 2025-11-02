@@ -98,7 +98,7 @@ public class MainLayoutTests
 	{
 		var mainLayoutType = typeof(Web.Components.Layout.MainLayout);
 		var method = mainLayoutType.GetMethod("GetErrorCode",
-			System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+			BindingFlags.NonPublic | BindingFlags.Static);
 
 		method.Should().NotBeNull("GetErrorCode method should exist");
 

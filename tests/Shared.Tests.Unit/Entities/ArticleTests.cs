@@ -85,9 +85,10 @@ public class ArticleTests
 		AuthorInfo author = new("auth0|123", "John Doe");
 		Category category = new() { CategoryName = "Technology" };
 		DateTimeOffset publishedOn = DateTimeOffset.UtcNow;
-
+		const string slug = "test_article";
+	
 		// Act
-		Article article = new(title, intro, content, coverImage, author, category, true, publishedOn, true);
+		Article article = new(title, intro, content, coverImage, author, category, true, publishedOn, true, slug);
 
 		// Assert
 		article.Title.Should().Be(title);
@@ -223,7 +224,7 @@ public class ArticleTests
 	public void Unpublish_ShouldClearPublishedProperties()
 	{
 		// Arrange
-		Article article = new("Title", "Intro", "Content", "cover.jpg", null, null, true, DateTimeOffset.UtcNow, false);
+		Article article = new("Title", "Intro", "Content", "cover.jpg", null, null, true, DateTimeOffset.UtcNow, false, "title");
 		DateTimeOffset beforeModified = DateTimeOffset.UtcNow;
 
 		// Act

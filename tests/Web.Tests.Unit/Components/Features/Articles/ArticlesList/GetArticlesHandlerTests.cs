@@ -7,8 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Microsoft.Extensions.Logging;
-
 using Web.Components.Features.Articles.ArticlesList;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticlesList;

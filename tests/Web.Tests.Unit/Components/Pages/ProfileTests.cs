@@ -147,7 +147,7 @@ public class ProfileTests
 		var profileType = typeof(Web.Components.User.Profile);
 
 		var method = profileType.GetMethod("GetClaimValue",
-				System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+				BindingFlags.NonPublic | BindingFlags.Static);
 
 		method.Should().NotBeNull("GetClaimValue method should exist");
 

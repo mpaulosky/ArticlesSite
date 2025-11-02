@@ -7,10 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Microsoft.Extensions.Logging;
-
-using MongoDB.Bson;
-
 using Web.Components.Features.Categories.CategoryEdit;
 
 namespace Web.Tests.Unit.Components.Features.Categories.CategoryEdit;

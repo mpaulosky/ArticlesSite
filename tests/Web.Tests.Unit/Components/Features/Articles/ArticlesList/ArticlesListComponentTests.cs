@@ -1,7 +1,5 @@
 using Web.Components.Features.Articles.ArticlesList;
 
-using MongoDB.Bson;
-
 namespace Web.Tests.Unit.Components.Features.Articles.ArticlesList;
 
 public class ArticlesListComponentTests
@@ -10,7 +8,7 @@ public class ArticlesListComponentTests
 	[Fact]
 	public void Should_Filter_Articles_By_Archived_Status()
 	{
-		using var ctx = new BunitContext();
+		using var ctx = new TestContext();
 
 		// Arrange
 		var articles = new[]
@@ -25,7 +23,7 @@ public class ArticlesListComponentTests
 		var mockHandler = Substitute.For<GetArticles.IGetArticlesHandler>();
 		ctx.Services.AddSingleton(mockHandler);
 
-		var cut = ctx.Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = ctx.RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
 
 		// Simulate setting articles via a public method or property if available, otherwise test via markup
 		// For now, verify the component renders the correct filtered count (mocking handler if needed)
@@ -36,7 +34,7 @@ public class ArticlesListComponentTests
 	[Fact]
 	public void Should_Filter_Articles_By_User()
 	{
-		using var ctx = new BunitContext();
+		using var ctx = new TestContext();
 
 		// Arrange
 		var articles = new[]
@@ -51,7 +49,7 @@ public class ArticlesListComponentTests
 		var mockHandler = Substitute.For<GetArticles.IGetArticlesHandler>();
 		ctx.Services.AddSingleton(mockHandler);
 
-		var cut = ctx.Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = ctx.RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
 
 		// Simulate setting articles via a public method or property if available, otherwise test via markup
 		// For now, verify the component renders the correct filtered count (mocking handler if needed)

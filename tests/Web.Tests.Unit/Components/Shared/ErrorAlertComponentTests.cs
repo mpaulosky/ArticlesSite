@@ -20,13 +20,14 @@ namespace Web.Tests.Unit.Components.Shared;
 /// </summary>
 [ExcludeFromCodeCoverage]
 [Obsolete]
-public class ErrorAlertComponentTests : Bunit.TestContext
+public class ErrorAlertComponentTests : TestContext
 {
+
 	[Fact]
 	public void ErrorAlertComponent_ShouldRender_WithDefaultValues()
 	{
 		// Act
-		var cut = Render<ErrorAlertComponent>();
+		var cut = RenderComponent<ErrorAlertComponent>();
 
 		// Assert
 		cut.Find("h3").TextContent.Should().Be("Error");
@@ -41,9 +42,9 @@ public class ErrorAlertComponentTests : Bunit.TestContext
 		var message = "Something went wrong!";
 
 		// Act
-		var cut = Render<ErrorAlertComponent>(parameters => parameters
-			.Add(p => p.Title, title)
-			.Add(p => p.Message, message));
+		var cut = RenderComponent<ErrorAlertComponent>(parameters => parameters
+				.Add(p => p.Title, title)
+				.Add(p => p.Message, message));
 
 		// Assert
 		cut.Find("h3").TextContent.Should().Be(title);
@@ -58,9 +59,9 @@ public class ErrorAlertComponentTests : Bunit.TestContext
 		var childContentText = "Custom child content here";
 
 		// Act
-		var cut = Render<ErrorAlertComponent>(parameters => parameters
-			.Add(p => p.Title, title)
-			.AddChildContent(childContentText));
+		var cut = RenderComponent<ErrorAlertComponent>(parameters => parameters
+				.Add(p => p.Title, title)
+				.AddChildContent(childContentText));
 
 		// Assert
 		cut.Find("h3").TextContent.Should().Be(title);
@@ -71,7 +72,7 @@ public class ErrorAlertComponentTests : Bunit.TestContext
 	public void ErrorAlertComponent_ShouldHave_CorrectStyling()
 	{
 		// Act
-		var cut = Render<ErrorAlertComponent>();
+		var cut = RenderComponent<ErrorAlertComponent>();
 
 		// Assert
 		var container = cut.Find("div.bg-red-50");
@@ -83,7 +84,7 @@ public class ErrorAlertComponentTests : Bunit.TestContext
 	public void ErrorAlertComponent_ShouldHave_ErrorIcon()
 	{
 		// Act
-		var cut = Render<ErrorAlertComponent>();
+		var cut = RenderComponent<ErrorAlertComponent>();
 
 		// Assert
 		var svg = cut.Find("svg");
@@ -98,12 +99,13 @@ public class ErrorAlertComponentTests : Bunit.TestContext
 		var childContent = "This should appear instead";
 
 		// Act
-		var cut = Render<ErrorAlertComponent>(parameters => parameters
-			.Add(p => p.Message, message)
-			.AddChildContent(childContent));
+		var cut = RenderComponent<ErrorAlertComponent>(parameters => parameters
+				.Add(p => p.Message, message)
+				.AddChildContent(childContent));
 
 		// Assert
 		cut.Find("div.text-red-700").TextContent.Trim().Should().Be(childContent);
 		cut.Markup.Should().NotContain(message);
 	}
+
 }

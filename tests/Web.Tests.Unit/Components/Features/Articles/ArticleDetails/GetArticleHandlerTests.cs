@@ -9,10 +9,6 @@
 
 using FluentAssertions;
 
-using Microsoft.Extensions.Logging;
-
-using MongoDB.Bson;
-
 using NSubstitute;
 
 using Shared.Entities;
@@ -50,10 +46,8 @@ public class GetArticleHandlerTests
 		var author = new AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
-		var article = new Article("Test Article", "Test Intro", "Test Content", null, author, category, true, null, false)
-		{
-			Id = objectId
-		};
+		var article = new Article("Test Article", "Test Intro", "Test Content", null, author, category, true, null, false,
+				"test-article") { Id = objectId };
 
 		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(article)));
 
@@ -156,13 +150,9 @@ public class GetArticleHandlerTests
 		var author = new AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
-		var article = new Article("Test Title", "Test Intro", "Test Content", null, author, category, true, publishedOn, false)
-		{
-			Id = objectId,
-			CreatedOn = createdOn,
-			ModifiedOn = modifiedOn,
-			IsArchived = false
-		};
+		var article =
+				new Article("Test Title", "Test Intro", "Test Content", null, author, category, true, publishedOn, false,
+						"test-title") { Id = objectId, CreatedOn = createdOn, ModifiedOn = modifiedOn, IsArchived = false };
 
 		_mockRepository.GetArticleByIdAsync(objectId)!.Returns(Task.FromResult(Result.Ok(article)));
 

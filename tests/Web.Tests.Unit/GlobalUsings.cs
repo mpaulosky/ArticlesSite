@@ -21,6 +21,9 @@ global using FluentAssertions;
 
 global using Microsoft.AspNetCore.Components.Authorization;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.Extensions.Logging;
+
+global using MongoDB.Bson;
 
 global using NSubstitute;
 
@@ -29,6 +32,7 @@ global using Shared.Entities;
 global using Shared.Interfaces;
 global using Shared.Models;
 
+global using Web.Components.Features.Categories.CategoryDetails;
 global using Web.Services;
 
 global using Xunit;

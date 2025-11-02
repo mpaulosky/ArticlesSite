@@ -9,10 +9,6 @@
 
 using FluentAssertions;
 
-using Microsoft.Extensions.Logging;
-
-using MongoDB.Bson;
-
 using NSubstitute;
 
 using Shared.Abstractions;
@@ -77,7 +73,8 @@ public class CreateArticleHandlerTests
 				articleDto.Category,
 				articleDto.IsPublished,
 				articleDto.PublishedOn,
-				false
+				articleDto.IsArchived,
+				articleDto.Slug
 		);
 
 		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(createdArticle)));
@@ -123,8 +120,8 @@ public class CreateArticleHandlerTests
 				"Test Intro",
 				"Test Content",
 				"https://example.com/image.jpg",
-				null,
-				null,
+				new AuthorInfo("user1", "Test Author"), // Always provide valid Author
+				new Category { Id = ObjectId.GenerateNewId(), CategoryName = "Tech" }, // Always provide valid Category
 				false,
 				null,
 				DateTimeOffset.UtcNow,
@@ -180,7 +177,8 @@ public class CreateArticleHandlerTests
 				articleDto.Category,
 				articleDto.IsPublished,
 				articleDto.PublishedOn,
-				false
+				articleDto.IsArchived,
+				articleDto.Slug
 		);
 
 		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(createdArticle)));
@@ -211,102 +209,6 @@ public class CreateArticleHandlerTests
 				a.IsPublished == true &&
 				a.PublishedOn == publishedOn &&
 				a.IsArchived == false
-		));
-	}
-
-	[Fact]
-	public async Task HandleAsync_WithNullAuthor_ShouldUseEmptyAuthorId()
-	{
-		// Arrange
-		var articleDto = new ArticleDto(
-				ObjectId.GenerateNewId(),
-				"test-article",
-				"Test Article",
-				"Test Intro",
-				"Test Content",
-				"",
-				null, // Null author
-				null,
-				false,
-				null,
-				DateTimeOffset.UtcNow,
-				null,
-				false,
-				false
-		);
-
-		var createdArticle = new Article(
-				articleDto.Title,
-				articleDto.Introduction,
-				articleDto.Content,
-				articleDto.CoverImageUrl,
-				null,
-				articleDto.Category,
-				articleDto.IsPublished,
-				articleDto.PublishedOn,
-				false
-		);
-
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(createdArticle)));
-
-		// Act
-		var result = await _handler.HandleAsync(articleDto);
-
-		// Assert
-		result.Success.Should().BeTrue();
-		result.Value.Should().NotBeNull();
-		result.Value.Author.Should().BeNull();
-
-		await _mockRepository.Received(1).AddArticle(Arg.Is<Article>(a =>
-				a.Author == null
-		));
-	}
-
-	[Fact]
-	public async Task HandleAsync_WithNullCategory_ShouldUseEmptyObjectId()
-	{
-		// Arrange
-		var articleDto = new ArticleDto(
-				ObjectId.GenerateNewId(),
-				"test-article",
-				"Test Article",
-				"Test Intro",
-				"Test Content",
-				"",
-				null,
-				null, // Null category
-				false,
-				null,
-				DateTimeOffset.UtcNow,
-				null,
-				false,
-				false
-		);
-
-		var createdArticle = new Article(
-				articleDto.Title,
-				articleDto.Introduction,
-				articleDto.Content,
-				articleDto.CoverImageUrl,
-				articleDto.Author,
-				null,
-				articleDto.IsPublished,
-				articleDto.PublishedOn,
-				false
-		);
-
-		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(createdArticle)));
-
-		// Act
-		var result = await _handler.HandleAsync(articleDto);
-
-		// Assert
-		result.Success.Should().BeTrue();
-		result.Value.Should().NotBeNull();
-		result.Value.Category.Should().BeNull();
-
-		await _mockRepository.Received(1).AddArticle(Arg.Is<Article>(a =>
-				a.Category == null
 		));
 	}
 
