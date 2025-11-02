@@ -27,7 +27,10 @@ public static class CreateCategory
 	/// <summary>
 	/// Command handler for creating a category.
 	/// </summary>
-	public class Handler(ICategoryRepository repository, ILogger<Handler> logger) : ICreateCategoryHandler
+	public class Handler(
+		ICategoryRepository repository, 
+		ILogger<Handler> logger,
+		IValidator<CategoryDto> validator) : ICreateCategoryHandler
 	{
 		/// <summary>
 		/// Handles creation of a category.
@@ -42,20 +45,23 @@ public static class CreateCategory
 				return Result.Fail<CategoryDto>("Category data cannot be null");
 			}
 
-			if (string.IsNullOrWhiteSpace(dto.CategoryName))
+			// Server-side validation using FluentValidation
+			var validationResult = await validator.ValidateAsync(dto);
+			if (!validationResult.IsValid)
 			{
-				logger.LogWarning("CreateCategory: Category name cannot be empty");
-				return Result.Fail<CategoryDto>("Category name is required");
+				var errors = string.Join("; ", validationResult.Errors.Select(e => e.ErrorMessage));
+				logger.LogWarning("CreateCategory: Validation failed. Errors: {Errors}", errors);
+				return Result.Fail<CategoryDto>(errors);
 			}
 
 			var category = new Category
 			{
 				Id = ObjectId.GenerateNewId(),
 				CategoryName = dto.CategoryName,
-				Slug = GenerateSlug(dto.CategoryName),
+				Slug = dto.CategoryName.GenerateSlug(),
 				CreatedOn = DateTimeOffset.UtcNow,
 				ModifiedOn = null,
-				IsArchived = false
+				IsArchived = dto.IsArchived
 			};
 
 			Result<Category> result = await repository.AddCategory(category);
@@ -70,6 +76,7 @@ public static class CreateCategory
 			{
 				Id = category.Id,
 				CategoryName = category.CategoryName,
+				Slug = category.Slug ?? string.Empty	,
 				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
 				ModifiedOn = category.ModifiedOn,
 				IsArchived = category.IsArchived
@@ -79,18 +86,6 @@ public static class CreateCategory
 			return Result.Ok(createdDto);
 		}
 
-		/// <summary>
-		/// Generates a slug from the category name.
-		/// </summary>
-		/// <param name="categoryName">The category name.</param>
-		/// <returns>A slug-friendly string.</returns>
-		private static string GenerateSlug(string categoryName)
-		{
-			return categoryName
-				.ToLowerInvariant()
-				.Replace(" ", "_")
-				.Replace("-", "_");
-		}
 	}
 }
 

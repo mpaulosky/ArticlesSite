@@ -81,11 +81,12 @@ public static class GetCategory
 
 			var dto = new CategoryDto
 			{
-					Id = category.Id,
-					CategoryName = category.CategoryName,
-					CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-					ModifiedOn = category.ModifiedOn,
-					IsArchived = category.IsArchived
+				Id = category.Id,
+				CategoryName = category.CategoryName,
+				Slug = category.Slug ?? string.Empty,
+				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+				ModifiedOn = category.ModifiedOn,
+				IsArchived = category.IsArchived
 			};
 
 			logger.LogInformation("GetCategory: Successfully retrieved category with slug: {Slug}", identifier);
@@ -116,11 +117,12 @@ public static class GetCategory
 
 			var dto = new CategoryDto
 			{
-					Id = category.Id,
-					CategoryName = category.CategoryName,
-					CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-					ModifiedOn = category.ModifiedOn,
-					IsArchived = category.IsArchived
+				Id = category.Id,
+				CategoryName = category.CategoryName,
+				Slug = category.Slug ?? string.Empty,
+				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+				ModifiedOn = category.ModifiedOn,
+				IsArchived = category.IsArchived
 			};
 
 			logger.LogInformation("GetCategory: Successfully retrieved category with ID: {Id}", id);

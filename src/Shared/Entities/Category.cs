@@ -76,12 +76,12 @@ public class Category
 	public static Category Empty =>
 			new()
 			{
-				Id = ObjectId.Empty,
-				CategoryName = string.Empty,
-				Slug = string.Empty,
-				CreatedOn = null,
-				ModifiedOn = null,
-				IsArchived = false
+					Id = ObjectId.Empty,
+					CategoryName = string.Empty,
+					Slug = string.Empty,
+					CreatedOn = null,
+					ModifiedOn = null,
+					IsArchived = false
 			};
 
 	/// <summary>
@@ -89,6 +89,7 @@ public class Category
 	/// </summary>
 	public void Update(string categoryName, string slug, bool isArchived)
 	{
+
 		if (string.IsNullOrWhiteSpace(categoryName))
 		{
 			throw new ArgumentException("Category name cannot be null or whitespace.", nameof(categoryName));
@@ -103,6 +104,7 @@ public class Category
 		Slug = slug;
 		IsArchived = isArchived;
 		ModifiedOn = DateTimeOffset.UtcNow;
+
 	}
 
 }

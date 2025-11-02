@@ -7,6 +7,8 @@
 // Project Name :  Web
 // =======================================================
 
+using Shared.Helpers;
+
 namespace Web.Components.Features.Articles.ArticleCreate;
 
 public static class CreateArticle
@@ -17,12 +19,14 @@ public static class CreateArticle
 	/// </summary>
 	public interface ICreateArticleHandler
 	{
+
 		/// <summary>
 		/// Handles creation of an article.
 		/// </summary>
 		/// <param name="dto">The article DTO containing data.</param>
 		/// <returns>A <see cref="Result{ArticleDto}"/> representing the outcome.</returns>
 		Task<Result<ArticleDto>> HandleAsync(ArticleDto dto);
+
 	}
 
 	/// <summary>
@@ -30,9 +34,11 @@ public static class CreateArticle
 	/// </summary>
 	public class Handler(IArticleRepository repository, ILogger<Handler> logger) : ICreateArticleHandler
 	{
+
 		/// <inheritdoc />
 		public async Task<Result<ArticleDto>> HandleAsync(ArticleDto dto)
 		{
+
 			if (dto is null)
 			{
 				logger.LogWarning("CreateArticle: Article DTO cannot be null");
@@ -48,7 +54,8 @@ public static class CreateArticle
 				dto.Category,
 				dto.IsPublished,
 				dto.PublishedOn,
-				false
+				false,
+				dto.Slug // Added missing 'slug' argument
 			);
 
 			Result<Article> result = await repository.AddArticle(article);
@@ -78,7 +85,9 @@ public static class CreateArticle
 
 			logger.LogInformation("CreateArticle: Successfully created article with ID: {Id}", article.Id);
 			return Result.Ok(createdDto);
+
 		}
+
 	}
 
 }

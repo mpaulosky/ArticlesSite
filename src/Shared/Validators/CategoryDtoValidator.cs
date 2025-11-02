@@ -10,24 +10,20 @@
 namespace Shared.Validators;
 
 /// <summary>
-///   Validator for the <see cref="Category" /> entity.
+///   Validator for the <see cref="CategoryDto" /> data transfer object.
 /// </summary>
 public class CategoryDtoValidator : AbstractValidator<CategoryDto>
 {
 
 	/// <summary>
-	///   Initializes a new instance of the <see cref="CategoryValidator" /> class.
+	///   Initializes a new instance of the <see cref="CategoryDtoValidator" /> class.
 	/// </summary>
 	public CategoryDtoValidator()
 	{
 
-		RuleFor(x => x.Id)
-				.NotNull()
-				.WithMessage("Id is required");
-
 		RuleFor(x => x.CategoryName)
 				.NotEmpty().WithMessage("Name is required")
-				.MaximumLength(80);
+				.MaximumLength(80).WithMessage("Category name cannot exceed 80 characters");
 
 	}
 

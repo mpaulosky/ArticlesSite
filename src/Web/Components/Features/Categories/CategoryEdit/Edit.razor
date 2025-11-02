@@ -1,17 +1,18 @@
 @page "/categories/edit/{id}"
 
 @inject NavigationManager Navigation
-@inject Web.Components.Features.Categories.CategoryDetails.GetCategory.IGetCategoryHandler GetHandler
-@inject Web.Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler EditHandler
+@inject CategoryDetails.GetCategory.IGetCategoryHandler GetHandler
+@inject EditCategory.IEditCategoryHandler EditHandler
 @inject ILogger<Edit> Logger
 
 @attribute [Authorize]
 
-<PageHeadingComponent HeaderText="Edit Category" Level="1" TextColorClass="blue-500"/>
+
+<PageHeadingComponent HeaderText="Edit Category" Level="1" TextColorClass="blue-500" />
 
 @if (_isLoading)
 {
-	<LoadingComponent/>
+	<LoadingComponent />
 }
 else if (_category is null)
 {
@@ -21,57 +22,61 @@ else if (_category is null)
 }
 else
 {
-	<div class="card">
-		<div class="card-body">
-			<EditForm Model="@_category" OnValidSubmit="HandleSubmit">
-				<DataAnnotationsValidator/>
-				<ValidationSummary/>
+	<div class="container-card bg-gray-700 rounded-lg shadow-lg p-8 max-w-2xl mx-auto mt-6">
+		<EditForm Model="@_category" OnValidSubmit="HandleSubmit">
+			<DataAnnotationsValidator />
+			<ValidationSummary />
 
-				@if (!string.IsNullOrEmpty(_submitErrorMessage))
-				{
-					<ErrorAlertComponent Title="Error updating category">
-						@_submitErrorMessage
-					</ErrorAlertComponent>
-				}
+			@if (!string.IsNullOrEmpty(_submitErrorMessage))
+			{
+				<ErrorAlertComponent Title="Error updating category">
+					@_submitErrorMessage
+				</ErrorAlertComponent>
+			}
 
-				<div class="mb-3">
-					<label for="categoryName" class="form-label">Category Name</label>
-					<InputText id="categoryName" class="form-control" @bind-Value="_category.CategoryName" placeholder="Enter category name"/>
-					<ValidationMessage For="@(() => _category.CategoryName)"/>
+			<div class="mb-6">
+				<label for="categoryName" class="block text-gray-300 font-semibold mb-2">Category Name</label>
+				<InputText id="categoryName"
+					class="form-control bg-gray-800 text-white border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					@bind-Value="_category.CategoryName" placeholder="Enter category name" />
+				<ValidationMessage For="@(() => _category.CategoryName)" />
+			</div>
+
+			<div class="mb-6">
+				<div class="flex items-center">
+					<InputCheckbox id="isArchived" class="form-check-input mr-2" @bind-Value="_category.IsArchived" />
+					<label class="form-check-label text-gray-300" for="isArchived">
+						Archive this category
+					</label>
 				</div>
+			</div>
 
-				<div class="mb-3">
-					<div class="form-check">
-						<InputCheckbox id="isArchived" class="form-check-input" @bind-Value="_category.IsArchived"/>
-						<label class="form-check-label" for="isArchived">
-							Archive this category
-						</label>
-					</div>
-				</div>
-
-				<div class="mb-3">
-					<button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
-						@if (_isSubmitting)
-						{
-							<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-							<span>Saving...</span>
-						}
-						else
-						{
-							<span>Save Changes</span>
-						}
-					</button>
-					<button type="button" class="btn btn-light ms-2" @onclick="GoToList" disabled="@_isSubmitting">Cancel</button>
-				</div>
-			</EditForm>
-		</div>
+			<div class="mt-8 flex gap-3 justify-end">
+				<button type="submit"
+					class="bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition-all duration-150"
+					disabled="@_isSubmitting">
+					@if (_isSubmitting)
+					{
+						<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+						<span>Saving...</span>
+					}
+					else
+					{
+						<span>Save Changes</span>
+					}
+				</button>
+				<button type="button"
+					class="bg-gray-500 text-white px-4 py-2 rounded shadow hover:bg-gray-600 transition-all duration-150"
+					@onclick="GoToList" disabled="@_isSubmitting">Cancel</button>
+			</div>
+		</EditForm>
 	</div>
 }
 
 @code {
 
 	/// <summary>
-	///   The unique identifier of the category to edit.
+	/// The unique identifier of the category to edit.
 	/// </summary>
 	[Parameter]
 	public required string Id { get; set; } = string.Empty;
@@ -79,32 +84,32 @@ else
 	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
 
 	/// <summary>
-	///   The category data being edited.
+	/// The category data being edited.
 	/// </summary>
 	private CategoryDto? _category;
 
 	/// <summary>
-	///   Indicates whether the component is currently loading data.
+	/// Indicates whether the component is currently loading data.
 	/// </summary>
 	private bool _isLoading = true;
 
 	/// <summary>
-	///   Indicates whether the form is currently being submitted.
+	/// Indicates whether the form is currently being submitted.
 	/// </summary>
 	private bool _isSubmitting;
 
 	/// <summary>
-	///   Error message returned by the handler when loading fails.
+	/// Error message returned by the handler when loading fails.
 	/// </summary>
 	private string? _errorMessage;
 
 	/// <summary>
-	///   Error message to display if update fails.
+	/// Error message to display if update fails.
 	/// </summary>
 	private string? _submitErrorMessage;
 
 	/// <summary>
-	///   Initializes the component by loading the category data.
+	/// Initializes the component by loading the category data.
 	/// </summary>
 	protected override async Task OnInitializedAsync()
 	{
@@ -135,7 +140,7 @@ else
 	}
 
 	/// <summary>
-	///   Handles the form submission to update the category.
+	/// Handles the form submission to update the category.
 	/// </summary>
 	private async Task HandleSubmit()
 	{
@@ -175,7 +180,7 @@ else
 	}
 
 	/// <summary>
-	///   Navigates back to the category list page.
+	/// Navigates back to the category list page.
 	/// </summary>
 	private void GoToList()
 	{

@@ -1,20 +1,24 @@
 @page "/articles"
-@using global::Shared.Models
+
 @inject GetArticles.IGetArticlesHandler ArticlesHandler
 @inject NavigationManager Navigation
 @inject ILogger<ArticlesList> Logger
 @inject AuthenticationStateProvider AuthStateProvider
 
 <div class="container-card mb-4 flex items-center justify-between">
+
 	<h1 class="text-2xl font-bold text-gray-100">All Articles</h1>
+
 	<label class="flex items-center text-gray-300">
 		<input type="checkbox" @bind="ShowMyArticlesOnly" class="mr-2" />
 		Show My Articles Only
 	</label>
+	
 	<label class="flex items-center text-gray-300">
 		<input type="checkbox" @bind="IncludeArchived" class="mr-2" />
 		Include Archived
 	</label>
+
 	@if (_canCreate)
 	{
 		<button class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700" @onclick="CreateNewArticle">Create

@@ -8,8 +8,13 @@
 
 <PageHeadingComponent HeaderText="Create New Category" Level="1" TextColorClass="blue-500" />
 
-<div class="card">
-	<div class="card-body">
+@if (_isSubmitting)
+{
+	<LoadingComponent />
+}
+else
+{
+	<div class="container-card bg-gray-700 rounded-lg shadow-lg p-8 max-w-2xl mx-auto mt-6">
 		<EditForm Model="@_category" OnValidSubmit="HandleSubmit">
 			<DataAnnotationsValidator />
 			<ValidationSummary />
@@ -21,15 +26,18 @@
 				</ErrorAlertComponent>
 			}
 
-			<div class="mb-3">
-				<label for="categoryName" class="form-label">Category Name</label>
-				<InputText id="categoryName" class="form-control" @bind-Value="_category.CategoryName"
-					placeholder="Enter category name" />
+			<div class="mb-6">
+				<label for="categoryName" class="block text-gray-300 font-semibold mb-2">Category Name</label>
+				<InputText id="categoryName"
+					class="form-control bg-gray-800 text-white border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					@bind-Value="_category.CategoryName" @bind-Value:event="onblur" placeholder="Enter category name" />
 				<ValidationMessage For="@(() => _category.CategoryName)" />
 			</div>
 
-			<div class="mb-3">
-				<button type="submit" class="btn btn-primary" disabled="@_isSubmitting">
+			<div class="mt-8 flex gap-3 justify-end">
+				<button type="submit"
+					class="bg-green-500 text-white px-4 py-2 rounded shadow hover:bg-green-600 transition-all duration-150"
+					disabled="@_isSubmitting">
 					@if (_isSubmitting)
 					{
 						<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
@@ -40,11 +48,13 @@
 						<span>Create Category</span>
 					}
 				</button>
-				<button type="button" class="btn btn-light ms-2" @onclick="GoToList" disabled="@_isSubmitting">Cancel</button>
+				<button type="button"
+					class="bg-gray-500 text-white px-4 py-2 rounded shadow hover:bg-gray-600 transition-all duration-150"
+					@onclick="GoToList" disabled="@_isSubmitting">Cancel</button>
 			</div>
 		</EditForm>
 	</div>
-</div>
+}
 
 @code {
 
@@ -53,7 +63,7 @@
 	/// <summary>
 	/// The category data being created.
 	/// </summary>
-	private CategoryDto _category = new();
+	private readonly CategoryDto _category = new();
 
 	/// <summary>
 	/// Indicates whether the form is currently being submitted.
@@ -76,6 +86,7 @@
 
 		try
 		{
+
 			var result = await CreateHandler.HandleAsync(_category);
 
 			if (result is { Success: true })
@@ -88,6 +99,7 @@
 				_errorMessage = result.Error ?? "Failed to create category.";
 				Logger?.LogWarning("Failed to create category. Error: {Error}", _errorMessage);
 			}
+
 		}
 		catch (Exception ex)
 		{

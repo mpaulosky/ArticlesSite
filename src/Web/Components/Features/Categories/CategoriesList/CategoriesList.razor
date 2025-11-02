@@ -4,32 +4,43 @@
 @inject GetCategories.IGetCategoriesHandler GetHandler
 @inject ILogger<CategoriesList> Logger
 @inject AuthenticationStateProvider AuthStateProvider
-@attribute [Authorize]
+
+@attribute [Authorize(Roles = "Admin")]
 
 <div class="container-card mb-4 flex items-center justify-between">
+
 	<h1 class="text-2xl font-bold text-gray-100">All Categories</h1>
+
 	@if (@_canCreate)
 	{
-	<button class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700" @onclick="CreateNewCategory">Create New Category</button>
+		<button class="bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700" @onclick="CreateNewCategory">Create
+			New Category</button>
 	}
+
 </div>
 
 @if (_isLoading)
 {
+
 	<LoadingComponent />
+
 }
 else if (_errorMessage != null)
 {
+
 	<ErrorAlertComponent Title="Error loading articles">
 		@_errorMessage
 	</ErrorAlertComponent>
+
 }
 else if (_categories == null || !_categories.Any())
 {
+
 	<div class="bg-gray-700 rounded-lg p-8 text-center">
 		<p class="text-gray-300 text-lg mb-4">No articles available yet.</p>
 		<p class="text-gray-400">Check back soon for new content!</p>
 	</div>
+
 }
 else
 {
@@ -40,6 +51,10 @@ else
 			<div class="container-card bg-gray-700 rounded-lg shadow-lg p-6 flex flex-col justify-between min-h-[180px]">
 				<div>
 					<h2 class="text-xl font-bold text-blue-300 mb-2">@category.CategoryName</h2>
+					<hr class="border-blue-500 mb-4" />
+					<div class="mb-2">
+						<span class="font-semibold text-gray-400">Category Slug:</span> <span class="text-gray-100">@category.Slug</span>
+					</div>
 					<div class="mb-2">
 						<span class="font-semibold text-gray-400">Created On:</span> <span
 							class="text-gray-100">@category.CreatedOn.ToString("d")</span>
@@ -125,10 +140,12 @@ else
 	{
 		Navigation.NavigateTo("/categories/create");
 	}
+
 	private void GoToDetails(string id)
 	{
 		Navigation.NavigateTo($"/categories/details/{id}");
 	}
+
 	private void GoToEdit(string id)
 	{
 		Navigation.NavigateTo($"/categories/edit/{id}");

@@ -9,6 +9,8 @@
 
 global using Auth0.AspNetCore.Authentication;
 
+global using FluentValidation;
+
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Authentication.Cookies;
 global using Microsoft.AspNetCore.Components.Authorization;
@@ -23,6 +25,7 @@ global using Shared.Interfaces;
 global using Shared.Models;
 
 global using static Shared.Constants.Constants;
+global using static Shared.Helpers.Helpers;
 
 global using Web.Components;
 global using Web.Data;

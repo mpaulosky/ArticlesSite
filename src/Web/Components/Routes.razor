@@ -1,4 +1,5 @@
-﻿@inject TokenProvider TokenProvider
+﻿@* Add global render mode *@
+@rendermode InteractiveServer
 
 <CascadingAuthenticationState>
 	<Router AppAssembly="typeof(Program).Assembly">
@@ -19,17 +20,3 @@
 		</NotFound>
 	</Router>
 </CascadingAuthenticationState>
-
-@code {
-	[Parameter]
-	public InitialApplicationState? InitialState { get; set; }
-
-	protected override Task OnInitializedAsync()
-	{
-		TokenProvider.AccessToken = InitialState?.AccessToken;
-		TokenProvider.IdToken = InitialState?.IdToken;
-		TokenProvider.RefreshToken = InitialState?.RefreshToken;
-
-		return base.OnInitializedAsync();
-	}
-}

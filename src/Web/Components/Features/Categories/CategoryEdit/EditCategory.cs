@@ -71,7 +71,7 @@ public static class EditCategory
 			}
 
 			Category category = existingResult.Value;
-			string slug = GenerateSlug(dto.CategoryName);
+			string slug = category.CategoryName.GenerateSlug();
 			category.Update(dto.CategoryName, slug, dto.IsArchived);
 			Result<Category> result = await repository.UpdateCategory(category);
 
@@ -84,29 +84,17 @@ public static class EditCategory
 
 			var updatedDto = new CategoryDto
 			{
-					Id = category.Id,
-					CategoryName = category.CategoryName,
-					CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-					ModifiedOn = category.ModifiedOn,
-					IsArchived = category.IsArchived
+				Id = category.Id,
+				CategoryName = category.CategoryName,
+				Slug = category.Slug ?? string.Empty,
+				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+				ModifiedOn = category.ModifiedOn,
+				IsArchived = category.IsArchived
 			};
 
 			logger.LogInformation("EditCategory: Successfully updated category with ID: {Id}", category.Id);
 
 			return Result.Ok(updatedDto);
-		}
-
-		/// <summary>
-		/// Generates a slug from the category name.
-		/// </summary>
-		/// <param name="categoryName">The category name.</param>
-		/// <returns>A slug string.</returns>
-		private static string GenerateSlug(string categoryName)
-		{
-			return categoryName
-					.ToLowerInvariant()
-					.Replace(" ", "_")
-					.Replace("-", "_");
 		}
 
 	}

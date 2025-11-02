@@ -39,7 +39,9 @@ public class Article
 			string content,
 			string? coverImageUrl,
 			AuthorInfo? author,
-			Category? category) : this()
+			AuthorInfo? author1,
+			Category? category,
+			string slug) : this()
 	{
 		if (string.IsNullOrWhiteSpace(title))
 		{
@@ -60,9 +62,10 @@ public class Article
 		Introduction = introduction;
 		Content = content;
 		CoverImageUrl = coverImageUrl ?? "https://example.com/image.jpg";
-		Slug = GenerateSlug(title);
+		Slug = title.GenerateSlug();
 		Author = author;
 		Category = category;
+		Slug = slug;
 		IsPublished = false;
 		PublishedOn = null;
 		IsArchived = false;
@@ -77,12 +80,51 @@ public class Article
 			Category? category,
 			bool isPublished,
 			DateTimeOffset? publishedOn,
-			bool isArchived)
+			bool isArchived,
+			string slug)
 			: this(title, introduction, content, coverImageUrl, author, category)
 	{
 		IsPublished = isPublished;
 		PublishedOn = publishedOn;
 		IsArchived = isArchived;
+		Slug = slug;
+	}
+
+	// Add this constructor to support the 6-argument call in the 10-argument constructor
+	public Article(
+			string title,
+			string introduction,
+			string content,
+			string? coverImageUrl,
+			AuthorInfo? author,
+			Category? category)
+			: this()
+	{
+		if (string.IsNullOrWhiteSpace(title))
+		{
+			throw new ArgumentException("Title cannot be null or whitespace.", nameof(title));
+		}
+
+		if (string.IsNullOrWhiteSpace(introduction))
+		{
+			throw new ArgumentException("Introduction cannot be null or whitespace.", nameof(introduction));
+		}
+
+		if (string.IsNullOrWhiteSpace(content))
+		{
+			throw new ArgumentException("Content cannot be null or whitespace.", nameof(content));
+		}
+
+		Title = title;
+		Introduction = introduction;
+		Content = content;
+		CoverImageUrl = coverImageUrl ?? "https://example.com/image.jpg";
+		Slug = title.GenerateSlug();
+		Author = author;
+		Category = category;
+		IsPublished = false;
+		PublishedOn = null;
+		IsArchived = false;
 	}
 
 	/// <summary>
@@ -243,7 +285,7 @@ public class Article
 		Introduction = introduction;
 		Content = content;
 		CoverImageUrl = coverImageUrl;
-		Slug = GenerateSlug(title);
+		Slug = title.GenerateSlug();
 		IsPublished = isPublished;
 		PublishedOn = publishedOn;
 		IsArchived = isArchived;
@@ -268,29 +310,6 @@ public class Article
 		IsPublished = false;
 		PublishedOn = null;
 		ModifiedOn = DateTimeOffset.UtcNow;
-	}
-
-	[System.Diagnostics.CodeAnalysis.SuppressMessage("Globalization", "CA1308:Normalize strings to uppercase", Justification = "URL slugs are conventionally lowercase for SEO and readability")]
-	private static string GenerateSlug(string title)
-	{
-		if (string.IsNullOrWhiteSpace(title))
-		{
-			throw new ArgumentException("Title cannot be null or whitespace.", nameof(title));
-		}
-
-		// Lowercase, replace non-alphanumeric sequences with single underscore, collapse multiple underscores
-		string slug = title.ToLowerInvariant();
-
-		// Replace any sequence of non-alphanumeric characters with underscore
-		slug = Regex.Replace(slug, "[^a-z0-9]+", "_");
-
-		// Collapse multiple underscores into one
-		slug = Regex.Replace(slug, "_+", "_");
-
-		// Trim leading/trailing underscores
-		slug = slug.Trim('_');
-
-		return slug;
 	}
 
 }

@@ -16,8 +16,6 @@ builder.AddMongoDb();
 builder.Services.AddRazorComponents()
 		.AddInteractiveServerComponents();
 
-builder.Services.AddScoped<TokenProvider>();
-
 // Register DatabaseSeeder
 builder.Services.AddScoped<DatabaseSeeder>();
 
@@ -49,6 +47,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseAntiforgery();
+
+app.UseStaticFiles(); // <-- Add this line to serve CSS and other static files
 
 app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
 {

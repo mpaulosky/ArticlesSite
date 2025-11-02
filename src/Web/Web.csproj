@@ -28,6 +28,7 @@
 		<PackageReference Include="MongoDB.Driver" />
 		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
 		<PackageReference Include="Auth0.AspNetCore.Authentication" />
+		<PackageReference Include="FluentValidation" />
 	</ItemGroup>
 
 	<!-- Optimized CSS build - only runs when source CSS changes -->
