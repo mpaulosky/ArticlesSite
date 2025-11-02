@@ -1,6 +1,16 @@
 ---
-mode: 'agent'
-tools: ['edit', 'search', 'new', 'runCommands', 'runTasks', 'playwright/*', 'microsoft.docs.mcp/*', 'mongodb/*', 'usages', 'vscodeAPI', 'think', 'problems', 'changes', 'testFailure', 'openSimpleBrowser', 'fetch', 'githubRepo', 'extensions', 'todos']
+agent: "agent"
+tools:
+  [
+    "changes",
+    "search/codebase",
+    "edit/editFiles",
+    "problems",
+    "search",
+    "microsoft.docs.mcp/*",
+    "fetch",
+    "todos",
+  ]
 description: "Get best practices for XUnit unit testing, including data-driven tests"
 ---
 
@@ -25,7 +35,7 @@ NSubstitute or Moq.
 
 ### Example: Testing a Blazor Article Component using XUnit
 
-````csharp
+```csharp
 
 using Xunit;
 using FluentAssertions;
@@ -37,7 +47,6 @@ using JetBrains.Annotations;
 /// Unit tests for the <see cref="Article"/> class.
 /// </summary>
 [ExcludeFromCodeCoverage]
-[TestSubject(typeof(Article))]
 public class ArticleTests
 {
   [Fact]
@@ -61,13 +70,13 @@ public class ArticleTests
     	article.Tags.Should().BeEmpty();
 
   }
-````
+```
 
 ## Project Setup
 
 - Use a separate test project with naming convention `[ProjectName].Tests.Unit`
 - Use the .NET SDK-style project format
-- Target the same framework as your main project (e.g., `net6.0`, `net7.0`)
+- Target the same framework as your main project (e.g., `net9.0`, `net10.0`)
 - Reference the same NuGet packages as your main project
 - Reference the same project references as your main project
 - Reference any additional dependencies required for testing
@@ -77,7 +86,8 @@ public class ArticleTests
 - Create test classes that match the classes being tested (e.g., `CalculatorTests` for `Calculator`)
 - Use .NET SDK test commands: `dotnet test` for running tests
 - Add appropriate package references to your project file:
-  ```xml
+
+```xml
   <ItemGroup>
     <PackageReference Include="bunit" /> <!-- For Blazor component/page testing -->
     <PackageReference Include="FluentAssertions" />
@@ -89,7 +99,7 @@ public class ArticleTests
     <PackageReference Include="xunit.v3.runner.visualstudio" />
   </ItemGroup>
 
-````
+```
 
 # Blazor Component and Page Testing with bUnit
 
@@ -100,16 +110,21 @@ bUnit is the recommended library for unit testing Blazor components and pages. I
 - Use semantic HTML comparison and event simulation (e.g., `cut.Find("button").Click()`).
 - Pass parameters, cascading values, and inject services as needed.
 - **Mock dependencies like `IJSRuntime` and services for isolation:**
-  ```csharp
+
+```csharp
+
   JSInterop.Mode = JSRuntimeMode.Loose;
   JSInterop.Setup<SomeJsCall>().SetResult("result");
   Services.AddSingleton(MockedService);
-  ```
+
+```
+
 - Use FluentAssertions for expressive assertions.
 
 ### Example: Advanced bUnit Mocking
 
 ```csharp
+
 using Bunit;
 using NSubstitute;
 using Xunit;
@@ -131,6 +146,7 @@ public class MyComponentTests : BunitContext
     cut.Markup.Should().Contain("mocked");
   }
 }
+
 ```
 
 For more advanced scenarios, see the [bUnit documentation](https://bunit.dev/docs/getting-started/index.html).
@@ -139,7 +155,8 @@ For more advanced scenarios, see the [bUnit documentation](https://bunit.dev/doc
 
 - Use async test methods for code that returns `Task`:
 
-  ```csharp
+```csharp
+
   [Fact]
   public async Task SaveAsync_ShouldPersistData()
   {
@@ -153,11 +170,13 @@ For more advanced scenarios, see the [bUnit documentation](https://bunit.dev/doc
     var result = await repo.GetAsync();
     result.Should().Be("data");
   }
-  ```
+
+```
 
 - Test exceptions with FluentAssertions:
 
-  ```csharp
+```csharp
+
   [Fact]
   public void Method_ShouldThrowArgumentException()
   {
@@ -170,24 +189,27 @@ For more advanced scenarios, see the [bUnit documentation](https://bunit.dev/doc
     // Assert
     act.Should().Throw<ArgumentException>().WithMessage("*null*");
   }
-  ```
 
-  For async:
+```
 
-  ```csharp
-  [Fact]
-  public async Task MethodAsync_ShouldThrowInvalidOperationException()
-  {
-    // Arrange
-    var obj = new MyClass();
+For async:
 
-    // Act
-    Func<Task> act = async () => await obj.MethodAsync();
+```csharp
 
-    // Assert
-    await act.Should().ThrowAsync<InvalidOperationException>();
-  }
-  ```
+[Fact]
+public async Task MethodAsync_ShouldThrowInvalidOperationException()
+{
+  // Arrange
+  var obj = new MyClass();
+
+  // Act
+  Func<Task> act = async () => await obj.MethodAsync();
+
+  // Assert
+  await act.Should().ThrowAsync<InvalidOperationException>();
+}
+
+```
 
 ## Test Structure
 
@@ -284,6 +306,7 @@ For more advanced scenarios, see the [bUnit documentation](https://bunit.dev/doc
 ## Example with AAA Pattern
 
 ```csharp
+
 [Test]
 public void Add_TwoPositiveNumbers_ReturnsCorrectSum()
 {
@@ -345,4 +368,25 @@ public void Add_WithLogging_ReturnsCorrectSum()
   result.Should().Be(5);
   TestOutput.WriteLine($"Result was {result} as expected");
 }
+
+```
+
+- Use async test methods for code that returns `Task`:
+
+```csharp
+
+  [Fact]
+  public async Task SaveAsync_ShouldPersistData()
+  {
+    // Arrange
+    var repo = new Repository();
+
+    // Act
+    await repo.SaveAsync("data");
+
+    // Assert
+    var result = await repo.GetAsync();
+    result.Should().Be("data");
+  }
+
 ```
