@@ -18,7 +18,7 @@ public class PlaywrightTestBase : IAsyncLifetime
 	/// <summary>
 	/// Gets the base URL for tests from environment variable or uses default
 	/// </summary>
-	protected string BaseUrl => Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost:5057";
+	protected string BaseUrl => Environment.GetEnvironmentVariable("BASE_URL") ?? "https://localhost:7241";
 
 	/// <summary>
 	/// Cached result of server availability check to avoid multiple checks
