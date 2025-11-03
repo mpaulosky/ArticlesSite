@@ -20,8 +20,76 @@ public class PlaywrightTestBase : IAsyncLifetime
 	/// </summary>
 	protected string BaseUrl => Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost:5057";
 
+	/// <summary>
+	/// Cached result of server availability check to avoid multiple checks
+	/// </summary>
+	private static bool? _isServerAvailable;
+
+	private static readonly object _lock = new();
+
+	/// <summary>
+	/// Checks if the server is available at the base URL
+	/// </summary>
+	protected static async Task<bool> IsServerAvailableAsync(string baseUrl)
+	{
+		lock (_lock)
+		{
+			if (_isServerAvailable.HasValue)
+			{
+				return _isServerAvailable.Value;
+			}
+		}
+
+		try
+		{
+			using var httpClient = new HttpClient();
+			httpClient.Timeout = TimeSpan.FromSeconds(5);
+			var response = await httpClient.GetAsync(baseUrl);
+			var isAvailable = response.IsSuccessStatusCode || response.StatusCode == System.Net.HttpStatusCode.NotFound;
+
+			lock (_lock)
+			{
+				_isServerAvailable = isAvailable;
+			}
+
+			return isAvailable;
+		}
+		catch
+		{
+			lock (_lock)
+			{
+				_isServerAvailable = false;
+			}
+
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// Determines if the test is a smoke test (always runs regardless of server availability)
+	/// Override this in derived classes to specify test type
+	/// </summary>
+	protected virtual bool IsSmokeTest => false;
+
 	public async Task InitializeAsync()
 	{
+		// Smoke tests always initialize (they don't need the browser/server)
+		if (IsSmokeTest)
+		{
+			return;
+		}
+
+		// For non-smoke tests, check if server is available
+		var serverAvailable = await IsServerAvailableAsync(BaseUrl);
+
+		if (!serverAvailable)
+		{
+			// Mark as inconclusive - test cannot proceed without server
+			Assert.Fail("Server is not available. Cannot run E2E tests without AppHost running.");
+
+			return;
+		}
+
 		_playwright = await Microsoft.Playwright.Playwright.CreateAsync();
 
 		// Launch browser (use Chromium by default)
