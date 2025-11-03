@@ -20,7 +20,9 @@ public class CrossRepositoryIntegrationTests
 {
 
 	private readonly MongoDbFixture _fixture;
+
 	private readonly IArticleRepository _articleRepository;
+
 	private readonly ICategoryRepository _categoryRepository;
 
 	public CrossRepositoryIntegrationTests(MongoDbFixture fixture)
@@ -90,11 +92,13 @@ public class CrossRepositoryIntegrationTests
 		// Act - Archive the category
 		await _categoryRepository.ArchiveCategory(category.Slug);
 
-		// Assert - Category is archived
+		// Assert - Category is still returned by repository (filtering happens at handler layer)
 		var fetchedCategory = await _categoryRepository.GetCategory(category.Slug);
-		fetchedCategory.Value.Should().BeNull("archived categories should not be returned");
+		fetchedCategory.Success.Should().BeTrue("repository returns ALL categories including archived");
+		fetchedCategory.Value.Should().NotBeNull();
+		fetchedCategory.Value!.IsArchived.Should().BeTrue("category was archived");
 
-		// But the article is still accessible by ID
+		// And the article is still accessible by ID
 		var fetchedArticle = await _articleRepository.GetArticleByIdAsync(articleResult.Value!.Id);
 		fetchedArticle.Success.Should().BeTrue();
 		fetchedArticle.Value.Should().NotBeNull();
@@ -157,6 +161,7 @@ public class CrossRepositoryIntegrationTests
 		category.Update("Updated Name", "updated-slug", false);
 		await _categoryRepository.UpdateCategory(category);
 		await _articleRepository.UpdateArticle(article);
+
 		// Assert - Article still points to the same category object
 		var fetchedArticle = await _articleRepository.GetArticles(a => a.Category!.Id == categoryResult.Value.Id);
 		fetchedArticle.Success.Should().BeTrue();
@@ -178,6 +183,7 @@ public class CrossRepositoryIntegrationTests
 
 		// Create articles for each category
 		var articles = new List<Article>();
+
 		foreach (var categoryResult in categoryResults)
 		{
 			categoryResult.Success.Should().BeTrue();
