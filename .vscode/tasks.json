@@ -46,6 +46,31 @@
 			"label": "restore-web-tests-unit",
 			"type": "shell",
 			"command": "dotnet restore e:\\github\\ArticlesSite\\tests\\Web.Tests.Unit\\Web.Tests.Unit.csproj"
+		},
+		{
+			"label": "restore-web-tests-unit",
+			"type": "shell",
+			"command": "dotnet restore e:\\github\\ArticlesSite\\tests\\Web.Tests.Unit\\Web.Tests.Unit.csproj"
+		},
+		{
+			"label": "build-web-tests-unit",
+			"type": "shell",
+			"command": "dotnet build e:\\github\\ArticlesSite\\tests\\Web.Tests.Unit\\Web.Tests.Unit.csproj"
+		},
+		{
+			"label": "build-web-tests-unit",
+			"type": "shell",
+			"command": "dotnet build e:\\github\\ArticlesSite\\tests\\Web.Tests.Unit\\Web.Tests.Unit.csproj"
+		},
+		{
+			"label": "build-web-tests-unit",
+			"type": "shell",
+			"command": "dotnet build e:\\github\\ArticlesSite\\tests\\Web.Tests.Unit\\Web.Tests.Unit.csproj"
+		},
+		{
+			"label": "build-web-tests-unit",
+			"type": "shell",
+			"command": "dotnet build e:\\github\\ArticlesSite\\tests\\Web.Tests.Unit\\Web.Tests.Unit.csproj"
 		}
 	]
 }
