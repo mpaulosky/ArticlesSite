@@ -32,6 +32,7 @@ global using Shared.Entities;
 global using Shared.Interfaces;
 global using Shared.Models;
 
+global using Web.Components.Features.Categories.CategoryCreate;
 global using Web.Components.Features.Categories.CategoryDetails;
 global using Web.Services;
 

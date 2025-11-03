@@ -43,7 +43,7 @@ public class CategoryRepositoryIntegrationTests
 	}
 
 	[Fact]
-	public async Task GetCategories_WithMultipleCategories_ReturnsAllNonArchived()
+	public async Task GetCategories_WithMultipleCategories_ReturnsAllIncludingArchived()
 	{
 		// Arrange
 		await _fixture.ClearCollectionsAsync();
@@ -76,13 +76,14 @@ public class CategoryRepositoryIntegrationTests
 		// Assert
 		result.Should().NotBeNull();
 		result.Success.Should().BeTrue();
-		result.Value.Should().NotBeNull().And.HaveCount(2);
+		result.Value.Should().NotBeNull().And.HaveCount(3, "repository returns ALL categories including archived");
 
 		// Verify the two non-archived categories are present
 		result.Value.Should().Contain(c => categoryNames.Contains(c.CategoryName));
 
-		// Verify archived category is NOT present
-		result.Value.Should().NotContain(c => c.CategoryName == archivedCategory.CategoryName);
+		// Verify archived category IS present (repository no longer filters)
+		result.Value.Should().Contain(c => c.CategoryName == archivedCategory.CategoryName);
+		result.Value.Should().Contain(c => c.IsArchived, "archived categories are included in repository results");
 	}
 
 	[Fact]
@@ -165,7 +166,7 @@ public class CategoryRepositoryIntegrationTests
 	}
 
 	[Fact]
-	public async Task GetCategory_WithArchivedCategory_ReturnsFailure()
+	public async Task GetCategory_WithArchivedCategory_ReturnsSuccess()
 	{
 		// Arrange
 		await _fixture.ClearCollectionsAsync();
@@ -181,9 +182,10 @@ public class CategoryRepositoryIntegrationTests
 
 		// Assert
 		result.Should().NotBeNull();
-		result.Success.Should().BeFalse();
-		result.Value.Should().BeNull("archived categories should not be returned");
-		result.Error.Should().NotBeNullOrEmpty();
+		result.Success.Should().BeTrue("repository returns ALL categories including archived");
+		result.Value.Should().NotBeNull();
+		result.Value!.Slug.Should().Be(category.Slug);
+		result.Value.IsArchived.Should().BeTrue("the archived flag is preserved");
 	}
 
 	[Fact]

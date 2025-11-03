@@ -18,6 +18,7 @@ public class ArticleRepositoryAdvancedIntegrationTests
 {
 
 	private readonly MongoDbFixture _fixture;
+
 	private readonly IArticleRepository _repository;
 
 	public ArticleRepositoryAdvancedIntegrationTests(MongoDbFixture fixture)
@@ -54,7 +55,7 @@ public class ArticleRepositoryAdvancedIntegrationTests
 	}
 
 	[Fact]
-	public async Task GetArticle_WithArchivedArticle_ReturnsNull()
+	public async Task GetArticle_WithArchivedArticle_ReturnsArticle()
 	{
 		// Arrange
 		await _fixture.ClearCollectionsAsync();
@@ -72,7 +73,9 @@ public class ArticleRepositoryAdvancedIntegrationTests
 		// Assert
 		result.Should().NotBeNull();
 		result.Success.Should().BeTrue();
-		result.Value.Should().BeNull("archived articles should not be returned");
+		result.Value.Should().NotBeNull("repository returns ALL articles including archived");
+		result.Value!.Slug.Should().Be(article.Slug);
+		result.Value.IsArchived.Should().BeTrue("the archived flag is preserved");
 	}
 
 	[Fact]
@@ -105,7 +108,7 @@ public class ArticleRepositoryAdvancedIntegrationTests
 	}
 
 	[Fact]
-	public async Task GetArticles_FiltersOutArchivedByDefault()
+	public async Task GetArticles_ReturnsAllIncludingArchived()
 	{
 		// Arrange
 		await _fixture.ClearCollectionsAsync();
@@ -130,9 +133,10 @@ public class ArticleRepositoryAdvancedIntegrationTests
 		// Assert
 		result.Should().NotBeNull();
 		result.Success.Should().BeTrue();
-		result.Value.Should().NotBeNull().And.HaveCount(1);
+		result.Value.Should().NotBeNull().And.HaveCount(2, "repository returns ALL articles including archived");
 		result.Value.Should().Contain(a => a.Title == activeTitles[0]);
-		result.Value.Should().NotContain(a => a.Title == archivedTitles[0]);
+		result.Value.Should().Contain(a => a.Title == archivedTitles[0], "archived articles are included");
+		result.Value.Should().Contain(a => a.IsArchived, "at least one archived article is present");
 	}
 
 	[Fact]
@@ -190,7 +194,7 @@ public class ArticleRepositoryAdvancedIntegrationTests
 
 		// Modify article
 		article.Update("New Title", "New Intro", "New Content", "https://example.com/new.jpg",
-			true, DateTimeOffset.UtcNow, false);
+				true, DateTimeOffset.UtcNow, false);
 
 		// Act
 		var result = await _repository.UpdateArticle(article);
@@ -200,7 +204,10 @@ public class ArticleRepositoryAdvancedIntegrationTests
 		result.Success.Should().BeTrue();
 		result.Value.Should().NotBeNull();
 		result.Value!.Id.Should().Be(originalId, "ID should not change");   // Verify in database
-		var dbArticle = await collection.Find(a => a.Id == originalId).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+
+		var dbArticle = await collection.Find(a => a.Id == originalId)
+				.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+
 		dbArticle.Should().NotBeNull();
 		dbArticle!.Id.Should().Be(originalId);
 		dbArticle.Title.Should().Be("New Title");
@@ -229,7 +236,10 @@ public class ArticleRepositoryAdvancedIntegrationTests
 
 		// Verify all fields in database
 		var collection = _fixture.Database.GetCollection<Article>("Articles");
-		var dbArticle = await collection.Find(a => a.Id == result.Value.Id).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+
+		var dbArticle = await collection.Find(a => a.Id == result.Value.Id)
+				.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+
 		dbArticle.Should().NotBeNull();
 		dbArticle!.Title.Should().Be(article.Title);
 		dbArticle.Introduction.Should().Be(article.Introduction);

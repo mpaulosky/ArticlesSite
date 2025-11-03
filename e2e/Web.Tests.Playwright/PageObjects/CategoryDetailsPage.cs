@@ -10,7 +10,7 @@ public class CategoryDetailsPage : BasePage
 
 	public CategoryDetailsPage(IPage page) : base(page) { }
 
-	public async Task GotoAsync(string categoryId)
+	public override async Task GotoAsync(string categoryId)
 	{
 		await Page.GotoAsync($"/categories/details/{categoryId}");
 	}
@@ -48,6 +48,6 @@ public class CategoryDetailsPage : BasePage
 		await Page.Locator("button:has-text('Back to List')").ClickAsync();
 	}
 
-	public string GetCurrentUrl() => Page.Url;
+	public new string GetCurrentUrl() => Page.Url;
 
 }

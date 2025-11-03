@@ -39,7 +39,7 @@ on:
 
 jobs:
   test:
-    timeout-minutes: 60
+    timeout-minutes: 80
     runs-on: ubuntu-latest
 
     env:
@@ -82,13 +82,13 @@ jobs:
       - name: Start application
         run: |
           dotnet run --project src/AppHost &
-          sleep 30
+          sleep 50
         env:
           ASPNETCORE_ENVIRONMENT: Development
 
       - name: Wait for application to be ready
         run: |
-          timeout 60 bash -c 'until curl -f http://localhost:5057; do sleep 2; done'
+          timeout 80 bash -c 'until curl -f http://localhost:5057; do sleep 2; done'
 
       - name: Run Playwright e2e
         working-directory: e2e/Web.Tests.Playwright

@@ -53,7 +53,7 @@ public class CategoryRepository
 		try
 		{
 			IMongoDbContext context = contextFactory.CreateDbContext();
-			Category? category = await context.Categories.Find(c => c.Slug == slug && !c.IsArchived).FirstOrDefaultAsync();
+			Category? category = await context.Categories.Find(c => c.Slug == slug).FirstOrDefaultAsync();
 
 			if (category is null)
 				return Result.Fail<Category>("Category not found");
@@ -75,7 +75,7 @@ public class CategoryRepository
 		try
 		{
 			IMongoDbContext context = contextFactory.CreateDbContext();
-			List<Category>? categories = await context.Categories.Find(c => !c.IsArchived).ToListAsync();
+			List<Category>? categories = await context.Categories.Find(_ => true).ToListAsync();
 
 			if (categories is null)
 				return Result.Fail<IEnumerable<Category>>("No categories found");

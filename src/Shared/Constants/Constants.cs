@@ -38,7 +38,7 @@ public static class Constants
 
 	public const string UserDatabase = "usersDb";
 
-	public const string Website = "Web";
+	public const string Website = "WebApp";
 
 	public const string ApiService = "api-service";
 

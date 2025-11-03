@@ -2,6 +2,8 @@ using AppHost;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
+builder.AddProject<Projects.Web>("web");
+
 var redisCache = builder.AddRedisServices();
 
 var mongoDb = builder.AddMongoDbServices();

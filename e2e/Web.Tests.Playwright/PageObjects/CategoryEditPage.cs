@@ -1,4 +1,5 @@
 using Microsoft.Playwright;
+
 using System.Threading.Tasks;
 
 namespace Web.Tests.Playwright.PageObjects;
@@ -6,9 +7,10 @@ namespace Web.Tests.Playwright.PageObjects;
 [ExcludeFromCodeCoverage]
 public class CategoryEditPage : BasePage
 {
+
 	public CategoryEditPage(IPage page) : base(page) { }
 
-	public async Task GotoAsync(string categoryId)
+	public override async Task GotoAsync(string categoryId)
 	{
 		await Page.GotoAsync($"/categories/edit/{categoryId}");
 	}
@@ -16,18 +18,21 @@ public class CategoryEditPage : BasePage
 	public async Task<string> GetHeadingTextAsync()
 	{
 		var heading = await Page.Locator("h1, h2").First.TextContentAsync();
+
 		return heading ?? string.Empty;
 	}
 
 	public async Task<string> GetCategoryNameInputAsync()
 	{
 		var input = await Page.Locator("input#categoryName").InputValueAsync();
+
 		return input ?? string.Empty;
 	}
 
 	public async Task<bool> IsArchiveCheckboxVisibleAsync()
 	{
 		var checkbox = Page.Locator("input#isArchived");
+
 		return await checkbox.IsVisibleAsync();
 	}
 
@@ -40,6 +45,7 @@ public class CategoryEditPage : BasePage
 	public async Task<bool> IsSaveButtonDisabledAsync()
 	{
 		var saveButton = Page.Locator("button[type='submit']");
+
 		return await saveButton.IsDisabledAsync();
 	}
 
@@ -48,5 +54,6 @@ public class CategoryEditPage : BasePage
 		await Page.Locator("button:has-text('Cancel')").ClickAsync();
 	}
 
-	public string GetCurrentUrl() => Page.Url;
+	public new string GetCurrentUrl() => Page.Url;
+
 }

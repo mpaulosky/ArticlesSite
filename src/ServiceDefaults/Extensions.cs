@@ -79,7 +79,8 @@ public static class Extensions
 									// Exclude health check requests from tracing
 									tracing.Filter = context =>
 											!context.Request.Path.StartsWithSegments(HealthEndpointPath, StringComparison.OrdinalIgnoreCase)
-											&& !context.Request.Path.StartsWithSegments(AlivenessEndpointPath, StringComparison.OrdinalIgnoreCase)
+											&& !context.Request.Path.StartsWithSegments(AlivenessEndpointPath,
+													StringComparison.OrdinalIgnoreCase)
 							)
 
 							// Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)

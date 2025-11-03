@@ -14,8 +14,12 @@ namespace Web.Data.Repositories;
 /// <summary>
 /// Article repository implementation using native MongoDB.Driver with factory pattern.
 /// </summary>
-public class ArticleRepository(IMongoDbContextFactory contextFactory) : IArticleRepository
+public class ArticleRepository
+(
+		IMongoDbContextFactory contextFactory
+) : IArticleRepository
 {
+
 	/// <summary>
 	/// Gets an article by its unique identifier.
 	/// </summary>
@@ -52,7 +56,7 @@ public class ArticleRepository(IMongoDbContextFactory contextFactory) : IArticle
 			IMongoDbContext context = contextFactory.CreateDbContext();
 
 			Article? article = await context.Articles
-					.Find(a => a.Slug == slug && !a.IsArchived)
+					.Find(a => a.Slug == slug)
 					.FirstOrDefaultAsync();
 
 			return Result.Ok<Article?>(article);
@@ -74,7 +78,7 @@ public class ArticleRepository(IMongoDbContextFactory contextFactory) : IArticle
 			IMongoDbContext context = contextFactory.CreateDbContext();
 
 			List<Article>? articles = await context.Articles
-					.Find(a => !a.IsArchived)
+					.Find(_ => true)
 					.ToListAsync();
 
 			return Result.Ok<IEnumerable<Article>?>(articles);

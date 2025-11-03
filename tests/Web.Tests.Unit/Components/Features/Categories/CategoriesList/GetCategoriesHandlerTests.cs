@@ -84,7 +84,7 @@ public class GetCategoriesHandlerTests
 		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Fail<IEnumerable<Category>>("Database error")));
 
 		// Act
-		var result = await _handler.HandleAsync();
+		var result = await _handler.HandleAsync(includeArchived: false);
 
 		// Assert
 		result.Success.Should().BeFalse();
@@ -111,7 +111,7 @@ public class GetCategoriesHandlerTests
 				.Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(new List<Category> { category })));
 
 		// Act
-		var result = await _handler.HandleAsync();
+		var result = await _handler.HandleAsync(includeArchived: false);
 
 		// Assert
 		result.Success.Should().BeTrue();
@@ -136,12 +136,11 @@ public class GetCategoriesHandlerTests
 		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(categories)));
 
 		// Act
-		var result = await _handler.HandleAsync();
+		var result = await _handler.HandleAsync(includeArchived: false);
 
 		// Assert
 		result.Success.Should().BeTrue();
 		result.Value.Should().HaveCount(3);
-
 		var dtos = result.Value.ToList();
 		dtos[0].CategoryName.Should().Be("First");
 		dtos[1].CategoryName.Should().Be("Second");
