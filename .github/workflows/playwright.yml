@@ -45,7 +45,7 @@ jobs:
     env:
       NUGET_PACKAGES: ${{ github.workspace }}/.nuget/packages
       E2E_HEADLESS: "true"
-      E2E_BASE_URL: "http://localhost:5057"
+      E2E_BASE_URL: "https://localhost:7241"
       AUTH0_E2E_USERNAME: ${{ secrets.AUTH0_E2E_USERNAME }}
       AUTH0_E2E_PASSWORD: ${{ secrets.AUTH0_E2E_PASSWORD }}
       AUTH0_E2E_USERNAME_ADMIN: ${{ secrets.AUTH0_E2E_USERNAME_ADMIN }}
@@ -88,13 +88,13 @@ jobs:
 
       - name: Wait for application to be ready
         run: |
-          timeout 80 bash -c 'until curl -f http://localhost:5057; do sleep 2; done'
+          timeout 80 bash -c 'until curl -f https://localhost:7241; do sleep 2; done'
 
       - name: Run Playwright e2e
         working-directory: e2e/Web.Tests.Playwright
         run: npm test
         env:
-          BASE_URL: http://localhost:5057
+          BASE_URL: https://localhost:7241
 
       - name: Upload test results
         uses: actions/upload-artifact@v5
