@@ -21,8 +21,9 @@ public static class GetCategories
 		/// <summary>
 		/// Handles retrieval of all categories.
 		/// </summary>
+		/// <param name="includeArchived">If true, archived categories are included; otherwise, only non-archived categories are returned (default).</param>
 		/// <returns>A Result containing a collection of CategoryDto representing the outcome.</returns>
-		Task<Result<IEnumerable<CategoryDto>>> HandleAsync();
+		Task<Result<IEnumerable<CategoryDto>>> HandleAsync(bool includeArchived = false);
 
 	}
 
@@ -37,7 +38,7 @@ public static class GetCategories
 	{
 
 		/// <inheritdoc />
-		public async Task<Result<IEnumerable<CategoryDto>>> HandleAsync()
+		public async Task<Result<IEnumerable<CategoryDto>>> HandleAsync(bool includeArchived = false)
 		{
 			Result<IEnumerable<Category>> result = await repository.GetCategories();
 
@@ -55,14 +56,22 @@ public static class GetCategories
 				return Result.Fail<IEnumerable<CategoryDto>>("No categories found");
 			}
 
-			var dtos = result.Value.Select(category => new CategoryDto
+			// Filter by archived status if needed
+			IEnumerable<Category> filteredCategories = result.Value;
+
+			if (!includeArchived)
 			{
-				Id = category.Id,
-				CategoryName = category.CategoryName,
-				Slug = category.Slug ?? string.Empty,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				ModifiedOn = category.ModifiedOn,
-				IsArchived = category.IsArchived
+				filteredCategories = filteredCategories.Where(c => !c.IsArchived);
+			}
+
+			var dtos = filteredCategories.Select(category => new CategoryDto
+			{
+					Id = category.Id,
+					CategoryName = category.CategoryName,
+					Slug = category.Slug ?? string.Empty,
+					CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+					ModifiedOn = category.ModifiedOn,
+					IsArchived = category.IsArchived
 			}).ToList();
 
 			logger.LogInformation("GetCategories: Successfully retrieved {Count} categories", dtos.Count);
