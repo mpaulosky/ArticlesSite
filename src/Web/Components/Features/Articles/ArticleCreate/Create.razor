@@ -9,7 +9,6 @@
 @attribute [Authorize]
 
 <PageHeadingComponent HeaderText="Create Article" Level="1" TextColorClass="blue-500" />
-<span class="visually-hidden">LoadingComponent</span>
 
 <div class="card modern-card">
 	<div class="card-body">
@@ -17,7 +16,6 @@
 		@if (_isLoading)
 		{
 			<LoadingComponent />
-			<span class="visually-hidden">LoadingComponent</span>
 		}
 		else
 		{

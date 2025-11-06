@@ -7,7 +7,6 @@
 @attribute [Authorize]
 
 <PageHeadingComponent HeaderText="Article Details" Level="1" TextColorClass="blue-500" />
-<span class="visually-hidden">LoadingComponent</span>
 
 @if (_isLoading)
 {
@@ -21,7 +20,7 @@ else if (_article is null)
 }
 else
 {
-	<div class="card modern-card shadow-lg rounded-lg border-0 p-0 mb-4" style="max-width:700px;margin:auto;">
+	<div class="container-card p-2">
 		<div class="card-img-wrapper position-relative">
 			<img src="@_article.CoverImageUrl" alt="Cover" class="card-img-top rounded-top"
 				style="max-height:260px;object-fit:cover;width:100%;" />
@@ -82,12 +81,12 @@ else
 	/// The article data to be displayed on the page.
 	/// </summary>
 	public ArticleDto? _article { get; set; }
-	
+
 	/// <summary>
 	/// Indicates whether the component is currently loading data.
 	/// </summary>
 	public bool _isLoading { get; set; } = true;
-	
+
 	/// <summary>
 	/// Error message returned by the handler when loading fails. Shown in the UI.
 	/// </summary>
@@ -104,7 +103,7 @@ else
 
 		try
 		{
-			var objectId = MongoDB.Bson.ObjectId.Parse(Id);
+			var objectId = ObjectId.Parse(Id);
 			var result = await ArticleRepository.GetArticleByIdAsync(objectId);
 
 			if (result is { Success: true })

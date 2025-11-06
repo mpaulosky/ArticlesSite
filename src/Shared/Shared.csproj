@@ -9,17 +9,18 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Bogus"/>
-		<PackageReference Include="FluentValidation"/>
-		<PackageReference Include="MongoDB.Bson"/>
-		<PackageReference Include="WaffleGenerator.Bogus"/>
+		<PackageReference Include="Bogus" />
+		<PackageReference Include="FluentValidation" />
+		<PackageReference Include="Markdig" />
+		<PackageReference Include="MongoDB.Bson" />
+		<PackageReference Include="WaffleGenerator.Bogus" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<InternalsVisibleTo Include="Architecture.Tests"/>
-		<InternalsVisibleTo Include="Shared.Tests.Unit"/>
-		<InternalsVisibleTo Include="Web.Tests.Unit"/>
-		<InternalsVisibleTo Include="Web.Tests.Integration"/>
+		<InternalsVisibleTo Include="Architecture.Tests" />
+		<InternalsVisibleTo Include="Shared.Tests.Unit" />
+		<InternalsVisibleTo Include="Web.Tests.Unit" />
+		<InternalsVisibleTo Include="Web.Tests.Integration" />
 	</ItemGroup>
 
 </Project>

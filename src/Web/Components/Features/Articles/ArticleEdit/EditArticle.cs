@@ -57,7 +57,7 @@ public static class EditArticle
 			}
 
 			Article article = existingResult.Value;
-			
+
 			try
 			{
 				article.Update(
@@ -80,7 +80,7 @@ public static class EditArticle
 				logger.LogError(ex, "EditArticle: Unexpected error during update for article {Id}", dto.Id);
 				return Result.Fail<ArticleDto>("Failed to update article");
 			}
-			
+
 			article.Author = dto.Author;
 			article.Category = dto.Category;
 
