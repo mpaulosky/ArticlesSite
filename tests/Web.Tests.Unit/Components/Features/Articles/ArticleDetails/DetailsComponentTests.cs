@@ -4,10 +4,10 @@ using FluentAssertions;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using Web.Components.Features.Articles.ArticleDetails;
-
-using Shared.Interfaces;
 using Shared.Entities;
+using Shared.Interfaces;
+
+using Web.Components.Features.Articles.ArticleDetails;
 
 using Xunit;
 

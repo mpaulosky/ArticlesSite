@@ -4,13 +4,14 @@ using FluentAssertions;
 
 using Microsoft.Extensions.DependencyInjection;
 
+using NSubstitute;
+
+using Shared.Entities;
+using Shared.Interfaces;
+
 using Web.Components.Features.Articles.ArticleEdit;
 
-using Shared.Interfaces;
-using Shared.Entities;
-
 using Xunit;
-using NSubstitute;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleEdit;
 

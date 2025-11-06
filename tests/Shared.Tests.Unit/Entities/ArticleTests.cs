@@ -87,7 +87,7 @@ public class ArticleTests
 		Category category = new() { CategoryName = "Technology" };
 		DateTimeOffset publishedOn = DateTimeOffset.UtcNow;
 		const string slug = "test_article";
-	
+
 		// Act
 		Article article = new(title, intro, content, coverImage, author, category, true, publishedOn, true, slug);
 

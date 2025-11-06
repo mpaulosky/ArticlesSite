@@ -37,7 +37,10 @@ public class GetCategoryHandlerTests
 
 		var category = new Category
 		{
-				Id = objectId, CategoryName = "Test Category", Slug = "test-category", IsArchived = false
+			Id = objectId,
+			CategoryName = "Test Category",
+			Slug = "test-category",
+			IsArchived = false
 		};
 
 		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(category)));
@@ -128,12 +131,12 @@ public class GetCategoryHandlerTests
 
 		var category = new Category
 		{
-				Id = objectId,
-				CategoryName = "Test Category",
-				Slug = "test-category",
-				CreatedOn = createdOn,
-				ModifiedOn = modifiedOn,
-				IsArchived = false
+			Id = objectId,
+			CategoryName = "Test Category",
+			Slug = "test-category",
+			CreatedOn = createdOn,
+			ModifiedOn = modifiedOn,
+			IsArchived = false
 		};
 
 		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(category)));

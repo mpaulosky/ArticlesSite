@@ -210,11 +210,11 @@ public class GetArticlesHandlerTests
 		var article =
 				new Article("Test Title", "Test Intro", "Test Content", "https://example.com/image.jpg", author, category)
 				{
-						IsPublished = true,
-						PublishedOn = publishedOn,
-						CreatedOn = createdOn,
-						ModifiedOn = modifiedOn,
-						IsArchived = false
+					IsPublished = true,
+					PublishedOn = publishedOn,
+					CreatedOn = createdOn,
+					ModifiedOn = modifiedOn,
+					IsArchived = false
 				};
 
 		_mockRepository.GetArticles()

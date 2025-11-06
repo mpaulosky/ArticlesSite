@@ -47,7 +47,8 @@ public class GetArticleHandlerTests
 		var category = new Category { CategoryName = "Tech" };
 
 		var article = new Article("Test Article", "Test Intro", "Test Content", null, author, category, true, null, false,
-				"test-article") { Id = objectId };
+				"test-article")
+		{ Id = objectId };
 
 		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(article)));
 
@@ -152,7 +153,8 @@ public class GetArticleHandlerTests
 
 		var article =
 				new Article("Test Title", "Test Intro", "Test Content", null, author, category, true, publishedOn, false,
-						"test-title") { Id = objectId, CreatedOn = createdOn, ModifiedOn = modifiedOn, IsArchived = false };
+						"test-title")
+				{ Id = objectId, CreatedOn = createdOn, ModifiedOn = modifiedOn, IsArchived = false };
 
 		_mockRepository.GetArticleByIdAsync(objectId)!.Returns(Task.FromResult(Result.Ok(article)));
 

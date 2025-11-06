@@ -80,12 +80,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -114,12 +114,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Science",
-				Slug = "science",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Science",
+			Slug = "science",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -146,12 +146,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology-slug",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology-slug",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -179,12 +179,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -214,12 +214,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = createdDate,
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = createdDate,
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -246,12 +246,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -279,12 +279,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = new DateTimeOffset(2024, 2, 20, 15, 30, 0, TimeSpan.Zero),
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = new DateTimeOffset(2024, 2, 20, 15, 30, 0, TimeSpan.Zero),
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -312,12 +312,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -345,12 +345,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Archived Category",
-				Slug = "archived-category",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-60),
-				ModifiedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				IsArchived = true
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Archived Category",
+			Slug = "archived-category",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-60),
+			ModifiedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			IsArchived = true
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -378,12 +378,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -411,12 +411,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Archived Category",
-				Slug = "archived-category",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-60),
-				ModifiedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				IsArchived = true
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Archived Category",
+			Slug = "archived-category",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-60),
+			ModifiedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			IsArchived = true
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -444,12 +444,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -482,12 +482,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -520,12 +520,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
@@ -552,12 +552,12 @@ public class DetailsComponentTests : TestContext
 
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-				CategoryName = "Technology",
-				Slug = "technology",
-				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-				ModifiedOn = null,
-				IsArchived = false
+			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+			CategoryName = "Technology",
+			Slug = "technology",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			ModifiedOn = null,
+			IsArchived = false
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
