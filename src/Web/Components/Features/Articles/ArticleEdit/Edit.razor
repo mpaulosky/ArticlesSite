@@ -122,7 +122,6 @@ else if (_editModel != ArticleDto.Empty)
 			// Load categories for the category dropdown
 			await LoadCategoriesAsync();
 
-			// TODO: Replace with your actual article loading logic
 			var objectId = ObjectId.Parse(Id);
 			var articleResult = await GetArticleHandler.HandleAsync(objectId);
 			
