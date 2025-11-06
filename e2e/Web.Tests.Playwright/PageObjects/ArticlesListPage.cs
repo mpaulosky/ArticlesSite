@@ -73,7 +73,7 @@ public class ArticlesListPage : BasePage
 	{
 		try
 		{
-			LocatorIsVisibleOptions options = new LocatorIsVisibleOptions() ;
+			LocatorIsVisibleOptions options = new LocatorIsVisibleOptions();
 			options.Timeout = 5000;
 
 			return await _createButton.IsVisibleAsync(options);
