@@ -1,16 +1,4 @@
 using Bunit;
-
-using FluentAssertions;
-
-using Microsoft.Extensions.DependencyInjection;
-
-using Web.Components.Features.Articles.ArticleDetails;
-
-using Shared.Interfaces;
-using Shared.Entities;
-
-using Xunit;
-
 using Details = Web.Components.Features.Articles.ArticleDetails.Details;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleDetails;
@@ -22,46 +10,49 @@ public class DetailsComponentTests : TestContext
 	[Fact]
 	public void RendersLoadingComponent_WhenIsLoading()
 	{
-		Services.AddSingleton(typeof(IArticleRepository),
-				Substitute.For<IArticleRepository>());
+		// Arrange DI: use the actual handler the component depends on
+		var handler = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		Services.AddSingleton(handler);
 
-		// Arrange
+		var id = ObjectId.Parse("507f1f77bcf86cd799439011");
+
+		// Simulate a pending load so the component stays in loading state
+		var tcs = new TaskCompletionSource<Result<ArticleDto>>();
+		handler.HandleAsync(id).Returns(_ => tcs.Task);
+
 		var cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011")
+				.Add<string>(p => p.Id, id.ToString())
 		);
 
-		cut.Instance.GetType().GetProperty("_isLoading")!.SetValue(cut.Instance, true);
-		cut.Render();
-
-		// Assert
-		cut.Markup.Should().Contain("LoadingComponent");
+		// Assert: Loading UI should be visible
+		cut.Markup.Should().Contain("Loading...");
 	}
 
 	[Fact]
 	public void RendersErrorAlert_WhenArticleIsNull()
 	{
-		Services.AddSingleton(typeof(IArticleRepository), Substitute.For<IArticleRepository>());
+		// Arrange DI
+		var handler = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		Services.AddSingleton(handler);
 
-		// Arrange
+		var id = ObjectId.Parse("507f1f77bcf86cd799439011");
+		handler.HandleAsync(id).Returns(Result.Fail<ArticleDto>("Article not found."));
+
 		var cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011")
+				.Add<string>(p => p.Id, id.ToString())
 		);
-
-		cut.Instance.GetType().GetProperty("_isLoading")!.SetValue(cut.Instance, false);
-		cut.Instance.GetType().GetProperty("_article")!.SetValue(cut.Instance, null);
-		cut.Instance.GetType().GetProperty("_errorMessage")!.SetValue(cut.Instance, "Article not found.");
-		cut.Render();
 
 		// Assert
 		cut.Markup.Should().Contain("Article not found.");
 	}
 
 	[Fact]
-	public void RendersModernCard_WhenArticleIsPresent()
+	public void RendersCard_WhenArticleIsPresent()
 	{
-		Services.AddSingleton(typeof(IArticleRepository), Substitute.For<IArticleRepository>());
+		// Arrange DI
+		var handler = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		Services.AddSingleton(handler);
 
-		// Arrange
 		var article = new ArticleDto(
 				ObjectId.GenerateNewId(),
 				"test-slug",
@@ -79,16 +70,14 @@ public class DetailsComponentTests : TestContext
 				true
 		);
 
+		handler.HandleAsync(article.Id).Returns(Result.Ok(article));
+
 		var cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, article.Id.ToString())
+				.Add<string>(p => p.Id, article.Id.ToString())
 		);
 
-		cut.Instance.GetType().GetProperty("_isLoading")!.SetValue(cut.Instance, false);
-		cut.Instance.GetType().GetProperty("_article")!.SetValue(cut.Instance, article);
-		cut.Render();
-
 		// Assert
-		cut.Markup.Should().Contain("modern-card");
+		cut.Markup.Should().Contain("container-card");
 		cut.Markup.Should().Contain("Test Title");
 		cut.Markup.Should().Contain("Test Introduction");
 		cut.Markup.Should().Contain("Test Author");

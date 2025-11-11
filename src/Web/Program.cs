@@ -1,54 +1,57 @@
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 IConfiguration configuration = builder.Configuration;
 
+// --- Service Registration ---
+
+// Telemetry, health, resilience, service discovery (Aspire defaults)
 builder.AddServiceDefaults();
 
+// Authentication & Authorization
 builder.Services.AddAuthenticationAndAuthorization(configuration);
 
-// Add Output Cache
+// Output Cache
 builder.Services.AddOutputCache();
 
-// Add MongoDB services
+// Data (MongoDB)
 builder.AddMongoDb();
 
-// Add services to the container.
+// UI (Blazor/Components)
 builder.Services.AddRazorComponents()
-		.AddInteractiveServerComponents();
+	.AddInteractiveServerComponents();
 
-// Register DatabaseSeeder
+// Application Services
 builder.Services.AddScoped<DatabaseSeeder>();
+builder.Services.AddScoped<Web.Services.IFileStorage, Web.Services.FileStorage>();
 
+// --- Build App ---
 WebApplication app = builder.Build();
 
-app.MapDefaultEndpoints();
-
-// Seed database on startup
-using (var scope = app.Services.CreateScope())
-{
-	var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
-	await seeder.SeedAsync();
-}
-
-// Configure the HTTP request pipeline.
+// --- Pipeline Configuration ---
 if (!app.Environment.IsDevelopment())
 {
 	app.UseExceptionHandler("/Error", true);
-
-	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
 
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseStatusCodePagesWithReExecute("/not-found");
-
-if (!app.Environment.IsDevelopment())
-{
-	app.UseHttpsRedirection();
-}
-
 app.UseAntiforgery();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseOutputCache();
 
-app.UseStaticFiles(); // <-- Add this line to serve CSS and other static files
+// --- Endpoint Mapping ---
+
+app.MapStaticAssets();
+
+app.MapRazorComponents<App>()
+		.AddInteractiveServerRenderMode();
+
+app.MapDefaultEndpoints();
 
 app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
 {
@@ -69,14 +72,19 @@ app.MapGet("/Account/Logout", async httpContext =>
 	await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 });
 
-app.UseAuthentication();
-app.UseAuthorization();
+// --- Startup Logic (Database Seeding) ---
 
-app.UseOutputCache();
+try
+{
+	using var scope = app.Services.CreateScope();
+	var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+	await seeder.SeedAsync();
+}
+catch (Exception ex)
+{
+	app.Logger.LogError(ex, "Database seeding failed.");
+	// Optional: decide whether to rethrow based on environment
+}
 
-app.MapStaticAssets();
-
-app.MapRazorComponents<App>()
-		.AddInteractiveServerRenderMode();
-
+// --- Run App ---
 app.Run();

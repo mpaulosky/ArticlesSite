@@ -252,7 +252,7 @@ public class CategoryCreateTests : PlaywrightTestBase
 
 		// Verify form is still usable
 		await createPage.FillCategoryNameAsync("Mobile Test");
-		
+
 		// Verify navigation is still visible
 		var isNavVisible = await createPage.IsNavigationVisibleAsync();
 		isNavVisible.Should().BeTrue();

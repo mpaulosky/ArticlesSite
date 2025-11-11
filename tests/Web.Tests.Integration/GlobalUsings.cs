@@ -16,6 +16,8 @@ global using System.Threading.Tasks;
 
 global using FluentAssertions;
 
+global using FluentValidation;
+
 global using Microsoft.AspNetCore.Mvc.Testing;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Logging;
@@ -36,7 +38,5 @@ global using Testcontainers.MongoDb;
 global using Web.Data;
 global using Web.Data.Repositories;
 global using Web.Tests.Integration.Infrastructure;
-
-global using FluentValidation;
 
 global using Xunit;

@@ -1,6 +1,6 @@
-using Microsoft.Playwright;
-
 using System.Threading.Tasks;
+
+using Microsoft.Playwright;
 
 namespace Web.Tests.Playwright.PageObjects;
 

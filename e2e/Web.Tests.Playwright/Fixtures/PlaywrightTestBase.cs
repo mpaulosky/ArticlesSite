@@ -18,7 +18,7 @@ public class PlaywrightTestBase : IAsyncLifetime
 	/// <summary>
 	/// Gets the base URL for tests from environment variable or uses default
 	/// </summary>
-	protected string BaseUrl => Environment.GetEnvironmentVariable("BASE_URL") ?? "https://localhost:7241";
+	protected string BaseUrl => Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost:5057";
 
 	/// <summary>
 	/// Cached result of server availability check to avoid multiple checks
@@ -84,10 +84,8 @@ public class PlaywrightTestBase : IAsyncLifetime
 
 		if (!serverAvailable)
 		{
-			// Mark as inconclusive - test cannot proceed without server
-			Assert.Fail("Server is not available. Cannot run E2E tests without AppHost running.");
-
-			return;
+			// Skip the test if the AppHost/server isn't running
+			Assert.Skip("Server is not available. Skipping E2E tests without AppHost running.");
 		}
 
 		_playwright = await Microsoft.Playwright.Playwright.CreateAsync();
@@ -95,19 +93,19 @@ public class PlaywrightTestBase : IAsyncLifetime
 		// Launch browser (use Chromium by default)
 		_browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
 		{
-				Headless = true,
+			Headless = true,
 
-				// Set to false for debugging
-				// Headless = false,
-				// SlowMo = 100
+			// Set to false for debugging
+			// Headless = false,
+			// SlowMo =100
 		});
 
 		// Create a new context with base URL
 		Context = await _browser.NewContextAsync(new BrowserNewContextOptions
 		{
-				BaseURL = BaseUrl,
-				ViewportSize = new ViewportSize { Width = 1280, Height = 720 },
-				ScreenSize = new ScreenSize { Width = 1280, Height = 720 },
+			BaseURL = BaseUrl,
+			ViewportSize = new ViewportSize { Width = 1280, Height = 720 },
+			ScreenSize = new ScreenSize { Width = 1280, Height = 720 },
 		});
 
 		// Create a new page

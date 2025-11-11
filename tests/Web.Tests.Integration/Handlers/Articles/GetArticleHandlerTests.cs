@@ -47,7 +47,7 @@ public class GetArticleHandlerTests
 		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
 
 		// Act
-		var result = await _handler.HandleAsync(article.Id.ToString());
+		var result = await _handler.HandleAsync(article.Id);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -63,7 +63,7 @@ public class GetArticleHandlerTests
 	{
 		// Arrange
 		await _fixture.ClearCollectionsAsync();
-		var nonExistentId = ObjectId.GenerateNewId().ToString();
+		var nonExistentId = ObjectId.GenerateNewId();
 
 		// Act
 		var result = await _handler.HandleAsync(nonExistentId);
@@ -81,27 +81,12 @@ public class GetArticleHandlerTests
 		await _fixture.ClearCollectionsAsync();
 
 		// Act
-		var result = await _handler.HandleAsync(string.Empty);
+		var result = await _handler.HandleAsync(ObjectId.Empty);
 
 		// Assert
 		result.Should().NotBeNull();
 		result.Failure.Should().BeTrue();
 		result.Error.Should().Be("Article ID cannot be empty");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WithInvalidObjectIdFormat_ReturnsFailure()
-	{
-		// Arrange
-		await _fixture.ClearCollectionsAsync();
-
-		// Act
-		var result = await _handler.HandleAsync("invalid-id-format");
-
-		// Assert
-		result.Should().NotBeNull();
-		result.Failure.Should().BeTrue();
-		result.Error.Should().Be("Invalid article ID format");
 	}
 
 	[Fact]
@@ -118,7 +103,7 @@ public class GetArticleHandlerTests
 		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
 
 		// Act
-		var result = await _handler.HandleAsync(article.Id.ToString());
+		var result = await _handler.HandleAsync(article.Id);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -143,7 +128,7 @@ public class GetArticleHandlerTests
 		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
 
 		// Act
-		var result = await _handler.HandleAsync(article.Id.ToString());
+		var result = await _handler.HandleAsync(article.Id);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -160,7 +145,7 @@ public class GetArticleHandlerTests
 		await _fixture.ClearCollectionsAsync();
 
 		// Act
-		var result = await _handler.HandleAsync(null!);
+		var result = await _handler.HandleAsync(ObjectId.Empty);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -180,7 +165,7 @@ public class GetArticleHandlerTests
 		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
 
 		// Act
-		var result = await _handler.HandleAsync(article.Id.ToString());
+		var result = await _handler.HandleAsync(article.Id);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -191,6 +176,3 @@ public class GetArticleHandlerTests
 	}
 
 }
-
-
-

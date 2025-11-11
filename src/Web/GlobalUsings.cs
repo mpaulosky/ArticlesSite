@@ -24,10 +24,10 @@ global using Shared.Entities;
 global using Shared.Interfaces;
 global using Shared.Models;
 
-global using static Shared.Constants.Constants;
-global using static Shared.Helpers.Helpers;
-
 global using Web.Components;
 global using Web.Data;
 global using Web.Data.Repositories;
 global using Web.Services;
+
+global using static Shared.Constants.Constants;
+global using static Shared.Helpers.Helpers;

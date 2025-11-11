@@ -1,10 +1,10 @@
 // =======================================================
-// Copyright (c) 2025. All rights reserved.
-// File Name :     Extensions.cs
-// Company :       mpaulosky
-// Author :        Matthew Paulosky
+// Copyright (c)2025. All rights reserved.
+// File Name : Extensions.cs
+// Company : mpaulosky
+// Author : Matthew Paulosky
 // Solution Name : ArticlesSite
-// Project Name :  ServiceDefaults
+// Project Name : ServiceDefaults
 // =======================================================
 
 using Microsoft.AspNetCore.Builder;
@@ -14,6 +14,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 
 using OpenTelemetry;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
 
@@ -49,7 +50,7 @@ public static class Extensions
 		// Uncomment the following to restrict the allowed schemes for service discovery.
 		// builder.Services.Configure<ServiceDiscoveryOptions>(options =>
 		// {
-		//     options.AllowedSchemes = ["https"];
+		// options.AllowedSchemes = ["https"];
 		// });
 
 		return builder;
@@ -76,11 +77,11 @@ public static class Extensions
 					tracing.AddSource(builder.Environment.ApplicationName)
 							.AddAspNetCoreInstrumentation(tracing =>
 
-									// Exclude health check requests from tracing
-									tracing.Filter = context =>
-											!context.Request.Path.StartsWithSegments(HealthEndpointPath, StringComparison.OrdinalIgnoreCase)
-											&& !context.Request.Path.StartsWithSegments(AlivenessEndpointPath,
-													StringComparison.OrdinalIgnoreCase)
+								// Exclude health check requests from tracing
+								tracing.Filter = context =>
+									!context.Request.Path.StartsWithSegments(HealthEndpointPath, StringComparison.OrdinalIgnoreCase)
+									&& !context.Request.Path.StartsWithSegments(AlivenessEndpointPath,
+											StringComparison.OrdinalIgnoreCase)
 							)
 
 							// Uncomment the following line to enable gRPC instrumentation (requires the OpenTelemetry.Instrumentation.GrpcNetClient package)
@@ -100,14 +101,29 @@ public static class Extensions
 
 		if (useOtlpExporter)
 		{
+			// Configure metrics, tracing, and logs OTLP exporters in a cross-cutting way.
 			builder.Services.AddOpenTelemetry().UseOtlpExporter();
+
+			// Configure logging options without adding a signal-specific exporter to avoid conflicts.
+			builder.Logging.AddOpenTelemetry(options =>
+			{
+				options.SetResourceBuilder(OpenTelemetry.Resources.ResourceBuilder.CreateDefault());
+				// Do not call options.AddOtlpExporter(...) here; UseOtlpExporter configures logs exporter.
+			});
 		}
+
+		// Always add structured json console logging as a fallback
+		builder.Logging.AddJsonConsole(opts =>
+		{
+			opts.IncludeScopes = true;
+			opts.TimestampFormat = "o";
+		});
 
 		// Uncomment the following lines to enable the Azure Monitor exporter (requires the Azure.Monitor.OpenTelemetry.AspNetCore package)
 		//if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
 		//{
-		//    builder.Services.AddOpenTelemetry()
-		//       .UseAzureMonitor();
+		// builder.Services.AddOpenTelemetry()
+		// .UseAzureMonitor();
 		//}
 
 		return builder;

@@ -45,12 +45,12 @@ public class EditCategoryHandlerTests
 
 		var updatedDto = new CategoryDto
 		{
-				Id = category.Id,
-				CategoryName = "Updated Category Name",
-				Slug = category.Slug,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				ModifiedOn = DateTimeOffset.UtcNow,
-				IsArchived = false
+			Id = category.Id,
+			CategoryName = "Updated Category Name",
+			Slug = category.Slug,
+			CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+			ModifiedOn = DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Act
@@ -96,11 +96,11 @@ public class EditCategoryHandlerTests
 
 		var updatedDto = new CategoryDto
 		{
-				Id = category.Id,
-				CategoryName = "",
-				Slug = category.Slug,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				IsArchived = false
+			Id = category.Id,
+			CategoryName = "",
+			Slug = category.Slug,
+			CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Act
@@ -122,11 +122,11 @@ public class EditCategoryHandlerTests
 
 		var dto = new CategoryDto
 		{
-				Id = nonExistentId,
-				CategoryName = "Test Category",
-				Slug = "test-slug",
-				CreatedOn = DateTimeOffset.UtcNow,
-				IsArchived = false
+			Id = nonExistentId,
+			CategoryName = "Test Category",
+			Slug = "test-slug",
+			CreatedOn = DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Act
@@ -153,11 +153,11 @@ public class EditCategoryHandlerTests
 
 		var updatedDto = new CategoryDto
 		{
-				Id = category.Id,
-				CategoryName = "New Category Name",
-				Slug = "old-slug", // Old slug, should be regenerated
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				IsArchived = false
+			Id = category.Id,
+			CategoryName = "New Category Name",
+			Slug = "old-slug", // Old slug, should be regenerated
+			CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Act
@@ -185,12 +185,12 @@ public class EditCategoryHandlerTests
 
 		var updatedDto = new CategoryDto
 		{
-				Id = category.Id,
-				CategoryName = category.CategoryName,
-				Slug = category.Slug,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				ModifiedOn = DateTimeOffset.UtcNow,
-				IsArchived = true
+			Id = category.Id,
+			CategoryName = category.CategoryName,
+			Slug = category.Slug,
+			CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+			ModifiedOn = DateTimeOffset.UtcNow,
+			IsArchived = true
 		};
 
 		// Act
@@ -222,11 +222,11 @@ public class EditCategoryHandlerTests
 
 		var updatedDto = new CategoryDto
 		{
-				Id = category.Id,
-				CategoryName = category.CategoryName,
-				Slug = category.Slug,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				IsArchived = false
+			Id = category.Id,
+			CategoryName = category.CategoryName,
+			Slug = category.Slug,
+			CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Act
@@ -253,11 +253,11 @@ public class EditCategoryHandlerTests
 
 		var updatedDto = new CategoryDto
 		{
-				Id = category.Id,
-				CategoryName = "Updated Name",
-				Slug = category.Slug,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				IsArchived = false
+			Id = category.Id,
+			CategoryName = "Updated Name",
+			Slug = category.Slug,
+			CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Act
@@ -290,11 +290,11 @@ public class EditCategoryHandlerTests
 
 		var updatedDto = new CategoryDto
 		{
-				Id = category.Id,
-				CategoryName = "Updated Name",
-				Slug = category.Slug,
-				CreatedOn = originalCreatedOn,
-				IsArchived = false
+			Id = category.Id,
+			CategoryName = "Updated Name",
+			Slug = category.Slug,
+			CreatedOn = originalCreatedOn,
+			IsArchived = false
 		};
 
 		// Act
@@ -319,11 +319,11 @@ public class EditCategoryHandlerTests
 
 		var updatedDto = new CategoryDto
 		{
-				Id = category.Id,
-				CategoryName = "   ",
-				Slug = category.Slug,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				IsArchived = false
+			Id = category.Id,
+			CategoryName = "   ",
+			Slug = category.Slug,
+			CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Act
@@ -347,11 +347,11 @@ public class EditCategoryHandlerTests
 
 		var updatedDto = new CategoryDto
 		{
-				Id = category.Id,
-				CategoryName = "Technology & Science!",
-				Slug = category.Slug,
-				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-				IsArchived = false
+			Id = category.Id,
+			CategoryName = "Technology & Science!",
+			Slug = category.Slug,
+			CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Act

@@ -76,12 +76,12 @@ public class Category
 	public static Category Empty =>
 			new()
 			{
-					Id = ObjectId.Empty,
-					CategoryName = string.Empty,
-					Slug = string.Empty,
-					CreatedOn = null,
-					ModifiedOn = null,
-					IsArchived = false
+				Id = ObjectId.Empty,
+				CategoryName = string.Empty,
+				Slug = string.Empty,
+				CreatedOn = null,
+				ModifiedOn = null,
+				IsArchived = false
 			};
 
 	/// <summary>

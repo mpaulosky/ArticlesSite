@@ -84,12 +84,12 @@ public static class EditCategory
 
 			var updatedDto = new CategoryDto
 			{
-					Id = category.Id,
-					CategoryName = category.CategoryName,
-					Slug = category.Slug ?? string.Empty,
-					CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
-					ModifiedOn = category.ModifiedOn,
-					IsArchived = category.IsArchived
+				Id = category.Id,
+				CategoryName = category.CategoryName,
+				Slug = category.Slug ?? string.Empty,
+				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
+				ModifiedOn = category.ModifiedOn,
+				IsArchived = category.IsArchived
 			};
 
 			logger.LogInformation("EditCategory: Successfully updated category with ID: {Id}", category.Id);

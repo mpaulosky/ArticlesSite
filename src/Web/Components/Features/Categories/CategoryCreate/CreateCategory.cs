@@ -28,7 +28,7 @@ public static class CreateCategory
 	/// Command handler for creating a category.
 	/// </summary>
 	public class Handler(
-		ICategoryRepository repository, 
+		ICategoryRepository repository,
 		ILogger<Handler> logger,
 		IValidator<CategoryDto> validator) : ICreateCategoryHandler
 	{
@@ -76,7 +76,7 @@ public static class CreateCategory
 			{
 				Id = category.Id,
 				CategoryName = category.CategoryName,
-				Slug = category.Slug ?? string.Empty	,
+				Slug = category.Slug ?? string.Empty,
 				CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
 				ModifiedOn = category.ModifiedOn,
 				IsArchived = category.IsArchived

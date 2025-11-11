@@ -190,7 +190,8 @@ public class CreateCategoryHandlerTests
 
 		var dto = new CategoryDto
 		{
-				CategoryName = "This is a very long category name with lots of words", IsArchived = false
+			CategoryName = "This is a very long category name with lots of words",
+			IsArchived = false
 		};
 
 		// Act

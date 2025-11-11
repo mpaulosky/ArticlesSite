@@ -7,6 +7,15 @@
 // Project Name :  Web
 // =======================================================
 
+using Web.Components.Features.Articles.ArticlesList;
+using Web.Components.Features.Articles.ArticleCreate;
+using Web.Components.Features.Articles.ArticleDetails;
+using Web.Components.Features.Articles.ArticleEdit;
+using Web.Components.Features.Categories.CategoryEdit;
+using Web.Components.Features.Categories.CategoryDetails;
+using Web.Components.Features.Categories.CategoriesList;
+using Web.Components.Features.Categories.CategoryCreate;
+
 namespace Web.Data;
 
 /// <summary>
@@ -77,28 +86,21 @@ public static class MongoDbServiceExtensions
 
 		// Register validators
 		services.AddScoped<IValidator<CategoryDto>, Shared.Validators.CategoryDtoValidator>();
+		services.AddScoped<IValidator<ArticleDto>, Shared.Validators.ArticleDtoValidator>();
+		services.AddScoped<IValidator<Category>, Shared.Validators.CategoryValidator>();
+		services.AddScoped<IValidator<Article>, Shared.Validators.ArticleValidator>();
 
 		// Article Handlers
-		services.AddScoped(
-				typeof(Components.Features.Articles.ArticlesList.GetArticles.IGetArticlesHandler),
-				typeof(Components.Features.Articles.ArticlesList.GetArticles.Handler));
-
+		services.AddScoped<GetArticles.IGetArticlesHandler, GetArticles.Handler>();
+		services.AddScoped<GetArticle.IGetArticleHandler, GetArticle.Handler>();
+		services.AddScoped<CreateArticle.ICreateArticleHandler, CreateArticle.Handler>();
+		services.AddScoped<EditArticle.IEditArticleHandler, EditArticle.Handler>();
+		
 		// Category Handlers
-		services.AddScoped(
-				typeof(Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler),
-				typeof(Components.Features.Categories.CategoryEdit.EditCategory.Handler));
-
-		services.AddScoped(
-				typeof(Components.Features.Categories.CategoryDetails.GetCategory.IGetCategoryHandler),
-				typeof(Components.Features.Categories.CategoryDetails.GetCategory.Handler));
-
-		services.AddScoped(
-				typeof(Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler),
-				typeof(Components.Features.Categories.CategoryCreate.CreateCategory.Handler));
-
-		services.AddScoped(
-				typeof(Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler),
-				typeof(Components.Features.Categories.CategoriesList.GetCategories.Handler));
+		services.AddScoped<EditCategory.IEditCategoryHandler, EditCategory.Handler>();
+		services.AddScoped<GetCategory.IGetCategoryHandler, GetCategory.Handler>();
+		services.AddScoped<CreateCategory.ICreateCategoryHandler, CreateCategory.Handler>();
+		services.AddScoped<GetCategories.IGetCategoriesHandler, GetCategories.Handler>();
 	}
 
 	/// <summary>

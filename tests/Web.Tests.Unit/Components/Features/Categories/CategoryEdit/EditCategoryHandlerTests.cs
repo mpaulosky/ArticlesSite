@@ -38,7 +38,10 @@ public class EditCategoryHandlerTests
 
 		var categoryDto = new CategoryDto
 		{
-				Id = objectId, CategoryName = "Updated Category", CreatedOn = DateTimeOffset.UtcNow, IsArchived = false
+			Id = objectId,
+			CategoryName = "Updated Category",
+			CreatedOn = DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(existingCategory)));
@@ -78,7 +81,10 @@ public class EditCategoryHandlerTests
 		// Arrange
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.GenerateNewId(), CategoryName = "", CreatedOn = DateTimeOffset.UtcNow, IsArchived = false
+			Id = ObjectId.GenerateNewId(),
+			CategoryName = "",
+			CreatedOn = DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Act
@@ -96,7 +102,10 @@ public class EditCategoryHandlerTests
 		// Arrange
 		var categoryDto = new CategoryDto
 		{
-				Id = ObjectId.GenerateNewId(), CategoryName = "   ", CreatedOn = DateTimeOffset.UtcNow, IsArchived = false
+			Id = ObjectId.GenerateNewId(),
+			CategoryName = "   ",
+			CreatedOn = DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		// Act
@@ -115,7 +124,10 @@ public class EditCategoryHandlerTests
 
 		var categoryDto = new CategoryDto
 		{
-				Id = objectId, CategoryName = "Test Category", CreatedOn = DateTimeOffset.UtcNow, IsArchived = false
+			Id = objectId,
+			CategoryName = "Test Category",
+			CreatedOn = DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		_mockRepository.GetCategoryByIdAsync(objectId)
@@ -139,7 +151,10 @@ public class EditCategoryHandlerTests
 
 		var categoryDto = new CategoryDto
 		{
-				Id = objectId, CategoryName = "Test Category", CreatedOn = DateTimeOffset.UtcNow, IsArchived = false
+			Id = objectId,
+			CategoryName = "Test Category",
+			CreatedOn = DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		_mockRepository.GetCategoryByIdAsync(id: objectId).Returns(Task.FromResult(Result.Ok(existingCategory)));
@@ -163,12 +178,17 @@ public class EditCategoryHandlerTests
 
 		var existingCategory = new Category
 		{
-				Id = objectId, CategoryName = "Old Category", CreatedOn = DateTimeOffset.UtcNow.AddDays(-10)
+			Id = objectId,
+			CategoryName = "Old Category",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-10)
 		};
 
 		var categoryDto = new CategoryDto
 		{
-				Id = objectId, CategoryName = "Brand New Category", CreatedOn = DateTimeOffset.UtcNow, IsArchived = false
+			Id = objectId,
+			CategoryName = "Brand New Category",
+			CreatedOn = DateTimeOffset.UtcNow,
+			IsArchived = false
 		};
 
 		_mockRepository.GetCategoryByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(existingCategory)));

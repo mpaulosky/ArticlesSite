@@ -253,7 +253,7 @@ public class CategoriesListComponentTests : TestContext
 		IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
 		NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
-		cut.WaitForState(() => cut.Markup.Contains("Technology"));		// Act
+		cut.WaitForState(() => cut.Markup.Contains("Technology"));    // Act
 		var viewButton = cut.Find("button:contains('View')");
 		viewButton.Click();
 
@@ -412,7 +412,7 @@ public class CategoriesListComponentTests : TestContext
 
 		// Act
 		var createButton = cut.Find("button:contains('Create')");
-		createButton.Click();		// Assert
+		createButton.Click();   // Assert
 		nav.Uri.Should().EndWith("/categories/create");
 	}
 

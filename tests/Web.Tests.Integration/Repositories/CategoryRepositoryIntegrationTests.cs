@@ -56,10 +56,10 @@ public class CategoryRepositoryIntegrationTests
 		// Force a unique name to avoid collision
 		archivedCategory = new Category
 		{
-				CategoryName = "ARCHIVED_" + Guid.NewGuid().ToString(),
-				Slug = archivedCategory.Slug,
-				IsArchived = false,
-				CreatedOn = DateTimeOffset.UtcNow
+			CategoryName = "ARCHIVED_" + Guid.NewGuid().ToString(),
+			Slug = archivedCategory.Slug,
+			IsArchived = false,
+			CreatedOn = DateTimeOffset.UtcNow
 		};
 
 		archivedCategory.Update(archivedCategory.CategoryName, archivedCategory.Slug, isArchived: true);

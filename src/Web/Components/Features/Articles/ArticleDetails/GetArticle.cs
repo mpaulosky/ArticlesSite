@@ -17,64 +17,69 @@ public static class GetArticle
 	/// </summary>
 	public interface IGetArticleHandler
 	{
+
 		/// <summary>
 		/// Handles retrieval of an article by identifier.
 		/// </summary>
 		/// <param name="id">The article identifier.</param>
 		/// <returns>A <see cref="Result{ArticleDto}"/> representing the outcome.</returns>
-		Task<Result<ArticleDto>> HandleAsync(string id);
+		Task<Result<ArticleDto>> HandleAsync(ObjectId id);
+
 	}
 
 	/// <summary>
 	/// Command handler for retrieving an article.
 	/// </summary>
-	public class Handler(IArticleRepository repository, ILogger<Handler> logger) : IGetArticleHandler
+	public class Handler
+	(
+			IArticleRepository repository,
+			ILogger<Handler> logger
+	) : IGetArticleHandler
 	{
+
 		/// <inheritdoc />
-		public async Task<Result<ArticleDto>> HandleAsync(string id)
+		public async Task<Result<ArticleDto>> HandleAsync(ObjectId id)
 		{
-			if (string.IsNullOrWhiteSpace(id))
+			if (id == ObjectId.Empty)
 			{
 				logger.LogWarning("GetArticle: Invalid article ID provided");
+
 				return Result.Fail<ArticleDto>("Article ID cannot be empty");
 			}
 
-			if (!ObjectId.TryParse(id, out ObjectId objectId))
-			{
-				logger.LogWarning("GetArticle: Invalid ObjectId format: {Id}", id);
-				return Result.Fail<ArticleDto>("Invalid article ID format");
-			}
-
-			Result<Article?> result = await repository.GetArticleByIdAsync(objectId);
+			Result<Article?> result = await repository.GetArticleByIdAsync(id);
 
 			if (result.Failure || result.Value is null)
 			{
 				logger.LogWarning("GetArticle: Article not found with ID: {Id}", id);
+
 				return Result.Fail<ArticleDto>(result.Error ?? "Article not found");
 			}
 
 			Article article = result.Value;
 
 			var dto = new ArticleDto(
-				article.Id,
-				article.Slug,
-				article.Title,
-				article.Introduction,
-				article.Content,
-				article.CoverImageUrl,
-				article.Author,
-				article.Category,
-				article.IsPublished,
-				article.PublishedOn,
-				article.CreatedOn,
-				article.ModifiedOn,
-				article.IsArchived,
-				!article.IsArchived
+					article.Id,
+					article.Slug,
+					article.Title,
+					article.Introduction,
+					article.Content,
+					article.CoverImageUrl,
+					article.Author,
+					article.Category,
+					article.IsPublished,
+					article.PublishedOn,
+					article.CreatedOn,
+					article.ModifiedOn,
+					article.IsArchived,
+					!article.IsArchived
 			);
 
 			logger.LogInformation("GetArticle: Successfully retrieved article {Id}", id);
+
 			return Result.Ok(dto);
 		}
+
 	}
 
 }

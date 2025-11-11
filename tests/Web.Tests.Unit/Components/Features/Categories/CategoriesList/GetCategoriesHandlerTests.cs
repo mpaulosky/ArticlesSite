@@ -100,11 +100,11 @@ public class GetCategoriesHandlerTests
 
 		var category = new Category
 		{
-				CategoryName = "Test Category",
-				Slug = "test-category",
-				CreatedOn = createdOn,
-				ModifiedOn = modifiedOn,
-				IsArchived = false
+			CategoryName = "Test Category",
+			Slug = "test-category",
+			CreatedOn = createdOn,
+			ModifiedOn = modifiedOn,
+			IsArchived = false
 		};
 
 		_mockRepository.GetCategories()
