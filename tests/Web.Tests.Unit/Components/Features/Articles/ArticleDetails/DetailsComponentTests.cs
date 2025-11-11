@@ -1,3 +1,4 @@
+using Bunit;
 using Details = Web.Components.Features.Articles.ArticleDetails.Details;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleDetails;
@@ -20,7 +21,7 @@ public class DetailsComponentTests : TestContext
 		handler.HandleAsync(id).Returns(_ => tcs.Task);
 
 		var cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, id)
+				.Add<string>(p => p.Id, id.ToString())
 		);
 
 		// Assert: Loading UI should be visible
@@ -38,7 +39,7 @@ public class DetailsComponentTests : TestContext
 		handler.HandleAsync(id).Returns(Result.Fail<ArticleDto>("Article not found."));
 
 		var cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, id)
+				.Add<string>(p => p.Id, id.ToString())
 		);
 
 		// Assert
@@ -72,7 +73,7 @@ public class DetailsComponentTests : TestContext
 		handler.HandleAsync(article.Id).Returns(Result.Ok(article));
 
 		var cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, article.Id)
+				.Add<string>(p => p.Id, article.Id.ToString())
 		);
 
 		// Assert

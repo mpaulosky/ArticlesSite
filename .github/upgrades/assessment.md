@@ -27,15 +27,15 @@ Legend:
 
 ```mermaid
 flowchart LR
-    P1["<b>📦&nbsp;Web.Tests.Playwright.csproj</b><br/><small>net9.0</small>"]
-    P2["<b>📦&nbsp;AppHost.csproj</b><br/><small>net9.0</small>"]
-    P3["<b>📦&nbsp;ServiceDefaults.csproj</b><br/><small>net9.0</small>"]
-    P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net8.0</small>"]
-    P5["<b>📦&nbsp;Web.csproj</b><br/><small>net9.0</small>"]
-    P6["<b>📦&nbsp;Architecture.Tests.csproj</b><br/><small>net9.0</small>"]
-    P7["<b>📦&nbsp;Shared.Tests.Unit.csproj</b><br/><small>net9.0</small>"]
-    P8["<b>📦&nbsp;Web.Tests.Integration.csproj</b><br/><small>net9.0</small>"]
-    P9["<b>📦&nbsp;Web.Tests.Unit.csproj</b><br/><small>net9.0</small>"]
+    P1["<b>📦&nbsp;Web.Tests.Playwright.csproj</b><br/><small>net10.0</small>"]
+    P2["<b>📦&nbsp;AppHost.csproj</b><br/><small>net10.0</small>"]
+    P3["<b>📦&nbsp;ServiceDefaults.csproj</b><br/><small>net10.0</small>"]
+    P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net10.0</small>"]
+    P5["<b>📦&nbsp;Web.csproj</b><br/><small>net10.0</small>"]
+    P6["<b>📦&nbsp;Architecture.Tests.csproj</b><br/><small>net10.0</small>"]
+    P7["<b>📦&nbsp;Shared.Tests.Unit.csproj</b><br/><small>net10.0</small>"]
+    P8["<b>📦&nbsp;Web.Tests.Integration.csproj</b><br/><small>net10.0</small>"]
+    P9["<b>📦&nbsp;Web.Tests.Unit.csproj</b><br/><small>net10.0</small>"]
     P1 --> P4
     P1 --> P5
     P2 --> P4
@@ -70,8 +70,7 @@ flowchart LR
 
 #### Project Info
 
-- **Current Target Framework:** net9.0
-- **Proposed Target Framework:** net10.0
+- **Current Target Framework:** net10.0✅
 - **SDK-style**: True
 - **Project Kind:** DotNetCoreApp
 - **Dependencies**: 2
@@ -88,12 +87,12 @@ Legend:
 ```mermaid
 flowchart TB
     subgraph current["Web.Tests.Playwright.csproj"]
-        MAIN["<b>📦&nbsp;Web.Tests.Playwright.csproj</b><br/><small>net9.0</small>"]
+        MAIN["<b>📦&nbsp;Web.Tests.Playwright.csproj</b><br/><small>net10.0</small>"]
         click MAIN "#e2ewebtestsplaywrightwebtestsplaywrightcsproj"
     end
     subgraph downstream["Dependencies (2"]
-        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net8.0</small>"]
-        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net9.0</small>"]
+        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net10.0</small>"]
+        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net10.0</small>"]
         click P4 "#srcsharedsharedcsproj"
         click P5 "#srcwebwebcsproj"
     end
@@ -121,8 +120,7 @@ flowchart TB
 
 #### Project Info
 
-- **Current Target Framework:** net9.0
-- **Proposed Target Framework:** net10.0
+- **Current Target Framework:** net10.0✅
 - **SDK-style**: True
 - **Project Kind:** DotNetCoreApp
 - **Dependencies**: 3
@@ -139,13 +137,13 @@ Legend:
 ```mermaid
 flowchart TB
     subgraph current["AppHost.csproj"]
-        MAIN["<b>📦&nbsp;AppHost.csproj</b><br/><small>net9.0</small>"]
+        MAIN["<b>📦&nbsp;AppHost.csproj</b><br/><small>net10.0</small>"]
         click MAIN "#srcapphostapphostcsproj"
     end
     subgraph downstream["Dependencies (3"]
-        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net8.0</small>"]
-        P3["<b>📦&nbsp;ServiceDefaults.csproj</b><br/><small>net9.0</small>"]
-        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net9.0</small>"]
+        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net10.0</small>"]
+        P3["<b>📦&nbsp;ServiceDefaults.csproj</b><br/><small>net10.0</small>"]
+        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net10.0</small>"]
         click P4 "#srcsharedsharedcsproj"
         click P3 "#srcservicedefaultsservicedefaultscsproj"
         click P5 "#srcwebwebcsproj"
@@ -169,8 +167,7 @@ flowchart TB
 
 #### Project Info
 
-- **Current Target Framework:** net9.0
-- **Proposed Target Framework:** net10.0
+- **Current Target Framework:** net10.0✅
 - **SDK-style**: True
 - **Project Kind:** ClassLibrary
 - **Dependencies**: 1
@@ -187,17 +184,17 @@ Legend:
 ```mermaid
 flowchart TB
     subgraph upstream["Dependants (2)"]
-        P2["<b>📦&nbsp;AppHost.csproj</b><br/><small>net9.0</small>"]
-        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net9.0</small>"]
+        P2["<b>📦&nbsp;AppHost.csproj</b><br/><small>net10.0</small>"]
+        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net10.0</small>"]
         click P2 "#srcapphostapphostcsproj"
         click P5 "#srcwebwebcsproj"
     end
     subgraph current["ServiceDefaults.csproj"]
-        MAIN["<b>📦&nbsp;ServiceDefaults.csproj</b><br/><small>net9.0</small>"]
+        MAIN["<b>📦&nbsp;ServiceDefaults.csproj</b><br/><small>net10.0</small>"]
         click MAIN "#srcservicedefaultsservicedefaultscsproj"
     end
     subgraph downstream["Dependencies (1"]
-        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net8.0</small>"]
+        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net10.0</small>"]
         click P4 "#srcsharedsharedcsproj"
     end
     P2 --> MAIN
@@ -213,12 +210,12 @@ flowchart TB
 | Aspire.Hosting.AppHost | Explicit | 13.0.0 |  | ✅Compatible |
 | Aspire.Hosting.MongoDB | Explicit | 13.0.0 |  | ✅Compatible |
 | Aspire.Hosting.Redis | Explicit | 13.0.0 |  | ✅Compatible |
-| Microsoft.Extensions.Http.Resilience | Explicit | 9.10.0 | 10.0.0 | NuGet package upgrade is recommended |
-| Microsoft.Extensions.ServiceDiscovery | Explicit | 9.5.2 | 10.0.0 | NuGet package upgrade is recommended |
+| Microsoft.Extensions.Http.Resilience | Explicit | 9.10.0 |  | ✅Compatible |
+| Microsoft.Extensions.ServiceDiscovery | Explicit | 9.5.2 |  | ✅Compatible |
 | OpenTelemetry.Exporter.OpenTelemetryProtocol | Explicit | 1.13.1 |  | ✅Compatible |
 | OpenTelemetry.Extensions.Hosting | Explicit | 1.13.1 |  | ✅Compatible |
-| OpenTelemetry.Instrumentation.AspNetCore | Explicit | 1.13.0 | 1.14.0-rc.1 | NuGet package upgrade is recommended |
-| OpenTelemetry.Instrumentation.Http | Explicit | 1.13.0 | 1.14.0-rc.1 | NuGet package upgrade is recommended |
+| OpenTelemetry.Instrumentation.AspNetCore | Explicit | 1.13.0 |  | ✅Compatible |
+| OpenTelemetry.Instrumentation.Http | Explicit | 1.13.0 |  | ✅Compatible |
 | OpenTelemetry.Instrumentation.Runtime | Explicit | 1.13.0 |  | ✅Compatible |
 | StackExchange.Redis | Explicit | 2.10.1 |  | ✅Compatible |
 
@@ -227,8 +224,7 @@ flowchart TB
 
 #### Project Info
 
-- **Current Target Framework:** net8.0
-- **Proposed Target Framework:** net10.0
+- **Current Target Framework:** net10.0✅
 - **SDK-style**: True
 - **Project Kind:** ClassLibrary
 - **Dependencies**: 0
@@ -245,14 +241,14 @@ Legend:
 ```mermaid
 flowchart TB
     subgraph upstream["Dependants (8)"]
-        P1["<b>📦&nbsp;Web.Tests.Playwright.csproj</b><br/><small>net9.0</small>"]
-        P2["<b>📦&nbsp;AppHost.csproj</b><br/><small>net9.0</small>"]
-        P3["<b>📦&nbsp;ServiceDefaults.csproj</b><br/><small>net9.0</small>"]
-        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net9.0</small>"]
-        P6["<b>📦&nbsp;Architecture.Tests.csproj</b><br/><small>net9.0</small>"]
-        P7["<b>📦&nbsp;Shared.Tests.Unit.csproj</b><br/><small>net9.0</small>"]
-        P8["<b>📦&nbsp;Web.Tests.Integration.csproj</b><br/><small>net9.0</small>"]
-        P9["<b>📦&nbsp;Web.Tests.Unit.csproj</b><br/><small>net9.0</small>"]
+        P1["<b>📦&nbsp;Web.Tests.Playwright.csproj</b><br/><small>net10.0</small>"]
+        P2["<b>📦&nbsp;AppHost.csproj</b><br/><small>net10.0</small>"]
+        P3["<b>📦&nbsp;ServiceDefaults.csproj</b><br/><small>net10.0</small>"]
+        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net10.0</small>"]
+        P6["<b>📦&nbsp;Architecture.Tests.csproj</b><br/><small>net10.0</small>"]
+        P7["<b>📦&nbsp;Shared.Tests.Unit.csproj</b><br/><small>net10.0</small>"]
+        P8["<b>📦&nbsp;Web.Tests.Integration.csproj</b><br/><small>net10.0</small>"]
+        P9["<b>📦&nbsp;Web.Tests.Unit.csproj</b><br/><small>net10.0</small>"]
         click P1 "#e2ewebtestsplaywrightwebtestsplaywrightcsproj"
         click P2 "#srcapphostapphostcsproj"
         click P3 "#srcservicedefaultsservicedefaultscsproj"
@@ -263,7 +259,7 @@ flowchart TB
         click P9 "#testswebtestsunitwebtestsunitcsproj"
     end
     subgraph current["Shared.csproj"]
-        MAIN["<b>📦&nbsp;Shared.csproj</b><br/><small>net8.0</small>"]
+        MAIN["<b>📦&nbsp;Shared.csproj</b><br/><small>net10.0</small>"]
         click MAIN "#srcsharedsharedcsproj"
     end
     P1 --> MAIN
@@ -292,8 +288,7 @@ flowchart TB
 
 #### Project Info
 
-- **Current Target Framework:** net9.0
-- **Proposed Target Framework:** net10.0
+- **Current Target Framework:** net10.0✅
 - **SDK-style**: True
 - **Project Kind:** AspNetCore
 - **Dependencies**: 2
@@ -310,11 +305,11 @@ Legend:
 ```mermaid
 flowchart TB
     subgraph upstream["Dependants (5)"]
-        P1["<b>📦&nbsp;Web.Tests.Playwright.csproj</b><br/><small>net9.0</small>"]
-        P2["<b>📦&nbsp;AppHost.csproj</b><br/><small>net9.0</small>"]
-        P6["<b>📦&nbsp;Architecture.Tests.csproj</b><br/><small>net9.0</small>"]
-        P8["<b>📦&nbsp;Web.Tests.Integration.csproj</b><br/><small>net9.0</small>"]
-        P9["<b>📦&nbsp;Web.Tests.Unit.csproj</b><br/><small>net9.0</small>"]
+        P1["<b>📦&nbsp;Web.Tests.Playwright.csproj</b><br/><small>net10.0</small>"]
+        P2["<b>📦&nbsp;AppHost.csproj</b><br/><small>net10.0</small>"]
+        P6["<b>📦&nbsp;Architecture.Tests.csproj</b><br/><small>net10.0</small>"]
+        P8["<b>📦&nbsp;Web.Tests.Integration.csproj</b><br/><small>net10.0</small>"]
+        P9["<b>📦&nbsp;Web.Tests.Unit.csproj</b><br/><small>net10.0</small>"]
         click P1 "#e2ewebtestsplaywrightwebtestsplaywrightcsproj"
         click P2 "#srcapphostapphostcsproj"
         click P6 "#testsarchitecturetestsarchitecturetestscsproj"
@@ -322,12 +317,12 @@ flowchart TB
         click P9 "#testswebtestsunitwebtestsunitcsproj"
     end
     subgraph current["Web.csproj"]
-        MAIN["<b>📦&nbsp;Web.csproj</b><br/><small>net9.0</small>"]
+        MAIN["<b>📦&nbsp;Web.csproj</b><br/><small>net10.0</small>"]
         click MAIN "#srcwebwebcsproj"
     end
     subgraph downstream["Dependencies (2"]
-        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net8.0</small>"]
-        P3["<b>📦&nbsp;ServiceDefaults.csproj</b><br/><small>net9.0</small>"]
+        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net10.0</small>"]
+        P3["<b>📦&nbsp;ServiceDefaults.csproj</b><br/><small>net10.0</small>"]
         click P4 "#srcsharedsharedcsproj"
         click P3 "#srcservicedefaultsservicedefaultscsproj"
     end
@@ -357,8 +352,7 @@ flowchart TB
 
 #### Project Info
 
-- **Current Target Framework:** net9.0
-- **Proposed Target Framework:** net10.0
+- **Current Target Framework:** net10.0✅
 - **SDK-style**: True
 - **Project Kind:** DotNetCoreApp
 - **Dependencies**: 2
@@ -375,12 +369,12 @@ Legend:
 ```mermaid
 flowchart TB
     subgraph current["Architecture.Tests.csproj"]
-        MAIN["<b>📦&nbsp;Architecture.Tests.csproj</b><br/><small>net9.0</small>"]
+        MAIN["<b>📦&nbsp;Architecture.Tests.csproj</b><br/><small>net10.0</small>"]
         click MAIN "#testsarchitecturetestsarchitecturetestscsproj"
     end
     subgraph downstream["Dependencies (2"]
-        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net8.0</small>"]
-        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net9.0</small>"]
+        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net10.0</small>"]
+        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net10.0</small>"]
         click P4 "#srcsharedsharedcsproj"
         click P5 "#srcwebwebcsproj"
     end
@@ -408,8 +402,7 @@ flowchart TB
 
 #### Project Info
 
-- **Current Target Framework:** net9.0
-- **Proposed Target Framework:** net10.0
+- **Current Target Framework:** net10.0✅
 - **SDK-style**: True
 - **Project Kind:** DotNetCoreApp
 - **Dependencies**: 1
@@ -426,11 +419,11 @@ Legend:
 ```mermaid
 flowchart TB
     subgraph current["Shared.Tests.Unit.csproj"]
-        MAIN["<b>📦&nbsp;Shared.Tests.Unit.csproj</b><br/><small>net9.0</small>"]
+        MAIN["<b>📦&nbsp;Shared.Tests.Unit.csproj</b><br/><small>net10.0</small>"]
         click MAIN "#testssharedtestsunitsharedtestsunitcsproj"
     end
     subgraph downstream["Dependencies (1"]
-        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net8.0</small>"]
+        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net10.0</small>"]
         click P4 "#srcsharedsharedcsproj"
     end
     MAIN --> P4
@@ -453,13 +446,12 @@ flowchart TB
 
 #### Project Info
 
-- **Current Target Framework:** net9.0
-- **Proposed Target Framework:** net10.0
+- **Current Target Framework:** net10.0✅
 - **SDK-style**: True
-- **Project Kind:** DotNetCoreApp
+- **Project Kind:** ClassLibrary
 - **Dependencies**: 2
 - **Dependants**: 0
-- **Number of Files**: 18
+- **Number of Files**: 16
 - **Lines of Code**: 3501
 
 #### Dependency Graph
@@ -471,12 +463,12 @@ Legend:
 ```mermaid
 flowchart TB
     subgraph current["Web.Tests.Integration.csproj"]
-        MAIN["<b>📦&nbsp;Web.Tests.Integration.csproj</b><br/><small>net9.0</small>"]
+        MAIN["<b>📦&nbsp;Web.Tests.Integration.csproj</b><br/><small>net10.0</small>"]
         click MAIN "#testswebtestsintegrationwebtestsintegrationcsproj"
     end
     subgraph downstream["Dependencies (2"]
-        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net8.0</small>"]
-        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net9.0</small>"]
+        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net10.0</small>"]
+        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net10.0</small>"]
         click P4 "#srcsharedsharedcsproj"
         click P5 "#srcwebwebcsproj"
     end
@@ -493,7 +485,7 @@ flowchart TB
 | Auth0.AspNetCore.Authentication | Explicit | 1.5.1 |  | ✅Compatible |
 | coverlet.collector | Explicit | 6.0.4 |  | ✅Compatible |
 | FluentAssertions | Explicit | 8.8.0 |  | ✅Compatible |
-| Microsoft.AspNetCore.Mvc.Testing | Explicit | 9.0.10 | 10.0.0 | NuGet package upgrade is recommended |
+| Microsoft.AspNetCore.Mvc.Testing | Explicit | 10.0.0 |  | ✅Compatible |
 | Microsoft.NET.Test.Sdk | Explicit | 18.0.0 |  | ✅Compatible |
 | MongoDB.Driver | Explicit | 3.5.0 |  | ✅Compatible |
 | NSubstitute | Explicit | 5.3.0 |  | ✅Compatible |
@@ -508,8 +500,7 @@ flowchart TB
 
 #### Project Info
 
-- **Current Target Framework:** net9.0
-- **Proposed Target Framework:** net10.0
+- **Current Target Framework:** net10.0✅
 - **SDK-style**: True
 - **Project Kind:** DotNetCoreApp
 - **Dependencies**: 2
@@ -526,12 +517,12 @@ Legend:
 ```mermaid
 flowchart TB
     subgraph current["Web.Tests.Unit.csproj"]
-        MAIN["<b>📦&nbsp;Web.Tests.Unit.csproj</b><br/><small>net9.0</small>"]
+        MAIN["<b>📦&nbsp;Web.Tests.Unit.csproj</b><br/><small>net10.0</small>"]
         click MAIN "#testswebtestsunitwebtestsunitcsproj"
     end
     subgraph downstream["Dependencies (2"]
-        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net8.0</small>"]
-        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net9.0</small>"]
+        P4["<b>📦&nbsp;Shared.csproj</b><br/><small>net10.0</small>"]
+        P5["<b>📦&nbsp;Web.csproj</b><br/><small>net10.0</small>"]
         click P4 "#srcsharedsharedcsproj"
         click P5 "#srcwebwebcsproj"
     end
@@ -571,9 +562,9 @@ flowchart TB
 | FluentAssertions | 8.8.0 |  | [Web.Tests.Playwright.csproj](#webtestsplaywrightcsproj)<br/>[Architecture.Tests.csproj](#architecturetestscsproj)<br/>[Shared.Tests.Unit.csproj](#sharedtestsunitcsproj)<br/>[Web.Tests.Integration.csproj](#webtestsintegrationcsproj)<br/>[Web.Tests.Unit.csproj](#webtestsunitcsproj) | ✅Compatible |
 | FluentValidation | 12.1.0 |  | [Shared.csproj](#sharedcsproj)<br/>[Web.csproj](#webcsproj) | ✅Compatible |
 | Markdig | 0.43.0 |  | [Shared.csproj](#sharedcsproj) | ✅Compatible |
-| Microsoft.AspNetCore.Mvc.Testing | 9.0.10 | 10.0.0 | [Web.Tests.Integration.csproj](#webtestsintegrationcsproj) | NuGet package upgrade is recommended |
-| Microsoft.Extensions.Http.Resilience | 9.10.0 | 10.0.0 | [ServiceDefaults.csproj](#servicedefaultscsproj) | NuGet package upgrade is recommended |
-| Microsoft.Extensions.ServiceDiscovery | 9.5.2 | 10.0.0 | [ServiceDefaults.csproj](#servicedefaultscsproj) | NuGet package upgrade is recommended |
+| Microsoft.AspNetCore.Mvc.Testing | 10.0.0 |  | [Web.Tests.Integration.csproj](#webtestsintegrationcsproj) | ✅Compatible |
+| Microsoft.Extensions.Http.Resilience | 9.10.0 |  | [ServiceDefaults.csproj](#servicedefaultscsproj) | ✅Compatible |
+| Microsoft.Extensions.ServiceDiscovery | 9.5.2 |  | [ServiceDefaults.csproj](#servicedefaultscsproj) | ✅Compatible |
 | Microsoft.NET.Test.Sdk | 18.0.0 |  | [Web.Tests.Playwright.csproj](#webtestsplaywrightcsproj)<br/>[Architecture.Tests.csproj](#architecturetestscsproj)<br/>[Shared.Tests.Unit.csproj](#sharedtestsunitcsproj)<br/>[Web.Tests.Integration.csproj](#webtestsintegrationcsproj)<br/>[Web.Tests.Unit.csproj](#webtestsunitcsproj) | ✅Compatible |
 | Microsoft.Playwright | 1.55.0 |  | [Web.Tests.Playwright.csproj](#webtestsplaywrightcsproj) | ✅Compatible |
 | MongoDB.Bson | 3.5.0 |  | [Shared.csproj](#sharedcsproj) | ✅Compatible |
@@ -584,8 +575,8 @@ flowchart TB
 | NSubstitute.Analyzers.CSharp | 1.0.17 |  | [Web.Tests.Unit.csproj](#webtestsunitcsproj) | ✅Compatible |
 | OpenTelemetry.Exporter.OpenTelemetryProtocol | 1.13.1 |  | [ServiceDefaults.csproj](#servicedefaultscsproj) | ✅Compatible |
 | OpenTelemetry.Extensions.Hosting | 1.13.1 |  | [ServiceDefaults.csproj](#servicedefaultscsproj)<br/>[Web.Tests.Integration.csproj](#webtestsintegrationcsproj) | ✅Compatible |
-| OpenTelemetry.Instrumentation.AspNetCore | 1.13.0 | 1.14.0-rc.1 | [ServiceDefaults.csproj](#servicedefaultscsproj) | NuGet package upgrade is recommended |
-| OpenTelemetry.Instrumentation.Http | 1.13.0 | 1.14.0-rc.1 | [ServiceDefaults.csproj](#servicedefaultscsproj) | NuGet package upgrade is recommended |
+| OpenTelemetry.Instrumentation.AspNetCore | 1.13.0 |  | [ServiceDefaults.csproj](#servicedefaultscsproj) | ✅Compatible |
+| OpenTelemetry.Instrumentation.Http | 1.13.0 |  | [ServiceDefaults.csproj](#servicedefaultscsproj) | ✅Compatible |
 | OpenTelemetry.Instrumentation.Runtime | 1.13.0 |  | [ServiceDefaults.csproj](#servicedefaultscsproj) | ✅Compatible |
 | PSC.Blazor.Components.MarkdownEditor | 8.0.8 |  | [Web.csproj](#webcsproj) | ✅Compatible |
 | StackExchange.Redis | 2.10.1 |  | [ServiceDefaults.csproj](#servicedefaultscsproj) | ✅Compatible |

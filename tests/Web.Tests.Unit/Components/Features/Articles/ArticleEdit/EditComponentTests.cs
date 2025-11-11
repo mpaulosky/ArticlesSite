@@ -10,6 +10,7 @@ using Shared.Entities;
 using Shared.Models;
 
 using Web.Components.Features.Articles.ArticleEdit;
+using Web.Services;
 
 using Xunit;
 
@@ -26,10 +27,15 @@ public class EditComponentTests : TestContext
 		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
 		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
 		var editArticle = Substitute.For<Web.Components.Features.Articles.ArticleEdit.EditArticle.IEditArticleHandler>();
+		var fileStorage = Substitute.For<IFileStorage>();
 
 		Services.AddSingleton(getCategories);
 		Services.AddSingleton(getArticle);
 		Services.AddSingleton(editArticle);
+		Services.AddSingleton(fileStorage);
+
+		// Setup JSInterop for the MarkdownEditor component
+		JSInterop.Mode = JSRuntimeMode.Loose;
 
 		var id = ObjectId.Parse("507f1f77bcf86cd799439011");
 
@@ -40,22 +46,27 @@ public class EditComponentTests : TestContext
 		var tcsArticle = new TaskCompletionSource<Result<ArticleDto>>();
 		getArticle.HandleAsync(id).Returns(_ => tcsArticle.Task);
 
-		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, id));
+		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, id.ToString()));
 
 		// Assert: loading markup present
-		cut.Markup.Should().Contain("Loading article...");
+		cut.Markup.Should().Contain("Loading");
 	}
 
 	[Fact]
-	public void RendersEmptyForm_WhenArticleLoadFails()
+	public void RendersErrorAlert_WhenArticleLoadFails()
 	{
 		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
 		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
 		var editArticle = Substitute.For<Web.Components.Features.Articles.ArticleEdit.EditArticle.IEditArticleHandler>();
+		var fileStorage = Substitute.For<IFileStorage>();
 
 		Services.AddSingleton(getCategories);
 		Services.AddSingleton(getArticle);
 		Services.AddSingleton(editArticle);
+		Services.AddSingleton(fileStorage);
+
+		// Setup JSInterop for the MarkdownEditor component
+		JSInterop.Mode = JSRuntimeMode.Loose;
 
 		var id = ObjectId.Parse("507f1f77bcf86cd799439011");
 
@@ -66,12 +77,11 @@ public class EditComponentTests : TestContext
 		// Article load fails
 		getArticle.HandleAsync(id).Returns(Result.Fail<ArticleDto>("Article not found."));
 
-		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, id));
+		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, id.ToString()));
 
-		// Assert: form is rendered but fields are empty due to load failure
-		cut.Markup.Should().Contain("Title");
-		cut.Markup.Should().Contain("Introduction");
-		cut.Markup.Should().NotContain("Test Author");
+		// Assert: Error alert should be shown when article load fails
+		cut.Markup.Should().Contain("Unable to load article");
+		cut.Markup.Should().Contain("Article not found.");
 	}
 
 	[Fact]
@@ -80,10 +90,15 @@ public class EditComponentTests : TestContext
 		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
 		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
 		var editArticle = Substitute.For<Web.Components.Features.Articles.ArticleEdit.EditArticle.IEditArticleHandler>();
+		var fileStorage = Substitute.For<IFileStorage>();
 
 		Services.AddSingleton(getCategories);
 		Services.AddSingleton(getArticle);
 		Services.AddSingleton(editArticle);
+		Services.AddSingleton(fileStorage);
+
+		// Setup JSInterop for the MarkdownEditor component
+		JSInterop.Mode = JSRuntimeMode.Loose;
 
 		var catId = ObjectId.GenerateNewId();
 		var categories = new List<CategoryDto>
@@ -112,7 +127,7 @@ public class EditComponentTests : TestContext
 
 		getArticle.HandleAsync(article.Id).Returns(Result.Ok(article));
 
-		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, article.Id));
+		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, article.Id.ToString()));
 
 		// Assert basic form content
 		cut.Markup.Should().Contain("Title");

@@ -4,6 +4,7 @@
 @using PSC.Blazor.Components.MarkdownEditor.Models
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JsRuntime
+@inject IFileStorage FileStorage
 
 
 <MarkdownEditor @bind-Value="@MyContent"
@@ -40,7 +41,7 @@
 
 @code {
 
-	MarkdownEditor _textEditor = null;
+	MarkdownEditor _textEditor = null!;
 
 	[Parameter, EditorRequired]
 	public bool AlignmentOptionsEnabled { get; set; }
@@ -67,10 +68,11 @@
 		Console.WriteLine($"Image: {file.Name} Size: {file.Size}");
 
 		// Convert the base64 string to a byte array and load it into a memory stream
-		//var bytes = Convert.FromBase64String(file.ContentBase64);
-		//var stream = new MemoryStream(bytes);
+		var bytes = Convert.FromBase64String(file.ContentBase64);
+		var stream = new MemoryStream(bytes);
 
-		//var fileName = await FileStorage!.AddFile(new FileData(stream, new FileMetaData(file.Name, "", file.LastModified)));
+		// Assign fileName from storage operation
+		var fileName = await FileStorage.AddFile(new FileData(stream, new FileMetaData(file.Name, "", file.LastModified)));
 		file.UploadUrl = new Uri(new Uri(NavigationManager.BaseUri), $"/api/files/{fileName}").ToString();
 		return file;
 	}
