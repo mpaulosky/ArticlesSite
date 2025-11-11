@@ -132,10 +132,20 @@ else if (_editModel != ArticleDto.Empty)
 				_errorMessage = articleResult.Error ?? "Article not found.";
 			}
 		}
+		catch (OperationCanceledException ex)
+		{
+			_errorMessage = "The operation was cancelled.";
+			Logger?.LogWarning(ex, "Operation cancelled while loading article for edit: {ArticleId}", RecordId);
+		}
+		catch (InvalidOperationException ex)
+		{
+			_errorMessage = "An invalid operation occurred while loading the article.";
+			Logger?.LogError(ex, "Invalid operation while loading article for edit: {ArticleId}", RecordId);
+		}
 		catch (Exception ex)
 		{
-			_errorMessage = ex.Message;
-			Logger?.LogError(ex, "Error loading article for edit: {ArticleId}", RecordId);
+			_errorMessage = "An unexpected error occurred while loading the article.";
+			Logger?.LogError(ex, "Unexpected error loading article for edit: {ArticleId}", RecordId);
 		}
 		finally
 		{
@@ -180,9 +190,17 @@ else if (_editModel != ArticleDto.Empty)
 				return string.Equals(currentUserId, authorId, StringComparison.OrdinalIgnoreCase);
 			}
 		}
+		catch (InvalidOperationException ex)
+		{
+			Logger?.LogWarning(ex, "Invalid operation while evaluating edit permission for article {ArticleId}", a?.Id);
+		}
+		catch (ArgumentException ex)
+		{
+			Logger?.LogWarning(ex, "Invalid argument while evaluating edit permission for article {ArticleId}", a?.Id);
+		}
 		catch (Exception ex)
 		{
-			Logger?.LogWarning(ex, "Error evaluating edit permission for article {ArticleId}", a?.Id);
+			Logger?.LogWarning(ex, "Unexpected error evaluating edit permission for article {ArticleId}", a?.Id);
 		}
 
 		return false;
@@ -234,10 +252,20 @@ else if (_editModel != ArticleDto.Empty)
 				Logger?.LogWarning("Failed to save article {ArticleId}: {Error}", RecordId, _errorMessage);
 			}
 		}
+		catch (OperationCanceledException ex)
+		{
+			_errorMessage = "The save operation was cancelled.";
+			Logger?.LogWarning(ex, "Operation cancelled while saving article {ArticleId}", RecordId);
+		}
+		catch (InvalidOperationException ex)
+		{
+			_errorMessage = "An invalid operation occurred while saving the article.";
+			Logger?.LogError(ex, "Invalid operation while saving article {ArticleId}", RecordId);
+		}
 		catch (Exception ex)
 		{
-			_errorMessage = ex.Message;
-			Logger?.LogError(ex, "Error saving article {ArticleId}", RecordId);
+			_errorMessage = "An unexpected error occurred while saving the article.";
+			Logger?.LogError(ex, "Unexpected error saving article {ArticleId}", RecordId);
 		}
 	}
 
@@ -255,11 +283,23 @@ else if (_editModel != ArticleDto.Empty)
 				Logger?.LogWarning("Failed to load categories: {Error}", _errorMessage);
 			}
 		}
+		catch (OperationCanceledException ex)
+		{
+			_categories = [];
+			_errorMessage = "Loading categories was cancelled.";
+			Logger?.LogWarning(ex, "Operation cancelled while loading categories");
+		}
+		catch (InvalidOperationException ex)
+		{
+			_categories = [];
+			_errorMessage = "An invalid operation occurred while loading categories.";
+			Logger?.LogError(ex, "Invalid operation while loading categories");
+		}
 		catch (Exception ex)
 		{
 			_categories = [];
-			_errorMessage = ex.Message;
-			Logger?.LogError(ex, "Error loading categories");
+			_errorMessage = "An unexpected error occurred while loading categories.";
+			Logger?.LogError(ex, "Unexpected error loading categories");
 		}
 	}
 
