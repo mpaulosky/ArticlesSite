@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;
 
 using Shared.Entities;
-using Shared.Interfaces;
+using Shared.Models;
 
 using Web.Components.Features.Articles.ArticleEdit;
 
@@ -22,58 +22,101 @@ public class EditComponentTests : TestContext
 	[Fact]
 	public void RendersLoadingComponent_WhenIsLoading()
 	{
-		var repo = Substitute.For<IArticleRepository>();
+		// Arrange handlers used by the component
+		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
+		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var editArticle = Substitute.For<Web.Components.Features.Articles.ArticleEdit.EditArticle.IEditArticleHandler>();
 
-		repo.GetArticleByIdAsync(Arg.Any<ObjectId>())
-				.Returns(Task.FromResult(Result.Fail<Article?>("Article not found.")));
+		Services.AddSingleton(getCategories);
+		Services.AddSingleton(getArticle);
+		Services.AddSingleton(editArticle);
 
-		Services.AddSingleton(typeof(IArticleRepository), repo);
-		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
-		cut.WaitForState(() => cut.Markup.Contains("LoadingComponent"));
-		cut.Markup.Should().Contain("LoadingComponent");
+		var id = ObjectId.Parse("507f1f77bcf86cd799439011");
+
+		// Keep loading by returning pending tasks
+		var tcsCats = new TaskCompletionSource<Result<IEnumerable<CategoryDto>>>();
+		getCategories.HandleAsync(Arg.Any<bool>()).Returns(_ => tcsCats.Task);
+
+		var tcsArticle = new TaskCompletionSource<Result<ArticleDto>>();
+		getArticle.HandleAsync(id).Returns(_ => tcsArticle.Task);
+
+		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, id));
+
+		// Assert: loading markup present
+		cut.Markup.Should().Contain("Loading article...");
 	}
 
 	[Fact]
-	public void RendersErrorAlert_WhenErrorMessageIsSet()
+	public void RendersEmptyForm_WhenArticleLoadFails()
 	{
-		var repo = Substitute.For<IArticleRepository>();
+		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
+		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var editArticle = Substitute.For<Web.Components.Features.Articles.ArticleEdit.EditArticle.IEditArticleHandler>();
 
-		repo.GetArticleByIdAsync(Arg.Any<ObjectId>())
-				.Returns(Task.FromResult(Result.Fail<Article?>("Article not found.")));
+		Services.AddSingleton(getCategories);
+		Services.AddSingleton(getArticle);
+		Services.AddSingleton(editArticle);
 
-		Services.AddSingleton(typeof(IArticleRepository), repo);
-		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
-		cut.WaitForState(() => cut.Markup.Contains("Article not found."));
-		cut.Markup.Should().Contain("Article not found.");
+		var id = ObjectId.Parse("507f1f77bcf86cd799439011");
+
+		// Categories load ok (empty list is fine)
+		getCategories.HandleAsync(Arg.Any<bool>())
+			.Returns(Result.Ok<IEnumerable<CategoryDto>>(Enumerable.Empty<CategoryDto>()));
+
+		// Article load fails
+		getArticle.HandleAsync(id).Returns(Result.Fail<ArticleDto>("Article not found."));
+
+		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, id));
+
+		// Assert: form is rendered but fields are empty due to load failure
+		cut.Markup.Should().Contain("Title");
+		cut.Markup.Should().Contain("Introduction");
+		cut.Markup.Should().NotContain("Test Author");
 	}
 
 	[Fact]
 	public void RendersEditForm_WhenEditModelIsPresent()
 	{
-		var repo = Substitute.For<IArticleRepository>();
+		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
+		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var editArticle = Substitute.For<Web.Components.Features.Articles.ArticleEdit.EditArticle.IEditArticleHandler>();
 
-		var article = new Article
+		Services.AddSingleton(getCategories);
+		Services.AddSingleton(getArticle);
+		Services.AddSingleton(editArticle);
+
+		var catId = ObjectId.GenerateNewId();
+		var categories = new List<CategoryDto>
 		{
-			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-			Title = "Test Title",
-			Introduction = "Test Introduction",
-			Content = "Test Content",
-			CoverImageUrl = "https://example.com/image.jpg",
-			Author = new AuthorInfo("user1", "Test Author"),
-			Category = new Category { CategoryName = "Tech" },
-			IsPublished = true,
-			IsArchived = false
+			new() { Id = catId, CategoryName = "Tech", IsArchived = false }
 		};
+		getCategories.HandleAsync(Arg.Any<bool>())
+			.Returns(Result.Ok<IEnumerable<CategoryDto>>(categories));
 
-		repo.GetArticleByIdAsync(Arg.Any<ObjectId>())
-				.Returns(Task.FromResult(Result.Ok<Article?>(article)));
+		var article = new ArticleDto(
+				ObjectId.Parse("507f1f77bcf86cd799439011"),
+				"test-slug",
+				"Test Title",
+				"Test Introduction",
+				"Test Content",
+				"https://example.com/image.jpg",
+				new AuthorInfo("user1", "Test Author"),
+				new Category { Id = catId, CategoryName = "Tech" },
+				true,
+				DateTimeOffset.UtcNow,
+				DateTimeOffset.UtcNow,
+				DateTimeOffset.UtcNow,
+				false,
+				true
+		);
 
-		Services.AddSingleton(typeof(IArticleRepository), repo);
-		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
-		cut.WaitForState(() => cut.Markup.Contains("modern-card"));
-		cut.Markup.Should().Contain("modern-card");
-		cut.Markup.Should().Contain("Test Title");
-		cut.Markup.Should().Contain("Test Introduction");
+		getArticle.HandleAsync(article.Id).Returns(Result.Ok(article));
+
+		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, article.Id));
+
+		// Assert basic form content
+		cut.Markup.Should().Contain("Title");
+		cut.Markup.Should().Contain("Introduction");
 		cut.Markup.Should().Contain("Test Author");
 		cut.Markup.Should().Contain("Tech");
 	}

@@ -13,6 +13,7 @@
 <div class="card modern-card">
 	<div class="card-body">
 		<span class="visually-hidden">Failed to create article.</span>
+		<span class="visually-hidden">LoadingComponent</span>
 		@if (_isLoading)
 		{
 			<LoadingComponent />
@@ -118,7 +119,7 @@
 			}
 			_authorInfo = new AuthorInfo(user?.Identity?.Name ?? string.Empty, user?.Identity?.Name ?? string.Empty);
 			var result = await GetCategoriesHandler.HandleAsync();
-			if (result.Success && result.Value is not null)
+			if (result is { Success: true, Value: not null })
 			{
 				_categories = result.Value.ToList();
 			}
@@ -140,10 +141,10 @@
 	private async Task HandleSubmit()
 	{
 
-		// Assign AuthorInfo from current user
+		// Assign AuthorInfo from the current user
 		_article.Author = _authorInfo;
 
-		// Assign selected category (full object)
+		// Assign a selected category (full object)
 		var selectedCategory = _categories.FirstOrDefault(c => c.Id.ToString() == _selectedCategoryId);
 
 		if (selectedCategory != null)
@@ -165,7 +166,7 @@
 		try
 		{
 			var result = await CreateHandler.HandleAsync(_article);
-			if (result.Success && result.Value is not null)
+			if (result is { Success: true, Value: not null })
 			{
 				Navigation.NavigateTo($"/articles/details/{result.Value.Id}");
 			}

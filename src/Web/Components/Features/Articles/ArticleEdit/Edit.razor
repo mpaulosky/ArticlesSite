@@ -1,34 +1,36 @@
 @page "/articles/edit/{Id}"
 
 @using Web.Components.Features.Articles.ArticleDetails
-@using Markdig
 @inject NavigationManager Navigation
 @inject ILogger<Edit> Logger
 @inject GetCategories.IGetCategoriesHandler GetCategoriesHandler
 @inject GetArticle.IGetArticleHandler GetArticleHandler
 @inject EditArticle.IEditArticleHandler EditArticleHandler
 
+@attribute [Authorize]
+
 @if (_isLoading)
 {
-	<div class="d-flex flex-column align-items-center justify-content-center" style="min-height:300px;">
-		<div class="spinner-border text-primary" role="status">
-			<span class="visually-hidden">Loading...</span>
-		</div>
-		<span class="mt-2">Loading article...</span>
-	</div>
+	<LoadingComponent />
+}
+else if (_errorMessage is not null)
+{
+	<ErrorAlertComponent Title="Unable to load article">
+		@_errorMessage
+	</ErrorAlertComponent>
 }
 else if (_editModel != ArticleDto.Empty)
 {
 	<EditForm Model="_editModel" OnValidSubmit="HandleValidSubmit">
-		<DataAnnotationsValidator/>
-		<ValidationSummary/>
+		<DataAnnotationsValidator />
+		<ValidationSummary />
 		<div class="mb-3">
 			<label class="form-label">Title</label>
-			<InputText class="form-control" @bind-Value="_editModel.Title"/>
+			<InputText class="form-control" @bind-Value="_editModel.Title" />
 		</div>
 		<div class="mb-3">
 			<label class="form-label">Introduction</label>
-			<InputTextArea class="form-control" @bind-Value="_editModel.Introduction" rows="2"/>
+			<InputTextArea class="form-control" @bind-Value="_editModel.Introduction" rows="2" />
 		</div>
 		<div class="row mb-3">
 			<div class="col-md-6 mb-2">
@@ -55,39 +57,27 @@ else if (_editModel != ArticleDto.Empty)
 			</div>
 			<div class="col-md-6 mb-2">
 				<div class="form-check">
-					<InputCheckbox id="isPublishedEdit" class="form-check-input" @bind-Value="_editModel.IsPublished"/>
+					<InputCheckbox id="isPublishedEdit" class="form-check-input" @bind-Value="_editModel.IsPublished" />
 					<label for="isPublishedEdit" class="form-check-label">Published</label>
 				</div>
 			</div>
 			<div class="col-md-6 mb-2">
 				<div class="form-check">
-					<InputCheckbox id="isArchivedEdit" class="form-check-input" @bind-Value="_editModel.IsArchived"/>
+					<InputCheckbox id="isArchivedEdit" class="form-check-input" @bind-Value="_editModel.IsArchived" />
 					<label for="isArchivedEdit" class="form-check-label">Archived</label>
 				</div>
 			</div>
 		</div>
 		<div class="mb-3">
 			<label class="form-label">Content (Markdown)</label>
-			@if (_showRawMarkdown)
-			{
-				<InputTextArea class="form-control" @bind-Value="_editModel.Content" @bind-Value:event="oninput" @oninput="(_) => UpdatePreview()" rows="10"/>
-			}
-			else
-			{
-				<div class="form-control" style="min-height:240px; overflow:auto;">
-					@((MarkupString)_previewHtml)
-				</div>
-			}
-			<button type="button" class="btn btn-link p-0 mt-1" @onclick="TogglePreviewMode">
-				<i class="bi bi-eye"></i> Toggle Preview
-			</button>
+			<TextEditor @bind-Content="@_editModel.Content" AlignmentOptionsEnabled="true" />
 		</div>
-		<div class="d-flex justify-content-end gap-2 mt-4">
-			<button type="submit" class="btn btn-success d-flex align-items-center gap-1">
+		<div class="mt-4 flex gap-2">
+			<button type="submit" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-blue-600">
 				<i class="bi bi-save"></i> Save
 			</button>
-			<button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-1"
-			        @onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
+			<button type="button" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+				@onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
 				<i class="bi bi-arrow-left"></i> Cancel
 			</button>
 		</div>
@@ -98,6 +88,10 @@ else if (_editModel != ArticleDto.Empty)
 
 	[Parameter] public required string Id { get; set; } = string.Empty;
 
+	private ObjectId RecordId { get; set; } = ObjectId.Empty;
+
+	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+
 	private ArticleDto _editModel = ArticleDto.Empty;
 
 	private bool _isLoading = true;
@@ -105,16 +99,17 @@ else if (_editModel != ArticleDto.Empty)
 	private string? _errorMessage;
 
 	private List<CategoryDto>? _categories;
-
-	private string _previewHtml = string.Empty;
-
-	private bool _showRawMarkdown;
+	
+	// private bool _showRawMarkdown;
 
 	private string _selectedCategoryId = string.Empty;
 
 	protected override async Task OnInitializedAsync()
 	{
-		Logger?.LogInformation("Loading article for edit: {ArticleId}", Id);
+
+		RecordId = ObjectId.Parse(Id);
+
+		Logger?.LogInformation("Loading article for edit: {ArticleId}", RecordId);
 		_isLoading = true;
 
 		try
@@ -122,14 +117,14 @@ else if (_editModel != ArticleDto.Empty)
 			// Load categories for the category dropdown
 			await LoadCategoriesAsync();
 
-			var objectId = ObjectId.Parse(Id);
-			var articleResult = await GetArticleHandler.HandleAsync(objectId);
-			
+			var articleResult = await GetArticleHandler.HandleAsync(RecordId);
+
 			if (articleResult is { Success: true, Value: not null })
 			{
 				_editModel = articleResult.Value;
+				_editModel.CanEdit = await UserCanEditArticleAsync(_editModel);
 				_selectedCategoryId = _editModel.Category?.Id.ToString() ?? string.Empty;
-				UpdatePreview();
+				//UpdatePreview();
 				_errorMessage = null;
 			}
 			else
@@ -140,7 +135,7 @@ else if (_editModel != ArticleDto.Empty)
 		catch (Exception ex)
 		{
 			_errorMessage = ex.Message;
-			Logger?.LogError(ex, "Error loading article for edit: {ArticleId}", Id);
+			Logger?.LogError(ex, "Error loading article for edit: {ArticleId}", RecordId);
 		}
 		finally
 		{
@@ -148,12 +143,57 @@ else if (_editModel != ArticleDto.Empty)
 		}
 	}
 
+	/// <summary>
+	/// Determines whether the current user can edit the specified article.
+	/// User can edit when they are in the \`Admin\` role or when they are the article's author.
+	/// </summary>
+	private async Task<bool> UserCanEditArticleAsync(ArticleDto? a)
+	{
+		if (AuthenticationState is null)
+		{
+			return false;
+		}
+
+		var authState = await AuthenticationState;
+		var user = authState.User;
+
+		if (user.Identity?.IsAuthenticated != true)
+		{
+			return false;
+		}
+
+		try
+		{
+			if (user.IsInRole("Admin"))
+			{
+				return true;
+			}
+
+			// Prefer stable identifier claims (Auth0 uses "sub"). Fall back to NameIdentifier.
+			var currentUserId = user.FindFirst("sub")?.Value
+													?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+			var authorId = a?.Author?.UserId;
+
+			if (!string.IsNullOrEmpty(currentUserId) && !string.IsNullOrEmpty(authorId))
+			{
+				return string.Equals(currentUserId, authorId, StringComparison.OrdinalIgnoreCase);
+			}
+		}
+		catch (Exception ex)
+		{
+			Logger?.LogWarning(ex, "Error evaluating edit permission for article {ArticleId}", a?.Id);
+		}
+
+		return false;
+	}
+
 	private async Task HandleValidSubmit()
 	{
 		if (_editModel == ArticleDto.Empty)
 		{
 			_errorMessage = "Nothing to save.";
-			Logger?.LogWarning("HandleValidSubmit: _editModel was null for {ArticleId}", Id);
+			Logger?.LogWarning("HandleValidSubmit: _editModel was null for {ArticleId}", RecordId);
 
 			return;
 		}
@@ -185,19 +225,19 @@ else if (_editModel != ArticleDto.Empty)
 
 			if (result.Success)
 			{
-				Logger?.LogInformation("Article saved: {ArticleId}", Id);
-				Navigation.NavigateTo($"/articles/details/{Id}");
+				Logger?.LogInformation("Article saved: {ArticleId}", RecordId);
+				Navigation.NavigateTo($"/articles/details/{RecordId}");
 			}
 			else
 			{
 				_errorMessage = result.Error ?? "Failed to save article.";
-				Logger?.LogWarning("Failed to save article {ArticleId}: {Error}", Id, _errorMessage);
+				Logger?.LogWarning("Failed to save article {ArticleId}: {Error}", RecordId, _errorMessage);
 			}
 		}
 		catch (Exception ex)
 		{
 			_errorMessage = ex.Message;
-			Logger?.LogError(ex, "Error saving article {ArticleId}", Id);
+			Logger?.LogError(ex, "Error saving article {ArticleId}", RecordId);
 		}
 	}
 
@@ -247,27 +287,27 @@ else if (_editModel != ArticleDto.Empty)
 			_editModel.Category = null;
 		}
 	}
-
-	private void UpdatePreview()
-	{
-		if (_editModel != ArticleDto.Empty)
-		{
-			var content = _editModel.Content;
-			_previewHtml = Markdown.ToHtml(content, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
-		}
-		else
-		{
-			_previewHtml = string.Empty;
-		}
-	}
-
-	private void TogglePreviewMode()
-	{
-		_showRawMarkdown = !_showRawMarkdown;
-		if (!_showRawMarkdown)
-		{
-			UpdatePreview();
-		}
-	}
+	//
+	// private void UpdatePreview()
+	// {
+	// 	if (_editModel != ArticleDto.Empty)
+	// 	{
+	// 		var content = _editModel.Content;
+	// 		_previewHtml = Markdown.ToHtml(content, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+	// 	}
+	// 	else
+	// 	{
+	// 		_previewHtml = string.Empty;
+	// 	}
+	// }
+	//
+	// private void TogglePreviewMode()
+	// {
+	// 	_showRawMarkdown = !_showRawMarkdown;
+	// 	if (!_showRawMarkdown)
+	// 	{
+	// 		UpdatePreview();
+	// 	}
+	// }
 
 }

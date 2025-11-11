@@ -76,11 +76,15 @@ else
 					</div>
 				</div>
 				<div class="mt-4 flex gap-2">
-					<button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+					<button class="bg-blue-500 text-white font-bold px-3 py-1 rounded hover:bg-blue-600"
 						@onclick="() => GoToDetails(article.Id)">Details</button>
 
-					<button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600" @onclick="() => GoToEdit(article.Id)"
-						disabled="@article.CanEdit">Edit</button>
+					@if (@article.CanEdit)
+					{
+						<button class="bg-green-500 text-white font-bold px-3 py-1 rounded hover:bg-green-600" @onclick="() => GoToEdit(article.Id)">
+							<i class="bi bi-pencil-square"></i> Edit
+						</button>
+					}
 				</div>
 			</div>
 		}
@@ -88,6 +92,8 @@ else
 }
 
 @code {
+
+	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
 
 	private IEnumerable<ArticleDto>? _articles;
 	private IEnumerable<ArticleDto>? _allArticles;
@@ -132,24 +138,40 @@ else
 
 		try
 		{
-			// Get current user for authorization
-			var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-			var user = authState.User;
 
-			// Determine if user is Admin or Author
-			var isAdmin = user.IsInRole("Admin");
-			var isAuthor = user.IsInRole("Author");
-			_canCreate = isAdmin || isAuthor;
+			_canCreate = await CanCreateArticleAsync();
 
 			// Fetch articles
 			var result = await ArticlesHandler.HandleAsync();
+
 			if (result.Success)
 			{
 				_allArticles = result.Value;
-				_articles = _allArticles;
-				_errorMessage = null;
 
-				Logger?.LogInformation("Articles loaded successfully. Count: {Count}", _articles?.Count() ?? 0);
+				if (_allArticles == null)
+				{
+					_allArticles = Enumerable.Empty<ArticleDto>();
+					_errorMessage = "No articles found.";
+					Logger?.LogWarning("No articles found.");
+				}
+				else
+				{
+
+					_articles = _allArticles;
+
+					await ApplyFilters();
+
+					foreach (var article in _articles)
+					{
+						article.CanEdit = await UserCanEditArticleAsync(article);
+					}
+
+					_errorMessage = null;
+
+					Logger?.LogInformation("Articles loaded successfully. Count: {Count}", _articles?.Count() ?? 0);
+
+				}
+
 			}
 			else
 			{
@@ -213,4 +235,72 @@ else
 		_articles = filteredArticles;
 		StateHasChanged();
 	}
+
+	private async Task<bool> CanCreateArticleAsync()
+	{
+		// Get current user for authorization
+		if (AuthenticationState is null)
+		{
+			return false;
+		}
+		else
+		{
+			var authState = await AuthenticationState;
+			var user = authState.User;
+
+			// Determine if user is Admin or Author
+			var isAdmin = user.IsInRole("Admin");
+			var isAuthor = user.IsInRole("Author");
+			return isAdmin || isAuthor;
+		}
+	}
+
+	/// <summary>
+	/// Determines whether the current user can edit the specified article.
+	/// User can edit when they are in the \`Admin\` role or when they are the article's author.
+	/// </summary>
+	private async Task<bool> UserCanEditArticleAsync(ArticleDto? a)
+	{
+		if (AuthenticationState is null)
+		{
+			return false;
+		}
+
+		var authState = await AuthenticationState;
+		var user = authState.User;
+
+		if (user.Identity?.IsAuthenticated != true)
+		{
+			return false;
+		}
+
+		try
+		{
+			// Determine if user is Admin or Author
+			var isAdmin = user.IsInRole("Admin");
+			var isAuthor = user.IsInRole("Author");
+			var isAuthorOfArticle = false;
+
+			// Prefer stable identifier claims (Auth0 uses "sub"). Fall back to NameIdentifier.
+			var currentUserId = user.FindFirst("sub")?.Value
+													?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+			var authorId = a?.Author?.UserId;
+
+			if (!string.IsNullOrEmpty(currentUserId) && !string.IsNullOrEmpty(authorId))
+			{
+				isAuthorOfArticle = string.Equals(currentUserId, authorId, StringComparison.OrdinalIgnoreCase);
+			}
+
+			return isAdmin || (isAuthor && isAuthorOfArticle);
+
+		}
+		catch (Exception ex)
+		{
+			Logger?.LogWarning(ex, "Error evaluating edit permission for article {ArticleId}", a?.Id);
+		}
+
+		return false;
+	}
+
 }

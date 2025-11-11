@@ -4,6 +4,7 @@
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="gitcommittemplate.txt" />
+    <File Path="global.json" />
   </Folder>
   <Folder Name="/SRC/">
     <Project Path="src/AppHost/AppHost.csproj" />

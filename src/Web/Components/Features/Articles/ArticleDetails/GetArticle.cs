@@ -37,6 +37,7 @@ public static class GetArticle
 	) : IGetArticleHandler
 	{
 
+		/// <inheritdoc />
 		public async Task<Result<ArticleDto>> HandleAsync(ObjectId id)
 		{
 			if (id == ObjectId.Empty)
@@ -46,9 +47,9 @@ public static class GetArticle
 				return Result.Fail<ArticleDto>("Article ID cannot be empty");
 			}
 
-			var result = await repository.GetArticleByIdAsync(id);
+			Result<Article?> result = await repository.GetArticleByIdAsync(id);
 
-			if (result.Failure)
+			if (result.Failure || result.Value is null)
 			{
 				logger.LogWarning("GetArticle: Article not found with ID: {Id}", id);
 

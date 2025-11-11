@@ -53,7 +53,7 @@ public class GetArticleHandlerTests
 		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(article)));
 
 		// Act
-		var result = await _handler.HandleAsync(objectId.ToString());
+		var result = await _handler.HandleAsync(objectId);
 
 		// Assert
 		result.Success.Should().BeTrue();
@@ -68,44 +68,11 @@ public class GetArticleHandlerTests
 	public async Task HandleAsync_WithNullId_ShouldReturnFailure()
 	{
 		// Act
-		var result = await _handler.HandleAsync(null!);
+		var result = await _handler.HandleAsync(ObjectId.Empty);
 
 		// Assert
 		result.Success.Should().BeFalse();
 		result.Error.Should().Be("Article ID cannot be empty");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WithEmptyId_ShouldReturnFailure()
-	{
-		// Act
-		var result = await _handler.HandleAsync(string.Empty);
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Article ID cannot be empty");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WithWhitespaceId_ShouldReturnFailure()
-	{
-		// Act
-		var result = await _handler.HandleAsync("   ");
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Article ID cannot be empty");
-	}
-
-	[Fact]
-	public async Task HandleAsync_WithInvalidObjectId_ShouldReturnFailure()
-	{
-		// Act
-		var result = await _handler.HandleAsync("invalid-id");
-
-		// Assert
-		result.Success.Should().BeFalse();
-		result.Error.Should().Be("Invalid article ID format");
 	}
 
 	[Fact]
@@ -116,7 +83,7 @@ public class GetArticleHandlerTests
 		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result<Article?>.Fail("Article not found")));
 
 		// Act
-		var result = await _handler.HandleAsync(objectId.ToString());
+		var result = await _handler.HandleAsync(objectId);
 
 		// Assert
 		result.Success.Should().BeFalse();
@@ -132,7 +99,7 @@ public class GetArticleHandlerTests
 		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(failResult));
 
 		// Act
-		var result = await _handler.HandleAsync(objectId.ToString());
+		var result = await _handler.HandleAsync(objectId);
 
 		// Assert
 		result.Success.Should().BeFalse();
@@ -159,7 +126,7 @@ public class GetArticleHandlerTests
 		_mockRepository.GetArticleByIdAsync(objectId)!.Returns(Task.FromResult(Result.Ok(article)));
 
 		// Act
-		var result = await _handler.HandleAsync(objectId.ToString());
+		var result = await _handler.HandleAsync(objectId);
 
 		// Assert
 		result.Success.Should().BeTrue();
