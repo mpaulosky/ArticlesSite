@@ -1,7 +1,5 @@
-using System.Security.Cryptography;
-using System.Security.Cryptography.X509Certificates;
-
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
 IConfiguration configuration = builder.Configuration;
 
 // --- Service Registration ---
