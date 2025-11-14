@@ -1,6 +1,9 @@
 ﻿@inherits LayoutComponentBase
+@inject IThemeService ThemeService
+@inject IJSRuntime JSRuntime
+@implements IDisposable
 
-<div class="antialiased bg-gray-800 text-gray-100">
+<div class="antialiased bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-300">
 	<div class="flex flex-col min-h-screen space-y-4">
 		<NavMenuComponent/>
 
@@ -38,6 +41,18 @@
 
 @code {
 
+	private bool _initialized = false;
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender && !_initialized)
+		{
+			await ThemeService.InitializeAsync();
+			_initialized = true;
+			StateHasChanged();
+		}
+	}
+
 	private static int GetErrorCode(Exception? exception)
 	{
 		if (exception is null)
@@ -50,6 +65,11 @@
 			KeyNotFoundException => 404,
 			_ => 500
 		};
+	}
+
+	public void Dispose()
+	{
+		// Cleanup if needed
 	}
 
 }

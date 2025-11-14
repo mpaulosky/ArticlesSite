@@ -23,6 +23,7 @@ builder.Services.AddRazorComponents()
 // Application Services
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<Web.Services.IFileStorage, Web.Services.FileStorage>();
+builder.Services.AddScoped<Web.Services.IThemeService, Web.Services.ThemeService>();
 
 // --- Build App ---
 WebApplication app = builder.Build();
