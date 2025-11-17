@@ -12,15 +12,17 @@ public class CategoriesListPage : BasePage
 	private readonly ILocator _createButton;
 	private readonly ILocator _searchInput;
 	private readonly ILocator _noCategoriesMessage;
+	private readonly ILocator _includeArchivedCheckbox;
 
 	public CategoriesListPage(IPage page) : base(page)
 	{
 		_pageHeading = page.Locator("h1, h2").First;
 		_categoriesList = page.Locator("[data-testid='categories-list'], .categories-list, .category-grid");
-		_categoryItems = page.Locator("[data-testid='category-item'], .category-item, .category-card");
+		_categoryItems = page.Locator("[data-testid='category-item'], .category-item, .container-card");
 		_createButton = page.Locator("a[href*='/categories/create'], button:has-text('Create'), button:has-text('New Category')");
 		_searchInput = page.Locator("input[type='search'], input[placeholder*='Search']");
 		_noCategoriesMessage = page.Locator("text=/no categories/i, .empty-state");
+		_includeArchivedCheckbox = page.Locator("input[type='checkbox']");
 	}
 
 	/// <summary>
@@ -123,6 +125,25 @@ public class CategoriesListPage : BasePage
 		catch
 		{
 			return false;
+		}
+	}
+
+	/// <summary>
+	/// Get the include archived checkbox locator
+	/// </summary>
+	public async Task<ILocator?> GetIncludeArchivedCheckboxAsync()
+	{
+		try
+		{
+			if (await _includeArchivedCheckbox.IsVisibleAsync(new LocatorIsVisibleOptions { Timeout = 2000 }))
+			{
+				return _includeArchivedCheckbox;
+			}
+			return null;
+		}
+		catch
+		{
+			return null;
 		}
 	}
 }
