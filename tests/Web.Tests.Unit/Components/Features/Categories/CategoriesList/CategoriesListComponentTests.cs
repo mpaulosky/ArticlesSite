@@ -1,6 +1,7 @@
 using Bunit.TestDoubles;
 
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 
 using Web.Components.Features.Categories.CategoriesList;
 
@@ -12,6 +13,11 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 	[ExcludeFromCodeCoverage]
 	public class CategoriesListComponentTests : TestContext
 	{
+		private void SetupQuickGridJSInterop()
+		{
+			JSInterop.Mode = JSRuntimeMode.Loose;
+		}
+
 		[Fact]
 		public void Should_FilterCategories_ByArchivedStatus_OnToggle()
 		{
@@ -48,6 +54,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			handler.HandleAsync(false).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(activeOnly)));
 			handler.HandleAsync(true).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(allCategories)));
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			var cut = RenderComponent<CategoriesListComponent>();
@@ -100,6 +107,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			handler.HandleAsync(false).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(Enumerable.Empty<CategoryDto>())));
 			handler.HandleAsync(true).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			var cut = RenderComponent<CategoriesListComponent>();
@@ -137,6 +145,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			var tcs = new TaskCompletionSource<Result<IEnumerable<CategoryDto>>>();
 			handler.HandleAsync(Arg.Any<bool>()).Returns(tcs.Task);
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
@@ -162,6 +171,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 					.Returns(Task.FromResult(Result<IEnumerable<CategoryDto>>.Fail("Failed to load categories.")));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
@@ -186,6 +196,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 					.Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
@@ -233,6 +244,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			handler.HandleAsync(Arg.Any<bool>()).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
@@ -273,17 +285,20 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 					.Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
 
 			// Assert
 			cut.WaitForState(() => cut.Markup.Contains("Technology"));
-			cut.Markup.Should().Contain("Category Slug:");
-			cut.Markup.Should().Contain("technology");
-			cut.Markup.Should().Contain("Created On:");
-			cut.Markup.Should().Contain("Modified On:");
-			cut.Markup.Should().Contain("Status:");
+		cut.Markup.Should().Contain("Category Name");
+		cut.Markup.Should().Contain("Technology");
+		cut.Markup.Should().Contain("Slug");
+		cut.Markup.Should().Contain("technology");
+		cut.Markup.Should().Contain("Created On");
+		cut.Markup.Should().Contain("Modified On");
+		cut.Markup.Should().Contain("Status");
 			cut.Markup.Should().Contain("Active");
 		}
 
@@ -314,6 +329,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 					.Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			var cut = RenderComponent<CategoriesListComponent>();
@@ -354,6 +370,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			handler.HandleAsync(Arg.Any<bool>()).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
 			NavigationManager nav = Services.GetRequiredService<NavigationManager>();
@@ -394,6 +411,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			handler.HandleAsync(Arg.Any<bool>()).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
 			NavigationManager nav = Services.GetRequiredService<NavigationManager>();
@@ -462,6 +480,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 					.Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
@@ -488,6 +507,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 					.Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
@@ -513,6 +533,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 					.Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
 			NavigationManager nav = Services.GetRequiredService<NavigationManager>();
@@ -539,6 +560,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 					.Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
@@ -575,13 +597,14 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 					.Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
 			// Act
 			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
 
 			// Assert
 			cut.WaitForState(() => cut.Markup.Contains("New Category"));
-			cut.Markup.Should().Contain("Modified On:");
+		cut.Markup.Should().Contain("Modified On");
 			cut.Markup.Should().Contain("N/A");
 		}
 

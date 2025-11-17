@@ -26,6 +26,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Blazored.LocalStorage" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
 		<PackageReference Include="MongoDB.Driver" />
 		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
 		<PackageReference Include="Auth0.AspNetCore.Authentication" />
@@ -35,7 +36,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <_ContentIncludedByDefault Remove="wwwroot\js\theme.js" />
+		<_ContentIncludedByDefault Remove="wwwroot\js\theme.js" />
 	</ItemGroup>
 
 	<!-- Optimized CSS build - only runs when source CSS changes -->
