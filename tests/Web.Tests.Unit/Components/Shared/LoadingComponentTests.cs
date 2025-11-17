@@ -28,7 +28,7 @@ public class LoadingComponentTests : TestContext
 		var cut = RenderComponent<LoadingComponent>();
 
 		// Assert
-		cut.Find("h3").TextContent.Should().Be("Loading...");
+		cut.Find("h3").TextContent.Trim().Should().Be("Loading...");
 	}
 
 	[Fact]
@@ -50,7 +50,7 @@ public class LoadingComponentTests : TestContext
 
 		// Assert
 		var container = cut.Find("div");
-		container.ClassList.Should().Contain("bg-gray-800");
+		container.ClassList.Should().Contain("dark:bg-gray-800");
 		container.ClassList.Should().Contain("rounded-md");
 	}
 

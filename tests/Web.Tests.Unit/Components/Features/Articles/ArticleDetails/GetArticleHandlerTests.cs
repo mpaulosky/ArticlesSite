@@ -50,7 +50,7 @@ public class GetArticleHandlerTests
 				"test-article")
 		{ Id = objectId };
 
-		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok(article)));
+		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok<Article?>(article)));
 
 		// Act
 		var result = await _handler.HandleAsync(objectId);
@@ -80,7 +80,7 @@ public class GetArticleHandlerTests
 	{
 		// Arrange
 		var objectId = ObjectId.GenerateNewId();
-		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result<Article?>.Fail("Article not found")));
+		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Fail<Article?>("Article not found")));
 
 		// Act
 		var result = await _handler.HandleAsync(objectId);
@@ -95,7 +95,7 @@ public class GetArticleHandlerTests
 	{
 		// Arrange
 		var objectId = ObjectId.GenerateNewId();
-		var failResult = Result<Article?>.Fail("Database error");
+		var failResult = Result.Fail<Article?>("Database error");
 		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(failResult));
 
 		// Act

@@ -100,7 +100,7 @@ public class CreateArticleHandlerTests
 	public async Task HandleAsync_WithNullRequest_ShouldReturnFailure()
 	{
 		// Act
-		var result = await _handler.HandleAsync(null);
+		var result = await _handler.HandleAsync(null!);
 
 		// Assert
 		result.Success.Should().BeFalse();

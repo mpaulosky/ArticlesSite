@@ -58,8 +58,9 @@ public class GetCategoryHandlerTests
 	[Fact]
 	public async Task HandleAsync_WithNullId_ShouldReturnFailure()
 	{
+		string? id = null;
 		// Act
-		var result = await _handler.HandleAsync(null);
+		var result = await _handler.HandleAsync(id!);
 
 		// Assert
 		result.Success.Should().BeFalse();
