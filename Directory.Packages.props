@@ -17,6 +17,7 @@
     <PackageVersion Include="Aspire.MongoDB.Driver" Version="9.5.2" />
     <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.5.2" />
     <PackageVersion Include="AspNetCore.HealthChecks.MongoDb" Version="9.0.0" />
+    <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
     <PackageVersion Include="StackExchange.Redis" Version="2.10.1" />
     <!-- Authentication -->
     <PackageVersion Include="Auth0.AspNetCore.Authentication" Version="1.5.1" />
