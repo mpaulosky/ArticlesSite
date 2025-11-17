@@ -1,5 +1,6 @@
 @page "/articles"
 
+@using System.Security.Claims
 @inject GetArticles.IGetArticlesHandler ArticlesHandler
 @inject NavigationManager Navigation
 @inject ILogger<ArticlesList> Logger
@@ -7,300 +8,186 @@
 
 <div class="container-card mb-4 flex items-center justify-between">
 
-	<h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200">All Articles</h1>
+    <h1 class="text-2xl">All Articles</h1>
 
-	<label class="flex items-center text-gray-700 dark:text-gray-300 transition-colors duration-200">
-		<input type="checkbox" @bind="ShowMyArticlesOnly" class="mr-2" />
-		Show My Articles Only
-	</label>
-	
-	<label class="flex items-center text-gray-700 dark:text-gray-300 transition-colors duration-200">
-		<input type="checkbox" @bind="IncludeArchived" class="mr-2" />
-		Include Archived
-	</label>
+    <label class="flex items-center font-semibold text-gray-900 dark:text-gray-50 transition-colors duration-300">
+        <input type="checkbox" @bind="_showMyArticlesOnly" @bind:after="OnFilterChanged" class="mr-2" />
+        Show My Articles Only
+    </label>
 
-	@if (_canCreate)
-	{
-		<button class="bg-blue-600 dark:bg-blue-700 text-white px-4 py-2 rounded shadow hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200" @onclick="CreateNewArticle">Create
-			New Article</button>
-	}
+    <label class="flex items-center font-semibold text-gray-900 dark:text-gray-50 transition-colors duration-300">
+        <input type="checkbox" @bind="_includeArchived" @bind:after="OnFilterChanged" class="mr-2" />
+        Include Archived
+    </label>
+
+    @if (_canCreate)
+    {
+        <button class="btn-secondary"
+                @onclick="CreateNewArticle">
+            Create
+            New Article
+        </button>
+    }
 </div>
 
 @if (_isLoading)
 {
-	<LoadingComponent />
+    <LoadingComponent />
 }
 else if (_errorMessage != null)
 {
-	<ErrorAlertComponent Title="Error loading articles">
-		@_errorMessage
-	</ErrorAlertComponent>
+    <ErrorAlertComponent Title="Error loading articles">
+        @_errorMessage
+    </ErrorAlertComponent>
 }
 else if (_articles == null || !_articles.Any())
 {
-	<div class="bg-white dark:bg-gray-700 rounded-lg p-8 text-center transition-colors duration-300">
-		<p class="text-gray-700 dark:text-gray-300 text-lg mb-4 transition-colors duration-200">No articles available yet.</p>
-		<p class="text-gray-500 dark:text-gray-400 transition-colors duration-200">Check back soon for new content!</p>
-	</div>
+    <div class="bg-white dark:bg-gray-700 rounded-lg p-8 text-center transition-colors duration-300">
+        <p class="text-gray-700 dark:text-gray-300 text-lg mb-4 transition-colors duration-200">No articles available yet.</p>
+        <p class="text-gray-500 dark:text-gray-400 transition-colors duration-200">Check back soon for new content!</p>
+    </div>
 }
 else
 {
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-		@foreach (var article in _articles)
-		{
-			<div class="container-card bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6 flex flex-col justify-between min-h-[260px] transition-colors duration-300">
-				@if (!string.IsNullOrEmpty(article.CoverImageUrl))
-				{
-					<img src="@article.CoverImageUrl" alt="@article.Title" style="width:100%;height:33%;object-fit:cover;" />
-				}
-				<div>
-					<h2 class="text-xl font-bold text-blue-600 dark:text-blue-300 mb-2 transition-colors duration-200">@article.Title</h2>
-					<p class="text-gray-800 dark:text-gray-200 mb-2 transition-colors duration-200" title="@article.Introduction">
-						<span class="font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-200">Intro:</span> @article.Introduction
-					</p>
-					<div class="mb-2">
-						<span class="font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-200">Author:</span> <span
-							class="text-gray-900 dark:text-gray-100 transition-colors duration-200">@article.Author?.Name</span>
-					</div>
-					<div class="mb-2">
-						<span class="font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-200">Category:</span> <span
-							class="text-gray-900 dark:text-gray-100 transition-colors duration-200">@article.Category?.CategoryName</span>
-					</div>
-					<div class="mb-2">
-						<span class="font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-200">Published:</span> <span class="text-gray-900 dark:text-gray-100 transition-colors duration-200">@(article.IsPublished ?
-											"Yes" : "No")</span>
-					</div>
-					<div class="mb-2">
-						<span class="font-semibold text-gray-600 dark:text-gray-400 transition-colors duration-200">Archived:</span> <span class="text-gray-900 dark:text-gray-100 transition-colors duration-200">@(article.IsArchived ?
-											"Yes" : "No")</span>
-					</div>
-				</div>
-				<div class="mt-4 flex gap-2">
-					<button class="bg-blue-500 dark:bg-blue-600 text-white font-bold px-3 py-1 rounded hover:bg-blue-600 dark:hover:bg-blue-500 transition-colors duration-200"
-						@onclick="() => GoToDetails(article.Id)">Details</button>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @foreach (var article in _articles)
+        {
+            <div class="container-card flex flex-col justify-between min-h-[260px]">
+                @if (!string.IsNullOrEmpty(article.CoverImageUrl))
+                {
+                    <img src="@article.CoverImageUrl" alt="@article.Title" style="width:100%;height:33%;object-fit:cover;" />
+                }
+            <div>
+                <h2 class="text-xl mb-2 transition-colors duration-200">@article.Title</h2>
+                <hr class="border-blue-700 mb-4" />
+                <p class="text-gray-800 dark:text-gray-50 mb-2 transition-colors duration-200" title="@article.Introduction">
+                    <span class="font-semibold text-gray-800 dark:text-gray-100 transition-colors duration-200">Intro:</span>
+                    @article.Introduction
+                </p>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-800 dark:text-gray-50 transition-colors duration-200">Author:</span> <span class="text-gray-900 dark:text-gray-100 transition-colors duration-200">@article.Author?.Name</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-800 dark:text-gray-50 transition-colors duration-200">Category:</span>
+                    <span class="text-gray-900 dark:text-gray-100 transition-colors duration-200">@article.Category?.CategoryName</span>
+                </div>
+                <div class="mb-2">
+                    <span class="font-semibold text-gray-800 dark:text-gray-50 transition-colors duration-200">Published:</span>
+                    <span class="text-gray-900 dark:text-gray-100 transition-colors duration-200">
+                        @(article.IsPublished ?
+                                            "Yes" : "No")
+                        </span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="font-semibold text-gray-800 dark:text-gray-50 transition-colors duration-200">Archived:</span>
+                        <span class="text-gray-900 dark:text-gray-100 transition-colors duration-200">
+                            @(article.IsArchived ?
+                                                "Yes" : "No")
+                        </span>
+                    </div>
+                </div>
+                <div class="mt-4 flex gap-2">
+                    <button class="btn-secondary" @onclick="() => GoToDetails(article.Id)">Details</button>
 
-					@if (@article.CanEdit)
-					{
-						<button class="bg-green-500 dark:bg-green-600 text-white font-bold px-3 py-1 rounded hover:bg-green-600 dark:hover:bg-green-500 transition-colors duration-200" @onclick="() => GoToEdit(article.Id)">
-							<i class="bi bi-pencil-square"></i> Edit
-						</button>
-					}
-				</div>
-			</div>
-		}
-	</div>
+                    @if (@article.CanEdit)
+                    {
+                        <button class="btn-primary" @onclick="() => GoToEdit(article.Id)">
+                            <i class="bi bi-pencil-square"></i> Edit
+                        </button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
 }
 
 @code {
 
-	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+    [CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
 
-	private IEnumerable<ArticleDto>? _articles;
-	private IEnumerable<ArticleDto>? _allArticles;
-	private bool _showMyArticlesOnly;
-	private bool _includeArchived;
-	private bool _isLoading = true;
-	private string? _errorMessage;
-	private bool _canCreate;
+    private IEnumerable<ArticleDto>? _articles;
+    private bool _showMyArticlesOnly;
+    private bool _includeArchived;
+    private bool _isLoading = true;
+    private string? _errorMessage;
+    private bool _canCreate;
 
-	public bool ShowMyArticlesOnly
-	{
-		get => _showMyArticlesOnly;
-		set
-		{
-			if (_showMyArticlesOnly != value)
-			{
-				_showMyArticlesOnly = value;
-				_ = ApplyFilters();
-			}
-		}
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadArticlesAsync();
+    }
 
-	public bool IncludeArchived
-	{
-		get => _includeArchived;
-		set
-		{
-			if (_includeArchived != value)
-			{
-				_includeArchived = value;
-				_ = ApplyFilters();
-			}
-		}
-	}
+    private async Task LoadArticlesAsync()
+    {
+        Logger?.LogInformation("Loading articles list");
+        _isLoading = true;
+        _errorMessage = null;
 
-	protected override async Task OnInitializedAsync()
-	{
-		Logger?.LogInformation("Loading articles list");
+        try
+        {
+            // Get current user for filtering
+            System.Security.Claims.ClaimsPrincipal? user = null;
+            if (AuthenticationState is not null)
+            {
+                var authState = await AuthenticationState;
+                user = authState.User;
 
-		_isLoading = true;
-		_errorMessage = null;
+                // Determine if user is Admin or Author
+                var isAdmin = user.IsInRole("Admin");
+                var isAuthor = user.IsInRole("Author");
+                _canCreate = isAdmin || isAuthor;
+            }
 
-		try
-		{
+            // Fetch articles with filtering done by the handler
+            var result = await ArticlesHandler.HandleAsync(
+                user: user,
+                filterByUser: _showMyArticlesOnly,
+                includeArchived: _includeArchived);
 
-			_canCreate = await CanCreateArticleAsync();
+            if (result.Success)
+            {
+                _articles = result.Value ?? Enumerable.Empty<ArticleDto>();
+                _errorMessage = null;
+                Logger?.LogInformation("Articles loaded successfully. Count: {Count}", _articles.Count());
+            }
+            else
+            {
+                _articles = null;
+                _errorMessage = result.Error ?? "Failed to load articles.";
+                Logger?.LogWarning("Failed to load articles. Error: {Error}", _errorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Unexpected error: {ex.Message}";
+            Logger?.LogError(ex, "Unexpected error while loading articles.");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
 
-			// Fetch articles
-			var result = await ArticlesHandler.HandleAsync();
+    private void GoToDetails(object id)
+    {
+        Navigation.NavigateTo($"/articles/details/{id}");
+    }
 
-			if (result.Success)
-			{
-				_allArticles = result.Value;
+    private void GoToEdit(object id)
+    {
+        Navigation.NavigateTo($"/articles/edit/{id}");
+    }
 
-				if (_allArticles == null)
-				{
-					_allArticles = Enumerable.Empty<ArticleDto>();
-					_errorMessage = "No articles found.";
-					Logger?.LogWarning("No articles found.");
-				}
-				else
-				{
+    private void CreateNewArticle()
+    {
+        Navigation.NavigateTo("/articles/create");
+    }
 
-					_articles = _allArticles;
-
-					await ApplyFilters();
-
-					foreach (var article in _articles)
-					{
-						article.CanEdit = await UserCanEditArticleAsync(article);
-					}
-
-					_errorMessage = null;
-
-					Logger?.LogInformation("Articles loaded successfully. Count: {Count}", _articles?.Count() ?? 0);
-
-				}
-
-			}
-			else
-			{
-				_articles = null;
-				_errorMessage = result.Error ?? "Failed to load articles.";
-
-				Logger?.LogWarning("Failed to load articles. Error: {Error}", _errorMessage);
-			}
-		}
-		catch (Exception ex)
-		{
-			_errorMessage = $"Unexpected error: {ex.Message}";
-			Logger?.LogError(ex, "Unexpected error while loading articles.");
-		}
-		finally
-		{
-			_isLoading = false;
-		}
-	}
-
-	private void GoToDetails(object id)
-	{
-		Navigation.NavigateTo($"/articles/details/{id}");
-	}
-
-	private void GoToEdit(object id)
-	{
-		Navigation.NavigateTo($"/articles/edit/{id}");
-	}
-
-	private void CreateNewArticle()
-	{
-		Navigation.NavigateTo("/articles/create");
-	}
-
-	private async Task ApplyFilters()
-	{
-		if (_allArticles == null) return;
-
-		var filteredArticles = _allArticles.AsEnumerable();
-
-		// Filter by archived status
-		if (!_includeArchived)
-		{
-			filteredArticles = filteredArticles.Where(a => !a.IsArchived);
-		}
-
-		// Filter by current user's articles
-		if (_showMyArticlesOnly)
-		{
-			var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-			var user = authState.User;
-			var currentUserId = user.FindFirst("sub")?.Value ?? user.FindFirst("id")?.Value;
-
-			if (!string.IsNullOrEmpty(currentUserId))
-			{
-				filteredArticles = filteredArticles.Where(a => a.Author?.UserId == currentUserId);
-			}
-		}
-
-		_articles = filteredArticles;
-		StateHasChanged();
-	}
-
-	private async Task<bool> CanCreateArticleAsync()
-	{
-		// Get current user for authorization
-		if (AuthenticationState is null)
-		{
-			return false;
-		}
-		else
-		{
-			var authState = await AuthenticationState;
-			var user = authState.User;
-
-			// Determine if user is Admin or Author
-			var isAdmin = user.IsInRole("Admin");
-			var isAuthor = user.IsInRole("Author");
-			return isAdmin || isAuthor;
-		}
-	}
-
-	/// <summary>
-	/// Determines whether the current user can edit the specified article.
-	/// User can edit when they are in the \`Admin\` role or when they are the article's author.
-	/// </summary>
-	private async Task<bool> UserCanEditArticleAsync(ArticleDto? a)
-	{
-		if (AuthenticationState is null)
-		{
-			return false;
-		}
-
-		var authState = await AuthenticationState;
-		var user = authState.User;
-
-		if (user.Identity?.IsAuthenticated != true)
-		{
-			return false;
-		}
-
-		try
-		{
-			// Determine if user is Admin or Author
-			var isAdmin = user.IsInRole("Admin");
-			var isAuthor = user.IsInRole("Author");
-			var isAuthorOfArticle = false;
-
-			// Prefer stable identifier claims (Auth0 uses "sub"). Fall back to NameIdentifier.
-			var currentUserId = user.FindFirst("sub")?.Value
-													?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-
-			var authorId = a?.Author?.UserId;
-
-			if (!string.IsNullOrEmpty(currentUserId) && !string.IsNullOrEmpty(authorId))
-			{
-				isAuthorOfArticle = string.Equals(currentUserId, authorId, StringComparison.OrdinalIgnoreCase);
-			}
-
-			return isAdmin || (isAuthor && isAuthorOfArticle);
-
-		}
-		catch (Exception ex)
-		{
-			Logger?.LogWarning(ex, "Error evaluating edit permission for article {ArticleId}", a?.Id);
-		}
-
-		return false;
-	}
+    private async Task OnFilterChanged()
+    {
+        Logger?.LogInformation("Filter changed - ShowMyArticlesOnly: {ShowMy}, IncludeArchived: {IncludeArchived}", 
+            _showMyArticlesOnly, _includeArchived);
+        await LoadArticlesAsync();
+    }
 
 }

@@ -1,11 +1,10 @@
 ﻿@inherits LayoutComponentBase
-@inject IThemeService ThemeService
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime JsRuntime
 @implements IDisposable
 
-<div class="antialiased bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+<div class="antialiased bg-gray-400 text-gray-900 dark:bg-gray-800 dark:text-gray-100 transition-colors duration-300">
 	<div class="flex flex-col min-h-screen space-y-4">
-		<NavMenuComponent/>
+		<NavMenuComponent />
 
 		<main class="container flex-1 max-w-7xl px-4 mx-auto space-y-2 xl:max-w-7xl">
 			<ErrorBoundary>
@@ -33,7 +32,7 @@
 			</ErrorBoundary>
 		</main>
 		<footer>
-			<FooterComponent/>
+			<FooterComponent />
 		</footer>
 
 	</div>
@@ -47,7 +46,6 @@
 	{
 		if (firstRender && !_initialized)
 		{
-			await ThemeService.InitializeAsync();
 			_initialized = true;
 			StateHasChanged();
 		}

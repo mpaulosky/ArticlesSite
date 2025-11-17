@@ -25,12 +25,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Blazored.LocalStorage" />
 		<PackageReference Include="MongoDB.Driver" />
 		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />
 		<PackageReference Include="Auth0.AspNetCore.Authentication" />
 		<PackageReference Include="FluentValidation" />
 		<PackageReference Include="PSC.Blazor.Components.MarkdownEditor" />
 		<PackageReference Include="MyMediator" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <_ContentIncludedByDefault Remove="wwwroot\js\theme.js" />
 	</ItemGroup>
 
 	<!-- Optimized CSS build - only runs when source CSS changes -->

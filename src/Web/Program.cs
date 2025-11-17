@@ -1,3 +1,5 @@
+using Blazored.LocalStorage;
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 IConfiguration configuration = builder.Configuration;
@@ -22,8 +24,8 @@ builder.Services.AddRazorComponents()
 
 // Application Services
 builder.Services.AddScoped<DatabaseSeeder>();
-builder.Services.AddScoped<Web.Services.IFileStorage, Web.Services.FileStorage>();
-builder.Services.AddScoped<Web.Services.IThemeService, Web.Services.ThemeService>();
+builder.Services.AddScoped<IFileStorage, FileStorage>();
+builder.Services.AddBlazoredLocalStorage();
 
 // --- Build App ---
 WebApplication app = builder.Build();
@@ -82,7 +84,7 @@ try
 catch (Exception ex)
 {
 	app.Logger.LogError(ex, "Database seeding failed.");
-	// Optional: decide whether to rethrow based on environment
+	// Optional: decide whether to rethrow based on the environment
 }
 
 // --- Run App ---
