@@ -15,6 +15,7 @@ global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Authentication.Cookies;
 global using Microsoft.AspNetCore.Components.Authorization;
 global using Microsoft.Extensions.DependencyInjection;
+global using Microsoft.JSInterop;
 
 global using MongoDB.Bson;
 global using MongoDB.Driver;

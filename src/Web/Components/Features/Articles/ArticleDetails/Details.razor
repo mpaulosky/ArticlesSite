@@ -67,12 +67,12 @@ else
 			<div class="mt-4 flex gap-2">
 				@if (@Article.CanEdit)
 				{
-					<button class="bg-green-500 text-white px-3 py-1 rounded hover:bg-blue-600" @onclick="GoToEdit">
+					<button class="btn-primary" @onclick="GoToEdit">
 						<i class="bi bi-pencil-square"></i> Edit
 					</button>
 				}
 
-				<button class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600" @onclick="GoToList">
+				<button class="btn-secondary" @onclick="GoToList">
 					<i class="bi bi-arrow-left"></i> Back to List
 				</button>
 			</div>

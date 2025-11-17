@@ -73,10 +73,10 @@ else if (_editModel != ArticleDto.Empty)
 			<TextEditor @bind-Content="@_editModel.Content" AlignmentOptionsEnabled="true" />
 		</div>
 		<div class="mt-4 flex gap-2">
-			<button type="submit" class="bg-green-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+			<button type="submit" class="btn-primary">
 				<i class="bi bi-save"></i> Save
 			</button>
-			<button type="button" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+			<button type="button" class="btn-secondary"
 				@onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
 				<i class="bi bi-arrow-left"></i> Cancel
 			</button>

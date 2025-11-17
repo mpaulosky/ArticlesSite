@@ -115,7 +115,7 @@ public class GetCategoriesHandlerTests
 
 		// Assert
 		result.Success.Should().BeTrue();
-		var dto = result.Value.First();
+		var dto = result.Value!.First();
 		dto.CategoryName.Should().Be("Test Category");
 		dto.CreatedOn.Should().Be(createdOn);
 		dto.ModifiedOn.Should().Be(modifiedOn);
@@ -145,6 +145,78 @@ public class GetCategoriesHandlerTests
 		dtos[0].CategoryName.Should().Be("First");
 		dtos[1].CategoryName.Should().Be("Second");
 		dtos[2].CategoryName.Should().Be("Third");
+	}
+
+	[Fact]
+	public async Task HandleAsync_WithIncludeArchivedFalse_ShouldExcludeArchivedCategories()
+	{
+		// Arrange
+		var categories = new List<Category>
+		{
+				new() { CategoryName = "Active1", Slug = "active1", IsArchived = false },
+				new() { CategoryName = "Archived1", Slug = "archived1", IsArchived = true },
+				new() { CategoryName = "Active2", Slug = "active2", IsArchived = false },
+				new() { CategoryName = "Archived2", Slug = "archived2", IsArchived = true }
+		};
+
+		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(categories)));
+
+		// Act
+		var result = await _handler.HandleAsync(includeArchived: false);
+
+		// Assert
+		result.Success.Should().BeTrue();
+		result.Value.Should().HaveCount(2);
+		result.Value.Should().OnlyContain(c => !c.IsArchived);
+		result.Value.Should().Contain(c => c.CategoryName == "Active1");
+		result.Value.Should().Contain(c => c.CategoryName == "Active2");
+	}
+
+	[Fact]
+	public async Task HandleAsync_WithIncludeArchivedTrue_ShouldIncludeAllCategories()
+	{
+		// Arrange
+		var categories = new List<Category>
+		{
+				new() { CategoryName = "Active1", Slug = "active1", IsArchived = false },
+				new() { CategoryName = "Archived1", Slug = "archived1", IsArchived = true },
+				new() { CategoryName = "Active2", Slug = "active2", IsArchived = false }
+		};
+
+		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(categories)));
+
+		// Act
+		var result = await _handler.HandleAsync(includeArchived: true);
+
+		// Assert
+		result.Success.Should().BeTrue();
+		result.Value.Should().HaveCount(3);
+		result.Value.Should().Contain(c => c.IsArchived);
+		result.Value.Should().Contain(c => c.CategoryName == "Active1");
+		result.Value.Should().Contain(c => c.CategoryName == "Archived1");
+		result.Value.Should().Contain(c => c.CategoryName == "Active2");
+	}
+
+	[Fact]
+	public async Task HandleAsync_DefaultParameter_ShouldExcludeArchivedCategories()
+	{
+		// Arrange
+		var categories = new List<Category>
+		{
+				new() { CategoryName = "Active", Slug = "active", IsArchived = false },
+				new() { CategoryName = "Archived", Slug = "archived", IsArchived = true }
+		};
+
+		_mockRepository.GetCategories().Returns(Task.FromResult(Result.Ok<IEnumerable<Category>>(categories)));
+
+		// Act
+		var result = await _handler.HandleAsync(); // Default parameter should be false
+
+		// Assert
+		result.Success.Should().BeTrue();
+		result.Value.Should().HaveCount(1);
+		result.Value.Should().OnlyContain(c => !c.IsArchived);
+		result.Value.First().CategoryName.Should().Be("Active");
 	}
 
 }

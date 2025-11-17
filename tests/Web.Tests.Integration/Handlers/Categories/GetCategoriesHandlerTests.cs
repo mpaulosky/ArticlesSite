@@ -258,6 +258,33 @@ public class GetCategoriesHandlerTests
 	}
 
 	[Fact]
+	public async Task HandleAsync_WithIncludeArchivedFalse_ExcludesArchivedCategories()
+	{
+		// Arrange
+		await _fixture.ClearCollectionsAsync();
+
+		var categories = FakeCategory.GetCategories(4, useSeed: true);
+		categories[0].IsArchived = false;
+		categories[1].IsArchived = true;
+		categories[2].IsArchived = false;
+		categories[3].IsArchived = true;
+
+		var collection = _fixture.Database.GetCollection<Category>("Categories");
+		await collection.InsertManyAsync(categories, cancellationToken: TestContext.Current.CancellationToken);
+
+		// Act
+		var result = await _handler.HandleAsync(includeArchived: false);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Success.Should().BeTrue();
+
+		// When includeArchived=false, only non-archived categories should be returned
+		result.Value.Should().NotBeNull().And.HaveCount(2);
+		result.Value.Should().OnlyContain(c => !c.IsArchived); // Should only contain non-archived categories
+	}
+
+	[Fact]
 	public async Task HandleAsync_AllFieldsAreMapped()
 	{
 		// Arrange

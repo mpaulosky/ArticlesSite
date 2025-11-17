@@ -74,8 +74,9 @@ public class CreateCategoryHandlerTests
 	[Fact]
 	public async Task HandleAsync_WithNullRequest_ShouldReturnFailure()
 	{
+		CategoryDto? dto = null;
 		// Act
-		var result = await _handler.HandleAsync(null);
+		var result = await _handler.HandleAsync(dto!);
 
 		// Assert
 		result.Success.Should().BeFalse();
