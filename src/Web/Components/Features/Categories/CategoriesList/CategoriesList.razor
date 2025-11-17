@@ -1,4 +1,5 @@
 @page "/categories"
+@using Microsoft.AspNetCore.Components.QuickGrid
 
 @inject NavigationManager Navigation
 @inject GetCategories.IGetCategoriesHandler GetHandler
@@ -9,169 +10,156 @@
 
 <div class="container-card mb-4 flex items-center justify-between">
 
-    <h1 class="text-2xl">All Categories</h1>
+  <h1 class="text-2xl">All Categories</h1>
 
-    <label class="flex items-center font-semibold text-gray-900 dark:text-gray-50 transition-colors duration-300">
-        <input type="checkbox" @bind="_includeArchived" @bind:after="OnIncludeArchivedChanged" class="mr-2" />
-        Include Archived
-    </label>
+  <label class="flex items-center font-semibold text-gray-900 dark:text-gray-50 transition-colors duration-300">
+    <input type="checkbox" @bind="_includeArchived" @bind:after="OnIncludeArchivedChanged" class="mr-2" />
+    Include Archived
+  </label>
 
-    @if (@_canCreate)
-    {
-        <button class="btn-secondary" @onclick="CreateNewCategory">
-            Create
-            New Category
-        </button>
-    }
+  @if (@_canCreate)
+  {
+    <button class="btn-secondary" @onclick="CreateNewCategory">
+      Create
+      New Category
+    </button>
+  }
 
 </div>
 
 @if (_isLoading)
 {
 
-    <LoadingComponent />
+  <LoadingComponent />
 
 }
 else if (_errorMessage != null)
 {
 
-    <ErrorAlertComponent Title="Error loading articles">
-        @_errorMessage
-    </ErrorAlertComponent>
+  <ErrorAlertComponent Title="Error loading articles">
+    @_errorMessage
+  </ErrorAlertComponent>
 
 }
 else if (_categories == null || !_categories.Any())
 {
 
-    <div class="bg-gray-900 rounded-lg p-8 text-center">
-        <p class="text-gray-300 text-lg mb-4">No categories available yet.</p>
-        <p class="text-gray-400">Check back soon for new content!</p>
-    </div>
+  <div class="bg-gray-900 rounded-lg p-8 text-center">
+    <p class="text-gray-300 text-lg mb-4">No categories available yet.</p>
+    <p class="text-gray-400">Check back soon for new content!</p>
+  </div>
 
 }
 else
 {
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        @foreach (var category in _categories)
+  <div class="container-card">
+    <QuickGrid Items="@_categories.AsQueryable()" Class="table-auto w-full text-sm dark:text-gray-50" Theme="default">
+      <PropertyColumn Property="@(c => c.CategoryName)" Title="Category Name" Sortable="true" Class="font-semibold" />
+      <PropertyColumn Property="@(c => c.Slug)" Title="Slug" Sortable="true" />
+      <PropertyColumn Property="@(c => c.CreatedOn)" Title="Created On" Format="d" Sortable="true" />
+      <TemplateColumn Title="Modified On" Sortable="true" SortBy="@(GridSort<CategoryDto>.ByAscending(c => c.ModifiedOn))">
+        @(context.ModifiedOn?.ToString("d") ?? "N/A")
+      </TemplateColumn>
+      <TemplateColumn Title="Status">
+        @if (context.IsArchived)
         {
-            <div class="container-card flex flex-col justify-between min-h-[180px]">
-                <div>
-                    <h2>@category.CategoryName</h2>
-                    <hr class="border-blue-700 mb-4" />
-                    <div class="mb-2">
-                        <span class="font-semibold text-gray-900 dark:text-gray-50">Category Slug:</span> <span class="text-gray-700 dark:text-gray-100">@category.Slug</span>
-                    </div>
-                    <div class="mb-2">
-                        <span class="font-semibold text-gray-900 dark:text-gray-50">Created On:</span> <span class="text-gray-700 dark:text-gray-100">@category.CreatedOn.ToString("d")</span>
-                    </div>
-                    <div class="mb-2">
-                        <span class="font-semibold text-gray-900 dark:text-gray-50">Modified On:</span> <span class="text-gray-700 dark:text-gray-100">@(category.ModifiedOn?.ToString("d") ?? "N/A")</span>
-                    </div>
-                    <div class="mb-2">
-                        <span class="font-semibold text-gray-900 dark:text-gray-50">Status:</span>
-                        @if (category.IsArchived)
-                        {
-                            <span class="badge bg-secondary">Archived</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-success">Active</span>
-                        }
-                    </div>
-                </div>
-                <div class="mt-4 flex gap-2">
-                    <button class="btn-secondary"
-                            @onclick="() => GoToDetails(category.Id.ToString())">
-                        View
-                    </button>
-                    <button class="btn-primary"
-                            @onclick="() => GoToEdit(category.Id.ToString())" disabled="@category.IsArchived">
-                        Edit
-                    </button>
-                </div>
-            </div>
+          <span class="badge bg-secondary">Archived</span>
         }
-    </div>
+        else
+        {
+          <span class="badge bg-success">Active</span>
+        }
+      </TemplateColumn>
+      <TemplateColumn Title="Actions" Class="text-right">
+        <button class="btn-secondary mr-2" @onclick="() => GoToDetails(context.Id.ToString())">
+          View
+        </button>
+        <button class="btn-primary" @onclick="() => GoToEdit(context.Id.ToString())" disabled="@context.IsArchived">
+          Edit
+        </button>
+      </TemplateColumn>
+    </QuickGrid>
+  </div>
 }
 
 @code {
 
-    [CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
-    private IEnumerable<CategoryDto>? _categories;
-    private bool _isLoading = true;
-    private string? _errorMessage;
-    private bool _includeArchived;
+  [CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+  private IEnumerable<CategoryDto>? _categories;
+  private bool _isLoading = true;
+  private string? _errorMessage;
+  private bool _includeArchived;
 
-    private bool _canCreate;
+  private bool _canCreate;
 
-    protected override async Task OnInitializedAsync()
+  protected override async Task OnInitializedAsync()
+  {
+    await LoadCategoriesAsync();
+  }
+
+  private async Task LoadCategoriesAsync()
+  {
+    Logger?.LogInformation("Loading categories list");
+    _isLoading = true;
+    _errorMessage = null;
+
+    try
     {
-        await LoadCategoriesAsync();
-    }
 
-    private async Task LoadCategoriesAsync()
-    {
-        Logger?.LogInformation("Loading categories list");
-        _isLoading = true;
+      // Get current user for authorization
+      var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+      var user = authState.User;
+
+      // Determine if user is Admin
+      var isAdmin = user.IsInRole("Admin");
+      _canCreate = isAdmin;
+
+      var result = await GetHandler.HandleAsync(_includeArchived);
+
+      if (result is { Success: true })
+      {
+        _categories = result.Value;
         _errorMessage = null;
-
-        try
-        {
-
-            // Get current user for authorization
-            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
-
-            // Determine if user is Admin
-            var isAdmin = user.IsInRole("Admin");
-            _canCreate = isAdmin;
-
-            var result = await GetHandler.HandleAsync(_includeArchived);
-
-            if (result is { Success: true })
-            {
-                _categories = result.Value;
-                _errorMessage = null;
-                Logger?.LogInformation("Categories loaded successfully. Count: {Count}", _categories?.Count() ?? 0);
-            }
-            else
-            {
-                _categories = null;
-                _errorMessage = result?.Error ?? "Failed to load categories.";
-                Logger?.LogWarning("Failed to load categories. Error: {Error}", _errorMessage);
-            }
-        }
-        finally
-        {
-            _isLoading = false;
-        }
+        Logger?.LogInformation("Categories loaded successfully. Count: {Count}", _categories?.Count() ?? 0);
+      }
+      else
+      {
+        _categories = null;
+        _errorMessage = result?.Error ?? "Failed to load categories.";
+        Logger?.LogWarning("Failed to load categories. Error: {Error}", _errorMessage);
+      }
     }
-
-    private void GoToCreate()
+    finally
     {
-        Navigation.NavigateTo("/categories/create");
+      _isLoading = false;
     }
+  }
 
-    private void GoToDetails(string id)
-    {
-        Navigation.NavigateTo($"/categories/details/{id}");
-    }
+  private void GoToCreate()
+  {
+    Navigation.NavigateTo("/categories/create");
+  }
 
-    private void GoToEdit(string id)
-    {
-        Navigation.NavigateTo($"/categories/edit/{id}");
-    }
+  private void GoToDetails(string id)
+  {
+    Navigation.NavigateTo($"/categories/details/{id}");
+  }
 
-    private void CreateNewCategory()
-    {
-        Navigation.NavigateTo("/categories/create");
-    }
+  private void GoToEdit(string id)
+  {
+    Navigation.NavigateTo($"/categories/edit/{id}");
+  }
 
-    private async Task OnIncludeArchivedChanged()
-    {
-        Logger?.LogInformation("Include archived toggled: {Value}", _includeArchived);
-        await LoadCategoriesAsync();
-    }
+  private void CreateNewCategory()
+  {
+    Navigation.NavigateTo("/categories/create");
+  }
+
+  private async Task OnIncludeArchivedChanged()
+  {
+    Logger?.LogInformation("Include archived toggled: {Value}", _includeArchived);
+    await LoadCategoriesAsync();
+  }
 
 }

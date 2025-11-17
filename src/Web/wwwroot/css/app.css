@@ -367,9 +367,6 @@
   .h-48 {
     height: calc(var(--spacing) * 48);
   }
-  .min-h-\[180px\] {
-    min-height: 180px;
-  }
   .min-h-\[260px\] {
     min-height: 260px;
   }
@@ -408,6 +405,9 @@
   }
   .flex-shrink-0 {
     flex-shrink: 0;
+  }
+  .table-auto {
+    table-layout: auto;
   }
   .translate-x-3 {
     --tw-translate-x: calc(var(--spacing) * 3);
@@ -681,6 +681,9 @@
   }
   .text-left {
     text-align: left;
+  }
+  .text-right {
+    text-align: right;
   }
   .text-2xl {
     font-size: var(--text-2xl);

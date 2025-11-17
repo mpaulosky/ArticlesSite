@@ -7,8 +7,8 @@ namespace Web.Tests.Playwright.PageObjects;
 public class CategoriesListPage : BasePage
 {
 	private readonly ILocator _pageHeading;
-	private readonly ILocator _categoriesList;
-	private readonly ILocator _categoryItems;
+	private readonly ILocator _categoriesTable;
+	private readonly ILocator _categoryRows;
 	private readonly ILocator _createButton;
 	private readonly ILocator _searchInput;
 	private readonly ILocator _noCategoriesMessage;
@@ -17,8 +17,8 @@ public class CategoriesListPage : BasePage
 	public CategoriesListPage(IPage page) : base(page)
 	{
 		_pageHeading = page.Locator("h1, h2").First;
-		_categoriesList = page.Locator("[data-testid='categories-list'], .categories-list, .category-grid");
-		_categoryItems = page.Locator("[data-testid='category-item'], .category-item, .container-card");
+		_categoriesTable = page.Locator(".quickgrid, table");
+		_categoryRows = page.Locator(".quickgrid tbody tr, table tbody tr");
 		_createButton = page.Locator("a[href*='/categories/create'], button:has-text('Create'), button:has-text('New Category')");
 		_searchInput = page.Locator("input[type='search'], input[placeholder*='Search']");
 		_noCategoriesMessage = page.Locator("text=/no categories/i, .empty-state");
@@ -46,7 +46,7 @@ public class CategoriesListPage : BasePage
 	/// </summary>
 	public async Task<int> GetCategoriesCountAsync()
 	{
-		return await _categoryItems.CountAsync();
+		return await _categoryRows.CountAsync();
 	}
 
 	/// <summary>
@@ -57,7 +57,8 @@ public class CategoriesListPage : BasePage
 	{
 		try
 		{
-			return await _categoriesList.IsVisibleAsync(new LocatorIsVisibleOptions { Timeout = 5000 });
+			var options = new LocatorIsVisibleOptions();
+			return await _categoriesTable.IsVisibleAsync(options);
 		}
 		catch
 		{
@@ -73,7 +74,8 @@ public class CategoriesListPage : BasePage
 	{
 		try
 		{
-			return await _createButton.IsVisibleAsync(new LocatorIsVisibleOptions { Timeout = 5000 });
+			var options = new LocatorIsVisibleOptions();
+			return await _createButton.IsVisibleAsync(options);
 		}
 		catch
 		{
@@ -95,7 +97,7 @@ public class CategoriesListPage : BasePage
 	/// </summary>
 	public async Task ClickCategoryAsync(int index = 0)
 	{
-		await _categoryItems.Nth(index).ClickAsync();
+		await _categoryRows.Nth(index).ClickAsync();
 		await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
 	}
 
@@ -105,7 +107,8 @@ public class CategoriesListPage : BasePage
 	[Obsolete]
 	public async Task SearchCategoriesAsync(string searchTerm)
 	{
-		if (await _searchInput.IsVisibleAsync(new LocatorIsVisibleOptions { Timeout = 2000 }))
+		var options = new LocatorIsVisibleOptions();
+		if (await _searchInput.IsVisibleAsync(options))
 		{
 			await _searchInput.FillAsync(searchTerm);
 			await Page.WaitForLoadStateAsync(LoadState.NetworkIdle);
@@ -120,7 +123,8 @@ public class CategoriesListPage : BasePage
 	{
 		try
 		{
-			return await _noCategoriesMessage.IsVisibleAsync(new LocatorIsVisibleOptions { Timeout = 5000 });
+			var options = new LocatorIsVisibleOptions();
+			return await _noCategoriesMessage.IsVisibleAsync(options);
 		}
 		catch
 		{
@@ -135,7 +139,8 @@ public class CategoriesListPage : BasePage
 	{
 		try
 		{
-			if (await _includeArchivedCheckbox.IsVisibleAsync(new LocatorIsVisibleOptions { Timeout = 2000 }))
+			var options = new LocatorIsVisibleOptions();
+			if (await _includeArchivedCheckbox.IsVisibleAsync(options))
 			{
 				return _includeArchivedCheckbox;
 			}
