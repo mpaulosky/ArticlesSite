@@ -367,6 +367,9 @@ FodyWeavers.xsd
 # TailwindCSS generated files
 src/Web/wwwroot/css/dist.css
 
+# Uploaded files
+src/Web/wwwroot/uploads/
+
 # Rider
 .idea/
 *.iml
