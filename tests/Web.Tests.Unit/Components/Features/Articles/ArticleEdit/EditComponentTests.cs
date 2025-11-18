@@ -136,4 +136,53 @@ public class EditComponentTests : TestContext
 		cut.Markup.Should().Contain("Tech");
 	}
 
+	[Fact]
+	public void RendersPageHeading_WhenPageLoads()
+	{
+		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
+		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var editArticle = Substitute.For<Web.Components.Features.Articles.ArticleEdit.EditArticle.IEditArticleHandler>();
+		var fileStorage = Substitute.For<IFileStorage>();
+
+		Services.AddSingleton(getCategories);
+		Services.AddSingleton(getArticle);
+		Services.AddSingleton(editArticle);
+		Services.AddSingleton(fileStorage);
+
+		// Setup JSInterop for the MarkdownEditor component
+		JSInterop.Mode = JSRuntimeMode.Loose;
+
+		var catId = ObjectId.GenerateNewId();
+		var categories = new List<CategoryDto>
+		{
+			new() { Id = catId, CategoryName = "Tech", IsArchived = false }
+		};
+		getCategories.HandleAsync(Arg.Any<bool>())
+			.Returns(Result.Ok<IEnumerable<CategoryDto>>(categories));
+
+		var article = new ArticleDto(
+				ObjectId.Parse("507f1f77bcf86cd799439011"),
+				"test-slug",
+				"Test Title",
+				"Test Introduction",
+				"Test Content",
+				"https://example.com/image.jpg",
+				new AuthorInfo("user1", "Test Author"),
+				new Category { Id = catId, CategoryName = "Tech" },
+				true,
+				DateTimeOffset.UtcNow,
+				DateTimeOffset.UtcNow,
+				DateTimeOffset.UtcNow,
+				false,
+				true
+		);
+
+		getArticle.HandleAsync(article.Id).Returns(Result.Ok(article));
+
+		var cut = RenderComponent<Edit>(parameters => parameters.Add(p => p.Id, article.Id.ToString()));
+
+		// Assert PageHeadingComponent is rendered
+		cut.Markup.Should().Contain("Edit Article");
+	}
+
 }

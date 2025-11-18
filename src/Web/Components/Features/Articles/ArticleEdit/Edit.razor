@@ -9,6 +9,8 @@
 
 @attribute [Authorize]
 
+<PageHeadingComponent HeaderText="Edit Article" Level="1" TextColorClass="blue-500" />
+
 @if (_isLoading)
 {
 	<LoadingComponent />
@@ -21,67 +23,77 @@ else if (_errorMessage is not null)
 }
 else if (_editModel != ArticleDto.Empty)
 {
-	<EditForm Model="_editModel" OnValidSubmit="HandleValidSubmit">
-		<DataAnnotationsValidator />
-		<ValidationSummary />
-		<div class="mb-3">
-			<label class="form-label">Title</label>
-			<InputText class="form-control" @bind-Value="_editModel.Title" />
-		</div>
-		<div class="mb-3">
-			<label class="form-label">Introduction</label>
-			<InputTextArea class="form-control" @bind-Value="_editModel.Introduction" rows="2" />
-		</div>
-		<div class="row mb-3">
-			<div class="col-md-6 mb-2">
-				<label class="form-label"><i class="bi bi-folder me-1"></i> Category</label>
-				<InputSelect class="form-control" @bind-Value="_selectedCategoryId" @onchange="OnCategoryChanged">
-					<option value="">Select a category</option>
-					@if (_categories != null && _categories.Any())
-					{
-						foreach (var cat in _categories)
+	<div class="container-card bg-gray-100 dark:bg-gray-700 rounded-lg shadow-lg p-8 max-w-7xl mx-auto mt-6 transition-colors duration-300">
+		<EditForm Model="_editModel" OnValidSubmit="HandleValidSubmit">
+			<DataAnnotationsValidator />
+			<ValidationSummary />
+			
+			<div class="mb-6">
+				<label for="titleEdit" class="block text-gray-800 dark:text-gray-300 font-semibold mb-2">Title</label>
+				<InputText id="titleEdit" class="form-control bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" @bind-Value="_editModel.Title" />
+			</div>
+			
+			<div class="mb-6">
+				<label for="introductionEdit" class="block text-gray-800 dark:text-gray-300 font-semibold mb-2">Introduction</label>
+				<InputTextArea id="introductionEdit" class="form-control bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" @bind-Value="_editModel.Introduction" rows="2" />
+			</div>
+			
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+				<div>
+					<label for="categoryEdit" class="block text-gray-800 dark:text-gray-300 font-semibold mb-2">
+						<i class="bi bi-folder me-1"></i> Category
+					</label>
+					<InputSelect id="categoryEdit" class="form-control bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" @bind-Value="_selectedCategoryId" @onchange="OnCategoryChanged">
+						<option value="">Select a category</option>
+						@if (_categories != null && _categories.Any())
 						{
-							<option value="@cat.Id.ToString()">@cat.CategoryName</option>
+							foreach (var cat in _categories)
+							{
+								<option value="@cat.Id.ToString()">@cat.CategoryName</option>
+							}
 						}
-					}
-				</InputSelect>
-			</div>
-			<div class="col-md-6 mb-2">
-				<label class="form-label">
-					<i class="bi bi-person-circle me-1"></i> Author
-					<i class="bi bi-lock-fill text-secondary ms-1" title="Not editable"></i>
-				</label>
-				<div class="form-control-plaintext ps-2 fw-bold text-primary">
-					@_editModel.Author?.Name
+					</InputSelect>
+				</div>
+				
+				<div>
+					<label class="block text-gray-800 dark:text-gray-300 font-semibold mb-2">
+						<i class="bi bi-person-circle me-1"></i> Author
+						<i class="bi bi-lock-fill text-gray-500 ms-1" title="Not editable"></i>
+					</label>
+					<div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-blue-500 rounded px-3 py-2 font-semibold">
+						@_editModel.Author?.Name
+					</div>
 				</div>
 			</div>
-			<div class="col-md-6 mb-2">
-				<div class="form-check">
-					<InputCheckbox id="isPublishedEdit" class="form-check-input" @bind-Value="_editModel.IsPublished" />
-					<label for="isPublishedEdit" class="form-check-label">Published</label>
+			
+			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+				<div class="flex items-center">
+					<InputCheckbox id="isPublishedEdit" class="form-check-input mr-2" @bind-Value="_editModel.IsPublished" />
+					<label for="isPublishedEdit" class="text-gray-800 dark:text-gray-300 font-semibold">Published</label>
+				</div>
+				
+				<div class="flex items-center">
+					<InputCheckbox id="isArchivedEdit" class="form-check-input mr-2" @bind-Value="_editModel.IsArchived" />
+					<label for="isArchivedEdit" class="text-gray-800 dark:text-gray-300 font-semibold">Archived</label>
 				</div>
 			</div>
-			<div class="col-md-6 mb-2">
-				<div class="form-check">
-					<InputCheckbox id="isArchivedEdit" class="form-check-input" @bind-Value="_editModel.IsArchived" />
-					<label for="isArchivedEdit" class="form-check-label">Archived</label>
-				</div>
+			
+			<div class="mb-6">
+				<label class="block text-gray-800 dark:text-gray-300 font-semibold mb-2">Content (Markdown)</label>
+				<TextEditor @bind-Content="@_editModel.Content" AlignmentOptionsEnabled="true" />
 			</div>
-		</div>
-		<div class="mb-3">
-			<label class="form-label">Content (Markdown)</label>
-			<TextEditor @bind-Content="@_editModel.Content" AlignmentOptionsEnabled="true" />
-		</div>
-		<div class="mt-4 flex gap-2">
-			<button type="submit" class="btn-primary">
-				<i class="bi bi-save"></i> Save
-			</button>
-			<button type="button" class="btn-secondary"
-				@onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
-				<i class="bi bi-arrow-left"></i> Cancel
-			</button>
-		</div>
-	</EditForm>
+			
+			<div class="mt-8 flex gap-3 justify-end">
+				<button type="submit" class="btn-primary">
+					<i class="bi bi-save"></i> Save Changes
+				</button>
+				<button type="button" class="btn-secondary"
+					@onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
+					<i class="bi bi-arrow-left"></i> Cancel
+				</button>
+			</div>
+		</EditForm>
+	</div>
 }
 
 @code {
