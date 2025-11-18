@@ -1,17 +1,17 @@
 # ArticlesSite
 
+
 [![GitHub](https://img.shields.io/github/license/mpaulosky/ArticlesSite?style=flat-square&logo=github)](LICENSE.txt)
 [![.NET Build](https://img.shields.io/github/actions/workflow/status/mpaulosky/ArticlesSite/dotnet.yml?style=flat-square&label=Build)](https://github.com/mpaulosky/ArticlesSite/actions/workflows/dotnet.yml)
 [![CodeCov](https://img.shields.io/codecov/c/github/mpaulosky/ArticlesSite/main?style=flat-square&logo=codecov)](https://codecov.io/gh/mpaulosky/ArticlesSite)
-:![.NET version](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)
+[![.NET version](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)](https://dotnet.microsoft.com/download/dotnet/10.0)
 
-[Overview](#overview) • [Features](#features) • [Getting Started](#getting-started) • [Architecture](#architecture) • [Testing](#testing)
+[Overview](#overview) • [Features](#features) • [Getting-Started](#getting-started) • [Architecture](#architecture) • [Testing](#testing)
 
 ---
 
-A modern, cloud-native blog management application built with **BlazorServer**, **.NET Aspire**, and **MongoDB**. This
-project demonstrates best practices in serverless architecture, comprehensive testing strategies, and production-ready
-patterns for building scalable web applications with .NET 9.
+
+A modern, cloud-native blog management application built with **Blazor Server**, **.NET Aspire**, and **MongoDB**. This project demonstrates best practices in serverless architecture, comprehensive testing strategies, and production-ready patterns for building scalable web applications with .NET 10.
 
 > [!TIP]
 > This application is designed to showcase enterprise-grade patterns including CQRS, Vertical Slice Architecture, and
@@ -23,18 +23,18 @@ ArticlesSite is a full-featured blog management system that enables users to cre
 categories and rich content. Built on .NET Aspire's cloud-native orchestration, the application leverages modern
 serverless patterns to deliver a scalable, maintainable solution.
 
-The application uses **Blazor Server** for interactive server-side rendering, providing a responsive user experience
-without the complexity of client-side JavaScript frameworks. MongoDB serves as the primary data store, providing
-flexible document-based storage for articles and categories.
+
+The application uses **Blazor Server** for interactive server-side rendering (SSR), providing a responsive user experience without the complexity of client-side JavaScript frameworks. MongoDB serves as the primary data store, providing flexible document-based storage for articles and categories.
+
 
 ### Key Technologies
 
-- **.NET 9** with **C# 13** – Latest .NET platform features
-- **.NET Aspire** - Cloud-native orchestration and service defaults
-- **Blazor Server** - Interactive server-side rendering
+- **.NET 10** with **C# 13** – Latest .NET platform features
+- **.NET Aspire** – Cloud-native orchestration, service defaults, and dashboard
+- **Blazor Server** – Interactive server-side rendering (SSR)
 - **MongoDB 8.0** – Document database with flexible schema
-- **xUnit** - Unit and integration testing framework
-- **bUnit** – Blazor component testing
+- **xUnit** – Unit and integration testing framework
+- **bUnit** – Blazor component testing (works with xUnit, NUnit, MSTest)
 - **TestContainers** – Isolated integration test environments
 
 ## Features
@@ -80,20 +80,24 @@ To run this application, you'll need:
 
    Once started, navigate to the URL displayed in the console output (typically `http://localhost:5000`).
 
+
 ### Running Tests
 
 Execute the full test suite with:
 
+ 
 ```bash
 dotnet test
-```
+```bash
+
+**Note:** With .NET 10, `dotnet test` uses Microsoft.Testing.Platform (MTP) mode for improved performance and compatibility. For legacy projects, VSTest mode is still supported but will be deprecated. See [Migrate to MTP mode of dotnet test](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test#migrate-to-mtp-mode-of-dotnet-test).
 
 This runs:
 
 - **Unit tests** – Fast, isolated tests for business logic
 - **Integration tests** – Database and service integration tests using TestContainers
-- **bunit tests** - Blazor component tests
-- **E2E tests** - End-to-end scenarios
+- **bUnit tests** – Blazor component tests (see [bUnit docs](https://bunit.dev/docs/getting-started/index.html))
+- **E2E tests** – End-to-end scenarios
 
 ## Architecture
 
@@ -101,7 +105,8 @@ ArticlesSite follows a clean, layered architecture with a clear separation of co
 
 ### Project Structure
 
-```
+ 
+```bash
 ArticlesSite/
 ├── src/
 │   ├── AppHost/              # .NET Aspire orchestration
@@ -171,8 +176,10 @@ ArticlesSite uses a comprehensive testing strategy:
 - Mobile and desktop viewport testing
 - Located in `tests/Web.Tests.Playwright/`
 
+
 To run Playwright E2E tests:
 
+ 
 ```bash
 cd tests/Web.Tests.Playwright
 npm install
@@ -195,6 +202,7 @@ dotnet test --filter "FullyQualifiedName~Integration"
 dotnet test /p:CollectCoverage=true
 ```
 
+
 ## Code Standards
 
 This project enforces strict coding standards through `.editorconfig` and analysis rules:
@@ -207,17 +215,17 @@ This project enforces strict coding standards through `.editorconfig` and analys
 - **XML documentation** for public APIs
 - **Centralized package management** in `Directory.Packages.props`
 
-See [`.github/instructions/copilot-instructions.md`](.github/instructions/copilot-instructions.md) for complete coding
-guidelines.
+See [`.github/instructions/copilot-instructions.md`](.github/instructions/copilot-instructions.md) for complete coding guidelines.
+
 
 ## Deployment
 
 The application is designed for deployment to Azure or any container orchestration platform:
 
-1. **Container Build** - Dockerfiles included for all services
-2. **.NET Aspire Manifest** – Deploy to Azure Container Apps
+1. **Container Build** – Dockerfiles included for all services
+2. **.NET Aspire Manifest & Dashboard** – Deploy to Azure Container Apps and monitor with Aspire dashboard ([docs](https://aspire.dev/dashboard/overview/))
 3. **MongoDB** – Use Azure Cosmos DB for MongoDB API or containerized deployment
-4. **Observability** - Built-in OpenTelemetry for Application Insights
+4. **Observability** – Built-in OpenTelemetry for Application Insights
 
 ## Dev Container detection
 
@@ -234,18 +242,24 @@ You can detect this in code via the helper ArticlesSite.Shared.Helpers.RuntimeEn
 
 The Web app logs a startup message indicating whether it is running inside a Dev Container.
 
+
 ## Resources
 
 - [.NET Aspire Documentation](https://learn.microsoft.com/dotnet/aspire/)
+- [Aspire Dashboard](https://aspire.dev/dashboard/overview/)
+- [Aspire Samples](https://learn.microsoft.com/en-us/samples/browse/?expanded=dotnet&terms=aspire)
 - [Blazor Server Documentation](https://learn.microsoft.com/aspnet/core/blazor/)
 - [MongoDB .NET Driver](https://www.mongodb.com/docs/drivers/csharp/)
 - [MongoDB Documentation](https://www.mongodb.com/docs/)
 - [TestContainers for .NET](https://dotnet.testcontainers.org/)
+- [xUnit Documentation](https://learn.microsoft.com/en-us/dotnet/core/testing/unit-testing-with-dotnet-test)
+- [bUnit Documentation](https://bunit.dev/docs/getting-started/index.html)
+
 
 ## Contributing
 
-Contributions are welcome! This project follows standard open-source contribution guidelines. Please ensure all tests
-pass and code follows the established standards before submitting a pull request.
+Contributions are welcome! This project follows standard open-source contribution guidelines. Please ensure all tests pass and code follows the established standards before submitting a pull request.
+
 
 ## License
 
