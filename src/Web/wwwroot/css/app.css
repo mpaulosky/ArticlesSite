@@ -660,9 +660,6 @@
   .py-16 {
     padding-block: calc(var(--spacing) * 16);
   }
-  .ps-2 {
-    padding-inline-start: calc(var(--spacing) * 2);
-  }
   .pt-4 {
     padding-top: calc(var(--spacing) * 4);
   }
@@ -1076,6 +1073,11 @@
   .dark\:text-gray-400 {
     &:where(.dark, .dark *) {
       color: var(--color-gray-400);
+    }
+  }
+  .dark\:text-white {
+    &:where(.dark, .dark *) {
+      color: var(--color-white);
     }
   }
   .dark\:hover\:bg-blue-600 {
