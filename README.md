@@ -3,9 +3,7 @@
 [![GitHub](https://img.shields.io/github/license/mpaulosky/ArticlesSite?style=flat-square&logo=github)](LICENSE.txt)
 [![.NET Build](https://img.shields.io/github/actions/workflow/status/mpaulosky/ArticlesSite/dotnet.yml?style=flat-square&label=Build)](https://github.com/mpaulosky/ArticlesSite/actions/workflows/dotnet.yml)
 [![CodeCov](https://img.shields.io/codecov/c/github/mpaulosky/ArticlesSite/main?style=flat-square&logo=codecov)](https://codecov.io/gh/mpaulosky/ArticlesSite)
-![.NET version](https://img.shields.io/badge/.NET-9.0-512BD4?style=flat-square&logo=dotnet)
-
-⭐ If you like this project, star it on GitHub — it helps a lot!
+:![.NET version](https://img.shields.io/badge/.NET-10.0-512BD4?style=flat-square&logo=dotnet)
 
 [Overview](#overview) • [Features](#features) • [Getting Started](#getting-started) • [Architecture](#architecture) • [Testing](#testing)
 
@@ -31,25 +29,25 @@ flexible document-based storage for articles and categories.
 
 ### Key Technologies
 
-- **.NET 9** with **C# 13** - Latest .NET platform features
+- **.NET 9** with **C# 13** – Latest .NET platform features
 - **.NET Aspire** - Cloud-native orchestration and service defaults
 - **Blazor Server** - Interactive server-side rendering
-- **MongoDB 8.0** - Document database with flexible schema
+- **MongoDB 8.0** – Document database with flexible schema
 - **xUnit** - Unit and integration testing framework
-- **bUnit** - Blazor component testing
-- **TestContainers** - Isolated integration test environments
+- **bUnit** – Blazor component testing
+- **TestContainers** – Isolated integration test environments
 
 ## Features
 
-- **Article Management** - Create, edit, and publish blog posts with rich content
-- **Category Organization** - Organize articles with hierarchical categories
-- **Interactive UI** - Blazor Server components with real-time updates
-- **Cloud-Native Architecture** - Built with .NET Aspire for container orchestration
-- **Persistent Storage** - MongoDB container with persistent data volumes
+- **Article Management** – Create, edit, and publish blog posts with rich content
+- **Category Organization** – Organize articles with hierarchical categories
+- **Interactive UI** – Blazor Server components with real-time updates
+- **Cloud-Native Architecture** – Built with .NET Aspire for container orchestration
+- **Persistent Storage** – MongoDB container with persistent data volumes
 - **Health Checks** - Built-in monitoring and diagnostics
-- **OpenTelemetry Integration** - Distributed tracing and metrics
-- **Comprehensive Testing** - Unit, integration, and E2E test coverage
-- **Security First** - HTTPS, authentication, CORS, and secure headers by default
+- **OpenTelemetry Integration** – Distributed tracing and metrics
+- **Comprehensive Testing** – Unit, integration, and E2E test coverage
+- **Security First** – HTTPS, authentication, CORS, and secure headers by default
 
 ## Getting Started
 
@@ -57,8 +55,8 @@ flexible document-based storage for articles and categories.
 
 To run this application, you'll need:
 
-- **.NET 9 SDK** - [Download](https://dotnet.microsoft.com/download/dotnet/9.0)
-- **Docker** - Required for MongoDB container and TestContainers
+- **.NET 9 SDK** – [Download](https://dotnet.microsoft.com/download/dotnet/9.0)
+- **Docker** – Required for MongoDB container and TestContainers
 - **Visual Studio 2022 / Rider / VS Code** - Recommended for development
 
 ### Running the Application
@@ -76,7 +74,7 @@ To run this application, you'll need:
    dotnet run --project src/AppHost
    ```
 
-   The AppHost will orchestrate all services including MongoDB container and Redis cache.
+   The AppHost will orchestrate all services, including MongoDB container and Redis cache.
 
 3. **Access the application**
 
@@ -92,14 +90,14 @@ dotnet test
 
 This runs:
 
-- **Unit tests** - Fast, isolated tests for business logic
-- **Integration tests** - Database and service integration tests using TestContainers
-- **bUnit tests** - Blazor component tests
+- **Unit tests** – Fast, isolated tests for business logic
+- **Integration tests** – Database and service integration tests using TestContainers
+- **bunit tests** - Blazor component tests
 - **E2E tests** - End-to-end scenarios
 
 ## Architecture
 
-ArticlesSite follows a clean, layered architecture with clear separation of concerns:
+ArticlesSite follows a clean, layered architecture with a clear separation of concerns:
 
 ### Project Structure
 
@@ -124,11 +122,11 @@ ArticlesSite/
 ### Design Principles
 
 - **SOLID Principles** - Maintainable, testable code structure
-- **Dependency Injection** - Constructor injection throughout
+- **Dependency Injection** – Constructor injection throughout
 - **CQRS Pattern** - Command/Query separation for clarity
 - **Vertical Slice Architecture** - Feature-focused organization
-- **Repository Pattern** - Clean data access abstraction
-- **Service Defaults** - Consistent observability and resilience
+- **Repository Pattern** – Clean data access abstraction
+- **Service Defaults** – Consistent observability and resilience
 
 ### Database
 
@@ -145,7 +143,7 @@ restarts.
 
 ## Testing
 
-ArticlesSite employs a comprehensive testing strategy:
+ArticlesSite uses a comprehensive testing strategy:
 
 ### Unit Tests
 
@@ -217,8 +215,8 @@ guidelines.
 The application is designed for deployment to Azure or any container orchestration platform:
 
 1. **Container Build** - Dockerfiles included for all services
-2. **.NET Aspire Manifest** - Deploy to Azure Container Apps
-3. **MongoDB** - Use Azure Cosmos DB for MongoDB API or containerized deployment
+2. **.NET Aspire Manifest** – Deploy to Azure Container Apps
+3. **MongoDB** – Use Azure Cosmos DB for MongoDB API or containerized deployment
 4. **Observability** - Built-in OpenTelemetry for Application Insights
 
 ## Dev Container detection
@@ -231,8 +229,8 @@ from .devcontainer/devcontainer.json:
 
 You can detect this in code via the helper ArticlesSite.Shared.Helpers.RuntimeEnvironment:
 
-- RuntimeEnvironment.IsRunningInDevContainer() -> true when in a Dev Container
-- RuntimeEnvironment.IsRunningInContainer() -> true when in any container
+- RuntimeEnvironment.IsRunningInDevContainer() → true when in a Dev Container
+- RuntimeEnvironment.IsRunningInContainer() → true when in any container
 
 The Web app logs a startup message indicating whether it is running inside a Dev Container.
 
@@ -251,4 +249,4 @@ pass and code follows the established standards before submitting a pull request
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
+This project is licensed under the MIT License – see the [LICENSE.txt](LICENSE.txt) file for details.
