@@ -73,6 +73,41 @@ app.MapGet("/Account/Logout", async httpContext =>
 	await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 });
 
+// File serving endpoint for uploaded images
+app.MapGet("/api/files/{fileName}", async (string fileName, IWebHostEnvironment environment) =>
+{
+	var uploadsPath = Path.Combine(environment.WebRootPath, "uploads");
+	var filePath = Path.Combine(uploadsPath, fileName);
+
+	// Security: Ensure the file path is within the uploads directory
+	var normalizedPath = Path.GetFullPath(filePath);
+	var normalizedUploadsPath = Path.GetFullPath(uploadsPath);
+
+	if (!normalizedPath.StartsWith(normalizedUploadsPath, StringComparison.OrdinalIgnoreCase))
+	{
+		return Results.BadRequest("Invalid file path.");
+	}
+
+	if (!File.Exists(filePath))
+	{
+		return Results.NotFound();
+	}
+
+	var fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
+	var contentType = fileExtension switch
+	{
+		".jpg" or ".jpeg" => "image/jpeg",
+		".png" => "image/png",
+		".gif" => "image/gif",
+		".svg" => "image/svg+xml",
+		".webp" => "image/webp",
+		".bmp" => "image/bmp",
+		_ => "application/octet-stream"
+	};
+
+	return Results.File(filePath, contentType);
+});
+
 // --- Startup Logic (Database Seeding) ---
 
 try

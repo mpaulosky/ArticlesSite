@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Web.Services
 {
@@ -11,11 +13,45 @@ namespace Web.Services
 
     public class FileStorage : IFileStorage
     {
+        private readonly IWebHostEnvironment _environment;
+        private readonly ILogger<FileStorage> _logger;
+
+        public FileStorage(IWebHostEnvironment environment, ILogger<FileStorage> logger)
+        {
+            _environment = environment;
+            _logger = logger;
+        }
+
         public async Task<string> AddFile(FileData fileData)
         {
-            // Implement file saving logic here
-            await Task.CompletedTask;
-            return fileData.MetaData.Name; // Return file name or generated ID
+            try
+            {
+                // Create uploads directory if it doesn't exist
+                var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads");
+                if (!Directory.Exists(uploadsPath))
+                {
+                    Directory.CreateDirectory(uploadsPath);
+                }
+
+                // Generate a unique filename to prevent collisions
+                var extension = Path.GetExtension(fileData.MetaData.Name);
+                var uniqueFileName = $"{Guid.NewGuid()}{extension}";
+                var filePath = Path.Combine(uploadsPath, uniqueFileName);
+
+                // Save the file
+                await using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                {
+                    await fileData.Content.CopyToAsync(fileStream);
+                }
+
+                _logger.LogInformation("File saved successfully: {FileName}", uniqueFileName);
+                return uniqueFileName;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error saving file: {FileName}", fileData.MetaData.Name);
+                throw;
+            }
         }
     }
 
