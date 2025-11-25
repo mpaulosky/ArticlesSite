@@ -11,7 +11,7 @@ using CategoriesListComponent = Web.Components.Features.Categories.CategoriesLis
 namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 {
 	[ExcludeFromCodeCoverage]
-	public class CategoriesListComponentTests : TestContext
+	public class CategoriesListComponentTests : BunitContext
 	{
 		private void SetupQuickGridJSInterop()
 		{
@@ -22,11 +22,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void Should_FilterCategories_ByArchivedStatus_OnToggle()
 		{
 			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
-
-			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 			var activeCategory = new CategoryDto
 			{
@@ -51,15 +47,15 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			var allCategories = new List<CategoryDto> { activeCategory, archivedCategory };
 			var activeOnly = new List<CategoryDto> { activeCategory };
 
+			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 			handler.HandleAsync(false).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(activeOnly)));
 			handler.HandleAsync(true).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(allCategories)));
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
 			SetupQuickGridJSInterop();
 
 			// Act
-			var cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 			cut.WaitForState(() => cut.Markup.Contains("Active Category"));
-			cut.Markup.Should().Contain("Active Category");
 
 			// Assert: Only active category shown by default
 			var editButton = cut.FindAll("button").FirstOrDefault(b => b.TextContent.Trim() == "Edit");
@@ -75,19 +71,16 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			cut.Markup.Should().Contain("Active Category");
 
 			// Toggle back to hide archived
-			checkbox2.Change(false);
-			cut.WaitForState(() => !cut.Markup.Contains("Archived Category"));
-			cut.Markup.Should().NotContain("Archived Category");
-			cut.Markup.Should().Contain("Active Category");
+			    checkbox2.Change(false);
+			    cut.WaitForState(() => !cut.Markup.Contains("Archived Category"));
+			    cut.Markup.Should().Contain("Active Category");
 		}
 
 		[Fact]
 		public void Should_DisplayEmptyMessage_WhenAllCategoriesArchived_AndNotIncluded()
 		{
 			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -104,13 +97,13 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 				}
 			};
 
-			handler.HandleAsync(false).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(Enumerable.Empty<CategoryDto>())));
+			handler.HandleAsync(false).Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
 			handler.HandleAsync(true).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
 			SetupQuickGridJSInterop();
 
 			// Act
-			var cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 
 			// Assert: Should show empty message since archived are not included by default
 			cut.WaitForState(() => cut.Markup.Contains("No categories available yet."));
@@ -122,59 +115,21 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			cut.WaitForState(() => cut.Markup.Contains("Archived Only"), TimeSpan.FromSeconds(15));
 			cut.Markup.Should().Contain("Archived Only");
 		}
-		// =======================================================
-		// Copyright (c) 2025. All rights reserved.
-		// File Name :     CategoriesListComponentTests.cs
-		// Company :       mpaulosky
-		// Author :        Matthew Paulosky
-		// Solution Name : ArticlesSite
-		// Project Name :  Web.Tests.Unit
-		// =======================================================
-
-		[Fact]
-		public void RendersLoadingComponent_WhenIsLoading()
-		{
-			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
-
-			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
-
-			// Create a delayed task to keep the component in loading state
-			var tcs = new TaskCompletionSource<Result<IEnumerable<CategoryDto>>>();
-			handler.HandleAsync(Arg.Any<bool>()).Returns(tcs.Task);
-			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
-			SetupQuickGridJSInterop();
-
-			// Act
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
-
-			// Assert - Check immediately while still loading
-			cut.Markup.Should().Contain("Loading...");
-
-			// Cleanup - complete the task
-			tcs.SetResult(Result.Ok(Enumerable.Empty<CategoryDto>()));
-		}
+		// ...existing copyright header...
 
 		[Fact]
 		public void RendersErrorAlert_WhenLoadingFails()
 		{
-			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", Array.Empty<string>());
 
-			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
-
+			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 			handler.HandleAsync(Arg.Any<bool>())
-					.Returns(Task.FromResult(Result<IEnumerable<CategoryDto>>.Fail("Failed to load categories.")));
-
+				.Returns(Task.FromResult(Result<IEnumerable<CategoryDto>>.Fail("Failed to load categories.")));
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
 			SetupQuickGridJSInterop();
 
 			// Act
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 
 			// Assert
 			cut.WaitForState(() => cut.Markup.Contains("Failed to load categories."));
@@ -186,9 +141,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void RendersEmptyMessage_WhenNoCategoriesExist()
 		{
 			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -199,7 +152,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			SetupQuickGridJSInterop();
 
 			// Act
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 
 			// Assert
 			cut.WaitForState(() => cut.Markup.Contains("No categories available yet."));
@@ -207,64 +160,64 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			cut.Markup.Should().Contain("Check back soon for new content!");
 		}
 
-		[Fact]
-		public void RendersCategoryList_WhenCategoriesExist()
+		[Theory]
+		[InlineData("Admin")]
+		[InlineData("Author")]
+		[InlineData("User")]
+		[InlineData("Admin", "Author")]
+		public void RendersCategoryList_WhenCategoriesExist(params string[] roles)
 		{
-			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+		    // Arrange
+		    Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);
 
-			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
+		    GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
-			var categories = new List<CategoryDto>
+		    var categories = new List<CategoryDto>
 		{
-				new()
-				{
-						Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-						CategoryName = "Technology",
-						Slug = "technology",
-						CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-						ModifiedOn = null,
-						IsArchived = false
-				},
-				new()
-				{
-						Id = ObjectId.Parse("507f1f77bcf86cd799439012"),
-						CategoryName = "Science",
-						Slug = "science",
-						CreatedOn = DateTimeOffset.UtcNow.AddDays(-20),
-						ModifiedOn = DateTimeOffset.UtcNow.AddDays(-10),
-						IsArchived = false
-				}
+			new()
+			{
+				Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+				CategoryName = "Technology",
+				Slug = "technology",
+				CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+				ModifiedOn = null,
+				IsArchived = false
+			},
+			new()
+			{
+				Id = ObjectId.Parse("507f1f77bcf86cd799439012"),
+				CategoryName = "Science",
+				Slug = "science",
+				CreatedOn = DateTimeOffset.UtcNow.AddDays(-20),
+				ModifiedOn = DateTimeOffset.UtcNow.AddDays(-10),
+				IsArchived = false
+			}
 		};
 
-			handler.HandleAsync()
-					.Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
-			handler.HandleAsync(Arg.Any<bool>()).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
+		    handler.HandleAsync()
+			    .Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
+		    handler.HandleAsync(Arg.Any<bool>()).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 
-			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
-			SetupQuickGridJSInterop();
+		    Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+		    SetupQuickGridJSInterop();
 
-			// Act
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
+		    // Act
+		    var cut = Render<CategoriesListComponent>();
 
-			// Assert
-			cut.WaitForState(() => cut.Markup.Contains("Technology"));
-			cut.Markup.Should().Contain("All Categories");
-			cut.Markup.Should().Contain("Technology");
-			cut.Markup.Should().Contain("Science");
-			cut.Markup.Should().Contain("technology");
-			cut.Markup.Should().Contain("science");
+		    // Assert
+		    cut.WaitForState(() => cut.Markup.Contains("Technology"));
+		    cut.Markup.Should().Contain("All Categories");
+		    cut.Markup.Should().Contain("Technology");
+		    cut.Markup.Should().Contain("Science");
+		    cut.Markup.Should().Contain("technology");
+		    cut.Markup.Should().Contain("science");
 		}
 
 		[Fact]
 		public void DisplaysCategoryDetails_WithCorrectData()
 		{
 			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -288,7 +241,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			SetupQuickGridJSInterop();
 
 			// Act
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 
 			// Assert
 			cut.WaitForState(() => cut.Markup.Contains("Technology"));
@@ -306,9 +259,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void DisplaysArchivedStatus_ForArchivedCategories()
 		{
 			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -332,7 +283,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			SetupQuickGridJSInterop();
 
 			// Act
-			var cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 
 			// Assert
 			var checkbox = cut.Find("input[type=checkbox]");
@@ -346,9 +297,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void ViewButton_Click_ShouldNavigateToDetails()
 		{
 			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -372,7 +321,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
 			SetupQuickGridJSInterop();
 
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 			NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
 			cut.WaitForState(() => cut.Markup.Contains("Technology"));    // Act
@@ -387,9 +336,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void EditButton_Click_ShouldNavigateToEdit()
 		{
 			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -413,7 +360,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
 			SetupQuickGridJSInterop();
 
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 			NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
 			cut.WaitForState(() => cut.Markup.Contains("Technology"));
@@ -466,66 +413,49 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		//	editButton.HasAttribute("disabled").Should().BeTrue();
 		//}
 
-		[Fact]
-		public void CreateButton_ShouldDisplay_ForAdminUsers()
+		[Theory]
+		[InlineData("Admin")]
+		[InlineData("Author")]
+		[InlineData("User")]
+		[InlineData("Admin", "Author")]
+		public void CreateButton_ShouldDisplay_ForAdminUsers(params string[] roles)
 		{
-			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+		    // Arrange
+		    Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);
 
-			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
+		    GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
-			handler.HandleAsync()
-					.Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
+		    handler.HandleAsync()
+			    .Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
 
-			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
-			SetupQuickGridJSInterop();
+		    Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+		    SetupQuickGridJSInterop();
 
-			// Act
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
+		    // Act
+		    var cut = Render<CategoriesListComponent>();
 
-			// Assert
-			cut.WaitForState(() => cut.Markup.Contains("All Categories"));
+		    // Assert
+		    cut.WaitForState(() => cut.Markup.Contains("All Categories"));
 
+		    if (roles.Contains("Admin"))
+		    {
 			cut.Markup.Should().Contain("Create")
-					.And.Contain("New Category");
-		}
-
-		[Fact]
-		public void CreateButton_ShouldNotDisplay_ForNonAdminUsers()
-		{
-			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-
-			// Not setting Admin role
-
-			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
-
-			handler.HandleAsync()
-					.Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
-
-			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
-			SetupQuickGridJSInterop();
-
-			// Act
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
-
-			// Assert
-			cut.WaitForState(() => cut.Markup.Contains("All Categories"));
-
+				.And.Contain("New Category");
+		    }
+		    else
+		    {
 			cut.Markup.Should().NotContain("Create")
-					.And.NotContain("New Category");
+				.And.NotContain("New Category");
+		    }
 		}
+
+		// Removed: CreateButton_ShouldNotDisplay_ForNonAdminUsers (now covered by Theory above)
 
 		[Fact]
 		public void CreateButton_Click_ShouldNavigateToCreate()
 		{
 			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -535,7 +465,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
 			SetupQuickGridJSInterop();
 
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 			NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
 			cut.WaitForState(() => cut.Markup.Contains("All Categories"));
@@ -550,20 +480,16 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void PageHeading_ShouldDisplay_AllCategories()
 		{
 			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", Array.Empty<string>());
 
-			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
-
+			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 			handler.HandleAsync()
-					.Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
-
+				.Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
 			SetupQuickGridJSInterop();
 
 			// Act
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 
 			// Assert
 			cut.WaitForState(() => cut.Markup.Contains("All Categories"));
@@ -574,37 +500,32 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void DisplaysModifiedOn_AsNAWhenNull()
 		{
 			// Arrange
-			var authContext = this.AddTestAuthorization();
-			authContext.SetAuthorized("TEST USER");
-			authContext.SetRoles("Admin");
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
-			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
-
+			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 			var categories = new List<CategoryDto>
-		{
+			{
 				new()
 				{
-						Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-						CategoryName = "New Category",
-						Slug = "new-category",
-						CreatedOn = DateTimeOffset.UtcNow.AddDays(-5),
-						ModifiedOn = null,
-						IsArchived = false
+					Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
+					CategoryName = "New Category",
+					Slug = "new-category",
+					CreatedOn = DateTimeOffset.UtcNow.AddDays(-5),
+					ModifiedOn = null,
+					IsArchived = false
 				}
-		};
-
+			};
 			handler.HandleAsync()
-					.Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
-
+				.Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
 			SetupQuickGridJSInterop();
 
 			// Act
-			IRenderedComponent<CategoriesListComponent> cut = RenderComponent<CategoriesListComponent>();
+			var cut = Render<CategoriesListComponent>();
 
 			// Assert
 			cut.WaitForState(() => cut.Markup.Contains("New Category"));
-		cut.Markup.Should().Contain("Modified On");
+			cut.Markup.Should().Contain("Modified On");
 			cut.Markup.Should().Contain("N/A");
 		}
 

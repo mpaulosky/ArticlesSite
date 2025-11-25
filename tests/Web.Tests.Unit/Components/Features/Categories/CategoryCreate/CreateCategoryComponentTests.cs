@@ -16,19 +16,21 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoryCreate;
 /// <summary>
 ///   bUnit tests for the Create category component
 /// </summary>
+// Modernized for bUnit v2 and helper-based authentication
 [ExcludeFromCodeCoverage]
-public class CreateCategoryComponentTests : TestContext
+public class CreateCategoryComponentTests : BunitContext
 {
 
 	[Fact]
 	public void InitialRender_ShouldShowFormAndHeading()
 	{
-		// Arrange - Register services BEFORE rendering
+		// Arrange
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
 		Services.AddSingleton(handler);
 
 		// Act
-		IRenderedComponent<Create> cut = RenderComponent<Create>();
+		var cut = Render<Create>();
 
 		// Assert
 		cut.Markup.Should().Contain("Create New Category");
@@ -41,11 +43,12 @@ public class CreateCategoryComponentTests : TestContext
 	[Fact]
 	public void CancelButton_Click_ShouldNavigateToList()
 	{
-		// Arrange - Register services BEFORE rendering
+		// Arrange
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
 		Services.AddSingleton(handler);
 
-		IRenderedComponent<Create> cut = RenderComponent<Create>();
+		var cut = Render<Create>();
 		NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
 		// Act
@@ -58,15 +61,15 @@ public class CreateCategoryComponentTests : TestContext
 	[Fact]
 	public void SubmittingForm_ShouldShowLoading()
 	{
-		// Arrange - Register services BEFORE rendering
+		// Arrange
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
 		Services.AddSingleton(handler);
 
-		IRenderedComponent<Create> cut = RenderComponent<Create>();
+		var cut = Render<Create>();
 
 		// Act
-		FieldInfo? isSubmittingField =
-				cut.Instance.GetType().GetField("_isSubmitting", BindingFlags.NonPublic | BindingFlags.Instance);
+		var isSubmittingField = cut.Instance.GetType().GetField("_isSubmitting", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		Assert.NotNull(isSubmittingField);
 		isSubmittingField.SetValue(cut.Instance, true);
@@ -76,29 +79,28 @@ public class CreateCategoryComponentTests : TestContext
 		cut.Markup.Should().Contain("Loading...");
 	}
 
-	[Fact]
-	public async Task HandleSubmit_WithSuccess_ShouldNavigateToList()
-	{
-		// Arrange - Register services BEFORE rendering
+	    [Fact]
+	    public async Task HandleSubmit_WithSuccess_ShouldNavigateToList()
+	    {
+		// Arrange
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
 
 		handler.HandleAsync(Arg.Any<CategoryDto>()).Returns(Task.FromResult(
-				Result.Ok(new CategoryDto { Id = ObjectId.GenerateNewId(), CategoryName = "Test" })));
+			Result.Ok(new CategoryDto { Id = ObjectId.GenerateNewId(), CategoryName = "Test" })));
 
 		Services.AddSingleton(handler);
 
-		IRenderedComponent<Create> cut = RenderComponent<Create>();
+		var cut = Render<Create>();
 		NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
-		FieldInfo? categoryField =
-				cut.Instance.GetType().GetField("_category", BindingFlags.NonPublic | BindingFlags.Instance);
+		var categoryField = cut.Instance.GetType().GetField("_category", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		Assert.NotNull(categoryField);
 		categoryField.SetValue(cut.Instance, new CategoryDto { CategoryName = "Test" });
 
 		// Act
-		MethodInfo? handleSubmitMethod =
-				cut.Instance.GetType().GetMethod("HandleSubmit", BindingFlags.NonPublic | BindingFlags.Instance);
+		var handleSubmitMethod = cut.Instance.GetType().GetMethod("HandleSubmit", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		Assert.NotNull(handleSubmitMethod);
 		var task = handleSubmitMethod.Invoke(cut.Instance, null) as Task;
@@ -107,30 +109,29 @@ public class CreateCategoryComponentTests : TestContext
 
 		// Assert
 		nav.Uri.Should().EndWith("/categories");
-	}
+	    }
 
-	[Fact]
-	public async Task HandleSubmit_WithFailure_ShouldShowError()
-	{
-		// Arrange - Register services BEFORE rendering
+	    [Fact]
+	    public async Task HandleSubmit_WithFailure_ShouldShowError()
+	    {
+		// Arrange
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
 
 		handler.HandleAsync(Arg.Any<CategoryDto>())
-				.Returns(Task.FromResult(Result<CategoryDto>.Fail("Failed to create category.")));
+			.Returns(Task.FromResult(Result<CategoryDto>.Fail("Failed to create category.")));
 
 		Services.AddSingleton(handler);
 
-		IRenderedComponent<Create> cut = RenderComponent<Create>();
+		var cut = Render<Create>();
 
-		FieldInfo? categoryField =
-				cut.Instance.GetType().GetField("_category", BindingFlags.NonPublic | BindingFlags.Instance);
+		var categoryField = cut.Instance.GetType().GetField("_category", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		Assert.NotNull(categoryField);
 		categoryField.SetValue(cut.Instance, new CategoryDto { CategoryName = "Test" });
 
 		// Act
-		MethodInfo? handleSubmitMethod =
-				cut.Instance.GetType().GetMethod("HandleSubmit", BindingFlags.NonPublic | BindingFlags.Instance);
+		var handleSubmitMethod = cut.Instance.GetType().GetMethod("HandleSubmit", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		Assert.NotNull(handleSubmitMethod);
 		var task = handleSubmitMethod.Invoke(cut.Instance, null) as Task;
@@ -141,6 +142,6 @@ public class CreateCategoryComponentTests : TestContext
 		// Assert
 		cut.Markup.Should().Contain("Error creating category");
 		cut.Markup.Should().Contain("Failed to create category.");
-	}
+	    }
 
 }

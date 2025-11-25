@@ -18,14 +18,14 @@ using Edit = Web.Components.Features.Categories.CategoryEdit.Edit;
 namespace Web.Tests.Unit.Components.Features.Categories.CategoryEdit;
 
 [ExcludeFromCodeCoverage]
-public class EditComponentTests : TestContext
+public class EditComponentTests : BunitContext
 {
 
 	[Fact]
 	public void RendersLoadingComponent_WhenIsLoading()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -41,8 +41,7 @@ public class EditComponentTests : TestContext
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		// Assert - Check immediately while still loading
 		cut.Markup.Should().Contain("Loading...");
@@ -55,7 +54,7 @@ public class EditComponentTests : TestContext
 	public void RendersErrorAlert_WhenCategoryNotFound()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -68,8 +67,7 @@ public class EditComponentTests : TestContext
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Category not found."));
@@ -77,11 +75,15 @@ public class EditComponentTests : TestContext
 		cut.Markup.Should().Contain("Unable to load category");
 	}
 
-	[Fact]
-	public void RendersEditForm_WhenCategoryIsLoaded()
+		[Theory]
+		[InlineData("Admin")]
+		[InlineData("Author")]
+		[InlineData("User")]
+		[InlineData("Admin", "Author")]
+		public void RendersEditForm_WhenCategoryIsLoaded(params string[] roles)
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -98,14 +100,15 @@ public class EditComponentTests : TestContext
 		getCategoryHandler.HandleAsync(Arg.Any<string>())
 				.Returns(Task.FromResult(Result.Ok(categoryDto)));
 
+		getCategoryHandler.HandleAsync(Arg.Any<string>())
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), getCategoryHandler);
 
 		Services.AddSingleton(typeof(EditCategory.IEditCategoryHandler),
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Edit Category"));
@@ -118,7 +121,7 @@ public class EditComponentTests : TestContext
 	public void DisplaysCategoryName_InInputField()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -135,14 +138,15 @@ public class EditComponentTests : TestContext
 		getCategoryHandler.HandleAsync(Arg.Any<string>())
 				.Returns(Task.FromResult(Result.Ok(categoryDto)));
 
+		getCategoryHandler.HandleAsync(Arg.Any<string>())
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), getCategoryHandler);
 
 		Services.AddSingleton(typeof(EditCategory.IEditCategoryHandler),
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Science"));
@@ -154,7 +158,7 @@ public class EditComponentTests : TestContext
 	public void DisplaysIsArchivedCheckbox_WithCorrectState()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -171,14 +175,15 @@ public class EditComponentTests : TestContext
 		getCategoryHandler.HandleAsync(Arg.Any<string>())
 				.Returns(Task.FromResult(Result.Ok(categoryDto)));
 
+		getCategoryHandler.HandleAsync(Arg.Any<string>())
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), getCategoryHandler);
 
 		Services.AddSingleton(typeof(EditCategory.IEditCategoryHandler),
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Archived Category"));
@@ -190,7 +195,7 @@ public class EditComponentTests : TestContext
 	public void RendersSubmitButton_WithCorrectText()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -213,8 +218,7 @@ public class EditComponentTests : TestContext
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Save Changes"));
@@ -226,7 +230,7 @@ public class EditComponentTests : TestContext
 	public void SubmitButton_ShouldBe_InitiallyEnabled()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -249,8 +253,7 @@ public class EditComponentTests : TestContext
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Save Changes"));
@@ -262,7 +265,7 @@ public class EditComponentTests : TestContext
 	public void PageHeading_ShouldDisplay_EditCategory()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -285,8 +288,7 @@ public class EditComponentTests : TestContext
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Edit Category"));
@@ -297,7 +299,7 @@ public class EditComponentTests : TestContext
 	public void FormLabels_ShouldBe_DisplayedCorrectly()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -320,8 +322,7 @@ public class EditComponentTests : TestContext
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Category Name"));
@@ -333,7 +334,7 @@ public class EditComponentTests : TestContext
 	public void ErrorAlert_ShouldNotDisplay_Initially()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -356,8 +357,7 @@ public class EditComponentTests : TestContext
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Edit Category"));
@@ -368,7 +368,7 @@ public class EditComponentTests : TestContext
 	public async Task HandleSubmit_WithValidData_ShouldNavigateToList()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 		EditCategory.IEditCategoryHandler? editHandler = Substitute.For<EditCategory.IEditCategoryHandler>();
@@ -382,21 +382,17 @@ public class EditComponentTests : TestContext
 			ModifiedOn = null,
 			IsArchived = false
 		};
-
 		getCategoryHandler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 		editHandler.HandleAsync(Arg.Any<CategoryDto>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), getCategoryHandler);
 		Services.AddSingleton(typeof(EditCategory.IEditCategoryHandler), editHandler);
 
 		NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		cut.WaitForState(() => cut.Markup.Contains("Edit Category"));
 
@@ -411,7 +407,7 @@ public class EditComponentTests : TestContext
 	public async Task HandleSubmit_WithFailure_ShouldDisplayError()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 		EditCategory.IEditCategoryHandler? editHandler = Substitute.For<EditCategory.IEditCategoryHandler>();
@@ -427,17 +423,14 @@ public class EditComponentTests : TestContext
 		};
 
 		getCategoryHandler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 		editHandler.HandleAsync(Arg.Any<CategoryDto>())
-				.Returns(Task.FromResult(Result<CategoryDto>.Fail("Failed to update category.")));
-
+			.Returns(Task.FromResult(Result<CategoryDto>.Fail("Failed to update category.")));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), getCategoryHandler);
 		Services.AddSingleton(typeof(EditCategory.IEditCategoryHandler), editHandler);
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		cut.WaitForState(() => cut.Markup.Contains("Edit Category"));
 
@@ -454,7 +447,7 @@ public class EditComponentTests : TestContext
 	public void CancelButton_Click_ShouldNavigateToList()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -467,10 +460,8 @@ public class EditComponentTests : TestContext
 			ModifiedOn = null,
 			IsArchived = false
 		};
-
 		getCategoryHandler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), getCategoryHandler);
 
 		Services.AddSingleton(typeof(EditCategory.IEditCategoryHandler),
@@ -479,8 +470,7 @@ public class EditComponentTests : TestContext
 		NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		cut.WaitForState(() => cut.Markup.Contains("Edit Category"));
 
@@ -495,7 +485,7 @@ public class EditComponentTests : TestContext
 	public void CategoryNameInput_ShouldBind_ToModel()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -508,18 +498,15 @@ public class EditComponentTests : TestContext
 			ModifiedOn = null,
 			IsArchived = false
 		};
-
 		getCategoryHandler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), getCategoryHandler);
 
 		Services.AddSingleton(typeof(EditCategory.IEditCategoryHandler),
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		cut.WaitForState(() => cut.Markup.Contains("Edit Category"));
 
@@ -534,7 +521,7 @@ public class EditComponentTests : TestContext
 	public void IsArchivedCheckbox_ShouldToggle_OnClick()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -547,18 +534,15 @@ public class EditComponentTests : TestContext
 			ModifiedOn = null,
 			IsArchived = false
 		};
-
 		getCategoryHandler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), getCategoryHandler);
 
 		Services.AddSingleton(typeof(EditCategory.IEditCategoryHandler),
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		cut.WaitForState(() => cut.Markup.Contains("Edit Category"));
 
@@ -573,7 +557,7 @@ public class EditComponentTests : TestContext
 	public async Task SubmitButton_ShouldBe_Disabled_WhileSubmitting()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 		EditCategory.IEditCategoryHandler? editHandler = Substitute.For<EditCategory.IEditCategoryHandler>();
@@ -588,21 +572,17 @@ public class EditComponentTests : TestContext
 			IsArchived = false
 		};
 
-		getCategoryHandler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
 		// Simulate a delayed response to observe the submitting state
 		var tcs = new TaskCompletionSource<Result<CategoryDto>>();
-
+		getCategoryHandler.HandleAsync(Arg.Any<string>())
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 		editHandler.HandleAsync(Arg.Any<CategoryDto>())
-				.Returns(tcs.Task);
-
+			.Returns(tcs.Task);
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), getCategoryHandler);
 		Services.AddSingleton(typeof(EditCategory.IEditCategoryHandler), editHandler);
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		cut.WaitForState(() => cut.Markup.Contains("Edit Category"));
 
@@ -623,7 +603,7 @@ public class EditComponentTests : TestContext
 	public void ComponentWithNoId_ShouldHandle_EmptyParameter()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? getCategoryHandler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -636,8 +616,7 @@ public class EditComponentTests : TestContext
 				Substitute.For<EditCategory.IEditCategoryHandler>());
 
 		// Act
-		IRenderedComponent<Edit> cut = RenderComponent<Edit>(parameters => parameters
-				.Add(p => p.Id, ""));
+		var cut = Render<Edit>(parameters => parameters.Add(p => p.Id, ""));
 
 		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Unable to load category"));

@@ -1,4 +1,10 @@
-﻿// =======================================================
+﻿
+
+	namespace Shared.Helpers;
+
+	public static partial class Helpers
+	{
+// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     Helpers.cs
 // Company :       mpaulosky
@@ -7,13 +13,7 @@
 // Project Name :  Shared
 // =======================================================
 
-namespace Shared.Helpers;
-
-/// <summary>
-///   Provides helper methods for common operations.
-/// </summary>
-public static partial class Helpers
-{
+// ...existing code...
 
 	private static readonly DateTimeOffset StaticDate = new(2025, 1, 1, 8, 0, 0, TimeSpan.Zero);
 

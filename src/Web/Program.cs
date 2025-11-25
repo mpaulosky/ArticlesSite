@@ -38,7 +38,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Statically files middleware first
 app.UseStaticFiles();
+
 app.UseStatusCodePagesWithReExecute("/not-found");
 app.UseAntiforgery();
 app.UseAuthentication();
@@ -47,14 +50,17 @@ app.UseOutputCache();
 
 // --- Endpoint Mapping ---
 
-app.MapStaticAssets();
-
+// Map Razor Components first (handles RCL static files)
 app.MapRazorComponents<App>()
 		.AddInteractiveServerRenderMode();
 
+// Then map static assets (for wwwroot files)
+app.MapStaticAssets();
+
 app.MapDefaultEndpoints();
 
-app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
+// ReSharper disable once AsyncVoidMethod
+app.MapGet("/Account/Login", async void (HttpContext httpContext, string returnUrl = "/") =>
 {
 	var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
 			.WithRedirectUri(returnUrl)
@@ -74,7 +80,7 @@ app.MapGet("/Account/Logout", async httpContext =>
 });
 
 // File serving endpoint for uploaded images
-app.MapGet("/api/files/{fileName}", async (string fileName, IWebHostEnvironment environment) =>
+app.MapGet("/api/files/{fileName}", (string fileName, IWebHostEnvironment environment) =>
 {
 	var uploadsPath = Path.Combine(environment.WebRootPath, "uploads");
 	var filePath = Path.Combine(uploadsPath, fileName);
@@ -85,12 +91,12 @@ app.MapGet("/api/files/{fileName}", async (string fileName, IWebHostEnvironment 
 
 	if (!normalizedPath.StartsWith(normalizedUploadsPath, StringComparison.OrdinalIgnoreCase))
 	{
-		return Results.BadRequest("Invalid file path.");
+		return Task.FromResult(Results.BadRequest("Invalid file path."));
 	}
 
 	if (!File.Exists(filePath))
 	{
-		return Results.NotFound();
+		return Task.FromResult(Results.NotFound());
 	}
 
 	var fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
@@ -105,7 +111,7 @@ app.MapGet("/api/files/{fileName}", async (string fileName, IWebHostEnvironment 
 		_ => "application/octet-stream"
 	};
 
-	return Results.File(filePath, contentType);
+	return Task.FromResult(Results.File(filePath, contentType));
 });
 
 // --- Startup Logic (Database Seeding) ---

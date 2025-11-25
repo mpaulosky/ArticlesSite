@@ -1,5 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@inject IJSRuntime JsRuntime
 @implements IDisposable
 
 <div class="antialiased bg-gray-400 text-gray-900 dark:bg-gray-800 dark:text-gray-100 transition-colors duration-300">
@@ -22,8 +21,7 @@
 								An unhandled error has occurred.
 								<a href="." class="text-blue-600 dark:text-blue-400 hover:underline ml-2">Reload</a>
 							</span>
-							<button class="text-gray-900 dark:text-gray-100 hover:text-red-600 dark:hover:text-red-400
-							transition-colors duration-200" onclick="document.getElementById('blazor-error-ui').style.display='none'">
+							<button class="btn-warning" onclick="document.getElementById('blazor-error-ui')">
 								🗙
 							</button>
 						</div>
@@ -40,16 +38,18 @@
 
 @code {
 
-	private bool _initialized = false;
+	private bool _initialized;
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender && !_initialized)
+	protected override Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender && !_initialized)
 		{
 			_initialized = true;
 			StateHasChanged();
 		}
-	}
+
+    return Task.CompletedTask;
+  }
 
 	private static int GetErrorCode(Exception? exception)
 	{

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk.Razor">
 	<PropertyGroup>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
@@ -8,9 +8,7 @@
 		<IsTestProject>true</IsTestProject>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
-	<ItemGroup>
-		<Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
-	</ItemGroup>
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" />
 		<PackageReference Include="xunit" />
@@ -19,6 +17,7 @@
 		<PackageReference Include="NSubstitute" />
 		<PackageReference Include="NSubstitute.Analyzers.CSharp" />
 		<PackageReference Include="bunit" />
+
 		<PackageReference Include="coverlet.collector">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
