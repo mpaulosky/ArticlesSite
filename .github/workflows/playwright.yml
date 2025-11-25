@@ -55,7 +55,7 @@ jobs:
       AUTH0_E2E_PASSWORD_USER: ${{ secrets.AUTH0_E2E_PASSWORD_USER }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
