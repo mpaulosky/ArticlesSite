@@ -18,63 +18,62 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoryDetails;
 /// <summary>
 /// bUnit tests for the Category Details component
 /// </summary>
+// Modernized for bUnit v2 and helper-based authentication
 [ExcludeFromCodeCoverage]
-public class DetailsComponentTests : TestContext
+public class DetailsComponentTests : BunitContext
 {
 
 	[Fact]
 	public void RendersLoadingComponent_WhenIsLoading()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
-		// Create a delayed task to keep the component in loading state
 		var tcs = new TaskCompletionSource<Result<CategoryDto>>();
 		handler.HandleAsync(Arg.Any<string>()).Returns(tcs.Task);
 
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert - Check immediately while still loading
 		cut.Markup.Should().Contain("Loading...");
 
-		// Cleanup - complete the task
 		tcs.SetResult(Result.Fail<CategoryDto>("Category not found."));
 	}
 
-	[Fact]
-	public void RendersErrorAlert_WhenCategoryNotFound()
-	{
+	    [Fact]
+	    public void RendersErrorAlert_WhenCategoryNotFound()
+	    {
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
 		handler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Fail<CategoryDto>("Category not found.")));
+			.Returns(Task.FromResult(Result.Fail<CategoryDto>("Category not found.")));
 
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Category not found."));
 		cut.Markup.Should().Contain("Unable to load category");
 		cut.Markup.Should().Contain("Category not found.");
-	}
+	    }
 
-	[Fact]
-	public void RendersDetailsView_WhenCategoryIsLoaded()
+	[Theory]
+	[InlineData("Admin")]
+	[InlineData("Author")]
+	[InlineData("User")]
+	[InlineData("Admin", "Author")]
+	public void RendersDetailsView_WhenCategoryIsLoaded(params string[] roles)
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -94,10 +93,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Category Details"));
 		cut.Markup.Should().Contain("Category Details");
 		cut.Markup.Should().Contain("Technology");
@@ -108,7 +105,7 @@ public class DetailsComponentTests : TestContext
 	public void DisplaysCategoryName_InHeading()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -128,10 +125,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Science"));
 		cut.Markup.Should().Contain("Science");
 	}
@@ -140,7 +135,7 @@ public class DetailsComponentTests : TestContext
 	public void DisplaysCategorySlug_Correctly()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -160,10 +155,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("technology-slug"));
 		cut.Markup.Should().Contain("Category Slug:");
 		cut.Markup.Should().Contain("technology-slug");
@@ -173,7 +166,7 @@ public class DetailsComponentTests : TestContext
 	public void DisplaysCategoryId_Correctly()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -193,10 +186,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("507f1f77bcf86cd799439011"));
 		cut.Markup.Should().Contain("Category ID:");
 		cut.Markup.Should().Contain("507f1f77bcf86cd799439011");
@@ -206,7 +197,7 @@ public class DetailsComponentTests : TestContext
 	public void DisplaysCreatedOn_InCorrectFormat()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -228,10 +219,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Created On:"));
 		cut.Markup.Should().Contain("Created On:");
 	}
@@ -240,7 +229,7 @@ public class DetailsComponentTests : TestContext
 	public void DisplaysModifiedOn_AsNeverWhenNull()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -260,10 +249,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Never"));
 		cut.Markup.Should().Contain("Modified On:");
 		cut.Markup.Should().Contain("Never");
@@ -273,7 +260,7 @@ public class DetailsComponentTests : TestContext
 	public void DisplaysModifiedOn_WhenNotNull()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -293,10 +280,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Modified On:"));
 		cut.Markup.Should().Contain("Modified On:");
 		cut.Markup.Should().NotContain("Never");
@@ -306,7 +291,7 @@ public class DetailsComponentTests : TestContext
 	public void DisplaysActiveStatus_ForNonArchivedCategories()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -326,10 +311,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Active"));
 		cut.Markup.Should().Contain("Status:");
 		cut.Markup.Should().Contain("Active");
@@ -339,7 +322,7 @@ public class DetailsComponentTests : TestContext
 	public void DisplaysArchivedStatus_ForArchivedCategories()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -359,10 +342,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Archived"));
 		cut.Markup.Should().Contain("Status:");
 		cut.Markup.Should().Contain("Archived");
@@ -372,7 +353,7 @@ public class DetailsComponentTests : TestContext
 	public void EditButton_ShouldBe_Enabled_ForActiveCategories()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -392,10 +373,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Technology"));
 		var editButton = cut.Find("button:contains('Edit')");
 		editButton.HasAttribute("disabled").Should().BeFalse();
@@ -405,7 +384,7 @@ public class DetailsComponentTests : TestContext
 	public void EditButton_ShouldBe_Disabled_ForArchivedCategories()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -425,10 +404,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Archived Category"));
 		var editButton = cut.Find("button:contains('Edit')");
 		editButton.HasAttribute("disabled").Should().BeTrue();
@@ -438,7 +415,7 @@ public class DetailsComponentTests : TestContext
 	public void EditButton_Click_ShouldNavigateToEdit()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -457,8 +434,7 @@ public class DetailsComponentTests : TestContext
 
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
@@ -476,7 +452,7 @@ public class DetailsComponentTests : TestContext
 	public void BackToListButton_Click_ShouldNavigateToList()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -495,8 +471,7 @@ public class DetailsComponentTests : TestContext
 
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
 		NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
@@ -514,7 +489,7 @@ public class DetailsComponentTests : TestContext
 	public void PageHeading_ShouldDisplay_CategoryDetails()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -534,10 +509,8 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Category Details"));
 		cut.Markup.Should().Contain("Category Details");
 	}
@@ -546,7 +519,7 @@ public class DetailsComponentTests : TestContext
 	public void RendersButtons_WithCorrectText()
 	{
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -566,35 +539,31 @@ public class DetailsComponentTests : TestContext
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Technology"));
 		cut.Markup.Should().Contain("Edit");
 		cut.Markup.Should().Contain("Back to List");
 	}
 
-	[Fact]
-	public void ComponentWithNoId_ShouldHandle_EmptyParameter()
-	{
+	    [Fact]
+	    public void ComponentWithNoId_ShouldHandle_EmptyParameter()
+	    {
 		// Arrange
-		this.AddTestAuthorization().SetAuthorized("TEST USER");
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
 		handler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Fail<CategoryDto>("Invalid category ID.")));
+			.Returns(Task.FromResult(Result.Fail<CategoryDto>("Invalid category ID.")));
 
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		IRenderedComponent<Details> cut = RenderComponent<Details>(parameters => parameters
-				.Add(p => p.Id, ""));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, ""));
 
-		// Assert
 		cut.WaitForState(() => cut.Markup.Contains("Unable to load category"));
 		cut.Markup.Should().Contain("Unable to load category");
-	}
+	    }
 
 }

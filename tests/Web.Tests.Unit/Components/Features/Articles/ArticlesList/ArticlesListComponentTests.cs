@@ -3,8 +3,10 @@ using Web.Components.Features.Articles.ArticlesList;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticlesList;
 
+using Bunit.TestDoubles;
+using Bunit;
 [ExcludeFromCodeCoverage]
-public class ArticlesListComponentTests : Bunit.TestContext
+public class ArticlesListComponentTests : BunitContext
 {
 
 	[Fact]
@@ -24,12 +26,9 @@ public class ArticlesListComponentTests : Bunit.TestContext
 				.Returns(Result.Ok<IEnumerable<ArticleDto>>(articles));
 
 		Services.AddSingleton(mockHandler);
-		
-		// Mock authentication
-		this.AddTestAuthorization().SetAuthorized("TestUser").SetRoles("Author");
 
 		// Act
-		var cut = RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
 
 		// Assert
 		cut.WaitForAssertion(() =>
@@ -56,12 +55,9 @@ public class ArticlesListComponentTests : Bunit.TestContext
 				.Returns(Result.Ok<IEnumerable<ArticleDto>>(articles));
 
 		Services.AddSingleton(mockHandler);
-		
-		// Mock authentication
-		this.AddTestAuthorization().SetAuthorized("TestUser");
 
 		// Act
-		var cut = RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
 
 		// Find and check the 'Include Archived' checkbox
 		var checkboxes = cut.FindAll("input[type='checkbox']");
@@ -93,12 +89,9 @@ public class ArticlesListComponentTests : Bunit.TestContext
 				.Returns(Result.Ok<IEnumerable<ArticleDto>>(articles));
 
 		Services.AddSingleton(mockHandler);
-		
-		// Mock authentication
-		this.AddTestAuthorization().SetAuthorized("user1");
 
 		// Act
-		var cut = RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
 
 		// Find and check the 'Show My Articles Only' checkbox
 		var checkboxes = cut.FindAll("input[type='checkbox']");
@@ -121,15 +114,12 @@ public class ArticlesListComponentTests : Bunit.TestContext
 		// Arrange
 		var mockHandler = Substitute.For<GetArticles.IGetArticlesHandler>();
 		mockHandler.HandleAsync(Arg.Any<ClaimsPrincipal?>(), Arg.Any<bool>(), Arg.Any<bool>())
-				.Returns(Result.Ok<IEnumerable<ArticleDto>>(Enumerable.Empty<ArticleDto>()));
+				.Returns(Result.Ok(Enumerable.Empty<ArticleDto>()));
 
 		Services.AddSingleton(mockHandler);
-		
-		// Mock authentication
-		this.AddTestAuthorization().SetAuthorized("TestUser");
 
 		// Act
-		var cut = RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
 
 		// Assert
 		cut.WaitForAssertion(() =>
@@ -148,12 +138,9 @@ public class ArticlesListComponentTests : Bunit.TestContext
 				.Returns(Result.Fail<IEnumerable<ArticleDto>>("Database connection failed"));
 
 		Services.AddSingleton(mockHandler);
-		
-		// Mock authentication
-		this.AddTestAuthorization().SetAuthorized("TestUser");
 
 		// Act
-		var cut = RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
 
 		// Assert
 		cut.WaitForAssertion(() =>
@@ -163,75 +150,37 @@ public class ArticlesListComponentTests : Bunit.TestContext
 		});
 	}
 
-	[Fact]
-	public async Task Should_Display_Create_Button_For_Admin_User()
+	[Theory]
+	[InlineData("Admin")]
+	[InlineData("Author")]
+	[InlineData("User")]
+	[InlineData("Admin", "Author")]
+	public async Task Should_Display_Create_Button_Based_On_Role(params string[] roles)
 	{
 		// Arrange
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);
 		var mockHandler = Substitute.For<GetArticles.IGetArticlesHandler>();
 		mockHandler.HandleAsync(Arg.Any<ClaimsPrincipal?>(), Arg.Any<bool>(), Arg.Any<bool>())
-				.Returns(Result.Ok<IEnumerable<ArticleDto>>(Enumerable.Empty<ArticleDto>()));
+				.Returns(Result.Ok(Enumerable.Empty<ArticleDto>()));
 
 		Services.AddSingleton(mockHandler);
-		
-		// Mock authentication as Admin
-		this.AddTestAuthorization().SetAuthorized("AdminUser").SetRoles("Admin");
 
 		// Act
-		var cut = RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
 
 		// Assert
 		cut.WaitForAssertion(() =>
 		{
-			var createButton = cut.Find("button.btn-secondary");
-			createButton.TextContent.Should().Contain("Create");
-		});
-	}
-
-	[Fact]
-	public async Task Should_Display_Create_Button_For_Author_User()
-	{
-		// Arrange
-		var mockHandler = Substitute.For<GetArticles.IGetArticlesHandler>();
-		mockHandler.HandleAsync(Arg.Any<ClaimsPrincipal?>(), Arg.Any<bool>(), Arg.Any<bool>())
-				.Returns(Result.Ok<IEnumerable<ArticleDto>>(Enumerable.Empty<ArticleDto>()));
-
-		Services.AddSingleton(mockHandler);
-		
-		// Mock authentication as Author
-		this.AddTestAuthorization().SetAuthorized("AuthorUser").SetRoles("Author");
-
-		// Act
-		var cut = RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
-
-		// Assert
-		cut.WaitForAssertion(() =>
-		{
-			var createButton = cut.Find("button.btn-secondary");
-			createButton.TextContent.Should().Contain("Create");
-		});
-	}
-
-	[Fact]
-	public async Task Should_Not_Display_Create_Button_For_Regular_User()
-	{
-		// Arrange
-		var mockHandler = Substitute.For<GetArticles.IGetArticlesHandler>();
-		mockHandler.HandleAsync(Arg.Any<ClaimsPrincipal?>(), Arg.Any<bool>(), Arg.Any<bool>())
-				.Returns(Result.Ok<IEnumerable<ArticleDto>>(Enumerable.Empty<ArticleDto>()));
-
-		Services.AddSingleton(mockHandler);
-		
-		// Mock authentication as regular user
-		this.AddTestAuthorization().SetAuthorized("RegularUser").SetRoles("User");
-
-		// Act
-		var cut = RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
-
-		// Assert
-		cut.WaitForAssertion(() =>
-		{
-			var buttons = cut.FindAll("button.btn-secondary");
-			buttons.Should().BeEmpty();
+			if (roles.Contains("Admin") || roles.Contains("Author"))
+			{
+				var createButton = cut.Find("button.btn-secondary");
+				createButton.TextContent.Should().Contain("Create");
+			}
+			else
+			{
+				var buttons = cut.FindAll("button.btn-secondary");
+				buttons.Should().BeEmpty();
+			}
 		});
 	}
 
@@ -250,12 +199,9 @@ public class ArticlesListComponentTests : Bunit.TestContext
 				.Returns(Result.Ok<IEnumerable<ArticleDto>>(articles));
 
 		Services.AddSingleton(mockHandler);
-		
-		// Mock authentication
-		this.AddTestAuthorization().SetAuthorized("user1");
 
 		// Act
-		var cut = RenderComponent<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
 
 		// Wait for initial render
 		cut.WaitForState(() => cut.FindAll("input[type='checkbox']").Count == 2, timeout: TimeSpan.FromSeconds(2));

@@ -16,8 +16,7 @@ using Create = Web.Components.Features.Articles.ArticleCreate.Create;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleCreate;
 
-[ExcludeFromCodeCoverage]
-public class CreateComponentTests : TestContext
+public class CreateComponentTests : BunitContext
 {
 
 	[Fact]
@@ -35,7 +34,7 @@ public class CreateComponentTests : TestContext
 				Substitute.For<CreateArticle.ICreateArticleHandler>());
 
 		// Now safe to render the component
-		IRenderedComponent<Create> cut = RenderComponent<Create>();
+		var cut = Render<Create>();
 		cut.WaitForState(() => cut.Markup.Contains("LoadingComponent"));
 		cut.Markup.Should().Contain("LoadingComponent");
 	}
@@ -55,7 +54,7 @@ public class CreateComponentTests : TestContext
 				Substitute.For<CreateArticle.ICreateArticleHandler>());
 
 		// Now safe to render the component
-		IRenderedComponent<Create> cut = RenderComponent<Create>();
+		var cut = Render<Create>();
 		cut.WaitForState(() => cut.Markup.Contains("Failed to create article."));
 		cut.Markup.Should().Contain("Failed to create article.");
 	}
@@ -75,8 +74,7 @@ public class CreateComponentTests : TestContext
 				Substitute.For<CreateArticle.ICreateArticleHandler>());
 
 		// Now safe to render the component
-		IRenderedComponent<Create> cut = RenderComponent<Create>();
-		cut.WaitForState(() => cut.Markup.Contains("modern-card"));
+		var cut = Render<Create>();
 		cut.Markup.Should().Contain("modern-card");
 		cut.Markup.Should().Contain("Create Article");
 	}
