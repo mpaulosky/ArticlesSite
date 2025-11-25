@@ -58,6 +58,7 @@
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.10" />
     <!-- Testing Packages -->
     <PackageVersion Include="bunit" Version="2.1.1" />
+
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="C3D.Extensions.Playwright.AspNetCore.Xunit" Version="0.1.45" />
     <PackageVersion Include="FluentAssertions" Version="8.8.0" />
