@@ -97,7 +97,7 @@ jobs:
           BASE_URL: https://localhost:7241
 
       - name: Upload test results
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report
@@ -105,7 +105,7 @@ jobs:
           retention-days: 30
 
       - name: Upload test artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-test-results
