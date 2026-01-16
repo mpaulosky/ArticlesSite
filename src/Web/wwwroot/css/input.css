@@ -1,41 +1,70 @@
 @import "tailwindcss";
 @import "./themes.css";
 
-@theme inline {
-  --color-theme-primary-*: initial;
-  --color-theme-accent-*: initial;
-  --color-theme-neutral-*: initial;
+@theme {
+  --color-theme-primary-50: #fef2f2;
+  --color-theme-primary-100: #fee2e2;
+  --color-theme-primary-200: #fecaca;
+  --color-theme-primary-300: #fca5a5;
+  --color-theme-primary-400: #f87171;
+  --color-theme-primary-500: #ef4444;
+  --color-theme-primary-600: #dc2626;
+  --color-theme-primary-700: #b91c1c;
+  --color-theme-primary-800: #991b1b;
+  --color-theme-primary-900: #7f1d1d;
+  --color-theme-primary-950: #450a0a;
+  --color-theme-accent-100: #fef3c7;
+  --color-theme-accent-300: #fcd34d;
+  --color-theme-accent-400: #fbbf24;
+  --color-theme-accent-500: #f59e0b;
+  --color-theme-accent-600: #d97706;
+  --color-theme-accent-700: #b45309;
+  --color-theme-accent-800: #92400e;
+  --color-theme-accent-900: #78350f;
+  --color-theme-neutral-50: #f9fafb;
+  --color-theme-neutral-100: #f3f4f6;
+  --color-theme-neutral-200: #e5e7eb;
+  --color-theme-neutral-300: #d1d5db;
+  --color-theme-neutral-400: #9ca3af;
+  --color-theme-neutral-500: #6b7280;
+  --color-theme-neutral-600: #4b5563;
+  --color-theme-neutral-700: #374151;
+  --color-theme-neutral-800: #1f2937;
+  --color-theme-neutral-900: #111827;
+  --color-theme-neutral-950: #030712;
 }
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer components {
 	.container-card {
-		@apply mx-auto max-w-7xl mb-6 p-6 sm:px-4 md:px-6 lg:px-8 rounded-md shadow-md shadow-blue-500 bg-gray-100 dark:bg-gray-800 transition-colors duration-300;
+		@apply mx-auto max-w-7xl mb-6 p-6 sm:px-4 md:px-6 lg:px-8 rounded-md shadow-md bg-theme-neutral-50 dark:bg-theme-neutral-800 transition-colors duration-300;
+		box-shadow: 0 4px 6px -1px rgb(from var(--color-theme-primary-500) r g b / 0.1), 0 2px 4px -2px rgb(from var(--color-theme-primary-500) r g b / 0.1);
 	}
 
 	.btn-secondary {
-		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-blue-600 to-blue-900 text-white hover:from-blue-900 hover:to-blue-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:bg-blue-800 dark:from-blue-400 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-400 dark:focus:ring-blue-300;
+		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-theme-primary-600 to-theme-primary-900 text-white hover:from-theme-primary-900 hover:to-theme-primary-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-theme-primary-500 focus:ring-offset-2 active:bg-theme-primary-800 dark:from-theme-primary-400 dark:to-theme-primary-700 dark:hover:from-theme-primary-700 dark:hover:to-theme-primary-400 dark:focus:ring-theme-primary-300;
 	}
 
 	.btn-primary {
-		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-green-600 to-green-900 text-white hover:from-green-900 hover:to-green-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:bg-green-800 dark:from-green-400 dark:to-green-700 dark:hover:from-green-700 dark:hover:to-green-400 dark:focus:ring-green-300;
+		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-theme-accent-600 to-theme-accent-900 text-white hover:from-theme-accent-900 hover:to-theme-accent-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-theme-accent-500 focus:ring-offset-2 active:bg-theme-accent-800 dark:from-theme-accent-400 dark:to-theme-accent-700 dark:hover:from-theme-accent-700 dark:hover:to-theme-accent-400 dark:focus:ring-theme-accent-300;
 	}
 
 	.btn-warning {
-		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-red-600 to-red-900 text-white hover:from-red-900 hover:to-red-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:bg-red-800 dark:from-red-400 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-400 dark:focus:ring-red-300;
+		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-theme-primary-600 to-theme-primary-900 text-white hover:from-theme-primary-900 hover:to-theme-primary-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-theme-primary-500 focus:ring-offset-2 active:bg-theme-primary-800 dark:from-theme-primary-400 dark:to-theme-primary-700 dark:hover:from-theme-primary-700 dark:hover:to-theme-primary-400 dark:focus:ring-theme-primary-300;
 	}
 
 	.edit-label {
-		@apply block text-gray-800 dark:text-gray-300 font-semibold mb-2;
+		@apply block text-theme-neutral-800 dark:text-theme-neutral-300 font-semibold mb-2;
 	}
 
 	.input-textbox {
-		@apply bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 w-full;
+		@apply bg-white dark:bg-theme-neutral-800 text-theme-neutral-900 dark:text-white border-2 border-theme-primary-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-theme-accent-500 w-full;
 	}
 	
 	.nav-bar {
-		@apply container flex items-center justify-between max-w-7xl px-6 py-2 mx-auto rounded-b-md border-b border-blue-700 shadow-md shadow-blue-500 transition-colors duration-200;
+		@apply container flex items-center justify-between max-w-7xl px-6 py-2 mx-auto rounded-b-md border-b border-theme-primary-700 shadow-md transition-colors duration-200;
+		box-shadow: 0 4px 6px -1px rgb(from var(--color-theme-primary-500) r g b / 0.1), 0 2px 4px -2px rgb(from var(--color-theme-primary-500) r g b / 0.1);
 	}
 }
 
@@ -45,9 +74,9 @@ h3,
 h4,
 h5,
 h6 {
-	@apply font-bold tracking-tight text-gray-900 dark:text-gray-50;
+	@apply font-bold tracking-tight text-theme-neutral-900 dark:text-theme-neutral-50;
 }
 
 a {
-	@apply p-1 font-semibold text-gray-900 hover:text-blue-900 dark:text-gray-50 dark:hover:text-blue-700 transition-colors duration-300;
+	@apply p-1 font-semibold text-theme-neutral-900 hover:text-theme-primary-900 dark:text-theme-neutral-50 dark:hover:text-theme-primary-700 transition-colors duration-300;
 }

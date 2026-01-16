@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @implements IDisposable
 
-<div class="antialiased bg-gray-400 text-gray-900 dark:bg-gray-800 dark:text-gray-100 transition-colors duration-300">
+<div class="antialiased bg-theme-neutral-400 text-theme-neutral-900 dark:bg-theme-neutral-800 dark:text-theme-neutral-100 transition-colors duration-300">
 	<div class="flex flex-col min-h-screen space-y-4">
 		<NavMenuComponent />
 
@@ -14,12 +14,12 @@
 				<ErrorContent>
 					<!-- Error UI -->
 					<div id="blazor-error-ui" class="hidden fixed
-					bottom-0 left-0 right-0 z-50bg-yellow-100 dark:bg-yellow-900 shadow-lg
-					border-t-2 border-yellow-400 dark:border-yellow-600 px-5 py-3 transition-colors duration-200" data-nosnippet>
+					bottom-0 left-0 right-0 z-50 bg-theme-accent-100 dark:bg-theme-accent-900 shadow-lg
+					border-t-2 border-theme-accent-400 dark:border-theme-accent-600 px-5 py-3 transition-colors duration-200" data-nosnippet>
 						<div class="flex items-center justify-between">
-							<span class="text-gray-900 dark:text-gray-100">
+							<span class="text-theme-neutral-900 dark:text-theme-neutral-100">
 								An unhandled error has occurred.
-								<a href="." class="text-blue-600 dark:text-blue-400 hover:underline ml-2">Reload</a>
+								<a href="." class="text-theme-primary-600 dark:text-theme-primary-400 hover:underline ml-2">Reload</a>
 							</span>
 							<button class="btn-warning" onclick="document.getElementById('blazor-error-ui')">
 								🗙
