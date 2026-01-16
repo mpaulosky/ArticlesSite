@@ -10,6 +10,11 @@
     <!-- Initialize theme early to prevent FOUC (Flash of Unstyled Content) -->
     <script>
         (function () {
+            // Initialize default theme colors (will be overridden by theme-manager.js after load)
+            const savedTheme = localStorage.getItem('tailwind-color-theme') || 'theme-blue-light';
+            document.documentElement.classList.add(savedTheme);
+            
+            // Initialize dark/light mode
             const theme = localStorage.getItem('theme') || 'light';
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
@@ -47,6 +52,9 @@
 
     <!-- Custom text editor helpers -->
     <script src="js/text-editor-helpers.js"></script>
+    
+    <!-- Theme Manager for color theme switching -->
+    <script src="js/theme-manager.js"></script>
 </body>
 
 </html>

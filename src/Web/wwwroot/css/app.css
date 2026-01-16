@@ -66,6 +66,7 @@
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
     --tracking-tight: -0.025em;
+    --tracking-wider: 0.05em;
     --leading-tight: 1.25;
     --radius-md: 0.375rem;
     --radius-lg: 0.5rem;
@@ -92,8 +93,11 @@
     --color-theme-accent-900: #78350f;
     --color-theme-neutral-50: #f9fafb;
     --color-theme-neutral-100: #f3f4f6;
+    --color-theme-neutral-200: #e5e7eb;
     --color-theme-neutral-300: #d1d5db;
     --color-theme-neutral-400: #9ca3af;
+    --color-theme-neutral-600: #4b5563;
+    --color-theme-neutral-700: #374151;
     --color-theme-neutral-800: #1f2937;
     --color-theme-neutral-900: #111827;
   }
@@ -1707,6 +1711,106 @@
     --tw-duration: 200ms;
     transition-duration: 200ms;
     box-shadow: 0 4px 6px -1px rgb(from var(--color-theme-primary-500) r g b / 0.1), 0 2px 4px -2px rgb(from var(--color-theme-primary-500) r g b / 0.1);
+  }
+  .theme-selector-container {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 4);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-theme-neutral-100);
+    padding: calc(var(--spacing) * 4);
+    &:where(.dark, .dark *) {
+      background-color: var(--color-theme-neutral-800);
+    }
+  }
+  .theme-controls {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 4);
+    @media (width >= 48rem) {
+      flex-direction: row;
+    }
+    @media (width >= 48rem) {
+      gap: calc(var(--spacing) * 6);
+    }
+  }
+  .color-selector,	.brightness-selector {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 2);
+  }
+  .theme-selector-label {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+    --tw-font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-semibold);
+    --tw-tracking: var(--tracking-wider);
+    letter-spacing: var(--tracking-wider);
+    color: var(--color-theme-neutral-700);
+    text-transform: uppercase;
+    &:where(.dark, .dark *) {
+      color: var(--color-theme-neutral-300);
+    }
+  }
+  .button-group {
+    display: flex;
+    gap: calc(var(--spacing) * 2);
+  }
+  .color-btn,	.brightness-btn {
+    cursor: pointer;
+    border-radius: var(--radius-md);
+    border-style: var(--tw-border-style);
+    border-width: 2px;
+    border-color: transparent;
+    background-color: var(--color-theme-neutral-200);
+    padding-inline: calc(var(--spacing) * 3);
+    padding-block: calc(var(--spacing) * 2);
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-theme-neutral-700);
+    transition-property: all;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+    --tw-duration: 200ms;
+    transition-duration: 200ms;
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-theme-primary-300);
+      }
+    }
+    &:where(.dark, .dark *) {
+      background-color: var(--color-theme-neutral-700);
+    }
+    &:where(.dark, .dark *) {
+      color: var(--color-theme-neutral-300);
+    }
+    &:where(.dark, .dark *) {
+      &:hover {
+        @media (hover: hover) {
+          background-color: var(--color-theme-primary-700);
+        }
+      }
+    }
+  }
+  .color-btn.active,	.brightness-btn.active {
+    border-color: var(--color-theme-primary-700);
+    background-color: var(--color-theme-primary-500);
+    color: var(--color-white);
+    &:where(.dark, .dark *) {
+      border-color: var(--color-theme-primary-300);
+    }
+  }
+  .theme-info {
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-theme-neutral-600);
+    &:where(.dark, .dark *) {
+      color: var(--color-theme-neutral-400);
+    }
   }
 }
 h1, h2, h3, h4, h5, h6 {

@@ -66,6 +66,46 @@
 		@apply container flex items-center justify-between max-w-7xl px-6 py-2 mx-auto rounded-b-md border-b border-theme-primary-700 shadow-md transition-colors duration-200;
 		box-shadow: 0 4px 6px -1px rgb(from var(--color-theme-primary-500) r g b / 0.1), 0 2px 4px -2px rgb(from var(--color-theme-primary-500) r g b / 0.1);
 	}
+	
+	.theme-selector-container {
+		@apply flex flex-col gap-4 p-4 rounded-lg bg-theme-neutral-100 dark:bg-theme-neutral-800;
+	}
+
+	.theme-controls {
+		@apply flex flex-col gap-4 md:flex-row md:gap-6;
+	}
+
+	.color-selector,
+	.brightness-selector {
+		@apply flex flex-col gap-2;
+	}
+
+	.theme-selector-label {
+		@apply font-semibold text-theme-neutral-700 dark:text-theme-neutral-300 text-sm uppercase tracking-wider;
+	}
+
+	.button-group {
+		@apply flex gap-2;
+	}
+
+	.color-btn,
+	.brightness-btn {
+		@apply px-3 py-2 rounded-md font-medium text-sm transition-all duration-200
+			   bg-theme-neutral-200 dark:bg-theme-neutral-700
+			   text-theme-neutral-700 dark:text-theme-neutral-300
+			   hover:bg-theme-primary-300 dark:hover:bg-theme-primary-700
+			   border-2 border-transparent
+			   cursor-pointer;
+	}
+
+	.color-btn.active,
+	.brightness-btn.active {
+		@apply bg-theme-primary-500 text-white border-theme-primary-700 dark:border-theme-primary-300;
+	}
+
+	.theme-info {
+		@apply text-sm font-medium text-theme-neutral-600 dark:text-theme-neutral-400;
+	}
 }
 
 h1,
