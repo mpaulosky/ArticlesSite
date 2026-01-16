@@ -7,8 +7,6 @@
 // Project Name :  Web
 // =======================================================
 
-using Shared.Helpers;
-
 namespace Web.Components.Features.Articles.ArticleCreate;
 
 public static class CreateArticle

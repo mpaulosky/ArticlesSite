@@ -26,6 +26,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Blazored.LocalStorage" />
+		<PackageReference Include="MediatR" />
 		<PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" />
 		<PackageReference Include="MongoDB.Driver" />
 		<PackageReference Include="AspNetCore.HealthChecks.MongoDb" />

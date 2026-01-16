@@ -14,313 +14,319 @@
 
 @if (_isLoading)
 {
-	<LoadingComponent />
+  <LoadingComponent />
 }
 else if (_errorMessage is not null)
 {
-	<ErrorAlertComponent Title="Unable to load article">
-		@_errorMessage
-	</ErrorAlertComponent>
+  <ErrorAlertComponent Title="Unable to load article">
+    @_errorMessage
+  </ErrorAlertComponent>
 }
 else if (_editModel != ArticleDto.Empty)
 {
-	<div class="container-card bg-gray-100 dark:bg-gray-700 rounded-lg shadow-lg p-8 max-w-7xl mx-auto mt-6 transition-colors duration-300">
-		<EditForm Model="_editModel" OnValidSubmit="HandleValidSubmit">
-			<DataAnnotationsValidator />
-			<ValidationSummary />
-			
-			<div class="mb-6">
-				<label for="titleEdit" class="block text-gray-800 dark:text-gray-300 font-semibold mb-2">Title</label>
-				<InputText id="titleEdit" class="form-control bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" @bind-Value="_editModel.Title" />
-			</div>
-			
-			<div class="mb-6">
-				<label for="introductionEdit" class="block text-gray-800 dark:text-gray-300 font-semibold mb-2">Introduction</label>
-				<InputTextArea id="introductionEdit" class="form-control bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" @bind-Value="_editModel.Introduction" rows="2" />
-			</div>
-			
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-				<div>
-					<label for="categoryEdit" class="block text-gray-800 dark:text-gray-300 font-semibold mb-2">
-						<i class="bi bi-folder me-1"></i> Category
-					</label>
-					<InputSelect id="categoryEdit" class="form-control bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full" @bind-Value="_selectedCategoryId" @onchange="OnCategoryChanged">
-						<option value="">Select a category</option>
-						@if (_categories != null && _categories.Any())
-						{
-							foreach (var cat in _categories)
-							{
-								<option value="@cat.Id.ToString()">@cat.CategoryName</option>
-							}
-						}
-					</InputSelect>
-				</div>
-				
-				<div>
-					<label class="block text-gray-800 dark:text-gray-300 font-semibold mb-2">
-						<i class="bi bi-person-circle me-1"></i> Author
-						<i class="bi bi-lock-fill text-gray-500 ms-1" title="Not editable"></i>
-					</label>
-					<div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-blue-500 rounded px-3 py-2 font-semibold">
-						@_editModel.Author?.Name
-					</div>
-				</div>
-			</div>
-			
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-				<div class="flex items-center">
-					<InputCheckbox id="isPublishedEdit" class="form-check-input mr-2" @bind-Value="_editModel.IsPublished" />
-					<label for="isPublishedEdit" class="text-gray-800 dark:text-gray-300 font-semibold">Published</label>
-				</div>
-				
-				<div class="flex items-center">
-					<InputCheckbox id="isArchivedEdit" class="form-check-input mr-2" @bind-Value="_editModel.IsArchived" />
-					<label for="isArchivedEdit" class="text-gray-800 dark:text-gray-300 font-semibold">Archived</label>
-				</div>
-			</div>
-			
-			<div class="mb-6">
-				<label class="block text-gray-800 dark:text-gray-300 font-semibold mb-2">Content (Markdown)</label>
-				<TextEditor @bind-Content="@_editModel.Content" AlignmentOptionsEnabled="true" />
-			</div>
-			
-			<div class="mt-8 flex gap-3 justify-end">
-				<button type="submit" class="btn-primary">
-					<i class="bi bi-save"></i> Save Changes
-				</button>
-				<button type="button" class="btn-secondary"
-					@onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
-					<i class="bi bi-arrow-left"></i> Cancel
-				</button>
-			</div>
-		</EditForm>
-	</div>
+  <div class="container-card">
+    <EditForm Model="_editModel" OnValidSubmit="HandleValidSubmit">
+      <DataAnnotationsValidator />
+      <ValidationSummary />
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label for="titleEdit" class="edit-label">Title</label>
+          <InputTextArea id="titleEdit" class="form-control input-textbox"
+            @bind-Value="_editModel.Title" />
+        </div>
+
+        <div>
+          <label for="introductionEdit"
+            class="edit-label">Introduction</label>
+          <InputTextArea id="introductionEdit" class="form-control input-textbox"
+            @bind-Value="_editModel.Introduction" rows="2" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+          <label for="categoryEdit" class="edit-label">
+            <i class="bi bi-folder me-1"></i> Category
+          </label>
+          <InputSelect id="categoryEdit" class="form-control input-textbox"
+            @bind-Value="_selectedCategoryId" @onchange="OnCategoryChanged">
+            <option value="">Select A Category</option>
+            @if (_categories != null && _categories.Any())
+            {
+              foreach (var cat in _categories)
+              {
+                <option value="@cat.Id.ToString()">@cat.CategoryName</option>
+              }
+            }
+          </InputSelect>
+        </div>
+
+        <div>
+          <label class="edit-label">
+            <i class="bi bi-person-circle me-1"></i> Author
+            <i class="bi bi-lock-fill text-gray-500 ms-1" title="Not editable"></i>
+          </label>
+          <div
+            class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-blue-500 rounded px-3 py-2 font-semibold">
+            @_editModel.Author?.Name
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="flex items-center">
+          <InputCheckbox id="isPublishedEdit" class="form-check-input mr-2" @bind-Value="_editModel.IsPublished" />
+          <label for="isPublishedEdit" class="edit-label">Published</label>
+        </div>
+
+        <div class="flex items-center">
+          <InputCheckbox id="isArchivedEdit" class="form-check-input mr-2" @bind-Value="_editModel.IsArchived" />
+          <label for="isArchivedEdit" class="edit-label">Archived</label>
+        </div>
+      </div>
+
+      <div class="mb-6">
+        <label class="edit-label">Content (Markdown)</label>
+        <TextEditor @bind-Content="@_editModel.Content" AlignmentOptionsEnabled="true" />
+      </div>
+
+      <div class="mt-8 flex gap-3 justify-end">
+        <button type="submit" class="btn-primary">
+          <i class="bi bi-save"></i> Save Changes
+        </button>
+        <button type="button" class="btn-secondary" @onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
+          <i class="bi bi-arrow-left"></i> Cancel
+        </button>
+      </div>
+    </EditForm>
+  </div>
 }
 
 @code {
 
-	[Parameter] public required string Id { get; set; } = string.Empty;
+  [Parameter] public required string Id { get; set; } = string.Empty;
 
-	private ObjectId RecordId { get; set; } = ObjectId.Empty;
+  private ObjectId RecordId { get; set; } = ObjectId.Empty;
 
-	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+  [CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
 
-	private ArticleDto _editModel = ArticleDto.Empty;
+  private ArticleDto _editModel = ArticleDto.Empty;
 
-	private bool _isLoading = true;
+  private bool _isLoading = true;
 
-	private string? _errorMessage;
+  private string? _errorMessage;
 
-	private List<CategoryDto>? _categories;
-	
-	// private bool _showRawMarkdown;
+  private List<CategoryDto>? _categories;
 
-	private string _selectedCategoryId = string.Empty;
+  // private bool _showRawMarkdown;
 
-	protected override async Task OnInitializedAsync()
-	{
+  private string _selectedCategoryId = string.Empty;
 
-		RecordId = ObjectId.Parse(Id);
+  protected override async Task OnInitializedAsync()
+  {
 
-		Logger?.LogInformation("Loading article for edit: {ArticleId}", RecordId);
-		_isLoading = true;
+    RecordId = ObjectId.Parse(Id);
 
-		try
-		{
-			// Load categories for the category dropdown
-			await LoadCategoriesAsync();
+    Logger?.LogInformation("Loading article for edit: {ArticleId}", RecordId);
+    _isLoading = true;
 
-			var articleResult = await GetArticleHandler.HandleAsync(RecordId);
+    try
+    {
+      // Load categories for the category dropdown
+      await LoadCategoriesAsync();
 
-			if (articleResult is { Success: true, Value: not null })
-			{
-				_editModel = articleResult.Value;
-				_editModel.CanEdit = await UserCanEditArticleAsync(_editModel);
-				_selectedCategoryId = _editModel.Category?.Id.ToString() ?? string.Empty;
-				//UpdatePreview();
-				_errorMessage = null;
-			}
-			else
-			{
-				_errorMessage = articleResult.Error ?? "Article not found.";
-			}
-		}
-		catch (Exception ex)
-		{
-			_errorMessage = ex.Message;
-			Logger?.LogError(ex, "Error loading article for edit: {ArticleId}", RecordId);
-		}
-		finally
-		{
-			_isLoading = false;
-		}
-	}
+      var articleResult = await GetArticleHandler.HandleAsync(RecordId);
 
-	/// <summary>
-	/// Determines whether the current user can edit the specified article.
-	/// User can edit when they are in the \`Admin\` role or when they are the article's author.
-	/// </summary>
-	private async Task<bool> UserCanEditArticleAsync(ArticleDto? a)
-	{
-		if (AuthenticationState is null)
-		{
-			return false;
-		}
+      if (articleResult is { Success: true, Value: not null })
+      {
+        _editModel = articleResult.Value;
+        _editModel.CanEdit = await UserCanEditArticleAsync(_editModel);
+        _selectedCategoryId = _editModel.Category?.Id.ToString() ?? string.Empty;
+        //UpdatePreview();
+        _errorMessage = null;
+      }
+      else
+      {
+        _errorMessage = articleResult.Error ?? "Article not found.";
+      }
+    }
+    catch (Exception ex)
+    {
+      _errorMessage = ex.Message;
+      Logger?.LogError(ex, "Error loading article for edit: {ArticleId}", RecordId);
+    }
+    finally
+    {
+      _isLoading = false;
+    }
+  }
 
-		var authState = await AuthenticationState;
-		var user = authState.User;
+  /// <summary>
+  /// Determines whether the current user can edit the specified article.
+  /// User can edit when they are in the \`Admin\` role or when they are the article's author.
+  /// </summary>
+  private async Task<bool> UserCanEditArticleAsync(ArticleDto? a)
+  {
+    if (AuthenticationState is null)
+    {
+      return false;
+    }
 
-		if (user.Identity?.IsAuthenticated != true)
-		{
-			return false;
-		}
+    var authState = await AuthenticationState;
+    var user = authState.User;
 
-		try
-		{
-			if (user.IsInRole("Admin"))
-			{
-				return true;
-			}
+    if (user.Identity?.IsAuthenticated != true)
+    {
+      return false;
+    }
 
-			// Prefer stable identifier claims (Auth0 uses "sub"). Fall back to NameIdentifier.
-			var currentUserId = user.FindFirst("sub")?.Value
-													?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    try
+    {
+      if (user.IsInRole("Admin"))
+      {
+        return true;
+      }
 
-			var authorId = a?.Author?.UserId;
+      // Prefer stable identifier claims (Auth0 uses "sub"). Fall back to NameIdentifier.
+      var currentUserId = user.FindFirst("sub")?.Value
+      ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-			if (!string.IsNullOrEmpty(currentUserId) && !string.IsNullOrEmpty(authorId))
-			{
-				return string.Equals(currentUserId, authorId, StringComparison.OrdinalIgnoreCase);
-			}
-		}
-		catch (Exception ex)
-		{
-			Logger?.LogWarning(ex, "Error evaluating edit permission for article {ArticleId}", a?.Id);
-		}
+      var authorId = a?.Author?.UserId;
 
-		return false;
-	}
+      if (!string.IsNullOrEmpty(currentUserId) && !string.IsNullOrEmpty(authorId))
+      {
+        return string.Equals(currentUserId, authorId, StringComparison.OrdinalIgnoreCase);
+      }
+    }
+    catch (Exception ex)
+    {
+      Logger?.LogWarning(ex, "Error evaluating edit permission for article {ArticleId}", a?.Id);
+    }
 
-	private async Task HandleValidSubmit()
-	{
-		if (_editModel == ArticleDto.Empty)
-		{
-			_errorMessage = "Nothing to save.";
-			Logger?.LogWarning("HandleValidSubmit: _editModel was null for {ArticleId}", RecordId);
+    return false;
+  }
 
-			return;
-		}
+  private async Task HandleValidSubmit()
+  {
+    if (_editModel == ArticleDto.Empty)
+    {
+      _errorMessage = "Nothing to save.";
+      Logger?.LogWarning("HandleValidSubmit: _editModel was null for {ArticleId}", RecordId);
 
-		try
-		{
-			// Ensure the selected category is applied to the edit model
-			if (!string.IsNullOrWhiteSpace(_selectedCategoryId) && ObjectId.TryParse(_selectedCategoryId, out var selectedCatId))
-			{
-				var selectedCategory = _categories?.FirstOrDefault(c => c.Id == selectedCatId);
+      return;
+    }
 
-				if (selectedCategory != null)
-				{
-					_editModel.Category = new Category
-					{
-						Id = selectedCategory.Id,
-						CategoryName = selectedCategory.CategoryName,
-						IsArchived = selectedCategory.IsArchived
-					};
-				}
-			}
-			else
-			{
-				// Allow clearing the category
-				_editModel.Category = null;
-			}
+    try
+    {
+      // Ensure the selected category is applied to the edit model
+      if (!string.IsNullOrWhiteSpace(_selectedCategoryId) && ObjectId.TryParse(_selectedCategoryId, out var selectedCatId))
+      {
+        var selectedCategory = _categories?.FirstOrDefault(c => c.Id == selectedCatId);
 
-			var result = await EditArticleHandler.HandleAsync(_editModel);
+        if (selectedCategory != null)
+        {
+          _editModel.Category = new Category
+          {
+            Id = selectedCategory.Id,
+            CategoryName = selectedCategory.CategoryName,
+            IsArchived = selectedCategory.IsArchived
+          };
+        }
+      }
+      else
+      {
+        // Allow clearing the category
+        _editModel.Category = null;
+      }
 
-			if (result.Success)
-			{
-				Logger?.LogInformation("Article saved: {ArticleId}", RecordId);
-				Navigation.NavigateTo($"/articles/details/{RecordId}");
-			}
-			else
-			{
-				_errorMessage = result.Error ?? "Failed to save article.";
-				Logger?.LogWarning("Failed to save article {ArticleId}: {Error}", RecordId, _errorMessage);
-			}
-		}
-		catch (Exception ex)
-		{
-			_errorMessage = ex.Message;
-			Logger?.LogError(ex, "Error saving article {ArticleId}", RecordId);
-		}
-	}
+      var result = await EditArticleHandler.HandleAsync(_editModel);
 
-	private async Task LoadCategoriesAsync()
-	{
-		// Load categories using handler and handle errors
-		try
-		{
-			var catResult = await GetCategoriesHandler.HandleAsync();
-			_categories = catResult is { Success: true, Value: not null } ? catResult.Value.ToList() : [];
+      if (result.Success)
+      {
+        Logger?.LogInformation("Article saved: {ArticleId}", RecordId);
+        Navigation.NavigateTo($"/articles/details/{RecordId}");
+      }
+      else
+      {
+        _errorMessage = result.Error ?? "Failed to save article.";
+        Logger?.LogWarning("Failed to save article {ArticleId}: {Error}", RecordId, _errorMessage);
+      }
+    }
+    catch (Exception ex)
+    {
+      _errorMessage = ex.Message;
+      Logger?.LogError(ex, "Error saving article {ArticleId}", RecordId);
+    }
+  }
 
-			if (!catResult.Success)
-			{
-				_errorMessage = catResult.Error ?? "Failed to load categories.";
-				Logger?.LogWarning("Failed to load categories: {Error}", _errorMessage);
-			}
-		}
-		catch (Exception ex)
-		{
-			_categories = [];
-			_errorMessage = ex.Message;
-			Logger?.LogError(ex, "Error loading categories");
-		}
-	}
+  private async Task LoadCategoriesAsync()
+  {
+    // Load categories using handler and handle errors
+    try
+    {
+      var catResult = await GetCategoriesHandler.HandleAsync();
+      _categories = catResult is { Success: true, Value: not null } ? catResult.Value.ToList() : [];
 
-	private void OnCategoryChanged(ChangeEventArgs e)
-	{
-		var selectedId = e.Value?.ToString() ?? string.Empty;
-		_selectedCategoryId = selectedId;
+      if (!catResult.Success)
+      {
+        _errorMessage = catResult.Error ?? "Failed to load categories.";
+        Logger?.LogWarning("Failed to load categories: {Error}", _errorMessage);
+      }
+    }
+    catch (Exception ex)
+    {
+      _categories = [];
+      _errorMessage = ex.Message;
+      Logger?.LogError(ex, "Error loading categories");
+    }
+  }
 
-		if (_categories != null && ObjectId.TryParse(selectedId, out var objId) && _categories.Any())
-		{
-			var selectedCategory = _categories.FirstOrDefault(c => c.Id == objId);
+  private void OnCategoryChanged(ChangeEventArgs e)
+  {
+    var selectedId = e.Value?.ToString() ?? string.Empty;
+    _selectedCategoryId = selectedId;
 
-			if (selectedCategory != null)
-			{
-				_editModel.Category = new Category
-				{
-					Id = selectedCategory.Id,
-					CategoryName = selectedCategory.CategoryName,
-					IsArchived = selectedCategory.IsArchived
-				};
-			}
-		}
-		else
-		{
-			_editModel.Category = null;
-		}
-	}
-	//
-	// private void UpdatePreview()
-	// {
-	// 	if (_editModel != ArticleDto.Empty)
-	// 	{
-	// 		var content = _editModel.Content;
-	// 		_previewHtml = Markdown.ToHtml(content, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
-	// 	}
-	// 	else
-	// 	{
-	// 		_previewHtml = string.Empty;
-	// 	}
-	// }
-	//
-	// private void TogglePreviewMode()
-	// {
-	// 	_showRawMarkdown = !_showRawMarkdown;
-	// 	if (!_showRawMarkdown)
-	// 	{
-	// 		UpdatePreview();
-	// 	}
-	// }
+    if (_categories != null && ObjectId.TryParse(selectedId, out var objId) && _categories.Any())
+    {
+      var selectedCategory = _categories.FirstOrDefault(c => c.Id == objId);
+
+      if (selectedCategory != null)
+      {
+        _editModel.Category = new Category
+        {
+          Id = selectedCategory.Id,
+          CategoryName = selectedCategory.CategoryName,
+          IsArchived = selectedCategory.IsArchived
+        };
+      }
+    }
+    else
+    {
+      _editModel.Category = null;
+    }
+  }
+  //
+  // private void UpdatePreview()
+  // {
+  // if (_editModel != ArticleDto.Empty)
+  // {
+  // var content = _editModel.Content;
+  // _previewHtml = Markdown.ToHtml(content, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
+  // }
+  // else
+  // {
+  // _previewHtml = string.Empty;
+  // }
+  // }
+  //
+  // private void TogglePreviewMode()
+  // {
+  // _showRawMarkdown = !_showRawMarkdown;
+  // if (!_showRawMarkdown)
+  // {
+  // UpdatePreview();
+  // }
+  // }
 
 }
