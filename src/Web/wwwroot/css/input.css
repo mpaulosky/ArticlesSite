@@ -1,34 +1,110 @@
 @import "tailwindcss";
+@import "./themes.css";
+
+@theme {
+  --color-theme-primary-50: oklch(98.3% 0.008 264.52);
+  --color-theme-primary-100: oklch(96.1% 0.018 266.34);
+  --color-theme-primary-200: oklch(93.5% 0.035 267.89);
+  --color-theme-primary-300: oklch(89.8% 0.052 269.12);
+  --color-theme-primary-400: oklch(83.6% 0.095 270.22);
+  --color-theme-primary-500: oklch(77.2% 0.135 271.01);
+  --color-theme-primary-600: oklch(70.1% 0.156 272.45);
+  --color-theme-primary-700: oklch(62.4% 0.158 273.98);
+  --color-theme-primary-800: oklch(52.3% 0.145 274.65);
+  --color-theme-primary-900: oklch(42.1% 0.125 275.34);
+  --color-theme-primary-950: oklch(35.2% 0.095 276.12);
+  --color-theme-accent-100: oklch(96.8% 0.035 52.34);
+  --color-theme-accent-300: oklch(92.2% 0.065 52.34);
+  --color-theme-accent-400: oklch(90.2% 0.085 52.34);
+  --color-theme-accent-500: oklch(85.2% 0.125 52.34);
+  --color-theme-accent-600: oklch(78.5% 0.145 49.87);
+  --color-theme-accent-700: oklch(70.2% 0.155 49.87);
+  --color-theme-accent-800: oklch(62.5% 0.135 49.87);
+  --color-theme-accent-900: oklch(54.5% 0.125 49.87);
+  --color-theme-neutral-50: oklch(97.1% 0.001 0);
+  --color-theme-neutral-100: oklch(94.2% 0.002 0);
+  --color-theme-neutral-200: oklch(89.4% 0.005 0);
+  --color-theme-neutral-300: oklch(84.1% 0.008 0);
+  --color-theme-neutral-400: oklch(76.3% 0.012 0);
+  --color-theme-neutral-500: oklch(64.2% 0.015 0);
+  --color-theme-neutral-600: oklch(52.8% 0.014 0);
+  --color-theme-neutral-700: oklch(42.3% 0.012 0);
+  --color-theme-neutral-800: oklch(30.1% 0.010 0);
+  --color-theme-neutral-900: oklch(20.2% 0.008 0);
+  --color-theme-neutral-950: oklch(10.1% 0.004 0);
+}
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @layer components {
 	.container-card {
-		@apply mx-auto max-w-7xl mb-6 p-6 sm:px-4 md:px-6 lg:px-8 rounded-md shadow-md shadow-blue-500 bg-gray-100 dark:bg-gray-800 transition-colors duration-300;
+		@apply mx-auto max-w-7xl mb-6 p-6 sm:px-4 md:px-6 lg:px-8 rounded-md shadow-md bg-theme-neutral-50 dark:bg-theme-neutral-800 transition-colors duration-300;
+		box-shadow: 0 4px 6px -1px rgb(from var(--color-theme-primary-500) r g b / 0.1), 0 2px 4px -2px rgb(from var(--color-theme-primary-500) r g b / 0.1);
 	}
 
 	.btn-secondary {
-		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-blue-600 to-blue-900 text-white hover:from-blue-900 hover:to-blue-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 active:bg-blue-800 dark:from-blue-400 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-400 dark:focus:ring-blue-300;
+		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-theme-primary-600 to-theme-primary-900 text-white hover:from-theme-primary-900 hover:to-theme-primary-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-theme-primary-500 focus:ring-offset-2 active:bg-theme-primary-800 dark:from-theme-primary-400 dark:to-theme-primary-700 dark:hover:from-theme-primary-700 dark:hover:to-theme-primary-400 dark:focus:ring-theme-primary-300;
 	}
 
 	.btn-primary {
-		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-green-600 to-green-900 text-white hover:from-green-900 hover:to-green-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 active:bg-green-800 dark:from-green-400 dark:to-green-700 dark:hover:from-green-700 dark:hover:to-green-400 dark:focus:ring-green-300;
+		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-theme-accent-600 to-theme-accent-900 text-white hover:from-theme-accent-900 hover:to-theme-accent-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-theme-accent-500 focus:ring-offset-2 active:bg-theme-accent-800 dark:from-theme-accent-400 dark:to-theme-accent-700 dark:hover:from-theme-accent-700 dark:hover:to-theme-accent-400 dark:focus:ring-theme-accent-300;
 	}
 
 	.btn-warning {
-		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-red-600 to-red-900 text-white hover:from-red-900 hover:to-red-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:bg-red-800 dark:from-red-400 dark:to-red-700 dark:hover:from-red-700 dark:hover:to-red-400 dark:focus:ring-red-300;
+		@apply inline-block font-semibold px-5 py-2 rounded-lg text-base leading-tight border-none cursor-pointer transition shadow-sm bg-linear-to-r from-theme-primary-600 to-theme-primary-900 text-white hover:from-theme-primary-900 hover:to-theme-primary-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-theme-primary-500 focus:ring-offset-2 active:bg-theme-primary-800 dark:from-theme-primary-400 dark:to-theme-primary-700 dark:hover:from-theme-primary-700 dark:hover:to-theme-primary-400 dark:focus:ring-theme-primary-300;
 	}
 
 	.edit-label {
-		@apply block text-gray-800 dark:text-gray-300 font-semibold mb-2;
+		@apply block text-theme-neutral-800 dark:text-theme-neutral-300 font-semibold mb-2;
 	}
 
 	.input-textbox {
-		@apply bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 w-full;
+		@apply bg-white dark:bg-theme-neutral-800 text-theme-neutral-900 dark:text-white border-2 border-theme-primary-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-theme-accent-500 w-full;
 	}
 	
 	.nav-bar {
-		@apply container flex items-center justify-between max-w-7xl px-6 py-2 mx-auto rounded-b-md border-b border-blue-700 shadow-md shadow-blue-500 transition-colors duration-200;
+		@apply container flex items-center justify-between max-w-7xl px-6 py-2 mx-auto rounded-b-md border-b border-theme-primary-700 shadow-md transition-colors duration-200;
+		box-shadow: 0 4px 6px -1px rgb(from var(--color-theme-primary-500) r g b / 0.1), 0 2px 4px -2px rgb(from var(--color-theme-primary-500) r g b / 0.1);
+	}
+	
+	.theme-selector-container {
+		@apply flex flex-col gap-4 p-4 rounded-lg bg-theme-neutral-100 dark:bg-theme-neutral-800;
+	}
+
+	.theme-controls {
+		@apply flex flex-col gap-4 md:flex-row md:gap-6;
+	}
+
+	.color-selector,
+	.brightness-selector {
+		@apply flex flex-col gap-2;
+	}
+
+	.theme-selector-label {
+		@apply font-semibold text-theme-neutral-700 dark:text-theme-neutral-300 text-sm uppercase tracking-wider;
+	}
+
+	.button-group {
+		@apply flex gap-2;
+	}
+
+	.color-btn,
+	.brightness-btn {
+		@apply px-3 py-2 rounded-md font-medium text-sm transition-all duration-200
+			   bg-theme-neutral-200 dark:bg-theme-neutral-700
+			   text-theme-neutral-700 dark:text-theme-neutral-300
+			   hover:bg-theme-primary-300 dark:hover:bg-theme-primary-700
+			   border-2 border-transparent
+			   cursor-pointer;
+	}
+
+	.color-btn.active,
+	.brightness-btn.active {
+		@apply bg-theme-primary-500 text-white border-theme-primary-700 dark:border-theme-primary-300;
+	}
+
+	.theme-info {
+		@apply text-sm font-medium text-theme-neutral-600 dark:text-theme-neutral-400;
 	}
 }
 
@@ -38,9 +114,9 @@ h3,
 h4,
 h5,
 h6 {
-	@apply font-bold tracking-tight text-gray-900 dark:text-gray-50;
+	@apply font-bold tracking-tight text-theme-neutral-900 dark:text-theme-neutral-50;
 }
 
 a {
-	@apply p-1 font-semibold text-gray-900 hover:text-blue-900 dark:text-gray-50 dark:hover:text-blue-700 transition-colors duration-300;
+	@apply p-1 font-semibold text-theme-neutral-900 hover:text-theme-primary-900 dark:text-theme-neutral-50 dark:hover:text-theme-primary-700 transition-colors duration-300;
 }

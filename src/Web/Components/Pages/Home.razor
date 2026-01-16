@@ -1,10 +1,20 @@
 ﻿@page "/"
 
 @using Web.Components.Features.Articles.ArticlesList
+@using Web.Components.Shared
 @inject GetArticles.IGetArticlesHandler ArticlesHandler
 @inject ILogger<Home> Logger
 
 <PageHeadingComponent Level="1" HeaderText="@_pageTitle" />
+
+<!-- Theme Selector Section -->
+<section class="mb-8">
+  <div class="mb-4">
+    <h2 class="text-2xl font-bold text-theme-neutral-900 dark:text-theme-neutral-100 mb-2">Choose Your Theme</h2>
+    <p class="text-theme-neutral-600 dark:text-theme-neutral-400">Customize your experience with different color themes</p>
+  </div>
+  <ThemeSelector />
+</section>
 
 <!-- Hero Section -->
 <section

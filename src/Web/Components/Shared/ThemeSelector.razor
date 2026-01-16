@@ -1,0 +1,48 @@
+@inject IJSRuntime JS
+
+<div class="theme-selector-container">
+  <div class="theme-controls">
+    <div class="color-selector">
+      <label class="theme-selector-label">Color:</label>
+      <div class="button-group">
+        <button @onclick="@(() => SelectColor("RED"))" class="color-btn" id="btn-red">Red</button>
+        <button @onclick="@(() => SelectColor("BLUE"))" class="color-btn active" id="btn-blue">Blue</button>
+        <button @onclick="@(() => SelectColor("GREEN"))" class="color-btn" id="btn-green">Green</button>
+        <button @onclick="@(() => SelectColor("YELLOW"))" class="color-btn" id="btn-yellow">Yellow</button>
+      </div>
+    </div>
+    
+    <div class="brightness-selector">
+      <label class="theme-selector-label">Brightness:</label>
+      <div class="button-group">
+        <button @onclick="@(() => SelectBrightness("light"))" class="brightness-btn active" id="btn-light">Light (Pastel)</button>
+        <button @onclick="@(() => SelectBrightness("dark"))" class="brightness-btn" id="btn-dark">Dark (Rich)</button>
+      </div>
+    </div>
+  </div>
+  
+  <div class="theme-info">
+    Current: <strong id="current-theme">Blue Light</strong>
+  </div>
+</div>
+
+@code {
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    if (firstRender)
+    {
+      // Sync UI with current theme on load
+      await JS.InvokeVoidAsync("ThemeManager.syncUI");
+    }
+  }
+
+  private async Task SelectColor(string color)
+  {
+    await JS.InvokeVoidAsync("ThemeManager.selectColorAndUpdateUI", color);
+  }
+
+  private async Task SelectBrightness(string brightness)
+  {
+    await JS.InvokeVoidAsync("ThemeManager.selectBrightnessAndUpdateUI", brightness);
+  }
+}
