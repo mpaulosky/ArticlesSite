@@ -127,6 +127,50 @@ class ThemeManager {
   static getColorFamilyThemes(colorFamily) {
     return this.COLOR_FAMILIES[colorFamily] || [];
   }
+  
+  /**
+   * Sync UI with current theme - updates button states and display
+   */
+  static syncUI() {
+    const currentTheme = this.getCurrentTheme();
+    const color = this.getCurrentColor();
+    const brightness = this.getCurrentBrightness();
+    
+    // Update color buttons
+    document.querySelectorAll('.color-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.toUpperCase() === color);
+    });
+    
+    // Update brightness buttons
+    document.querySelectorAll('.brightness-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.toLowerCase().includes(brightness));
+    });
+    
+    // Update current theme display
+    const themeDisplay = document.getElementById('current-theme');
+    if (themeDisplay) {
+      themeDisplay.textContent = color + ' ' + brightness.charAt(0).toUpperCase() + brightness.slice(1);
+    }
+  }
+  
+  /**
+   * Select a color and update UI
+   * @param {string} color - Color family name (RED, BLUE, GREEN, or YELLOW)
+   */
+  static selectColorAndUpdateUI(color) {
+    this.setColor(color);
+    this.syncUI();
+  }
+  
+  /**
+   * Select brightness and update UI
+   * @param {string} brightness - 'light' or 'dark'
+   */
+  static selectBrightnessAndUpdateUI(brightness) {
+    const color = this.getCurrentColor();
+    this.setBrightness(color, brightness);
+    this.syncUI();
+  }
 }
 
 // Initialize theme on page load

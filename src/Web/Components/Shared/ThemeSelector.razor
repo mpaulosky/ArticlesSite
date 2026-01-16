@@ -32,42 +32,17 @@
     if (firstRender)
     {
       // Sync UI with current theme on load
-      await JS.InvokeVoidAsync("eval", @"
-        const currentTheme = ThemeManager.getCurrentTheme();
-        const color = ThemeManager.getCurrentColor();
-        const brightness = ThemeManager.getCurrentBrightness();
-        document.querySelectorAll('.color-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.textContent.toUpperCase() === color);
-        });
-        document.querySelectorAll('.brightness-btn').forEach(btn => {
-          btn.classList.toggle('active', btn.textContent.toLowerCase().includes(brightness));
-        });
-        document.getElementById('current-theme').textContent = color + ' ' + brightness.charAt(0).toUpperCase() + brightness.slice(1);
-      ");
+      await JS.InvokeVoidAsync("ThemeManager.syncUI");
     }
   }
 
   private async Task SelectColor(string color)
   {
-    await JS.InvokeVoidAsync("eval", $@"
-      ThemeManager.setColor('{color}');
-      const brightness = ThemeManager.getCurrentBrightness();
-      document.getElementById('current-theme').textContent = '{color}' + ' ' + brightness.charAt(0).toUpperCase() + brightness.slice(1);
-      document.querySelectorAll('.color-btn').forEach(btn => {{
-        btn.classList.toggle('active', btn.textContent.toUpperCase() === '{color}');
-      }});
-    ");
+    await JS.InvokeVoidAsync("ThemeManager.selectColorAndUpdateUI", color);
   }
 
   private async Task SelectBrightness(string brightness)
   {
-    await JS.InvokeVoidAsync("eval", $@"
-      const color = ThemeManager.getCurrentColor();
-      ThemeManager.setBrightness(color, '{brightness}');
-      document.getElementById('current-theme').textContent = color + ' ' + '{brightness}'.charAt(0).toUpperCase() + '{brightness}'.slice(1);
-      document.querySelectorAll('.brightness-btn').forEach(btn => {{
-        btn.classList.toggle('active', btn.textContent.toLowerCase().includes('{brightness}'));
-      }});
-    ");
+    await JS.InvokeVoidAsync("ThemeManager.selectBrightnessAndUpdateUI", brightness);
   }
 }
