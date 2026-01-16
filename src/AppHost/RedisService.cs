@@ -7,10 +7,6 @@
 // Project Name :  AppHost
 // =======================================================
 
-using Aspire.Hosting;
-using Aspire.Hosting.ApplicationModel;
-using Aspire.Hosting.Redis;
-
 using StackExchange.Redis;
 
 namespace AppHost;

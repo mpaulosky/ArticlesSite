@@ -7,9 +7,6 @@
 // Project Name :  AppHost
 // =======================================================
 
-using Aspire.Hosting;
-using Aspire.Hosting.MongoDB;
-
 namespace AppHost;
 
 /// <summary>
