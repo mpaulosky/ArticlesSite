@@ -1,7 +1,4 @@
-using Bunit.TestDoubles;
-
 using Microsoft.AspNetCore.Components;
-using Microsoft.JSInterop;
 
 using Web.Components.Features.Categories.CategoriesList;
 

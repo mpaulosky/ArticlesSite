@@ -7,8 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using FluentAssertions;
-
 namespace Web.Tests.Unit;
 
 [ExcludeFromCodeCoverage]

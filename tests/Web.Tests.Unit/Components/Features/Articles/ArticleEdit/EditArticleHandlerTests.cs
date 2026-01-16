@@ -1,8 +1,3 @@
-using Shared.Abstractions;
-using Shared.Entities;
-using Shared.Interfaces;
-using Shared.Models;
-
 using Web.Components.Features.Articles.ArticleEdit;
 
 

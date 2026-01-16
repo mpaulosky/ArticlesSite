@@ -7,13 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using FluentAssertions;
-
-using NSubstitute;
-
-using Shared.Entities;
-using Shared.Interfaces;
-
 using Web.Components.Features.Articles.ArticleDetails;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleDetails;

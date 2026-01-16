@@ -80,7 +80,7 @@ public class Auth0AuthenticationStateProviderTests
 		var httpContext = new DefaultHttpContext();
 		var claims = new[]
 		{
-			new Claim(ClaimTypes.Name, "testuser"),
+			new Claim(ClaimTypes.Name, "tester"),
 			new Claim(ClaimTypes.Email, "test@example.com")
 		};
 		var identity = new ClaimsIdentity(claims, "TestAuth");
@@ -104,7 +104,7 @@ public class Auth0AuthenticationStateProviderTests
 		var httpContext = new DefaultHttpContext();
 		var claims = new[]
 		{
-			new Claim(ClaimTypes.Name, "testuser"),
+			new Claim(ClaimTypes.Name, "tester"),
 			new Claim("https://articlesite.com/roles", "Admin,Editor")
 		};
 		var identity = new ClaimsIdentity(claims, "TestAuth");
@@ -127,7 +127,7 @@ public class Auth0AuthenticationStateProviderTests
 		var httpContext = new DefaultHttpContext();
 		var claims = new[]
 		{
-			new Claim(ClaimTypes.Name, "testuser"),
+			new Claim(ClaimTypes.Name, "tester"),
 			new Claim("roles", "Admin"),
 			new Claim("roles", "Editor")
 		};
@@ -150,7 +150,7 @@ public class Auth0AuthenticationStateProviderTests
 		var httpContext = new DefaultHttpContext();
 		var claims = new[]
 		{
-			new Claim(ClaimTypes.Name, "testuser"),
+			new Claim(ClaimTypes.Name, "tester"),
 			new Claim("https://articlesite.com/roles", "Admin"),
 			new Claim("roles", "Admin") // Duplicate
 		};
@@ -173,7 +173,7 @@ public class Auth0AuthenticationStateProviderTests
 		var httpContext = new DefaultHttpContext();
 		var claims = new[]
 		{
-			new Claim(ClaimTypes.Name, "testuser"),
+			new Claim(ClaimTypes.Name, "tester"),
 			new Claim("https://articlesite.com/roles", "")
 		};
 		var identity = new ClaimsIdentity(claims, "TestAuth");
@@ -194,7 +194,7 @@ public class Auth0AuthenticationStateProviderTests
 		var httpContext = new DefaultHttpContext();
 		var claims = new[]
 		{
-			new Claim(ClaimTypes.Name, "testuser"),
+			new Claim(ClaimTypes.Name, "tester"),
 			new Claim("https://articlesite.com/roles", " Admin , Editor ")
 		};
 		var identity = new ClaimsIdentity(claims, "TestAuth");
@@ -217,7 +217,7 @@ public class Auth0AuthenticationStateProviderTests
 		var httpContext = new DefaultHttpContext();
 		var claims = new[]
 		{
-			new Claim(ClaimTypes.Name, "testuser"),
+			new Claim(ClaimTypes.Name, "tester"),
 			new Claim(ClaimTypes.Email, "test@example.com"),
 			new Claim("custom_claim", "custom_value")
 		};
@@ -229,7 +229,7 @@ public class Auth0AuthenticationStateProviderTests
 		var result = await _provider.GetAuthenticationStateAsync();
 
 		// Assert
-		result.User.FindFirst(ClaimTypes.Name)?.Value.Should().Be("testuser");
+		result.User.FindFirst(ClaimTypes.Name)?.Value.Should().Be("tester");
 		result.User.FindFirst(ClaimTypes.Email)?.Value.Should().Be("test@example.com");
 		result.User.FindFirst("custom_claim")?.Value.Should().Be("custom_value");
 	}
@@ -241,7 +241,7 @@ public class Auth0AuthenticationStateProviderTests
 		var httpContext = new DefaultHttpContext();
 		var claims = new[]
 		{
-			new Claim(ClaimTypes.Name, "testuser"),
+			new Claim(ClaimTypes.Name, "tester"),
 			new Claim("https://articlesite.com/roles", "Admin,Editor,Viewer")
 		};
 		var identity = new ClaimsIdentity(claims, "TestAuth");

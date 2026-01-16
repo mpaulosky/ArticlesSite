@@ -3,20 +3,25 @@
 ## Changes Made
 
 ### 1. Fixed Build Errors
+
 - **Program.cs**: Added namespace `Web` and made `Program` class `static` to resolve CA1050 and CA1052 analyzer errors
 - **Handler Tests**: Fixed type conversion issues by explicitly casting `List<T>` to `IEnumerable<T>` in mock setup
 
 ### 2. Removed Repository Tests
+
 - Removed `Data/` folder containing `ArticleRepositoryTests.cs` and `CategoryRepositoryTests.cs`
 - **Reason**: These tests had MongoDB.Driver version conflicts (2.28.0 vs 3.4.3) due to transitive dependencies
 - **Recommendation**: Move these tests to an integration test project (`Web.Tests.Integration`) where they belong, as they test actual database interactions
 
 ### 3. Removed Unnecessary Dependencies
+
 - Removed `Testcontainers` and `Testcontainers.MongoDb` packages (not used in unit tests)
 - Removed `MongoDB.Bson` and `MongoDB.Driver` from GlobalUsings (not needed without repository tests)
 
 ### 4. Added Proper Bunit Component Tests
+
 Created new Bunit tests for Razor components:
+
 - **LoadingComponentTests.cs**: Tests for `LoadingComponent.razor`
   - Verifies loading text renders correctly
   - Checks spinning icon presence
@@ -30,12 +35,14 @@ Created new Bunit tests for Razor components:
   - Confirms child content overrides message parameter
 
 ### 5. Project Configuration Updates
+
 - Cleaned up `Web.Tests.Unit.csproj` to remove unused MongoDB packages
 - Updated `GlobalUsings.cs` to remove MongoDB-related usings
 
 ## Current Test Status
 
 **Total Tests**: 92
+
 - **Passing**: 65 (71%)
 - **Failing**: 27 (29%)
 - **Skipped**: 0
@@ -64,6 +71,7 @@ Created new Bunit tests for Razor components:
 ### Failing Tests Analysis
 
 All 27 failing tests are due to error message mismatches. Examples:
+
 - Expected: "The ID is invalid or empty."
 - Actual: "Category identifier cannot be empty"
 
@@ -72,10 +80,12 @@ These failures indicate the tests need to be updated to match the actual error m
 ## Recommendations
 
 ### Short Term
+
 1. **Update error message assertions** in failing handler tests to match actual error messages, OR
 2. **Standardize error messages** in handlers to match test expectations
 
 ### Medium Term
+
 1. **Add more Bunit component tests** for:
    - `PageHeaderComponent.razor`
    - `ComponentHeadingComponent.razor`
@@ -89,6 +99,7 @@ These failures indicate the tests need to be updated to match the actual error m
 3. **Create integration test project** for repository tests that were removed
 
 ### Long Term
+
 1. Consider using `bUnit.web.testcomponents` for testing more complex interactive components
 2. Add snapshot testing for component markup verification
 3. Implement test coverage reporting
@@ -96,14 +107,17 @@ These failures indicate the tests need to be updated to match the actual error m
 ## What Uses Bunit (and Should)
 
 ### ✅ Now Using Bunit
+
 - `LoadingComponent` - Simple presentational component
 - `ErrorAlertComponent` - Component with parameters and child content
 
 ### ❌ Should Use Bunit (Not Yet Implemented)
+
 - All other `.razor` components in the Web project
 - Currently tested components using reflection (MainLayout, Profile)
 
 ### ✅ Correctly NOT Using Bunit
+
 - Handler tests (business logic, not UI)
 - Service tests (business logic, not UI)
 - Repository tests (moved to integration tests)

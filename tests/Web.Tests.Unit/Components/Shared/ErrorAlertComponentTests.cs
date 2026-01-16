@@ -7,10 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Bunit;
-
-using Microsoft.AspNetCore.Components;
-
 using Web.Components.Shared;
 
 namespace Web.Tests.Unit.Components.Shared;
@@ -20,14 +16,14 @@ namespace Web.Tests.Unit.Components.Shared;
 /// </summary>
 [ExcludeFromCodeCoverage]
 [Obsolete]
-public class ErrorAlertComponentTests : TestContext
+public class ErrorAlertComponentTests : BunitContext
 {
 
 	[Fact]
 	public void ErrorAlertComponent_ShouldRender_WithDefaultValues()
 	{
 		// Act
-		var cut = RenderComponent<ErrorAlertComponent>();
+		var cut = Render<ErrorAlertComponent>();
 
 		// Assert
 		cut.Find("h3").TextContent.Should().Be("Error");
@@ -42,9 +38,9 @@ public class ErrorAlertComponentTests : TestContext
 		var message = "Something went wrong!";
 
 		// Act
-		var cut = RenderComponent<ErrorAlertComponent>(parameters => parameters
-				.Add(p => p.Title, title)
-				.Add(p => p.Message, message));
+		var cut = Render<ErrorAlertComponent>(parameters => parameters
+			.Add(p => p.Title, title)
+			.Add(p => p.Message, message));
 
 		// Assert
 		cut.Find("h3").TextContent.Should().Be(title);
@@ -59,9 +55,9 @@ public class ErrorAlertComponentTests : TestContext
 		var childContentText = "Custom child content here";
 
 		// Act
-		var cut = RenderComponent<ErrorAlertComponent>(parameters => parameters
-				.Add(p => p.Title, title)
-				.AddChildContent(childContentText));
+		var cut = Render<ErrorAlertComponent>(parameters => parameters
+			.Add(p => p.Title, title)
+			.AddChildContent(childContentText));
 
 		// Assert
 		cut.Find("h3").TextContent.Should().Be(title);
@@ -72,7 +68,7 @@ public class ErrorAlertComponentTests : TestContext
 	public void ErrorAlertComponent_ShouldHave_CorrectStyling()
 	{
 		// Act
-		var cut = RenderComponent<ErrorAlertComponent>();
+		var cut = Render<ErrorAlertComponent>();
 
 		// Assert
 		var container = cut.Find("div.bg-red-50");
@@ -84,7 +80,7 @@ public class ErrorAlertComponentTests : TestContext
 	public void ErrorAlertComponent_ShouldHave_ErrorIcon()
 	{
 		// Act
-		var cut = RenderComponent<ErrorAlertComponent>();
+		var cut = Render<ErrorAlertComponent>();
 
 		// Assert
 		var svg = cut.Find("svg");
@@ -99,9 +95,9 @@ public class ErrorAlertComponentTests : TestContext
 		var childContent = "This should appear instead";
 
 		// Act
-		var cut = RenderComponent<ErrorAlertComponent>(parameters => parameters
-				.Add(p => p.Message, message)
-				.AddChildContent(childContent));
+		var cut = Render<ErrorAlertComponent>(parameters => parameters
+			.Add(p => p.Message, message)
+			.AddChildContent(childContent));
 
 		// Assert
 		cut.Find("div.text-red-700").TextContent.Trim().Should().Be(childContent);

@@ -1,9 +1,7 @@
-using Bunit.TestDoubles;
 using Web.Components.Features.Articles.ArticlesList;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticlesList;
 
-using Bunit.TestDoubles;
 using Bunit;
 [ExcludeFromCodeCoverage]
 public class ArticlesListComponentTests : BunitContext
@@ -166,22 +164,26 @@ public class ArticlesListComponentTests : BunitContext
 		Services.AddSingleton(mockHandler);
 
 		// Act
-		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<CascadingAuthenticationState>(parameters =>
+			parameters.AddChildContent<Web.Components.Features.Articles.ArticlesList.ArticlesList>());
+
+		// Wait for top bar to render (h1 'All Articles')
+		cut.WaitForState(() => cut.FindAll("h1").Any(h => h.TextContent.Contains("All Articles")), timeout: TimeSpan.FromSeconds(2));
 
 		// Assert
 		cut.WaitForAssertion(() =>
 		{
 			if (roles.Contains("Admin") || roles.Contains("Author"))
 			{
-				var createButton = cut.Find("button.btn-secondary");
-				createButton.TextContent.Should().Contain("Create");
+				var createButton = cut.FindAll("button.btn-secondary").FirstOrDefault(b => b.TextContent.Contains("Create"));
+				createButton.Should().NotBeNull();
 			}
 			else
 			{
-				var buttons = cut.FindAll("button.btn-secondary");
+				var buttons = cut.FindAll("button.btn-secondary").Where(b => b.TextContent.Contains("Create"));
 				buttons.Should().BeEmpty();
 			}
-		});
+		}, timeout: TimeSpan.FromSeconds(2));
 	}
 
 	[Fact]

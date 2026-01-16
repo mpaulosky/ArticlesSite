@@ -11,7 +11,7 @@ using Web.Components.Shared;
 namespace Web.Tests.Unit.Components.Shared;
 
 [ExcludeFromCodeCoverage]
-public class MyComponentTests : Bunit.TestContext
+public class MyComponentTests : Bunit.BunitContext
 {
     [Fact]
     public void MyComponent_ShouldRender_WithExpectedContent()
@@ -146,7 +146,7 @@ public void MyComponent_WhenClicked_ShouldInvokeCallback()
 
 ## Best Practices
 
-1. **Inherit from `Bunit.TestContext`** (not `Xunit.TestContext`)
+1. **Inherit from `Bunit.BunitContext`** (not `Xunit.TestContext`)
 2. **Use `Render<TComponent>()`** instead of obsolete `RenderComponent<TComponent>()`
 3. **Test one thing per test** - keep tests focused and simple
 4. **Use descriptive test names** - follow pattern: `ComponentName_Scenario_ExpectedResult`
