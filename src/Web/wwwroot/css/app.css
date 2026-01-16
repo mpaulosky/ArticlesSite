@@ -813,6 +813,9 @@
   .text-red-800 {
     color: var(--color-red-800);
   }
+  .text-theme-neutral-600 {
+    color: var(--color-theme-neutral-600);
+  }
   .text-theme-neutral-900 {
     color: var(--color-theme-neutral-900);
   }
@@ -1113,6 +1116,11 @@
   .dark\:text-theme-neutral-100 {
     &:where(.dark, .dark *) {
       color: var(--color-theme-neutral-100);
+    }
+  }
+  .dark\:text-theme-neutral-400 {
+    &:where(.dark, .dark *) {
+      color: var(--color-theme-neutral-400);
     }
   }
   .dark\:text-theme-primary-400 {
