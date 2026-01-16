@@ -7,18 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using FluentAssertions;
-
 using FluentValidation;
-
-using NSubstitute;
-
-using Shared.Abstractions;
-using Shared.Entities;
-using Shared.Interfaces;
-using Shared.Models;
-
-using Web.Components.Features.Categories.CategoryCreate;
 
 namespace Web.Tests.Unit.Components.Features.Categories.CategoryCreate;
 

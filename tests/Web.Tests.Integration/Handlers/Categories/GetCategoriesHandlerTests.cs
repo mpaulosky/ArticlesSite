@@ -222,8 +222,8 @@ public class GetCategoriesHandlerTests
 		result2.Should().NotBeNull();
 		result2.Success.Should().BeTrue();
 
-		var list1 = result1.Value.ToList();
-		var list2 = result2.Value.ToList();
+		var list1 = result1.Value!.ToList();
+		var list2 = result2.Value!.ToList();
 
 		list1.Should().HaveCount(5);
 		list2.Should().HaveCount(5);

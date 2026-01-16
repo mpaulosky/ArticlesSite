@@ -7,13 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using FluentAssertions;
-
-using NSubstitute;
-
-using Shared.Entities;
-using Shared.Interfaces;
-
 using Web.Components.Features.Categories.CategoriesList;
 
 namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList;

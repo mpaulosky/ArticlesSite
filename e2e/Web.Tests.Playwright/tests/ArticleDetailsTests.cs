@@ -1,9 +1,3 @@
-using System.Threading.Tasks;
-
-using Microsoft.Playwright;
-
-using Xunit;
-
 namespace Web.Tests.Playwright.Tests;
 
 [ExcludeFromCodeCoverage]

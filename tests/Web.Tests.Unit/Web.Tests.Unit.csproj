@@ -7,10 +7,13 @@
 		<TargetFramework>net10.0</TargetFramework>
 		<IsTestProject>true</IsTestProject>
 		<IsPackable>false</IsPackable>
+		<UserSecretsId>26708ebe-70ff-4758-8710-fa7eb4ef5e72</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
 		<PackageReference Include="Microsoft.NET.Test.Sdk" />
+		<PackageReference Include="Moq" />
 		<PackageReference Include="xunit" />
 		<PackageReference Include="xunit.runner.visualstudio" />
 		<PackageReference Include="FluentAssertions" />

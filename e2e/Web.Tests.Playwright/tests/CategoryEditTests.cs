@@ -1,8 +1,4 @@
-using Microsoft.Playwright;
-
 using Web.Tests.Playwright.PageObjects;
-
-using Xunit;
 
 namespace Web.Tests.Playwright.Tests;
 

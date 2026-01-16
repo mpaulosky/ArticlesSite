@@ -7,8 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Bunit;
-
 using Web.Components.Shared;
 
 namespace Web.Tests.Unit.Components.Shared;
@@ -18,14 +16,14 @@ namespace Web.Tests.Unit.Components.Shared;
 /// </summary>
 [ExcludeFromCodeCoverage]
 [Obsolete]
-public class LoadingComponentTests : TestContext
+public class LoadingComponentTests : BunitContext
 {
 
 	[Fact]
 	public void LoadingComponent_ShouldRender_WithLoadingText()
 	{
 		// Act
-		var cut = RenderComponent<LoadingComponent>();
+		var cut = Render<LoadingComponent>();
 
 		// Assert
 		cut.Find("h3").TextContent.Trim().Should().Be("Loading...");
@@ -35,7 +33,7 @@ public class LoadingComponentTests : TestContext
 	public void LoadingComponent_ShouldHave_SpinningIcon()
 	{
 		// Act
-		var cut = RenderComponent<LoadingComponent>();
+		var cut = Render<LoadingComponent>();
 
 		// Assert
 		var svg = cut.Find("svg");
@@ -46,7 +44,7 @@ public class LoadingComponentTests : TestContext
 	public void LoadingComponent_ShouldHave_CorrectStyling()
 	{
 		// Act
-		var cut = RenderComponent<LoadingComponent>();
+		var cut = Render<LoadingComponent>();
 
 		// Assert
 		var container = cut.Find("div");

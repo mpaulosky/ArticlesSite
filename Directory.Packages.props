@@ -9,25 +9,26 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Aspire -->
-    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.0.0" />
+    <PackageVersion Include="Aspire.Hosting.AppHost" Version="13.1.0" />
     <PackageVersion Include="Aspire.Hosting" Version="9.5.2" />
-    <PackageVersion Include="Aspire.Hosting.MongoDB" Version="13.0.0" />
-    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.0.0" />
+    <PackageVersion Include="Aspire.Hosting.MongoDB" Version="13.1.0" />
+    <PackageVersion Include="Aspire.Hosting.Redis" Version="13.1.0" />
     <PackageVersion Include="Aspire.Hosting.Testing" Version="9.5.2" />
     <PackageVersion Include="Aspire.MongoDB.Driver" Version="9.5.2" />
     <PackageVersion Include="Aspire.StackExchange.Redis.OutputCaching" Version="9.5.2" />
     <PackageVersion Include="AspNetCore.HealthChecks.MongoDb" Version="9.0.0" />
     <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
+    <PackageVersion Include="MediatR" Version="12.4.1" />
     <PackageVersion Include="StackExchange.Redis" Version="2.10.1" />
     <!-- Authentication -->
-    <PackageVersion Include="Auth0.AspNetCore.Authentication" Version="1.5.1" />
+    <PackageVersion Include="Auth0.AspNetCore.Authentication" Version="1.6.1" />
     <!-- Core Libraries -->
     <PackageVersion Include="Bogus" Version="35.6.5" />
-    <PackageVersion Include="FluentValidation" Version="12.1.0" />
+    <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="Mapster" Version="7.4.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Components.QuickGrid" Version="10.0.0" />
-    <PackageVersion Include="MongoDB.Bson" Version="3.5.1" />
-    <PackageVersion Include="MongoDB.Driver" Version="3.5.1" />
+    <PackageVersion Include="Microsoft.AspNetCore.Components.QuickGrid" Version="10.0.1" />
+    <PackageVersion Include="MongoDB.Bson" Version="3.5.2" />
+    <PackageVersion Include="MongoDB.Driver" Version="3.5.2" />
     <PackageVersion Include="MongoDB.Driver.Core" Version="3.5.0" />
     <PackageVersion Include="WaffleGenerator.Bogus" Version="4.2.2" />
     <PackageVersion Include="PSC.Blazor.Components.MarkdownEditor" Version="8.0.8" />
@@ -37,8 +38,8 @@
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Json" Version="9.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.UserSecrets" Version="9.0.10" />
-    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.0.0" />
-    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.Http.Resilience" Version="10.1.0" />
+    <PackageVersion Include="Microsoft.Extensions.ServiceDiscovery" Version="10.1.0" />
     <!-- OpenTelemetry -->
     <PackageVersion Include="OpenTelemetry" Version="1.13.1" />
     <PackageVersion Include="OpenTelemetry.Exporter.Console" Version="1.13.1" />
@@ -57,16 +58,15 @@
     <PackageVersion Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.10" />
     <PackageVersion Include="Microsoft.Extensions.Hosting.Abstractions" Version="9.0.10" />
     <!-- Testing Packages -->
-    <PackageVersion Include="bunit" Version="2.1.1" />
-
+    <PackageVersion Include="bunit" Version="2.4.2" />
     <PackageVersion Include="coverlet.collector" Version="6.0.4" />
     <PackageVersion Include="C3D.Extensions.Playwright.AspNetCore.Xunit" Version="0.1.45" />
     <PackageVersion Include="FluentAssertions" Version="8.8.0" />
     <PackageVersion Include="Markdig" Version="0.44.0" />
-    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0" />
+    <PackageVersion Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.1" />
     <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="9.0.10" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-    <PackageVersion Include="Microsoft.Playwright" Version="1.56.0" />
+    <PackageVersion Include="Microsoft.Playwright" Version="1.57.0" />
     <PackageVersion Include="Microsoft.Playwright.Xunit.v3" Version="1.55.0" />
     <PackageVersion Include="Moq" Version="4.20.72" />
     <PackageVersion Include="NetArchTest.Rules" Version="1.3.2" />
@@ -76,7 +76,7 @@
     <PackageVersion Include="Testcontainers.MongoDb" Version="4.9.0" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
-    <PackageVersion Include="xunit.v3" Version="3.2.0" />
+    <PackageVersion Include="xunit.v3" Version="3.2.1" />
     <PackageVersion Include="Xunit.SkippableFact" Version="1.5.23" />
     <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
   </ItemGroup>

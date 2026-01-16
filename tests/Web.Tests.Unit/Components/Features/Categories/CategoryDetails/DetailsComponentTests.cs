@@ -7,8 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Bunit.TestDoubles;
-
 using Microsoft.AspNetCore.Components;
 
 using Details = Web.Components.Features.Categories.CategoryDetails.Details;

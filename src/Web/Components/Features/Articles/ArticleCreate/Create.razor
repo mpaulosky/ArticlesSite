@@ -10,180 +10,244 @@
 
 <PageHeadingComponent HeaderText="Create Article" Level="1" TextColorClass="blue-500" />
 
-<div class="card modern-card">
-	<div class="card-body">
-		<span class="visually-hidden">Failed to create article.</span>
-		<span class="visually-hidden">LoadingComponent</span>
-		@if (_isLoading)
-		{
-			<LoadingComponent />
-		}
-		else
-		{
-			<EditForm Model="_article" OnValidSubmit="HandleSubmit">
-				<DataAnnotationsValidator />
-				<ValidationSummary />
+@if (_isLoading)
+{
+    <LoadingComponent />
+}
+else
+{
+    <div class="container-card">
+        <EditForm Model="_article" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-				@if (!string.IsNullOrEmpty(_errorMessage))
-				{
-					<ErrorAlertComponent Title="Error creating article">
-						@_errorMessage
-					</ErrorAlertComponent>
-				}
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <ErrorAlertComponent Title="Error creating article">
+                    @_errorMessage
+                </ErrorAlertComponent>
+            }
 
-				<div class="mb-3">
-					<label for="title" class="form-label">Title</label>
-					<InputText id="title" class="form-control" @bind-Value="_article.Title" />
-				</div>
-				<div class="mb-3">
-					<label for="introduction" class="form-label">Introduction</label>
-					<InputText id="introduction" class="form-control" @bind-Value="_article.Introduction" />
-				</div>
-				<div class="mb-3">
-					<label for="content" class="form-label">Content</label>
-					<InputTextArea id="content" class="form-control" @bind-Value="_article.Content" rows="8" />
-				</div>
-				<div class="mb-3">
-					<label for="coverImageUrl" class="form-label">Cover Image URL</label>
-					<InputText id="coverImageUrl" class="form-control" @bind-Value="_article.CoverImageUrl" />
-				</div>
-				<div class="row mb-3">
-					<div class="col-md-6 mb-2">
-						<label class="form-label">Category</label>
-						<InputSelect class="form-control" @bind-Value="_selectedCategoryId">
-							<option value="">-- Select Category --</option>
-							@foreach (var category in _categories)
-							{
-								<option value="@category.Id.ToString()">@category.CategoryName</option>
-							}
-						</InputSelect>
-					</div>
-					<div class="col-md-6 mb-2">
-						<label class="form-label">Author</label>
-						<input class="form-control" value="@_authorInfo.Name" readonly />
-					</div>
-				</div>
-				<div class="row mb-3">
-					<div class="col-md-6 mb-2">
-						<div class="form-check">
-							<InputCheckbox id="isPublished" class="form-check-input" @bind-Value="_article.IsPublished" />
-							<label for="isPublished" class="form-check-label">Published</label>
-						</div>
-					</div>
-					<div class="col-md-6 mb-2">
-						<div class="form-check">
-							<InputCheckbox id="isArchived" class="form-check-input" @bind-Value="_article.IsArchived" />
-							<label for="isArchived" class="form-check-label">Archived</label>
-						</div>
-					</div>
-				</div>
-				<div class="d-flex justify-content-end gap-2 mt-4">
-					<button type="submit" class="btn-primary">
-						<i class="bi bi-plus-circle"></i> Create
-					</button>
-					<button type="button" class="btn-secondary" @onclick="GoToList">
-						<i class="bi bi-arrow-left"></i> Cancel
-					</button>
-				</div>
-			</EditForm>
-		}
-	</div>
-</div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="titleEdit" class="edit-label">Title</label>
+                    <InputTextArea id="titleEdit" class="form-control input-textbox"
+                                   @bind-Value="_article.Title" />
+                </div>
+
+                <div>
+                    <label for="introductionEdit"
+                           class="edit-label">Introduction</label>
+                    <InputTextArea id="introductionEdit" class="form-control input-textbox"
+                                   @bind-Value="_article.Introduction" rows="2" />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label for="categoryEdit" class="edit-label">
+                        <i class="bi bi-folder me-1"></i> Category
+                    </label>
+                    <InputSelect class="form-control input-textbox"
+                    @bind-Value="_selectedCategoryId">
+                        <option value="">Select A Category</option>
+                        @foreach (var category in _categories ?? [])
+                        {
+                            <option value="@category.Id.ToString()">@category.CategoryName</option>
+                        }
+                    </InputSelect>
+                </div>
+
+                <div>
+                    <label class="edit-label">
+                        <i class="bi bi-person-circle me-1"></i> Author
+                        <i class="bi bi-lock-fill text-gray-500 ms-1" title="Not editable"></i>
+                    </label>
+                    <div class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-blue-500 rounded px-3 py-2 font-semibold">
+                        @_authorInfo.Name
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="flex items-center">
+                    <InputCheckbox id="isPublishedEdit" class="form-check-input mr-2" @bind-Value="_article.IsPublished" />
+                    <label for="isPublishedEdit" class="edit-label">Published</label>
+                </div>
+
+                <div class="flex items-center">
+                    <InputCheckbox id="isArchivedEdit" class="form-check-input mr-2" @bind-Value="_article.IsArchived" />
+                    <label for="isArchivedEdit" class="edit-label">Archived</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="coverImageUrl" class="form-label">Cover Image URL</label>
+                <InputText id="coverImageUrl" class="form-control" @bind-Value="_article.CoverImageUrl" />
+            </div>
+
+            <div class="mb-6">
+                <label class="edit-label">Content (Markdown)</label>
+                <TextEditor @bind-Content="@_article.Content" AlignmentOptionsEnabled="true" />
+            </div>
+
+            <div class="mt-8 flex gap-3 justify-end">
+                <button type="submit" class="btn-primary">
+                    <i class="bi bi-save"></i> Create
+                </button>
+                <button type="button" class="btn-secondary" @onclick="GoToList">
+                    <i class="bi bi-arrow-left"></i> Cancel
+                </button>
+            </div>
+
+        </EditForm>
+    </div>
+}
 
 @code {
-	[CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
+    [CascadingParameter] private Task<AuthenticationState>? AuthenticationState { get; set; }
 
-	private bool _isLoading = true;
-	private ArticleDto _article = new();
-	private string? _errorMessage;
-	private List<CategoryDto> _categories = new();
-	private string? _selectedCategoryId;
-	private AuthorInfo _authorInfo = AuthorInfo.Empty;
+    private bool _isLoading = true;
+    private ArticleDto _article = new();
+    private string? _errorMessage;
+    private List<CategoryDto>? _categories;
+    private string? _selectedCategoryId;
+    private AuthorInfo _authorInfo = AuthorInfo.Empty;
 
-	protected override async Task OnInitializedAsync()
-	{
-		_isLoading = true;
-		await Task.Yield();
-		System.Security.Claims.ClaimsPrincipal? user = null;
-		try
-		{
-			if (AuthenticationState is not null)
-			{
-				var state = await AuthenticationState;
-				user = state.User;
-			}
-			else if (AuthStateProvider is not null)
-			{
-				var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-				user = authState.User;
-			}
-			_authorInfo = new AuthorInfo(user?.Identity?.Name ?? string.Empty, user?.Identity?.Name ?? string.Empty);
-			var result = await GetCategoriesHandler.HandleAsync();
-			if (result is { Success: true, Value: not null })
-			{
-				_categories = result.Value.ToList();
-			}
-			else
-			{
-				_errorMessage = result.Error ?? "Failed to load categories.";
-			}
-		}
-		catch
-		{
-			// Ignore authentication retrieval errors in contexts without auth (e.g., unit tests)
-		}
-		finally
-		{
-			_isLoading = false;
-		}
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        _isLoading = true;
+        await Task.Yield();
+        System.Security.Claims.ClaimsPrincipal? user = null;
+        try
+        {
+            if (AuthenticationState is not null)
+            {
+                var state = await AuthenticationState;
+                user = state.User;
+            }
+            else if (AuthStateProvider is not null)
+            {
+                var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                user = authState.User;
+            }
+            _authorInfo = new AuthorInfo(user?.Identity?.Name ?? string.Empty, user?.Identity?.Name ?? string.Empty);
+            var result = await GetCategoriesHandler.HandleAsync();
+            if (result is { Success: true, Value: not null })
+            {
+                _categories = result.Value.ToList();
+            }
+            else
+            {
+                _errorMessage = result.Error ?? "Failed to load categories.";
+            }
+        }
+        catch
+        {
+            // Ignore authentication retrieval errors in contexts without auth (e.g., unit tests)
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
 
-	private async Task HandleSubmit()
-	{
+    private async Task HandleSubmit()
+    {
 
-		// Assign AuthorInfo from the current user
-		_article.Author = _authorInfo;
+        // Assign AuthorInfo from the current user
+        _article.Author = _authorInfo;
 
-		// Assign a selected category (full object)
-		var selectedCategory = _categories.FirstOrDefault(c => c.Id.ToString() == _selectedCategoryId);
+        // Assign a selected category (full object)
+        if (_categories != null)
+        {
+          var selectedCategory = _categories.FirstOrDefault(c => c.Id.ToString() == _selectedCategoryId);
 
-		if (selectedCategory != null)
-		{
-			_article.Category = new Category
-			{
-				Id = selectedCategory.Id,
-				CategoryName = selectedCategory.CategoryName,
-				CreatedOn = selectedCategory.CreatedOn,
-				ModifiedOn = selectedCategory.ModifiedOn,
-				IsArchived = selectedCategory.IsArchived
-			};
-		}
-		else
-		{
-			_article.Category = null;
-		}
+          if (selectedCategory != null)
+          {
+            _article.Category = new Category
+            {
+                Id = selectedCategory.Id,
+                CategoryName = selectedCategory.CategoryName,
+                CreatedOn = selectedCategory.CreatedOn,
+                ModifiedOn = selectedCategory.ModifiedOn,
+                IsArchived = selectedCategory.IsArchived
+            };
+          }
+          else
+          {
+            _article.Category = null;
+          }
+        }
 
-		try
-		{
-			var result = await CreateHandler.HandleAsync(_article);
-			if (result is { Success: true, Value: not null })
-			{
-				Navigation.NavigateTo($"/articles/details/{result.Value.Id}");
-			}
-			else
-			{
-				_errorMessage = result.Error ?? "Failed to create article.";
-			}
-		}
-		catch (Exception ex)
-		{
-			_errorMessage = ex.Message;
-			Logger?.LogError(ex, "Error creating article");
-		}
-	}
+        try
+        {
+            var result = await CreateHandler.HandleAsync(_article);
+            if (result is { Success: true, Value: not null })
+            {
+                Navigation.NavigateTo($"/articles/details/{result.Value.Id}");
+            }
+            else
+            {
+                _errorMessage = result.Error ?? "Failed to create article.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+            Logger?.LogError(ex, "Error creating article");
+        }
+    }
 
-	private void GoToList()
-	{
-		Navigation.NavigateTo("/articles");
-	}
+    private async Task LoadCategoriesAsync()
+    {
+        // Load categories using handler and handle errors
+        try
+        {
+            var catResult = await GetCategoriesHandler.HandleAsync();
+            _categories = catResult is { Success: true, Value: not null } ? catResult.Value.ToList() : [];
+
+            if (!catResult.Success)
+            {
+                _errorMessage = catResult.Error ?? "Failed to load categories.";
+                Logger?.LogWarning("Failed to load categories: {Error}", _errorMessage);
+            }
+        }
+        catch (Exception ex)
+        {
+            _categories = [];
+            _errorMessage = ex.Message;
+            Logger?.LogError(ex, "Error loading categories");
+        }
+    }
+
+    private void OnCategoryChanged(ChangeEventArgs e)
+    {
+        var selectedId = e.Value?.ToString() ?? string.Empty;
+        _selectedCategoryId = selectedId;
+
+        if (_categories != null && ObjectId.TryParse(selectedId, out var objId) && _categories.Any())
+        {
+            var selectedCategory = _categories.FirstOrDefault(c => c.Id == objId);
+
+            if (selectedCategory != null)
+            {
+                _article.Category = new Category
+                {
+                    Id = selectedCategory.Id,
+                    CategoryName = selectedCategory.CategoryName,
+                    IsArchived = selectedCategory.IsArchived
+                };
+            }
+        }
+        else
+        {
+            _article.Category = null;
+        }
+    }
+
+    private void GoToList()
+    {
+        Navigation.NavigateTo("/articles");
+    }
 }

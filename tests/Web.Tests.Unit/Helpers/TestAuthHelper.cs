@@ -1,6 +1,3 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.Extensions.DependencyInjection;
-
 namespace Web.Tests.Unit.Helpers;
 
 public static class TestAuthHelper

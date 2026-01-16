@@ -1,4 +1,3 @@
-using Bunit;
 using Details = Web.Components.Features.Articles.ArticleDetails.Details;
 
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleDetails;

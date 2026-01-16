@@ -1,7 +1,5 @@
 using AppHost;
 
-using Microsoft.Extensions.Hosting;
-
 var builder = DistributedApplication.CreateBuilder(args);
 
 // Configure resources

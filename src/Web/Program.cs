@@ -2,9 +2,8 @@ using Blazored.LocalStorage;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-IConfiguration configuration = builder.Configuration;
-
 // --- Service Registration ---
+IConfiguration configuration = builder.Configuration;
 
 // Telemetry, health, resilience, service discovery (Aspire defaults)
 builder.AddServiceDefaults();
