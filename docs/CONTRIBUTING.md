@@ -2,8 +2,7 @@
 
 Thank you for taking the time to consider contributing to our project.
 
-The following is a set of guidelines for contributing to the project. These are mostly guidelines, not rules, and can be
-changed in the future. Please submit your suggestions with a pull-request to this document.
+The following is a set of guidelines for contributing to the project. These are mostly guidelines, not rules, and can be changed in the future. Please submit your suggestions with a pull-request to this document.
 
 ## Table of Contents
 
@@ -17,17 +16,15 @@ changed in the future. Please submit your suggestions with a pull-request to thi
     - [Write code](#write-code)
     - [Write documentation](#write-documentation)
 
-## Welcome!
+## Welcome
 
-Thank you for your interest in contributing! We value all contributions and strive to make this project a welcoming,
-inclusive space for everyone.
+Thank you for your interest in contributing! We value all contributions and strive to make this project a welcoming, inclusive space for everyone.
 
 Below are guidelines to help you get started. If you have suggestions, please submit a pull request to this document.
 
 ## Code of Conduct
 
-We have adopted a code of conduct from the Contributor Covenant. Contributors to this project are expected to adhere to
-this code. Please report unwanted behavior to [Matthew Paulosky](mailto:matthew.paulosky@outlook.com)
+We have adopted a code of conduct from the Contributor Covenant. Contributors to this project are expected to adhere to this code. Please report unwanted behavior to [Project Maintainer](mailto:matthew.paulosky@outlook.com)
 
 ## Quick Start
 
@@ -41,7 +38,7 @@ this code. Please report unwanted behavior to [Matthew Paulosky](mailto:matthew.
 
 ## What should I know before I get started
 
-This project is a practice project to build a Blazor Server application with .NET Aspire and MongoDB.
+This project is a project to build a [describe your solution, e.g., web application] with [technology stack, e.g., .NET, Blazor, MongoDB].
 
 ### Code Style & Commit Messages
 
@@ -53,16 +50,13 @@ This project is a practice project to build a Blazor Server application with .NE
 
 ### Project Folder Structure
 
-This project is designed to be built and run primarily with Visual Studio 2022 or JetBrains Rider. The folders are
-configured so that they will support editing and working in other editors and on non-Windows operating systems. We
-encourage you to develop with these other environments, because we would like to be able to support developers who use
-those tools as well. The folders are configured as follows:
+This project is designed to be built and run primarily with [your preferred IDEs/editors]. The folders are configured so that they will support editing and working in other editors and on other operating systems. We encourage you to develop with these other environments, because we would like to be able to support developers who use those tools as well. The folders are configured as follows:
 
 ```bash
 docs/                                   -- Documentation and guides
 
 src/                                    -- Source code
-  Api/                                  -- ASP.NET Core API project
+  Api/                                  -- API project
     Properties/                         -- API project properties
     bin/                                -- Build output
     obj/                                -- Build objects
@@ -71,7 +65,7 @@ src/                                    -- Source code
   Shared/                               -- Domain models, interfaces, and shared code
     bin/                                -- Build output
     obj/                                -- Build objects
-  Web/                                  -- Blazor Server UI
+  Web/                                  -- UI project
     Components/                         -- Blazor components
       Layout/                           -- Layout components
       Pages/                            -- Page components
@@ -93,31 +87,26 @@ tests/                                  -- Unit and Integration tests
   Web.Tests.Integration/                -- Web integration tests
   Web.Tests.Unit/                       -- Web/UI unit tests
 
-ArticlesSite.slnx                       -- Solution file
+ [SolutionName].slnx                    -- Solution file
 codecov.yml                             -- Code coverage configuration
 Directory.Packages.props                -- Central NuGet package management
-global.json                             -- Global .NET SDK version
+global.json                             -- Global SDK version
 LICENSE.txt                             -- License
 README.md                               -- Project overview
 ```
 
 See the main [README.md](../README.md) for more details.
 
-All official versions of the project are built and delivered with GitHub Actions and linked in the main README.md
-and [releases tab in GitHub](https://github.com/mpaulosky/ArticleSite/releases).
-
-## Design Decisions
+All official versions of the project are built and delivered with [your CI/CD system, e.g., GitHub Actions] and linked in the main README.md and [releases tab in your repository].
 
 ### Design Decisions
 
-Design for this project is ultimately decided by the project team
-lead, [Matthew Paulosky](mailto:matthew.paulosky@outlook.com). The following project tenets are adhered to when making
-decisions:
+Design for this project is ultimately decided by the project team lead ([maintainer name or role]). The following project tenets are adhered to when making decisions:
 
-1. Use Blazor Server for the UI.
-1. Use MongoDB for data persistence.
-1. Provide both EF Core and native MongoDB driver options for data access.
-1. Use .NET Aspire for cloud-native orchestration.
+1. Use [UI framework] for the UI.
+1. Use [database technology] for data persistence.
+1. Provide both [ORM/driver options] for data access.
+1. Use [cloud orchestration/tooling] for cloud-native orchestration.
 1. Follow clean architecture principles with repository pattern.
 
 If you have suggestions, please open an issue or discuss in your pull request.
@@ -141,7 +130,7 @@ This means one of several types of contributions:
 
 ### Create an Issue
 
-Create a [New Issue Here](https://github.com/mpaulosky/ArticleSite/issues).
+Create a [New Issue Here]( [your repository issues URL] ).
 
 1. If you are reporting a `Bug` that you have found. Be sure to add the `Bug` label so that we can triage and track it.
 1. If you are reporting an `Enhancement` that you think would improve the project. Be sure to add the `Enhancement`
@@ -151,21 +140,18 @@ Please provide as much detail as possible, including steps to reproduce, expecte
 
 ### Respond to an Issue
 
-[Fork the Repository to your GitHub account](https://github.com/mpaulosky/ArticleSite/fork).
+[Fork the Repository to your account]( [your repository fork URL] ).
 
 1. Create a new Branch from the develop branch with a reference to the existing Issue number.
 1. Work on the issue.
-1. Create Unit, Integration tests for any code that require them. We use [xUnit](https://www.nuget.org/packages/xunit/)
-   to test our code and [bUnit](https://www.nuget.org/packages/bunit/) to test our blazor components.
+1. Create Unit, Integration tests for any code that require them. We use [your test frameworks, e.g., xUnit, bUnit] to test our code and components.
 1. When you are done Create a Pull Request from your branch to the develop branch.
 1. Submit the Pull Request.
 
 **Note:** Pull requests without unit tests will be delayed until tests are added. All new features and bug fixes must
 include appropriate tests.
 
-Any code that is written to support a blazor component or new functionality are required to be accompanied with unit
-tests at the time the pull request is submitted. Pull requests without unit tests will be delayed and asked for unit
-tests to prove their functionality.
+Any code that is written to support a component or new functionality are required to be accompanied with unit tests at the time the pull request is submitted. Pull requests without unit tests will be delayed and asked for unit tests to prove their functionality.
 
 ### Review Process
 
