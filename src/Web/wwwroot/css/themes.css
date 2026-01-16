@@ -1,0 +1,157 @@
+/* Theme Color Palettes - Using OKLCH Color Space */
+/* Light (Pastel) and Dark (Rich) variants for each theme */
+
+/* ===== RED THEME ===== */
+/* LIGHT VARIANT - Pastel Red (soft, gentle, high lightness 75-98%) */
+:root.theme-red-light {
+  --color-theme-primary-50: oklch(98.5% 0.006 17.38);
+  --color-theme-primary-100: oklch(96.2% 0.015 17.717);
+  --color-theme-primary-200: oklch(93.8% 0.03 18.334);
+  --color-theme-primary-300: oklch(90.2% 0.048 19.571);
+  --color-theme-primary-400: oklch(84.6% 0.08 22.216);
+  --color-theme-primary-500: oklch(78.5% 0.12 25.331);
+  --color-theme-primary-600: oklch(72.1% 0.14 27.104);
+  --color-theme-primary-700: oklch(65.3% 0.15 28.957);
+  --color-theme-primary-800: oklch(55.2% 0.12 32.463);
+  --color-theme-primary-900: oklch(45.1% 0.10 35.084);
+  --color-theme-primary-950: oklch(38.4% 0.08 38.627);
+  --color-theme-accent-500: oklch(82.1% 0.108 47.604);  /* pastel orange */
+  --color-theme-accent-600: oklch(76.3% 0.14 41.116);
+}
+
+/* DARK VARIANT - Deep Red (bold, saturated, low lightness 25-63%) */
+:root.theme-red-dark {
+  --color-theme-primary-50: oklch(97.1% 0.013 17.38);
+  --color-theme-primary-100: oklch(93.6% 0.032 17.717);
+  --color-theme-primary-200: oklch(88.5% 0.062 18.334);
+  --color-theme-primary-300: oklch(80.8% 0.114 19.571);
+  --color-theme-primary-400: oklch(70.4% 0.191 22.216);
+  --color-theme-primary-500: oklch(63.7% 0.237 25.331);
+  --color-theme-primary-600: oklch(56.2% 0.240 26.832);
+  --color-theme-primary-700: oklch(47.3% 0.222 27.654);
+  --color-theme-primary-800: oklch(38.1% 0.198 28.012);
+  --color-theme-primary-900: oklch(28.4% 0.145 29.234);
+  --color-theme-primary-950: oklch(22.1% 0.098 31.045);
+  --color-theme-accent-500: oklch(70.5% 0.213 47.604);
+  --color-theme-accent-600: oklch(64.6% 0.222 41.116);
+}
+
+/* ===== BLUE THEME ===== */
+/* LIGHT VARIANT - Pastel Blue */
+:root.theme-blue-light {
+  --color-theme-primary-50: oklch(98.3% 0.008 264.52);
+  --color-theme-primary-100: oklch(96.1% 0.018 266.34);
+  --color-theme-primary-200: oklch(93.5% 0.035 267.89);
+  --color-theme-primary-300: oklch(89.8% 0.052 269.12);
+  --color-theme-primary-400: oklch(83.6% 0.095 270.22);
+  --color-theme-primary-500: oklch(77.2% 0.135 271.01);
+  --color-theme-primary-600: oklch(70.1% 0.156 272.45);
+  --color-theme-primary-700: oklch(62.4% 0.158 273.98);
+  --color-theme-primary-800: oklch(52.3% 0.145 274.65);
+  --color-theme-primary-900: oklch(42.1% 0.125 275.34);
+  --color-theme-primary-950: oklch(35.2% 0.095 276.12);
+  --color-theme-accent-500: oklch(85.2% 0.125 52.34);   /* pastel amber */
+  --color-theme-accent-600: oklch(78.5% 0.145 49.87);
+}
+
+/* DARK VARIANT - Deep Blue */
+:root.theme-blue-dark {
+  --color-theme-primary-50: oklch(97.2% 0.016 264.52);
+  --color-theme-primary-100: oklch(93.5% 0.038 266.34);
+  --color-theme-primary-200: oklch(87.8% 0.075 267.89);
+  --color-theme-primary-300: oklch(79.4% 0.125 269.12);
+  --color-theme-primary-400: oklch(68.5% 0.195 270.22);
+  --color-theme-primary-500: oklch(59.7% 0.245 271.01);
+  --color-theme-primary-600: oklch(51.8% 0.258 272.45);
+  --color-theme-primary-700: oklch(43.2% 0.242 273.98);
+  --color-theme-primary-800: oklch(34.5% 0.215 274.65);
+  --color-theme-primary-900: oklch(25.8% 0.165 275.34);
+  --color-theme-primary-950: oklch(19.2% 0.125 276.12);
+  --color-theme-accent-500: oklch(72.1% 0.215 52.34);
+  --color-theme-accent-600: oklch(65.3% 0.235 49.87);
+}
+
+/* ===== GREEN THEME ===== */
+/* LIGHT VARIANT - Pastel Green */
+:root.theme-green-light {
+  --color-theme-primary-50: oklch(98.2% 0.007 146.71);
+  --color-theme-primary-100: oklch(95.9% 0.018 148.45);
+  --color-theme-primary-200: oklch(93.1% 0.032 149.87);
+  --color-theme-primary-300: oklch(89.2% 0.055 151.23);
+  --color-theme-primary-400: oklch(82.5% 0.105 153.12);
+  --color-theme-primary-500: oklch(75.8% 0.142 155.34);
+  --color-theme-primary-600: oklch(68.3% 0.152 156.89);
+  --color-theme-primary-700: oklch(60.2% 0.148 158.12);
+  --color-theme-primary-800: oklch(49.8% 0.135 159.45);
+  --color-theme-primary-900: oklch(39.5% 0.115 160.67);
+  --color-theme-primary-950: oklch(32.1% 0.088 161.23);
+  --color-theme-accent-500: oklch(86.4% 0.095 89.34);    /* pastel yellow */
+  --color-theme-accent-600: oklch(80.2% 0.125 87.65);
+}
+
+/* DARK VARIANT - Deep Green */
+:root.theme-green-dark {
+  --color-theme-primary-50: oklch(97.1% 0.014 146.71);
+  --color-theme-primary-100: oklch(93.4% 0.038 148.45);
+  --color-theme-primary-200: oklch(87.5% 0.068 149.87);
+  --color-theme-primary-300: oklch(78.9% 0.118 151.23);
+  --color-theme-primary-400: oklch(67.2% 0.195 153.12);
+  --color-theme-primary-500: oklch(57.5% 0.252 155.34);
+  --color-theme-primary-600: oklch(49.1% 0.268 156.89);
+  --color-theme-primary-700: oklch(40.3% 0.248 158.12);
+  --color-theme-primary-800: oklch(31.5% 0.215 159.45);
+  --color-theme-primary-900: oklch(23.8% 0.165 160.67);
+  --color-theme-primary-950: oklch(17.9% 0.125 161.23);
+  --color-theme-accent-500: oklch(71.5% 0.185 89.34);
+  --color-theme-accent-600: oklch(64.8% 0.205 87.65);
+}
+
+/* ===== YELLOW THEME ===== */
+/* LIGHT VARIANT - Pastel Yellow */
+:root.theme-yellow-light {
+  --color-theme-primary-50: oklch(98.8% 0.004 104.23);
+  --color-theme-primary-100: oklch(97.2% 0.012 107.45);
+  --color-theme-primary-200: oklch(94.8% 0.028 109.87);
+  --color-theme-primary-300: oklch(91.2% 0.048 112.34);
+  --color-theme-primary-400: oklch(85.9% 0.090 115.12);
+  --color-theme-primary-500: oklch(79.6% 0.125 117.89);
+  --color-theme-primary-600: oklch(72.3% 0.135 119.45);
+  --color-theme-primary-700: oklch(64.1% 0.128 121.23);
+  --color-theme-primary-800: oklch(54.2% 0.115 123.12);
+  --color-theme-primary-900: oklch(43.8% 0.095 124.67);
+  --color-theme-primary-950: oklch(36.5% 0.075 125.34);
+  --color-theme-accent-500: oklch(70.2% 0.185 25.12);    /* pastel red */
+  --color-theme-accent-600: oklch(62.8% 0.215 22.45);
+}
+
+/* DARK VARIANT - Deep Yellow */
+:root.theme-yellow-dark {
+  --color-theme-primary-50: oklch(97.3% 0.008 104.23);
+  --color-theme-primary-100: oklch(93.8% 0.028 107.45);
+  --color-theme-primary-200: oklch(88.5% 0.062 109.87);
+  --color-theme-primary-300: oklch(80.2% 0.108 112.34);
+  --color-theme-primary-400: oklch(69.4% 0.185 115.12);
+  --color-theme-primary-500: oklch(59.8% 0.245 117.89);
+  --color-theme-primary-600: oklch(51.2% 0.258 119.45);
+  --color-theme-primary-700: oklch(42.5% 0.242 121.23);
+  --color-theme-primary-800: oklch(33.8% 0.215 123.12);
+  --color-theme-primary-900: oklch(25.1% 0.165 124.67);
+  --color-theme-primary-950: oklch(18.9% 0.125 125.34);
+  --color-theme-accent-500: oklch(58.3% 0.245 25.12);
+  --color-theme-accent-600: oklch(51.2% 0.265 22.45);
+}
+
+/* ===== NEUTRAL COLORS (used in all themes) ===== */
+:root {
+  --color-theme-neutral-50: oklch(97.1% 0.001 0);
+  --color-theme-neutral-100: oklch(94.2% 0.002 0);
+  --color-theme-neutral-200: oklch(89.4% 0.005 0);
+  --color-theme-neutral-300: oklch(84.1% 0.008 0);
+  --color-theme-neutral-400: oklch(76.3% 0.012 0);
+  --color-theme-neutral-500: oklch(64.2% 0.015 0);
+  --color-theme-neutral-600: oklch(52.8% 0.014 0);
+  --color-theme-neutral-700: oklch(42.3% 0.012 0);
+  --color-theme-neutral-800: oklch(30.1% 0.010 0);
+  --color-theme-neutral-900: oklch(20.2% 0.008 0);
+  --color-theme-neutral-950: oklch(10.1% 0.004 0);
+}

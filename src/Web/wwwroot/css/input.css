@@ -1,4 +1,11 @@
 @import "tailwindcss";
+@import "./themes.css";
+
+@theme inline {
+  --color-theme-primary-*: initial;
+  --color-theme-accent-*: initial;
+  --color-theme-neutral-*: initial;
+}
 
 @custom-variant dark (&:where(.dark, .dark *));
 
