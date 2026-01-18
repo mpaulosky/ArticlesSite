@@ -12,10 +12,23 @@
         (function () {
             // Initialize default theme colors (will be overridden by theme-manager.js after load)
             const savedTheme = localStorage.getItem('tailwind-color-theme') || 'theme-blue-light';
+
+            // Remove existing theme classes (in case of server-side re-render)
+            const themes = [
+                'theme-red-light', 'theme-red-dark',
+                'theme-blue-light', 'theme-blue-dark',
+                'theme-green-light', 'theme-green-dark',
+                'theme-yellow-light', 'theme-yellow-dark'
+            ];
+            themes.forEach(t => document.documentElement.classList.remove(t));
+
+            // Add the saved theme class
             document.documentElement.classList.add(savedTheme);
-            
+
             // Initialize dark/light mode
-            const theme = localStorage.getItem('theme') || 'light';
+            // We use both 'theme' (from ThemeToggle) and 'tailwind-color-theme' (from ThemeManager)
+            // to ensure consistency between the two systems.
+            const theme = localStorage.getItem('theme') || (savedTheme.includes('-dark') ? 'dark' : 'light');
             if (theme === 'dark') {
                 document.documentElement.classList.add('dark');
                 document.documentElement.classList.remove('light');
@@ -52,7 +65,7 @@
 
     <!-- Custom text editor helpers -->
     <script src="js/text-editor-helpers.js"></script>
-    
+
     <!-- Theme Manager for color theme switching -->
     <script src="js/theme-manager.js"></script>
 </body>

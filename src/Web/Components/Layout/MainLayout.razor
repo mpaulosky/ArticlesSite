@@ -1,11 +1,11 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 @implements IDisposable
 
-<div class="antialiased bg-theme-neutral-400 text-theme-neutral-900 dark:bg-theme-neutral-800 dark:text-theme-neutral-100 transition-colors duration-300">
+<div class="antialiased bg-theme-neutral-50 text-theme-neutral-900 dark:bg-theme-neutral-900 dark:text-theme-neutral-100 transition-colors duration-300">
 	<div class="flex flex-col min-h-screen space-y-4">
 		<NavMenuComponent />
 
-		<main class="container flex-1 max-w-7xl px-4 mx-auto space-y-2 xl:max-w-7xl">
+		<main class="container flex-1 max-w-7xl px-4 mx-auto space-y-4 xl:max-w-7xl">
 			<ErrorBoundary>
 				<ChildContent>
 					@Body

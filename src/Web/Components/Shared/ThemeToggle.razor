@@ -22,32 +22,61 @@
 	{
 		if (firstRender)
 		{
-			// Import the co-located JS module using the correct path from the web root.
-			// For components in Components/Shared, the path must be ./Components/Shared/ThemeToggle.razor.js
-			_themeModule = await Js.InvokeAsync<IJSObjectReference>("import", "./Components/Shared/ThemeToggle.razor.js");
-
-			// Get the saved theme from localStorage, defaulting to "light" if not set
-			var theme = await LocalStorage.GetItemAsStringAsync("theme");
-			if (string.IsNullOrEmpty(theme))
+			try
 			{
-				theme = "light";
-				await LocalStorage.SetItemAsStringAsync("theme", theme);
-			}
+				// Import the co-located JS module using the correct path from the web root.
+				// For components in Components/Shared, the path must be ./Components/Shared/ThemeToggle.razor.js
+				_themeModule = await Js.InvokeAsync<IJSObjectReference>("import", "./Components/Shared/ThemeToggle.razor.js");
 
-			_darkMode = theme == "dark";
-			await _themeModule.InvokeVoidAsync("setTheme", theme);
-			StateHasChanged();
+				// Get the saved theme from localStorage, defaulting to "light" if not set
+				var theme = await LocalStorage.GetItemAsStringAsync("theme");
+				if (string.IsNullOrEmpty(theme))
+				{
+					theme = "light";
+					await LocalStorage.SetItemAsStringAsync("theme", theme);
+				}
+
+				_darkMode = theme == "dark";
+				await _themeModule.InvokeVoidAsync("setTheme", theme);
+				StateHasChanged();
+			}
+			catch (TaskCanceledException)
+			{
+				// Ignore task cancellation if the circuit is disconnected during initialization
+				// The theme will be applied on next component interaction or page reload
+			}
+			catch (JSDisconnectedException)
+			{
+				// Ignore JS disconnection if the circuit has been disconnected
+				// The theme will be applied when the circuit re-establishes
+			}
 		}
 	}
 
 	private async Task ToggleTheme(ChangeEventArgs args)
 	{
-		_darkMode = (bool)args.Value!;
-		var theme = _darkMode ? "dark" : "light";
+		if (_themeModule is null)
+			return;
 
-		await LocalStorage.SetItemAsStringAsync("theme", theme);
-		await _themeModule.InvokeVoidAsync("setTheme", theme);
-		StateHasChanged();
+		try
+		{
+			_darkMode = (bool)args.Value!;
+			var theme = _darkMode ? "dark" : "light";
+
+			await LocalStorage.SetItemAsStringAsync("theme", theme);
+			await _themeModule.InvokeVoidAsync("setTheme", theme);
+			StateHasChanged();
+		}
+		catch (TaskCanceledException)
+		{
+			// Ignore task cancellation during theme toggle
+			// The theme preference is still saved to localStorage
+		}
+		catch (JSDisconnectedException)
+		{
+			// Ignore JS disconnection errors during user interaction
+			// The theme preference is still saved to localStorage
+		}
 	}
 
 	async ValueTask IAsyncDisposable.DisposeAsync()
