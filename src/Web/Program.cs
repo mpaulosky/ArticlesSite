@@ -58,8 +58,7 @@ app.MapStaticAssets();
 
 app.MapDefaultEndpoints();
 
-// ReSharper disable once AsyncVoidMethod
-app.MapGet("/Account/Login", async void (HttpContext httpContext, string returnUrl = "/") =>
+app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
 {
 	var authenticationProperties = new LoginAuthenticationPropertiesBuilder()
 			.WithRedirectUri(returnUrl)
@@ -68,7 +67,7 @@ app.MapGet("/Account/Login", async void (HttpContext httpContext, string returnU
 	await httpContext.ChallengeAsync(Auth0Constants.AuthenticationScheme, authenticationProperties);
 });
 
-app.MapGet("/Account/Logout", async httpContext =>
+app.MapGet("/Account/Logout", async (HttpContext httpContext) =>
 {
 	var authenticationProperties = new LogoutAuthenticationPropertiesBuilder()
 			.WithRedirectUri("/")
