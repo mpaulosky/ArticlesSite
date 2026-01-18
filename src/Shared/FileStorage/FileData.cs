@@ -1,4 +1,4 @@
-﻿// =======================================================
+// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     FileData.cs
 // Company :       mpaulosky
@@ -31,7 +31,7 @@ public record FileMetaData(string FileName, string ContentType, DateTimeOffset C
 		}
 
 		// run a regular expression check to ensure the file name is valid - no slashes or other special characters
-		Regex reValidFileName = new (@"^[a-zA-Z0-9_\-\.]+$");
+		Regex reValidFileName = new(@"^[a-zA-Z0-9_\-\.]+$");
 
 		if (!reValidFileName.IsMatch(FileName))
 		{

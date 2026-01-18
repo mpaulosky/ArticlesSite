@@ -1,4 +1,4 @@
-﻿// =======================================================
+// =======================================================
 // Copyright (c) 2025. All rights reserved.
 // File Name :     Result.cs
 // Company :       mpaulosky
@@ -72,7 +72,7 @@ public sealed class Result<T> : Result
 		return new Result<T>(default, false, errorMessage);
 	}
 
-	public static implicit operator T? (Result<T> result)
+	public static implicit operator T?(Result<T> result)
 	{
 		ArgumentNullException.ThrowIfNull(result);
 
