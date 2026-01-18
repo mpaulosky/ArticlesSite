@@ -1,7 +1,4 @@
 <Solution>
-  <Folder Name="/E2E/">
-    <Project Path="e2e\Web.Tests.Playwright\Web.Tests.Playwright.csproj" />
-  </Folder>
   <Folder Name="/Solution Items/">
     <File Path="gitcommittemplate.txt" />
     <File Path="global.json" />
