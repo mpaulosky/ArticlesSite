@@ -77,9 +77,9 @@ public class CreateCategoryComponentTests : BunitContext
 		cut.Markup.Should().Contain("Loading...");
 	}
 
-	    [Fact]
-	    public async Task HandleSubmit_WithSuccess_ShouldNavigateToList()
-	    {
+	[Fact]
+	public async Task HandleSubmit_WithSuccess_ShouldNavigateToList()
+	{
 		// Arrange
 		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
@@ -107,11 +107,11 @@ public class CreateCategoryComponentTests : BunitContext
 
 		// Assert
 		nav.Uri.Should().EndWith("/categories");
-	    }
+	}
 
-	    [Fact]
-	    public async Task HandleSubmit_WithFailure_ShouldShowError()
-	    {
+	[Fact]
+	public async Task HandleSubmit_WithFailure_ShouldShowError()
+	{
 		// Arrange
 		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
@@ -140,6 +140,6 @@ public class CreateCategoryComponentTests : BunitContext
 		// Assert
 		cut.Markup.Should().Contain("Error creating category");
 		cut.Markup.Should().Contain("Failed to create category.");
-	    }
+	}
 
 }

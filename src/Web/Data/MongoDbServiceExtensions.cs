@@ -7,14 +7,14 @@
 // Project Name :  Web
 // =======================================================
 
-using Web.Components.Features.Articles.ArticlesList;
 using Web.Components.Features.Articles.ArticleCreate;
 using Web.Components.Features.Articles.ArticleDetails;
 using Web.Components.Features.Articles.ArticleEdit;
-using Web.Components.Features.Categories.CategoryEdit;
-using Web.Components.Features.Categories.CategoryDetails;
+using Web.Components.Features.Articles.ArticlesList;
 using Web.Components.Features.Categories.CategoriesList;
 using Web.Components.Features.Categories.CategoryCreate;
+using Web.Components.Features.Categories.CategoryDetails;
+using Web.Components.Features.Categories.CategoryEdit;
 
 namespace Web.Data;
 
@@ -95,7 +95,7 @@ public static class MongoDbServiceExtensions
 		services.AddScoped<GetArticle.IGetArticleHandler, GetArticle.Handler>();
 		services.AddScoped<CreateArticle.ICreateArticleHandler, CreateArticle.Handler>();
 		services.AddScoped<EditArticle.IEditArticleHandler, EditArticle.Handler>();
-		
+
 		// Category Handlers
 		services.AddScoped<EditCategory.IEditCategoryHandler, EditCategory.Handler>();
 		services.AddScoped<GetCategory.IGetCategoryHandler, GetCategory.Handler>();

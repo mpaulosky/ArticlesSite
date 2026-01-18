@@ -13,9 +13,9 @@ public class ArticlesListComponentTests : BunitContext
 		// Arrange
 		var articles = new[]
 		{
-				new ArticleDto(ObjectId.GenerateNewId(), "slug1", "Title1", "Intro1", "Content1", "", 
+				new ArticleDto(ObjectId.GenerateNewId(), "slug1", "Title1", "Intro1", "Content1", "",
 						new AuthorInfo("user1", "User One"), null, true, null, null, null, false, true),
-				new ArticleDto(ObjectId.GenerateNewId(), "slug2", "Title2", "Intro2", "Content2", "", 
+				new ArticleDto(ObjectId.GenerateNewId(), "slug2", "Title2", "Intro2", "Content2", "",
 						new AuthorInfo("user2", "User Two"), null, true, null, null, null, false, true)
 		};
 
@@ -44,7 +44,7 @@ public class ArticlesListComponentTests : BunitContext
 		// Arrange
 		var articles = new[]
 		{
-				new ArticleDto(ObjectId.GenerateNewId(), "slug1", "Title1", "Intro1", "Content1", "", 
+				new ArticleDto(ObjectId.GenerateNewId(), "slug1", "Title1", "Intro1", "Content1", "",
 						null, null, true, null, null, null, false, true)
 		};
 
@@ -59,12 +59,12 @@ public class ArticlesListComponentTests : BunitContext
 
 		// Find and check the 'Include Archived' checkbox
 		var checkboxes = cut.FindAll("input[type='checkbox']");
-		var includeArchivedCheckbox = checkboxes.FirstOrDefault(c => 
+		var includeArchivedCheckbox = checkboxes.FirstOrDefault(c =>
 				c.Parent?.TextContent.Contains("Include Archived") == true);
-		
+
 		includeArchivedCheckbox.Should().NotBeNull();
 		includeArchivedCheckbox!.Change(true);
-		
+
 		cut.WaitForState(() => mockHandler.ReceivedCalls().Count() >= 2, timeout: TimeSpan.FromSeconds(2));
 
 		// Assert - Handler should be called twice: once on init (includeArchived=false), once after change (includeArchived=true)
@@ -93,12 +93,12 @@ public class ArticlesListComponentTests : BunitContext
 
 		// Find and check the 'Show My Articles Only' checkbox
 		var checkboxes = cut.FindAll("input[type='checkbox']");
-		var myArticlesCheckbox = checkboxes.FirstOrDefault(c => 
+		var myArticlesCheckbox = checkboxes.FirstOrDefault(c =>
 				c.Parent?.TextContent.Contains("Show My Articles Only") == true);
-		
+
 		myArticlesCheckbox.Should().NotBeNull();
 		myArticlesCheckbox!.Change(true);
-		
+
 		cut.WaitForState(() => mockHandler.ReceivedCalls().Count() >= 2, timeout: TimeSpan.FromSeconds(2));
 
 		// Assert - Handler should be called twice: once on init (filterByUser=false), once after change (filterByUser=true)
@@ -210,9 +210,9 @@ public class ArticlesListComponentTests : BunitContext
 
 		// Find checkboxes
 		var checkboxes = cut.FindAll("input[type='checkbox']");
-		var myArticlesCheckbox = checkboxes.FirstOrDefault(c => 
+		var myArticlesCheckbox = checkboxes.FirstOrDefault(c =>
 				c.Parent?.TextContent.Contains("Show My Articles Only") == true);
-		var includeArchivedCheckbox = checkboxes.FirstOrDefault(c => 
+		var includeArchivedCheckbox = checkboxes.FirstOrDefault(c =>
 				c.Parent?.TextContent.Contains("Include Archived") == true);
 
 		myArticlesCheckbox.Should().NotBeNull();
@@ -221,12 +221,12 @@ public class ArticlesListComponentTests : BunitContext
 		// Trigger first checkbox change
 		await cut.InvokeAsync(() => myArticlesCheckbox!.Change(true));
 		cut.WaitForState(() => mockHandler.ReceivedCalls().Count() >= 2, timeout: TimeSpan.FromSeconds(2));
-		
+
 		// Re-find checkboxes after re-render
 		checkboxes = cut.FindAll("input[type='checkbox']");
-		includeArchivedCheckbox = checkboxes.FirstOrDefault(c => 
+		includeArchivedCheckbox = checkboxes.FirstOrDefault(c =>
 				c.Parent?.TextContent.Contains("Include Archived") == true);
-		
+
 		// Trigger second checkbox change
 		await cut.InvokeAsync(() => includeArchivedCheckbox!.Change(true));
 		cut.WaitForState(() => mockHandler.ReceivedCalls().Count() >= 3, timeout: TimeSpan.FromSeconds(2));

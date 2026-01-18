@@ -17,30 +17,30 @@ namespace Web.Tests.Unit.Components.Shared;
 [ExcludeFromCodeCoverage]
 public class PageHeaderComponentTests : BunitContext
 {
-    [Fact]
-    public void RendersDefaultHeaderTextAndLevel()
-    {
-        var cut = Render<PageHeaderComponent>();
-        cut.Find("h1").TextContent.Should().Be("My Blog");
-    }
+	[Fact]
+	public void RendersDefaultHeaderTextAndLevel()
+	{
+		var cut = Render<PageHeaderComponent>();
+		cut.Find("h1").TextContent.Should().Be("My Blog");
+	}
 
-    [Theory]
-    [InlineData("1", "h1", "My Blog")]
-    [InlineData("2", "h2", "My Blog")]
-    [InlineData("3", "h3", "My Blog")]
-    public void RendersCorrectHeaderLevel(string level, string expectedTag, string expectedText)
-    {
-        var cut = Render<PageHeaderComponent>(parameters => parameters
-            .Add(p => p.Level, level)
-            .Add(p => p.HeaderText, expectedText));
-        cut.Find(expectedTag).TextContent.Should().Be(expectedText);
-    }
+	[Theory]
+	[InlineData("1", "h1", "My Blog")]
+	[InlineData("2", "h2", "My Blog")]
+	[InlineData("3", "h3", "My Blog")]
+	public void RendersCorrectHeaderLevel(string level, string expectedTag, string expectedText)
+	{
+		var cut = Render<PageHeaderComponent>(parameters => parameters
+				.Add(p => p.Level, level)
+				.Add(p => p.HeaderText, expectedText));
+		cut.Find(expectedTag).TextContent.Should().Be(expectedText);
+	}
 
-    [Fact]
-    public void RendersCustomHeaderText()
-    {
-        var cut = Render<PageHeaderComponent>(parameters => parameters
-            .Add(p => p.HeaderText, "Welcome to Articles!"));
-        cut.Find("h1").TextContent.Should().Be("Welcome to Articles!");
-    }
+	[Fact]
+	public void RendersCustomHeaderText()
+	{
+		var cut = Render<PageHeaderComponent>(parameters => parameters
+				.Add(p => p.HeaderText, "Welcome to Articles!"));
+		cut.Find("h1").TextContent.Should().Be("Welcome to Articles!");
+	}
 }
