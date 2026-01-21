@@ -73,12 +73,12 @@ public class EditComponentTests : BunitContext
 		cut.Markup.Should().Contain("Unable to load category");
 	}
 
-		[Theory]
-		[InlineData("Admin")]
-		[InlineData("Author")]
-		[InlineData("User")]
-		[InlineData("Admin", "Author")]
-		public void RendersEditForm_WhenCategoryIsLoaded(params string[] roles)
+	[Theory]
+	[InlineData("Admin")]
+	[InlineData("Author")]
+	[InlineData("User")]
+	[InlineData("Admin", "Author")]
+	public void RendersEditForm_WhenCategoryIsLoaded(params string[] roles)
 	{
 		// Arrange
 		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);

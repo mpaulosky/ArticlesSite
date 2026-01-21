@@ -1,200 +1,177 @@
-﻿@page "/"
+@page "/"
 
 @using Web.Components.Features.Articles.ArticlesList
-@using Web.Components.Shared
 @inject GetArticles.IGetArticlesHandler ArticlesHandler
+@inject NavigationManager NavigationManager
 @inject ILogger<Home> Logger
 
 <PageHeadingComponent Level="1" HeaderText="@_pageTitle" />
 
 <!-- Theme Selector Section -->
-<section class="mb-8">
-  <div class="mb-4">
-    <h2 class="text-2xl font-bold text-theme-neutral-900 dark:text-theme-neutral-100 mb-2">Choose Your Theme</h2>
-    <p class="text-theme-neutral-600 dark:text-theme-neutral-400">Customize your experience with different color themes</p>
-  </div>
-  <ThemeSelector />
+<section class="container-card">
+	<div class="mb-4">
+		<h2 class="text-2xl font-bold text-theme-neutral-900 dark:text-theme-neutral-100 mb-2">Choose Your Theme</h2>
+		<p class="text-theme-neutral-600 dark:text-theme-neutral-400">Customize your experience with different color themes</p>
+	</div>
+	<ThemeSelector />
 </section>
 
-<!-- Hero Section -->
-<section
-  class="relative bg-linear-to-r from-blue-600 to-blue-800 dark:from-blue-700 dark:to-blue-900 rounded-lg shadow-xl overflow-hidden mb-8 transition-colors duration-300">
+<!-- Hero Section Welcome Message -->
+<section class="container-card">
 
-  <div class="px-6 py-16 sm:px-8 lg:px-10 text-center">
+	<h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 text-center w-full">
+		Welcome to the Article Site
+	</h1>
 
-    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">
-      Welcome to the Article Site
-    </h1>
+	<p class="text-xl sm:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto text-center">
+		Create and Discover insightful articles, engage with amazing content, and stay up to date with the latest posts
+		from our
+		community.
+	</p>
 
-    <p class="text-xl sm:text-2xl text-blue-100 mb-8 max-w-3xl mx-auto">
-      Create and Discover insightful articles, engage with amazing content, and stay up to date with the latest posts
-      from our
-      community.
-    </p>
+	<div class="flex flex-wrap justify-center gap-4">
 
-    <div class="flex flex-wrap justify-center gap-4">
+		<div class="button-group">
+			<button @onclick="@(() => NavigateTo("articles"))" class="btn btn-primary">Browse All Articles</button>
+			<button @onclick="@(() => NavigateTo("about"))" class="btn btn-warning">Learn More</button>
+		</div>
 
-      <a href="/articles" class="btn-primary">
-        Browse All Articles
-      </a>
-
-      <a href="/about" class="btn-secondary">
-        Learn More
-      </a>
-
-    </div>
-
-  </div>
+	</div>
 
 </section>
 
 <!-- Recent Articles Section -->
-<section class="mb-8">
+<section class="container-card">
 
-  <div class="mb-6">
-    <h2 class="text-3xl font-bold text-gray-100 mb-2">Recent Articles</h2>
-    <p class="text-gray-400">Check out our latest published content</p>
-  </div>
+	<div class="mb-6">
+		<h2 class="text-3xl font-bold text-gray-100 mb-2">Recent Articles</h2>
+		<p class="text-gray-400">Check out our latest published content</p>
+	</div>
 
-  @if (_isLoading)
-  {
+	@if (_isLoading)
+	{
 
-    <div class="flex justify-center items-center py-12">
-      <LoadingComponent />
-    </div>
+		<div class="flex justify-center items-center py-12">
+			<LoadingComponent />
+		</div>
 
-  }
-  else if (_recentArticles == null || !_recentArticles.Any())
-  {
+	}
+	else if (_recentArticles == null || !_recentArticles.Any())
+	{
 
-    <div class="bg-white dark:bg-gray-700 rounded-lg p-8 text-center transition-colors duration-300">
-      <p class="text-gray-700 dark:text-gray-300 text-lg mb-4">No articles available yet.</p>
-      <p class="text-gray-500 dark:text-gray-400">Check back soon for new content!</p>
-    </div>
+		<div class="bg-white dark:bg-gray-700 rounded-lg p-8 text-center transition-colors duration-300">
+			<p class="text-gray-700 dark:text-gray-300 text-lg mb-4">No articles available yet.</p>
+			<p class="text-gray-500 dark:text-gray-400">Check back soon for new content!</p>
+		</div>
 
-  }
-  else
-  {
+	}
+	else
+	{
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-      @foreach (var article in _recentArticles)
-      {
+			@foreach (var article in _recentArticles)
+			{
 
-        <article
-          class="bg-white dark:bg-gray-700 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
+				<article class="bg-white dark:bg-gray-700 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300">
 
-          @if (!string.IsNullOrEmpty(article.CoverImageUrl))
-          {
-            <img src="@article.CoverImageUrl" alt="@article.Title" style="width:100%;height:33%;object-fit:cover;" />
-          }
-          else
-          {
-            <div class="w-full h-48 bg-linear-to-br from-blue-500 to-blue-700 flex items-center justify-center">
-              <span class="text-white text-4xl">📝</span>
-            </div>
-          }
+					@if (!string.IsNullOrEmpty(article.CoverImageUrl))
+					{
+						<img src="@article.CoverImageUrl" alt="@article.Title" style="width:100%;height:33%;object-fit:cover;" />
+					}
+					else
+					{
+						<div class="w-full h-48 bg-linear-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+							<span class="text-white text-4xl">📝</span>
+						</div>
+					}
 
-          <div class="p-6">
+					<div class="p-6">
 
-            <h3
-              class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2 transition-colors duration-200">
-              @article.Title
-            </h3>
+						<h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2 transition-colors duration-200">
+							@article.Title
+						</h3>
 
-            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 transition-colors duration-200">
+						<p class="text-gray-600 dark:text-gray-400 text-sm mb-4 transition-colors duration-200">
 
-              @if (article.PublishedOn.HasValue)
-              {
-                <span>@article.PublishedOn.Value.ToString("MMMM dd, yyyy")</span>
-              }
-              @if (article.Author != null && !string.IsNullOrEmpty(article.Author.Name))
-              {
-                <span> • by @article.Author.Name</span>
-              }
-            </p>
+							@if (article.PublishedOn.HasValue)
+							{
+								<span>@article.PublishedOn.Value.ToString("MMMM dd, yyyy")</span>
+							}
+							@if (article.Author != null && !string.IsNullOrEmpty(article.Author.Name))
+							{
+								<span> • by @article.Author.Name</span>
+							}
+						</p>
 
-            <p class="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3 transition-colors duration-200">
-              @article.Introduction
-            </p>
+						<p class="text-gray-700 dark:text-gray-300 mb-4 line-clamp-3 transition-colors duration-200">
+							@article.Introduction
+						</p>
 
-            <a href="/articles/details/@article.Id"
-              class="inline-block text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200">
-              Read More →
-            </a>
+						<a href="/articles/details/@article.Id"
+						   class="inline-block text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 transition-colors duration-200">
+							Read More →
+						</a>
 
-          </div>
+					</div>
 
-        </article>
-      }
-    </div>
-  }
-</section>
-
-<!-- Call to Action Section -->
-<section class="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-8 text-center transition-colors duration-300">
-
-  <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-200">Join Our Community
-  </h2>
-
-  <p class="text-gray-700 dark:text-gray-300 mb-6 max-w-2xl mx-auto transition-colors duration-200">
-    Stay connected and never miss an update. Explore more articles, connect with authors, and be part of our growing
-    community.
-  </p>
-
-  <a href="/contact"
-    class="inline-block bg-blue-600 dark:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors duration-200">
-    Get in Touch
-  </a>
-
+				</article>
+			}
+		</div>
+	}
 </section>
 
 @code {
 
-  private const string _pageTitle = "Article Site - A Modern Blogging Platform";
+	private const string _pageTitle = "Article Site - A Modern Blogging Platform";
 
-  private bool _isLoading = true;
+	private bool _isLoading = true;
 
-  private List<ArticleDto>? _recentArticles;
+	private List<ArticleDto>? _recentArticles;
 
-  protected override async Task OnInitializedAsync()
-  {
-    await LoadArticlesAsync();
-  }
+	protected override async Task OnInitializedAsync()
+	{
+		await LoadArticlesAsync();
+	}
 
-  private async Task LoadArticlesAsync()
-  {
-    try
-    {
-      var result = await ArticlesHandler.HandleAsync(user: null, filterByUser: false, includeArchived: false);
+	private async Task LoadArticlesAsync()
+	{
+		try
+		{
+			var result = await ArticlesHandler.HandleAsync(user: null, filterByUser: false, includeArchived: false);
 
-      if (result.Success && result.Value != null)
-      {
-        // Get published articles, ordered by published date, take top 6
-        _recentArticles = result.Value
-        .Where(a => a.IsPublished && !a.IsArchived)
-        .OrderByDescending(a => a.PublishedOn ?? a.CreatedOn)
-        .Take(6)
-        .ToList();
+			if (result is { Success: true, Value: not null })
+			{
+				// Get published articles, ordered by published date, take top 6
+				_recentArticles = result.Value
+				.Where(a => a is { IsPublished: true, IsArchived: false })
+				.OrderByDescending(a => a.PublishedOn ?? a.CreatedOn)
+				.Take(6)
+				.ToList();
 
-        Logger.LogInformation("Loaded {Count} recent articles for home page", _recentArticles.Count);
-      }
-      else
-      {
-        _recentArticles = new List<ArticleDto>();
-        Logger.LogWarning("Failed to load articles: {Error}", result.Error);
-      }
-    }
-    catch (Exception ex)
-    {
-      _recentArticles = new List<ArticleDto>();
-      Logger.LogError(ex, "Error loading articles for home page");
-    }
-    finally
-    {
-      _isLoading = false;
-    }
+				Logger.LogInformation("Loaded {Count} recent articles for home page", _recentArticles.Count);
+			}
+			else
+			{
+				_recentArticles = new List<ArticleDto>();
+				Logger.LogWarning("Failed to load articles: {Error}", result.Error);
+			}
+		}
+		catch (Exception ex)
+		{
+			_recentArticles = new List<ArticleDto>();
+			Logger.LogError(ex, "Error loading articles for home page");
+		}
+		finally
+		{
+			_isLoading = false;
+		}
 
-  }
+	}
+
+	private void NavigateTo(string path)
+	{
+		NavigationManager.NavigateTo($"/{path}");
+	}
 
 }

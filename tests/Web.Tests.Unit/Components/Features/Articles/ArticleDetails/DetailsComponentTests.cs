@@ -10,12 +10,12 @@ public class DetailsComponentTests : BunitContext
 	public void RendersLoadingComponent_WhenIsLoading()
 	{
 		// Arrange DI: use the actual handler the component depends on
-		var handler = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var handler = Substitute.For<GetArticle.IGetArticleHandler>();
 		Services.AddSingleton(handler);
 
 		var id = ObjectId.Parse("507f1f77bcf86cd799439011");
 
-		// Simulate a pending load so the component stays in loading state
+		// Simulate a pending load so the component stays in the loading state
 		var tcs = new TaskCompletionSource<Result<ArticleDto>>();
 		handler.HandleAsync(id).Returns(_ => tcs.Task);
 
@@ -31,7 +31,7 @@ public class DetailsComponentTests : BunitContext
 	public void RendersErrorAlert_WhenArticleIsNull()
 	{
 		// Arrange DI
-		var handler = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var handler = Substitute.For<GetArticle.IGetArticleHandler>();
 		Services.AddSingleton(handler);
 
 		var id = ObjectId.Parse("507f1f77bcf86cd799439011");
@@ -49,7 +49,7 @@ public class DetailsComponentTests : BunitContext
 	public void RendersCard_WhenArticleIsPresent()
 	{
 		// Arrange DI
-		var handler = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var handler = Substitute.For<GetArticle.IGetArticleHandler>();
 		Services.AddSingleton(handler);
 
 		var article = new ArticleDto(
@@ -59,7 +59,7 @@ public class DetailsComponentTests : BunitContext
 				"Test Introduction",
 				"<p>Test Content</p>",
 				"https://example.com/image.jpg",
-				new AuthorInfo("user1", "Test Author"),
+				new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author"),
 				new Category { CategoryName = "Tech" },
 				true,
 				DateTimeOffset.UtcNow,

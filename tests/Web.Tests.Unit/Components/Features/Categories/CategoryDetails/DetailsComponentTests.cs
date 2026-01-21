@@ -42,9 +42,9 @@ public class DetailsComponentTests : BunitContext
 		tcs.SetResult(Result.Fail<CategoryDto>("Category not found."));
 	}
 
-	    [Fact]
-	    public void RendersErrorAlert_WhenCategoryNotFound()
-	    {
+	[Fact]
+	public void RendersErrorAlert_WhenCategoryNotFound()
+	{
 		// Arrange
 		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
@@ -61,7 +61,7 @@ public class DetailsComponentTests : BunitContext
 		cut.WaitForState(() => cut.Markup.Contains("Category not found."));
 		cut.Markup.Should().Contain("Unable to load category");
 		cut.Markup.Should().Contain("Category not found.");
-	    }
+	}
 
 	[Theory]
 	[InlineData("Admin")]
@@ -544,9 +544,9 @@ public class DetailsComponentTests : BunitContext
 		cut.Markup.Should().Contain("Back to List");
 	}
 
-	    [Fact]
-	    public void ComponentWithNoId_ShouldHandle_EmptyParameter()
-	    {
+	[Fact]
+	public void ComponentWithNoId_ShouldHandle_EmptyParameter()
+	{
 		// Arrange
 		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
 
@@ -562,6 +562,6 @@ public class DetailsComponentTests : BunitContext
 
 		cut.WaitForState(() => cut.Markup.Contains("Unable to load category"));
 		cut.Markup.Should().Contain("Unable to load category");
-	    }
+	}
 
 }

@@ -1,5 +1,3 @@
-using Web.Components.Features.Articles.ArticleEdit;
-
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleEdit;
 
 // Modernized for bUnit v2 and helper-based authentication
@@ -11,10 +9,10 @@ public class EditComponentTests : BunitContext
 	public void RendersLoadingComponent_WhenIsLoading()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", ["Admin"]);
 
 		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
-		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var getArticle = Substitute.For<GetArticle.IGetArticleHandler>();
 		var editArticle = Substitute.For<EditArticle.IEditArticleHandler>();
 		var fileStorage = Substitute.For<IFileStorage>();
 
@@ -41,10 +39,10 @@ public class EditComponentTests : BunitContext
 	[Fact]
 	public void RendersErrorAlert_WhenArticleLoadFails()
 	{
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", ["Admin"]);
 
 		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
-		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var getArticle = Substitute.For<GetArticle.IGetArticleHandler>();
 		var editArticle = Substitute.For<EditArticle.IEditArticleHandler>();
 		var fileStorage = Substitute.For<IFileStorage>();
 
@@ -71,10 +69,10 @@ public class EditComponentTests : BunitContext
 	[Fact]
 	public void RendersEditForm_WhenEditModelIsPresent()
 	{
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", ["Admin"]);
 
 		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
-		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var getArticle = Substitute.For<GetArticle.IGetArticleHandler>();
 		var editArticle = Substitute.For<EditArticle.IEditArticleHandler>();
 		var fileStorage = Substitute.For<IFileStorage>();
 
@@ -100,7 +98,7 @@ public class EditComponentTests : BunitContext
 				"Test Introduction",
 				"Test Content",
 				"https://example.com/image.jpg",
-				new AuthorInfo("user1", "Test Author"),
+				new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author"),
 				new Category { Id = catId, CategoryName = "Tech" },
 				true,
 				DateTimeOffset.UtcNow,
@@ -123,10 +121,10 @@ public class EditComponentTests : BunitContext
 	[Fact]
 	public void RendersPageHeading_WhenPageLoads()
 	{
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", ["Admin"]);
 
 		var getCategories = Substitute.For<Web.Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler>();
-		var getArticle = Substitute.For<Web.Components.Features.Articles.ArticleDetails.GetArticle.IGetArticleHandler>();
+		var getArticle = Substitute.For<GetArticle.IGetArticleHandler>();
 		var editArticle = Substitute.For<EditArticle.IEditArticleHandler>();
 		var fileStorage = Substitute.For<IFileStorage>();
 
@@ -152,7 +150,7 @@ public class EditComponentTests : BunitContext
 				"Test Introduction",
 				"Test Content",
 				"https://example.com/image.jpg",
-				new AuthorInfo("user1", "Test Author"),
+				new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author"),
 				new Category { Id = catId, CategoryName = "Tech" },
 				true,
 				DateTimeOffset.UtcNow,

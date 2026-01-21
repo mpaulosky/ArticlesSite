@@ -68,9 +68,9 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			cut.Markup.Should().Contain("Active Category");
 
 			// Toggle back to hide archived
-			    checkbox2.Change(false);
-			    cut.WaitForState(() => !cut.Markup.Contains("Archived Category"));
-			    cut.Markup.Should().Contain("Active Category");
+			checkbox2.Change(false);
+			cut.WaitForState(() => !cut.Markup.Contains("Archived Category"));
+			cut.Markup.Should().Contain("Active Category");
 		}
 
 		[Fact]
@@ -164,12 +164,12 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		[InlineData("Admin", "Author")]
 		public void RendersCategoryList_WhenCategoriesExist(params string[] roles)
 		{
-		    // Arrange
-		    Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);
+			// Arrange
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);
 
-		    GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
+			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
-		    var categories = new List<CategoryDto>
+			var categories = new List<CategoryDto>
 		{
 			new()
 			{
@@ -191,23 +191,23 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 			}
 		};
 
-		    handler.HandleAsync()
-			    .Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
-		    handler.HandleAsync(Arg.Any<bool>()).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
+			handler.HandleAsync()
+				.Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
+			handler.HandleAsync(Arg.Any<bool>()).Returns(Task.FromResult(Result.Ok<IEnumerable<CategoryDto>>(categories)));
 
-		    Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
-		    SetupQuickGridJSInterop();
+			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
-		    // Act
-		    var cut = Render<CategoriesListComponent>();
+			// Act
+			var cut = Render<CategoriesListComponent>();
 
-		    // Assert
-		    cut.WaitForState(() => cut.Markup.Contains("Technology"));
-		    cut.Markup.Should().Contain("All Categories");
-		    cut.Markup.Should().Contain("Technology");
-		    cut.Markup.Should().Contain("Science");
-		    cut.Markup.Should().Contain("technology");
-		    cut.Markup.Should().Contain("science");
+			// Assert
+			cut.WaitForState(() => cut.Markup.Contains("Technology"));
+			cut.Markup.Should().Contain("All Categories");
+			cut.Markup.Should().Contain("Technology");
+			cut.Markup.Should().Contain("Science");
+			cut.Markup.Should().Contain("technology");
+			cut.Markup.Should().Contain("science");
 		}
 
 		[Fact]
@@ -242,13 +242,13 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 
 			// Assert
 			cut.WaitForState(() => cut.Markup.Contains("Technology"));
-		cut.Markup.Should().Contain("Category Name");
-		cut.Markup.Should().Contain("Technology");
-		cut.Markup.Should().Contain("Slug");
-		cut.Markup.Should().Contain("technology");
-		cut.Markup.Should().Contain("Created On");
-		cut.Markup.Should().Contain("Modified On");
-		cut.Markup.Should().Contain("Status");
+			cut.Markup.Should().Contain("Category Name");
+			cut.Markup.Should().Contain("Technology");
+			cut.Markup.Should().Contain("Slug");
+			cut.Markup.Should().Contain("technology");
+			cut.Markup.Should().Contain("Created On");
+			cut.Markup.Should().Contain("Modified On");
+			cut.Markup.Should().Contain("Status");
 			cut.Markup.Should().Contain("Active");
 		}
 
@@ -417,33 +417,33 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		[InlineData("Admin", "Author")]
 		public void CreateButton_ShouldDisplay_ForAdminUsers(params string[] roles)
 		{
-		    // Arrange
-		    Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);
+			// Arrange
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);
 
-		    GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
+			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
-		    handler.HandleAsync()
-			    .Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
+			handler.HandleAsync()
+				.Returns(Task.FromResult(Result.Ok(Enumerable.Empty<CategoryDto>())));
 
-		    Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
-		    SetupQuickGridJSInterop();
+			Services.AddSingleton(typeof(GetCategories.IGetCategoriesHandler), handler);
+			SetupQuickGridJSInterop();
 
-		    // Act
-		    var cut = Render<CategoriesListComponent>();
+			// Act
+			var cut = Render<CategoriesListComponent>();
 
-		    // Assert
-		    cut.WaitForState(() => cut.Markup.Contains("All Categories"));
+			// Assert
+			cut.WaitForState(() => cut.Markup.Contains("All Categories"));
 
-		    if (roles.Contains("Admin"))
-		    {
-			cut.Markup.Should().Contain("Create")
-				.And.Contain("New Category");
-		    }
-		    else
-		    {
-			cut.Markup.Should().NotContain("Create")
-				.And.NotContain("New Category");
-		    }
+			if (roles.Contains("Admin"))
+			{
+				cut.Markup.Should().Contain("Create")
+					.And.Contain("New Category");
+			}
+			else
+			{
+				cut.Markup.Should().NotContain("Create")
+					.And.NotContain("New Category");
+			}
 		}
 
 		// Removed: CreateButton_ShouldNotDisplay_ForNonAdminUsers (now covered by Theory above)

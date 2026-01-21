@@ -34,6 +34,9 @@ class ThemeManager {
    * Initialize theme manager and apply saved or default theme
    */
   static initialize() {
+    // Theme classes are already applied in App.razor to prevent FOUC,
+    // but we re-apply here to ensure the ThemeManager state is consistent
+    // and to handle any edge cases.
     const savedTheme = localStorage.getItem(this.STORAGE_KEY) || this.DEFAULT_THEME;
     this.setTheme(savedTheme);
   }
@@ -43,15 +46,30 @@ class ThemeManager {
    * @param {string} themeName - Theme name (must be in THEMES object values)
    */
   static setTheme(themeName) {
+    if (!Object.values(this.THEMES).includes(themeName)) {
+        themeName = this.DEFAULT_THEME;
+    }
+
     // Remove all theme classes
     Object.values(this.THEMES).forEach(theme => {
       document.documentElement.classList.remove(theme);
     });
 
     // Add the selected theme class
-    if (Object.values(this.THEMES).includes(themeName)) {
-      document.documentElement.classList.add(themeName);
-      localStorage.setItem(this.STORAGE_KEY, themeName);
+    document.documentElement.classList.add(themeName);
+    localStorage.setItem(this.STORAGE_KEY, themeName);
+    
+    // Also sync the 'theme' key used by ThemeToggle.razor
+    const isDark = themeName.includes('dark');
+    const brightness = isDark ? 'dark' : 'light';
+    localStorage.setItem('theme', brightness);
+    
+    if (isDark) {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+    } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
     }
   }
 
@@ -177,3 +195,5 @@ class ThemeManager {
 document.addEventListener('DOMContentLoaded', () => {
   ThemeManager.initialize();
 });
+
+window.ThemeManager = ThemeManager;

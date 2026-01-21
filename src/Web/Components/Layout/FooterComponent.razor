@@ -1,7 +1,58 @@
-<div class="container-card p-2 text-center">
+<div class="container-card p-4 md:p-8">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+    <div class="flex flex-col gap-4">
+      <a href="/" class="flex items-center gap-2 text-xl font-bold transition-colors duration-200">
+        <span class="text-2xl">📝</span>
+        <span class="bg-linear-to-r from-theme-accent-500 to-theme-accent-700 bg-clip-text text-transparent">Articles</span>
+      </a>
+      <p class="text-theme-neutral-600 dark:text-theme-neutral-400 text-sm leading-relaxed">
+        The modern blog article app for organized articles and capture ideas.
+      </p>
+      <div class="flex gap-4">
+        <a href="https://github.com" target="_blank" rel="noopener" aria-label="GitHub" class="hover:scale-110 transition-transform">🐙</a>
+        <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter" class="hover:scale-110 transition-transform">🐦</a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener" aria-label="LinkedIn" class="hover:scale-110 transition-transform">💼</a>
+        <a href="mailto:hello@noteapp.com" aria-label="Email" class="hover:scale-110 transition-transform">📧</a>
+      </div>
+    </div>
 
-	<a href="/" class="transition-colors duration-200">©@_currentYear @_companyName All rights reserved.</a>
+    <div class="flex flex-col gap-4">
+      <h4 class="text-lg font-bold">Product</h4>
+      <ul class="flex flex-col gap-2 list-none p-0">
+        <li><a href="#features" class="text-sm hover:translate-x-1 transition-transform inline-block">Features</a></li>
+        <li><a href="#how-it-works" class="text-sm hover:translate-x-1 transition-transform inline-block">How It Works</a></li>
+        <li><a href="/changelog" class="text-sm hover:translate-x-1 transition-transform inline-block">Changelog</a></li>
+      </ul>
+    </div>
 
+    <div class="flex flex-col gap-4">
+      <h4 class="text-lg font-bold">Resources</h4>
+      <ul class="flex flex-col gap-2 list-none p-0">
+        <li><a href="/docs" class="text-sm hover:translate-x-1 transition-transform inline-block">Documentation</a></li>
+        <li><a href="/help" class="text-sm hover:translate-x-1 transition-transform inline-block">Help Center</a></li>
+      </ul>
+    </div>
+
+    <div class="flex flex-col gap-4">
+      <h4 class="text-lg font-bold">Company</h4>
+      <ul class="flex flex-col gap-2 list-none p-0">
+        <li><a href="/about" class="text-sm hover:translate-x-1 transition-transform inline-block">About Us</a></li>
+        <li><a href="/contact" class="text-sm hover:translate-x-1 transition-transform inline-block">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-theme-primary-500/30 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+    <p class="text-xs text-theme-neutral-600 dark:text-theme-neutral-400 text-center md:text-left">
+      © @_currentYear @_companyName. All rights reserved.
+      Built with 💖 using .NET @Environment.Version.Major and Blazor Server.
+    </p>
+    <div class="flex gap-6">
+      <a href="/privacy" class="text-xs">Privacy Policy</a>
+      <a href="/terms" class="text-xs">Terms of Service</a>
+      <a href="/cookies" class="text-xs">Cookie Policy</a>
+    </div>
+  </div>
 </div>
 
 @code {
