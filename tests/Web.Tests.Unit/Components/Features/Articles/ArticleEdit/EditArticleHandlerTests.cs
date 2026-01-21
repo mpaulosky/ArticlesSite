@@ -1,6 +1,3 @@
-using Web.Components.Features.Articles.ArticleEdit;
-
-
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleEdit;
 
 [ExcludeFromCodeCoverage]
@@ -11,7 +8,7 @@ public class EditArticleHandlerTests
 	public async Task HandleAsync_WithInvalidDtoFields_ShouldReturnFailure()
 	{
 		var objectId = ObjectId.GenerateNewId();
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var invalidDto = new ArticleDto(
@@ -38,16 +35,28 @@ public class EditArticleHandlerTests
 		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok<Article?>(existingArticle)));
 		_mockRepository.UpdateArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
 
+		// Validator returns validation errors
+		var validationErrors = new List<ValidationFailure>
+		{
+			new("Title", "Title is required"),
+			new("Introduction", "Introduction is required"),
+			new("Content", "Content is required")
+		};
+		_mockValidator.ValidateAsync(Arg.Any<ArticleDto>(), Arg.Any<CancellationToken>()).Returns(
+			Task.FromResult(new ValidationResult(validationErrors)));
+
 		var result = await _handler.HandleAsync(invalidDto);
 
-		// The handler should throw or fail due to invalid fields (depending on business logic)
-		// If validation is inside Article.Update, it should throw ArgumentException
+		// The handler should fail due to validation errors
 		result.Success.Should().BeFalse();
 		result.Error.Should().NotBeNull();
+		result.Error.Should().Contain("Title is required");
 	}
 
 
 	private readonly IArticleRepository _mockRepository;
+
+	private readonly IValidator<ArticleDto> _mockValidator;
 
 	private readonly EditArticle.Handler _handler;
 
@@ -55,14 +64,15 @@ public class EditArticleHandlerTests
 	{
 		_mockRepository = Substitute.For<IArticleRepository>();
 		var mockLogger = Substitute.For<ILogger<EditArticle.Handler>>();
-		_handler = new EditArticle.Handler(_mockRepository, mockLogger);
+		_mockValidator = Substitute.For<IValidator<ArticleDto>>();
+		_handler = new EditArticle.Handler(_mockRepository, mockLogger, _mockValidator);
 	}
 
 	[Fact]
 	public async Task HandleAsync_WithValidRequest_ShouldReturnSuccess()
 	{
 		var objectId = ObjectId.GenerateNewId();
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var existingArticle =
@@ -85,6 +95,7 @@ public class EditArticleHandlerTests
 				false
 		);
 
+		_mockValidator.ValidateAsync(Arg.Any<ArticleDto>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(new ValidationResult()));
 		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok<Article?>(existingArticle)));
 		_mockRepository.UpdateArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(new Article())));
 		var result = await _handler.HandleAsync(articleDto);
@@ -130,6 +141,7 @@ public class EditArticleHandlerTests
 				false
 		);
 
+		_mockValidator.ValidateAsync(Arg.Any<ArticleDto>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(new ValidationResult()));
 		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Fail<Article?>("Article not found")));
 		var result = await _handler.HandleAsync(articleDto);
 		result.Success.Should().BeFalse();
@@ -172,7 +184,7 @@ public class EditArticleHandlerTests
 	{
 		var objectId = ObjectId.GenerateNewId();
 		var publishedOn = DateTimeOffset.UtcNow.AddDays(-5);
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var categoryId = ObjectId.GenerateNewId();
 		var category = new Category { Id = categoryId, CategoryName = "Tech" };
 		var existingArticle = new Article { Id = objectId, Title = "Old Title" };

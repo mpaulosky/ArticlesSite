@@ -7,8 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Web.Components.Features.Articles.ArticleCreate;
-
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleCreate;
 
 /// <summary>
@@ -22,20 +20,23 @@ public class CreateArticleHandlerTests
 
 	private readonly ILogger<CreateArticle.Handler> _mockLogger;
 
+	private readonly IValidator<ArticleDto> _mockValidator;
+
 	private readonly CreateArticle.ICreateArticleHandler _handler;
 
 	public CreateArticleHandlerTests()
 	{
 		_mockRepository = Substitute.For<IArticleRepository>();
 		_mockLogger = Substitute.For<ILogger<CreateArticle.Handler>>();
-		_handler = new CreateArticle.Handler(_mockRepository, _mockLogger);
+		_mockValidator = Substitute.For<IValidator<ArticleDto>>();
+		_handler = new CreateArticle.Handler(_mockRepository, _mockLogger, _mockValidator);
 	}
 
 	[Fact]
 	public async Task HandleAsync_WithValidRequest_ShouldReturnSuccess()
 	{
 		// Arrange
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var articleDto = new ArticleDto(
@@ -68,6 +69,7 @@ public class CreateArticleHandlerTests
 				articleDto.Slug
 		);
 
+		_mockValidator.ValidateAsync(Arg.Any<ArticleDto>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(new ValidationResult()));
 		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(createdArticle)));
 
 		// Act
@@ -111,8 +113,8 @@ public class CreateArticleHandlerTests
 				"Test Intro",
 				"Test Content",
 				"https://example.com/image.jpg",
-				new AuthorInfo("user1", "Test Author"), // Always provide valid Author
-				new Category { Id = ObjectId.GenerateNewId(), CategoryName = "Tech" }, // Always provide valid Category
+				new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author"), // Always provide a valid Author
+				new Category { Id = ObjectId.GenerateNewId(), CategoryName = "Tech" }, // Always provide a valid Category
 				false,
 				null,
 				DateTimeOffset.UtcNow,
@@ -121,6 +123,7 @@ public class CreateArticleHandlerTests
 				false
 		);
 
+		_mockValidator.ValidateAsync(Arg.Any<ArticleDto>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(new ValidationResult()));
 		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result<Article>.Fail("Database error")));
 
 		// Act
@@ -139,7 +142,7 @@ public class CreateArticleHandlerTests
 		var publishedOn = DateTimeOffset.UtcNow.AddDays(-5);
 		var createdOn = DateTimeOffset.UtcNow.AddDays(-10);
 
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var category = new Category { Id = ObjectId.GenerateNewId(), CategoryName = "Tech" };
 
 		var articleDto = new ArticleDto(
@@ -172,6 +175,7 @@ public class CreateArticleHandlerTests
 				articleDto.Slug
 		);
 
+		_mockValidator.ValidateAsync(Arg.Any<ArticleDto>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(new ValidationResult()));
 		_mockRepository.AddArticle(Arg.Any<Article>()).Returns(Task.FromResult(Result.Ok(createdArticle)));
 
 		// Act
