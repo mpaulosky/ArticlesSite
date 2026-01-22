@@ -1,6 +1,6 @@
 ---
 mode: 'agent'
-description: 'Plan for fixing failing tests and unblocking CI by resolving build errors and test failures'
+description: 'Plan for fixing failing tests and unblocking CI build errors'
 ---
 
 ## Plan: Fix failing tests and unblock CI ✅
