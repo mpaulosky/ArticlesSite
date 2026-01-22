@@ -1,3 +1,8 @@
+---
+mode: 'agent'
+description: 'Plan for fixing failing tests and unblocking CI build errors'
+---
+
 ## Plan: Fix failing tests and unblock CI ✅
 
 **TL;DR** — The test run shows a single blocker: `src/Web` fails to build (≈210 compile errors). Fix those compile errors (missing packages, usings, ambiguous types) first to unblock `Web.*` and `Architecture` tests, then iterate: reproduce each failing test, diagnose, fix code or test, and re-run until all pass.
