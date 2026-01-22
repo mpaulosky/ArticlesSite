@@ -19,6 +19,7 @@ namespace Web.Tests.Integration.Handlers.Articles;
 /// <summary>
 /// Integration tests for concurrency and race condition scenarios in Article handlers.
 /// Tests simultaneous edits, conflicts, and edge cases under concurrent access.
+/// Includes Version tests for optimistic concurrency.
 /// </summary>
 [Collection("MongoDb Collection")]
 [ExcludeFromCodeCoverage]
@@ -60,11 +61,11 @@ public class ArticleConcurrencyTests
 		// Arrange
 		await _fixture.ClearCollectionsAsync();
 
-		var article = FakeArticle.GetNewArticle(useSeed: true);
-		var collection = _fixture.Database.GetCollection<Article>("Articles");
+		var article = Web.Components.Features.Articles.Fakes.FakeArticle.GetNewArticle(useSeed: true);
+		var collection = _fixture.Database.GetCollection<Web.Components.Features.Articles.Entities.Article>("Articles");
 		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
 
-		var user1Dto = new ArticleDto(
+		var user1Dto = new Web.Components.Features.Articles.Models.ArticleDto(
 			article.Id,
 			article.Slug,
 			"User 1 Title",
@@ -78,11 +79,11 @@ public class ArticleConcurrencyTests
 			article.CreatedOn,
 			DateTimeOffset.UtcNow,
 			false,
-			false
-		), 0
-	);
+			false,
+			0
+		);
 
-		var user2Dto = new ArticleDto(
+		var user2Dto = new Web.Components.Features.Articles.Models.ArticleDto(
 			article.Id,
 			article.Slug,
 			"User 2 Title",
@@ -96,9 +97,9 @@ public class ArticleConcurrencyTests
 			article.CreatedOn,
 			DateTimeOffset.UtcNow,
 			false,
-			false
-		), 0
-	);
+			false,
+			0
+		);
 
 		// Act - Both users edit simultaneously
 		var user1Task = _editHandler.HandleAsync(user1Dto);
@@ -127,11 +128,11 @@ public class ArticleConcurrencyTests
 		// Arrange
 		await _fixture.ClearCollectionsAsync();
 
-		var category = FakeCategory.GetNewCategory(useSeed: true);
-		var author = FakeAuthorInfo.GetNewAuthorInfo(useSeed: true);
+		var category = Web.Components.Features.Categories.Fakes.FakeCategory.GetNewCategory(useSeed: true);
+		var author = Web.Components.Features.AuthorInfo.Fakes.FakeAuthorInfo.GetNewAuthorInfo(useSeed: true);
 		var sharedSlug = "shared_article_slug";
 
-		var dto1 = new ArticleDto(
+		var dto1 = new Web.Components.Features.Articles.Models.ArticleDto(
 			ObjectId.Empty,
 			sharedSlug,
 			"Article 1",
@@ -145,11 +146,11 @@ public class ArticleConcurrencyTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false
-		), 0
-	);
+			false,
+			0
+		);
 
-		var dto2 = new ArticleDto(
+		var dto2 = new Web.Components.Features.Articles.Models.ArticleDto(
 			ObjectId.Empty,
 			sharedSlug,
 			"Article 2",
@@ -330,8 +331,7 @@ public class ArticleConcurrencyTests
 				DateTimeOffset.UtcNow,
 				false,
 				false
-			), 0
-	);
+			, 0);
 
 			editTasks.Add(_editHandler.HandleAsync(dto));
 			await Task.Delay(10, TestContext.Current.CancellationToken); // Small delay to allow interleaving
@@ -414,7 +414,7 @@ public class ArticleConcurrencyTests
 		// Arrange - Create two articles for concurrent modification and deletion
 		await _fixture.ClearCollectionsAsync();
 
-		var article1 = FakeArticle.GetNewArticle(useSeed: true);
+		var article1 = Web.Components.Features.Articles.Fakes.FakeArticle.GetNewArticle(useSeed: true);
 		var article2 = FakeArticle.GetNewArticle(useSeed: false);
 
 		var collection = _fixture.Database.GetCollection<Article>("Articles");
@@ -442,7 +442,7 @@ public class ArticleConcurrencyTests
 		var editTask = _editHandler.HandleAsync(editDto);
 
 		// Simulate deletion by setting IsArchived
-		var deleteDto = new ArticleDto(
+		var deleteDto = new Web.Components.Features.Articles.Models.ArticleDto(
 			article1.Id,
 			article1.Slug,
 			article1.Title,

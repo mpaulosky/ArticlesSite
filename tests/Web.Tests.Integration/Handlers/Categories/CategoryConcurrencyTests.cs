@@ -12,6 +12,7 @@ namespace Web.Tests.Integration.Handlers.Categories;
 /// <summary>
 /// Integration tests for concurrency and race condition scenarios in Category handlers.
 /// Tests simultaneous edits, conflicts, and edge cases under concurrent access.
+/// Includes Version tests for optimistic concurrency.
 /// </summary>
 [Collection("MongoDb Collection")]
 [ExcludeFromCodeCoverage]
@@ -335,7 +336,7 @@ public class CategoryConcurrencyTests
 		var category2 = FakeCategory.GetNewCategory(useSeed: false);
 
 		var collection = _fixture.Database.GetCollection<Category>("Categories");
-		await collection.InsertManyAsync([ category1, category2 ], cancellationToken: TestContext.Current.CancellationToken);
+		await collection.InsertManyAsync([category1, category2], cancellationToken: TestContext.Current.CancellationToken);
 
 		var editDto = new CategoryDto
 		{

@@ -13,6 +13,7 @@ namespace Web.Components.Features.Articles.Fakes;
 
 /// <summary>
 ///   Provides fake data generation methods for the <see cref="ArticleDto" /> entity.
+///   Note: DTOs are expected to declare a Version property (int Version) for optimistic concurrency.
 /// </summary>
 public static class FakeArticleDto
 {
@@ -65,7 +66,8 @@ public static class FakeArticleDto
 				.RuleFor(a => a.Category, FakeCategory.GetNewCategory(useSeed))
 				.RuleFor(a => a.Author, FakeAuthorInfo.GetNewAuthorInfo(useSeed))
 				.RuleFor(f => f.CreatedOn, _ => DateTime.Now)
-				.RuleFor(f => f.ModifiedOn, _ => DateTime.Now);
+				.RuleFor(f => f.ModifiedOn, _ => DateTime.Now)
+				.RuleFor(f => f.Version, _ => 0);
 
 
 		return useSeed ? fake.UseSeed(Seed) : fake;

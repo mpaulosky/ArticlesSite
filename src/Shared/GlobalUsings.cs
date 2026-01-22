@@ -21,8 +21,5 @@ global using MongoDB.Bson;
 global using MongoDB.Bson.Serialization.Attributes;
 
 global using Shared.Abstractions;
-global using Shared.Entities;
-global using Shared.Models;
-global using Shared.Validators;
 
 global using static Shared.Helpers.Helpers;

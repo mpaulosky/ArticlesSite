@@ -1,3 +1,5 @@
+using Edit = Web.Components.Features.Articles.ArticleEdit.Edit;
+
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleEdit;
 
 // Modernized for bUnit v2 and helper-based authentication
