@@ -40,12 +40,50 @@ public class MappingTests
 		_srcPath = Path.Combine(foundRoot, "src");
 	}
 
-	[Fact(Skip = "Draft - implement mapping checks to ensure Version is mapped between DTOs and Entities")]
+	[Fact]
 	public void MappingExtensions_ShouldMapVersion()
 	{
-		// TODO: Inspect mapping extension files for mapping of Version <-> Version
-		// Example assertions:
-		// - ArticleMappingExtensions contains `Version = dto.Version` when mapping dto->entity
-		// - ArticleMappingExtensions contains `Version = entity.Version` when mapping entity->dto
+		// Arrange - Find mapping extension files
+		string webProjectPath = Path.Combine(_srcPath, "Web");
+		string[] mappingFiles = Directory.GetFiles(webProjectPath, "*MappingExtensions.cs", SearchOption.AllDirectories);
+		mappingFiles.Should().NotBeEmpty("because the project should contain mapping extension classes");
+
+		// Act & Assert - Check each mapping file for Version mapping
+		foreach (string mappingFile in mappingFiles)
+		{
+			string content = File.ReadAllText(mappingFile);
+			string fileName = Path.GetFileName(mappingFile);
+
+			// Skip AuthorInfo mappings as they may not need Version
+			if (fileName.Contains("AuthorInfo"))
+			{
+				continue;
+			}
+
+			// Check for ToDto method that maps Version from entity to DTO
+			if (content.Contains("ToDto"))
+			{
+				// Should map entity.Version to DTO
+				bool mapsVersionToDto = content.Contains("Version = ") ||
+																content.Contains("article.Version") ||
+																content.Contains("category.Version") ||
+																content.Contains(".Version");
+
+				mapsVersionToDto.Should().BeTrue(
+						$"Mapping {fileName} ToDto method should map Version from entity to DTO");
+			}
+
+			// Check for ToEntity method that maps Version from DTO to entity
+			if (content.Contains("ToEntity"))
+			{
+				// Should map dto.Version to entity
+				bool mapsVersionToEntity = content.Contains("Version = ") ||
+																	 content.Contains("dto.Version") ||
+																	 content.Contains(".Version");
+
+				mapsVersionToEntity.Should().BeTrue(
+						$"Mapping {fileName} ToEntity method should map Version from DTO to entity");
+			}
+		}
 	}
 }

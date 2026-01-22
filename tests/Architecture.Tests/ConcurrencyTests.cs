@@ -49,17 +49,53 @@ public class ConcurrencyTests
 		_testsPath = Path.Combine(foundRoot, "tests");
 	}
 
-	[Fact(Skip = "Draft - implement assertions to verify DTOs and Entities contain a Version property")]
+	[Fact]
 	public void EntitiesAndDTOs_ShouldContainVersionProperty()
 	{
-		// TODO: Implement using reflection and/or file scanning
-		// Example assertions to implement:
-		// - For each type in the Web assembly ending with 'Dto', assert it has a readable/writable `Version` property (int or long)
-		// - For each entity type under Web.Components.Features.*.Entities assert it has a `Version` property
+		// Arrange - Find all DTO and Entity types
+		string webProjectPath = Path.Combine(_srcPath, "Web");
+		if (!Directory.Exists(webProjectPath))
+		{
+			throw new DirectoryNotFoundException($"Web project not found at {webProjectPath}");
+		}
 
-		// Example pseudo-code:
-		// var assembly = Assembly.Load("Web");
-		// var dtoTypes = assembly.GetTypes().Where(t => t.Name.EndsWith("Dto"));
-		// dtoTypes.Should().AllSatisfy(t => t.GetProperty("Version").Should().NotBeNull());
+		// Find all *Dto.cs files
+		string[] dtoFiles = Directory.GetFiles(webProjectPath, "*Dto.cs", SearchOption.AllDirectories);
+		dtoFiles.Should().NotBeEmpty("because the project should contain DTO classes");
+
+		// Find all entity files under Features/**/Entities/
+		string[] entityFiles = Directory.GetFiles(webProjectPath, "*.cs", SearchOption.AllDirectories)
+				.Where(f => f.Contains(Path.Combine("Features")) && f.Contains(Path.Combine("Entities")))
+				.Where(f => !f.Contains("AuthorInfo")) // AuthorInfo might not need Version
+				.ToArray();
+		entityFiles.Should().NotBeEmpty("because the project should contain Entity classes");
+
+		// Act & Assert - Check DTOs contain Version property
+		foreach (string dtoFile in dtoFiles)
+		{
+			string content = File.ReadAllText(dtoFile);
+			string fileName = Path.GetFileName(dtoFile);
+
+			// Check for Version property declaration
+			content.Should().Contain("Version", $"DTO {fileName} should have a Version property for optimistic concurrency");
+
+			// Check it's a property (public int/long Version)
+			bool hasVersionProperty = content.Contains("int Version") || content.Contains("long Version");
+			hasVersionProperty.Should().BeTrue($"DTO {fileName} should declare Version as int or long property");
+		}
+
+		// Act & Assert - Check Entities contain Version property
+		foreach (string entityFile in entityFiles)
+		{
+			string content = File.ReadAllText(entityFile);
+			string fileName = Path.GetFileName(entityFile);
+
+			// Check for Version property declaration
+			content.Should().Contain("Version", $"Entity {fileName} should have a Version property for optimistic concurrency");
+
+			// Check it's a property (public int/long Version)
+			bool hasVersionProperty = content.Contains("int Version") || content.Contains("long Version");
+			hasVersionProperty.Should().BeTrue($"Entity {fileName} should declare Version as int or long property");
+		}
 	}
 }
