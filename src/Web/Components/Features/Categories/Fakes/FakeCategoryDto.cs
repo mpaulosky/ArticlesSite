@@ -13,6 +13,7 @@ namespace Web.Components.Features.Categories.Fakes;
 
 /// <summary>
 ///   Provides fake data generation methods for the <see cref="CategoryDto" /> entity.
+///   Note: DTOs are expected to declare a Version property (int Version) for optimistic concurrency.
 /// </summary>
 public static class FakeCategoryDto
 {

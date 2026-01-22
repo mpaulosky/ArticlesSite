@@ -20,7 +20,7 @@ public class PageHeadingComponentTests : BunitContext
 	[Fact]
 	public void RendersDefaultHeaderTextAndLevel()
 	{
-		var cut = Render<PageHeadingComponent>();
+		var cut = Render<ComponentHeadingComponent>();
 		cut.Find("h1").TextContent.Should().Be("My Blog");
 		cut.Find("h1").ClassList.Should().Contain("text-gray-50");
 	}
@@ -31,7 +31,7 @@ public class PageHeadingComponentTests : BunitContext
 	[InlineData("3", "h3", "text-1xl")]
 	public void RendersCorrectHeaderLevelAndClass(string level, string expectedTag, string expectedClass)
 	{
-		var cut = Render<PageHeadingComponent>(parameters => parameters
+		var cut = Render<ComponentHeadingComponent>(parameters => parameters
 				.Add(p => p.Level, level)
 				.Add(p => p.HeaderText, "Test Heading"));
 		cut.Find(expectedTag).TextContent.Should().Be("Test Heading");
@@ -41,7 +41,7 @@ public class PageHeadingComponentTests : BunitContext
 	[Fact]
 	public void RendersCustomTextColorClass()
 	{
-		var cut = Render<PageHeadingComponent>(parameters => parameters
+		var cut = Render<ComponentHeadingComponent>(parameters => parameters
 				.Add(p => p.TextColorClass, "text-blue-500"));
 		cut.Find("h1").ClassList.Should().Contain("text-blue-500");
 	}

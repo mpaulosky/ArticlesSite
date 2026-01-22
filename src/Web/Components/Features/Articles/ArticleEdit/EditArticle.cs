@@ -33,7 +33,8 @@ public static class EditArticle
 	public class Handler
 	(
 			IArticleRepository repository,
-			ILogger<Handler> logger
+			ILogger<Handler> logger,
+			IValidator<ArticleDto> validator
 	) : IEditArticleHandler
 	{
 
@@ -47,6 +48,17 @@ public static class EditArticle
 				return Result.Fail<ArticleDto>("Article data cannot be null");
 			}
 
+			// Run validator if provided
+			if (validator != null)
+			{
+				var validation = await validator.ValidateAsync(dto);
+				if (!validation.IsValid)
+				{
+					string errors = string.Join("; ", validation.Errors.Select(e => e.ErrorMessage));
+					logger.LogWarning("EditArticle: Validation failed for article {Id}: {Errors}", dto.Id, errors);
+					return Result.Fail<ArticleDto>(errors);
+				}
+			}
 			Result<Article?> existingResult = await repository.GetArticleByIdAsync(dto.Id);
 
 			if (existingResult.Failure || existingResult.Value is null)

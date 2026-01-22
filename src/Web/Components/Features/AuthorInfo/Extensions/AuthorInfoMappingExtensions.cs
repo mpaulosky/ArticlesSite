@@ -39,8 +39,19 @@ public static class AuthorInfoMappingExtensions
 	/// <returns>True if the author info is null, empty, or has empty user ID and name; otherwise false.</returns>
 	public static bool IsEmpty(this Entities.AuthorInfo? authorInfo)
 	{
-		return authorInfo is null ||
-				(string.IsNullOrWhiteSpace(authorInfo.UserId) && string.IsNullOrWhiteSpace(authorInfo.Name));
+		if (authorInfo is null) return true;
+
+		var userId = authorInfo.UserId;
+		var name = authorInfo.Name;
+
+		// Both null/empty => empty
+		if (string.IsNullOrEmpty(userId) && string.IsNullOrEmpty(name)) return true;
+
+		// If either field exists but is whitespace-only => considered empty/invalid
+		if (!string.IsNullOrEmpty(userId) && string.IsNullOrWhiteSpace(userId)) return true;
+		if (!string.IsNullOrEmpty(name) && string.IsNullOrWhiteSpace(name)) return true;
+
+		return false;
 	}
 
 }

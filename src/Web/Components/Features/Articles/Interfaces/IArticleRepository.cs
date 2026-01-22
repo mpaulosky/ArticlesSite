@@ -52,6 +52,7 @@ public interface IArticleRepository
 
 	/// <summary>
 	/// Updates an existing article in the database.
+	/// Implementations should use ReplaceOneAsync for updates and filter by Id (e.g., Id ==) and Version when implemented.
 	/// </summary>
 	/// <param name="post">The article to update.</param>
 	/// <returns>A <see cref="Result{Article}"/> containing the updated article or an error message.</returns>

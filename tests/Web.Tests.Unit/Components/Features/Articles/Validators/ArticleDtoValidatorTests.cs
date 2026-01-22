@@ -169,7 +169,7 @@ public class ArticleDtoValidatorTests
 		{
 			Title = "Valid Title",
 			Introduction = "Valid intro",
-			Content = new string('A', 4001),
+			Content = new string('A', 10001),
 			CoverImageUrl = "https://example.com/cover.jpg",
 			Slug = "valid_slug",
 			Author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("auth0|123", "John Doe"),
@@ -183,7 +183,7 @@ public class ArticleDtoValidatorTests
 		result.IsValid.Should().BeFalse();
 
 		result.Errors.Should().Contain(e =>
-				e.PropertyName == "Content" && e.ErrorMessage == "Content cannot exceed 4000 characters");
+			e.PropertyName == "Content" && e.ErrorMessage == "Content cannot exceed 10000 characters");
 	}
 
 	[Theory]

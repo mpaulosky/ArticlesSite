@@ -36,7 +36,7 @@ public class GetArticleHandlerTests
 	{
 		// Arrange
 		var objectId = ObjectId.GenerateNewId();
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var article = new Article("Test Article", "Test Intro", "Test Content", null, author, category, true, null, false,
@@ -108,7 +108,7 @@ public class GetArticleHandlerTests
 		var createdOn = DateTimeOffset.UtcNow.AddDays(-10);
 		var modifiedOn = DateTimeOffset.UtcNow.AddDays(-2);
 
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var article =

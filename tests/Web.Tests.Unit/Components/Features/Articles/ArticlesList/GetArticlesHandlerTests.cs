@@ -22,7 +22,7 @@ public class GetArticlesHandlerTests
 	public async Task HandleAsync_ShouldReturnOnlyNonArchivedByDefault()
 	{
 		// Arrange
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var articles = new List<Article>
@@ -47,7 +47,7 @@ public class GetArticlesHandlerTests
 	public async Task HandleAsync_ShouldIncludeArchivedIfRequested()
 	{
 		// Arrange
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var articles = new List<Article>
@@ -72,8 +72,8 @@ public class GetArticlesHandlerTests
 	public async Task HandleAsync_ShouldFilterByUser()
 	{
 		// Arrange
-		var author1 = new AuthorInfo("user1", "Test Author");
-		var author2 = new AuthorInfo("user2", "Other Author");
+		var author1 = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
+		var author2 = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user2", "Other Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var articles = new List<Article>
@@ -101,8 +101,8 @@ public class GetArticlesHandlerTests
 	public async Task HandleAsync_ShouldFilterByUserAndIncludeArchived()
 	{
 		// Arrange
-		var author1 = new AuthorInfo("user1", "Test Author");
-		var author2 = new AuthorInfo("user2", "Other Author");
+		var author1 = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
+		var author2 = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user2", "Other Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var articles = new List<Article>
@@ -142,7 +142,7 @@ public class GetArticlesHandlerTests
 	public async Task HandleAsync_WithArticlesAvailable_ShouldReturnSuccess()
 	{
 		// Arrange
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var articles = new List<Article>
@@ -204,7 +204,7 @@ public class GetArticlesHandlerTests
 		var createdOn = DateTimeOffset.UtcNow.AddDays(-10);
 		var modifiedOn = DateTimeOffset.UtcNow.AddDays(-2);
 
-		var author = new AuthorInfo("user1", "Test Author");
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
 		var category = new Category { CategoryName = "Tech" };
 
 		var article =

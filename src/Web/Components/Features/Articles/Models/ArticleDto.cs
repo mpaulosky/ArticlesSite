@@ -69,6 +69,40 @@ public sealed class ArticleDto
 		Version = version;
 	}
 
+	// Backwards-compatible constructor without version (keeps Version at 0)
+	public ArticleDto(
+			ObjectId id,
+			string slug,
+			string title,
+			string introduction,
+			string content,
+			string coverImageUrl,
+			AuthorInfo.Entities.AuthorInfo? author,
+			Category? category,
+			bool isPublished,
+			DateTimeOffset? publishedOn,
+			DateTimeOffset? createdOn,
+			DateTimeOffset? modifiedOn,
+			bool isArchived,
+			bool canEdit)
+	{
+		Id = id;
+		Slug = slug;
+		Title = title;
+		Introduction = introduction;
+		Content = content;
+		CoverImageUrl = coverImageUrl;
+		Author = author;
+		Category = category;
+		IsPublished = isPublished;
+		PublishedOn = publishedOn;
+		CreatedOn = createdOn;
+		ModifiedOn = modifiedOn;
+		IsArchived = isArchived;
+		CanEdit = canEdit;
+		Version = 0;
+	}
+
 	/// <summary>
 	///   Gets the unique identifier for this entity.
 	/// </summary>

@@ -30,8 +30,18 @@ public static class CreateArticle
 	/// <summary>
 	/// Command handler for creating an article.
 	/// </summary>
-	public class Handler(IArticleRepository repository, ILogger<Handler> logger) : ICreateArticleHandler
+	public class Handler : ICreateArticleHandler
 	{
+		private readonly IArticleRepository _repository;
+		private readonly ILogger<Handler> _logger;
+		private readonly IValidator<ArticleDto>? _validator;
+
+		public Handler(IArticleRepository repository, ILogger<Handler> logger, IValidator<ArticleDto>? validator)
+		{
+			_repository = repository ?? throw new ArgumentNullException(nameof(repository));
+			_logger = logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger<Handler>.Instance;
+			_validator = validator;
+		}
 
 		/// <inheritdoc />
 		public async Task<Result<ArticleDto>> HandleAsync(ArticleDto dto)
@@ -39,8 +49,19 @@ public static class CreateArticle
 
 			if (dto is null)
 			{
-				logger.LogWarning("CreateArticle: Article DTO cannot be null");
+				_logger.LogWarning("CreateArticle: Article DTO cannot be null");
 				return Result.Fail<ArticleDto>("Article data cannot be null");
+			}
+
+			if (_validator is not null)
+			{
+				var validation = await _validator.ValidateAsync(dto);
+				if (!validation.IsValid)
+				{
+					string errors = string.Join("; ", validation.Errors.Select(e => e.ErrorMessage));
+					_logger.LogWarning("CreateArticle: Validation failed for article {Id}: {Errors}", dto.Id, errors);
+					return Result.Fail<ArticleDto>(errors);
+				}
 			}
 
 			var article = new Article(
@@ -56,11 +77,11 @@ public static class CreateArticle
 				dto.Slug // Added missing 'slug' argument
 			);
 
-			Result<Article> result = await repository.AddArticle(article);
+			Result<Article> result = await _repository.AddArticle(article);
 
 			if (result.Failure)
 			{
-				logger.LogWarning("CreateArticle: Failed to create article. Error: {Error}", result.Error);
+				_logger.LogWarning("CreateArticle: Failed to create article. Error: {Error}", result.Error);
 				return Result.Fail<ArticleDto>(result.Error ?? "Failed to create article");
 			}
 
@@ -82,7 +103,7 @@ public static class CreateArticle
 				article.Version
 			);
 
-			logger.LogInformation("CreateArticle: Successfully created article with ID: {Id}", article.Id);
+			_logger.LogInformation("CreateArticle: Successfully created article with ID: {Id}", article.Id);
 			return Result.Ok(createdDto);
 
 		}
