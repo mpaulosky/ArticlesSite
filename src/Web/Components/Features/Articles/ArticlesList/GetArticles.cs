@@ -92,7 +92,8 @@ public static class GetArticles
 					article.CreatedOn,
 					article.ModifiedOn,
 					article.IsArchived,
-					DetermineCanEdit(article, currentUserId, isAdmin)
+					DetermineCanEdit(article, currentUserId, isAdmin),
+					article.Version
 			)).ToList();
 
 			static string GenerateSlug(string title)

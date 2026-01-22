@@ -85,10 +85,10 @@ public static class MongoDbServiceExtensions
 		services.AddScoped<ICategoryRepository, CategoryRepository>();
 
 		// Register validators
-		services.AddScoped<IValidator<CategoryDto>, Shared.Validators.CategoryDtoValidator>();
-		services.AddScoped<IValidator<ArticleDto>, Shared.Validators.ArticleDtoValidator>();
-		services.AddScoped<IValidator<Category>, Shared.Validators.CategoryValidator>();
-		services.AddScoped<IValidator<Article>, Shared.Validators.ArticleValidator>();
+		services.AddScoped<IValidator<CategoryDto>, Web.Components.Features.Categories.Validators.CategoryDtoValidator>();
+		services.AddScoped<IValidator<ArticleDto>, Web.Components.Features.Articles.Validators.ArticleDtoValidator>();
+		services.AddScoped<IValidator<Category>, Web.Components.Features.Categories.Validators.CategoryValidator>();
+		services.AddScoped<IValidator<Article>, Web.Components.Features.Articles.Validators.ArticleValidator>();
 
 		// Article Handlers
 		services.AddScoped<GetArticles.IGetArticlesHandler, GetArticles.Handler>();

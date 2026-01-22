@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-using Shared.Fakes;
+using Web.Components.Features.Articles.Fakes;
 
 namespace Web.Services;
 
