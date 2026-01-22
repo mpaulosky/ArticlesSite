@@ -72,7 +72,8 @@ public static class GetArticle
 					article.CreatedOn,
 					article.ModifiedOn,
 					article.IsArchived,
-					!article.IsArchived
+					!article.IsArchived,
+					article.Version
 			);
 
 			logger.LogInformation("GetArticle: Successfully retrieved article {Id}", id);

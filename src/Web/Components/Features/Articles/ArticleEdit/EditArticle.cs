@@ -107,7 +107,8 @@ public static class EditArticle
 					article.CreatedOn,
 					article.ModifiedOn,
 					article.IsArchived,
-					!article.IsArchived
+					!article.IsArchived,
+					article.Version
 			);
 
 			logger.LogInformation("EditArticle: Successfully updated article with ID: {Id}", article.Id);

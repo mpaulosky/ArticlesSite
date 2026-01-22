@@ -78,7 +78,8 @@ public static class CreateArticle
 				article.CreatedOn,
 				article.ModifiedOn,
 				article.IsArchived,
-				true
+				true,
+				article.Version
 			);
 
 			logger.LogInformation("CreateArticle: Successfully created article with ID: {Id}", article.Id);
