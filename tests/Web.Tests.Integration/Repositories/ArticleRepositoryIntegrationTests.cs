@@ -249,5 +249,85 @@ public class ArticleRepositoryIntegrationTests
 		results.Should().Contain(r => r.ErrorMessage == "Category is required");
 	}
 
+	[Fact]
+	public async Task UpdateArticle_IncrementsVersion_OnSuccess()
+	{
+		// Arrange
+		await _fixture.ClearCollectionsAsync();
+
+		var article = FakeArticle.GetNewArticle(useSeed: true);
+		var collection = _fixture.Database.GetCollection<Article>("Articles");
+		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
+
+		// Act
+		var result = await _repository.UpdateArticle(article);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Success.Should().BeTrue();
+		result.Value.Should().NotBeNull();
+		result.Value.Version.Should().BeGreaterThan(0);
+
+		// Verify in database
+		var dbArticle = await collection.Find(a => a.Id == article.Id).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+		dbArticle.Should().NotBeNull();
+		dbArticle!.Version.Should().Be(result.Value.Version);
+	}
+
+	[Fact]
+	public async Task UpdateArticle_WithVersionMismatch_ReturnsConcurrencyConflict()
+	{
+		// Arrange
+		await _fixture.ClearCollectionsAsync();
+
+		var article = FakeArticle.GetNewArticle(useSeed: true);
+		var collection = _fixture.Database.GetCollection<Article>("Articles");
+		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
+
+		// Create a stale copy with the same version (0)
+		var stale1 = new Article
+		{
+			Id = article.Id,
+			Title = article.Title,
+			Introduction = article.Introduction,
+			Content = article.Content,
+			CoverImageUrl = article.CoverImageUrl,
+			Slug = article.Slug,
+			Author = article.Author,
+			Category = article.Category,
+			IsPublished = article.IsPublished,
+			PublishedOn = article.PublishedOn,
+			CreatedOn = article.CreatedOn,
+			IsArchived = article.IsArchived,
+			Version = 0
+		};
+
+		// First update with stale1 should succeed (expected version 0)
+		var res1 = await _repository.UpdateArticle(stale1);
+		res1.Success.Should().BeTrue();
+
+		// Create another stale copy still with version 0 (simulates another concurrent writer using stale data)
+		var stale2 = new Article
+		{
+			Id = article.Id,
+			Title = article.Title,
+			Introduction = article.Introduction,
+			Content = article.Content,
+			CoverImageUrl = article.CoverImageUrl,
+			Slug = article.Slug,
+			Author = article.Author,
+			Category = article.Category,
+			IsPublished = article.IsPublished,
+			PublishedOn = article.PublishedOn,
+			CreatedOn = article.CreatedOn,
+			IsArchived = article.IsArchived,
+			Version = 0
+		};
+
+		// Second update should fail with concurrency conflict because DB version has moved to 1
+		var res2 = await _repository.UpdateArticle(stale2);
+		res2.Success.Should().BeFalse();
+		res2.Error.Should().Contain("Concurrency conflict");
+	}
 }
 

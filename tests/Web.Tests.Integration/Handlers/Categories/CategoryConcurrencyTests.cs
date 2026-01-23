@@ -23,7 +23,7 @@ public class CategoryConcurrencyTests
 
 	private readonly ICategoryRepository _repository;
 
-	private readonly Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler _editHandler;
+	private readonly EditCategory.IEditCategoryHandler _editHandler;
 
 	private readonly Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler _createHandler;
 
@@ -31,20 +31,16 @@ public class CategoryConcurrencyTests
 
 	private readonly Components.Features.Categories.CategoriesList.GetCategories.IGetCategoriesHandler _getCategoriesHandler;
 
-	private readonly ILogger<Components.Features.Categories.CategoryEdit.EditCategory.Handler> _editLogger;
-
-	private readonly IValidator<CategoryDto> _validator;
-
 	public CategoryConcurrencyTests(MongoDbFixture fixture)
 	{
 		_fixture = fixture;
 		_repository = new CategoryRepository(_fixture.ContextFactory);
-		_editLogger = Substitute.For<ILogger<Components.Features.Categories.CategoryEdit.EditCategory.Handler>>();
-		_validator = new CategoryDtoValidator();
-		_editHandler = new Components.Features.Categories.CategoryEdit.EditCategory.Handler(_repository, _editLogger, _validator);
+		ILogger<EditCategory.Handler> editLogger = Substitute.For<ILogger<EditCategory.Handler>>();
+		var validator = new CategoryDtoValidator();
+		_editHandler = new EditCategory.Handler(_repository, editLogger, validator);
 
 		var createLogger = Substitute.For<ILogger<Components.Features.Categories.CategoryCreate.CreateCategory.Handler>>();
-		_createHandler = new Components.Features.Categories.CategoryCreate.CreateCategory.Handler(_repository, createLogger, _validator);
+		_createHandler = new Components.Features.Categories.CategoryCreate.CreateCategory.Handler(_repository, createLogger, validator);
 
 		var getLogger = Substitute.For<ILogger<Components.Features.Categories.CategoryDetails.GetCategory.Handler>>();
 		_getHandler = new Components.Features.Categories.CategoryDetails.GetCategory.Handler(_repository, getLogger);

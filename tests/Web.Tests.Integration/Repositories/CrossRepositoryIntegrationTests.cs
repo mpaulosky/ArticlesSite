@@ -7,8 +7,6 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-using Shared.Validators;
-
 namespace Web.Tests.Integration.Repositories;
 
 /// <summary>
@@ -92,7 +90,7 @@ public class CrossRepositoryIntegrationTests
 		// Act - Archive the category
 		await _categoryRepository.ArchiveCategory(category.Slug);
 
-		// Assert - Category is still returned by repository (filtering happens at handler layer)
+		// Assert - repository still returns Category (filtering happens at handler layer)
 		var fetchedCategory = await _categoryRepository.GetCategory(category.Slug);
 		fetchedCategory.Success.Should().BeTrue("repository returns ALL categories including archived");
 		fetchedCategory.Value.Should().NotBeNull();
@@ -196,7 +194,7 @@ public class CrossRepositoryIntegrationTests
 
 		// Act
 		var articleTasks = articles.Select(a => _articleRepository.AddArticle(a)).ToArray();
-		var articleResults = await Task.WhenAll(articleTasks);
+		//var articleResults = await Task.WhenAll(articleTasks);
 
 		// Assert
 		// All categories created

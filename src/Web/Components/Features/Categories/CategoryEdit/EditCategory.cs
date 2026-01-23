@@ -7,6 +7,8 @@
 // Project Name :  Web
 // =======================================================
 
+using Web.Components.Features.Categories.Validators;
+
 namespace Web.Components.Features.Categories.CategoryEdit;
 
 public static class EditCategory
@@ -35,7 +37,7 @@ public static class EditCategory
 		private readonly ICategoryRepository _repository;
 		private readonly ILogger<Handler> _logger;
 
-		public Handler(ICategoryRepository repository, ILogger<Handler>? logger)
+		public Handler( ICategoryRepository repository, ILogger<Handler>? logger, CategoryDtoValidator validator)
 		{
 			_repository = repository ?? throw new ArgumentNullException(nameof(repository));
 			_logger = logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger<Handler>.Instance;

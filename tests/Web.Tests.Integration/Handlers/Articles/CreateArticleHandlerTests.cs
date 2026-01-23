@@ -21,16 +21,15 @@ public class CreateArticleHandlerTests
 
 	private readonly IArticleRepository _repository;
 
-	private readonly Components.Features.Articles.ArticleCreate.CreateArticle.ICreateArticleHandler _handler;
-
-	private readonly ILogger<Components.Features.Articles.ArticleCreate.CreateArticle.Handler> _logger;
+	private readonly CreateArticle.ICreateArticleHandler _handler;
 
 	public CreateArticleHandlerTests(MongoDbFixture fixture)
 	{
 		_fixture = fixture;
 		_repository = new ArticleRepository(_fixture.ContextFactory);
-		_logger = Substitute.For<ILogger<Components.Features.Articles.ArticleCreate.CreateArticle.Handler>>();
-		_handler = new Components.Features.Articles.ArticleCreate.CreateArticle.Handler(_repository, _logger);
+		ILogger<CreateArticle.Handler> logger = Substitute.For<ILogger<CreateArticle.Handler>>();
+		IValidator<ArticleDto>? validator = Substitute.For<IValidator<ArticleDto>?>();
+		_handler = new CreateArticle.Handler(_repository, logger, validator);
 	}
 
 	[Fact]
@@ -71,7 +70,7 @@ public class CreateArticleHandlerTests
 		result.Value.Content.Should().Be("Test Content");
 		result.Value.Id.Should().NotBe(ObjectId.Empty);
 
-		// Verify it was actually saved to database
+		// Verify it was actually saved to a database
 		var saved = await _repository.GetArticleByIdAsync(result.Value.Id);
 		saved.Success.Should().BeTrue();
 		saved.Value.Should().NotBeNull();
@@ -182,7 +181,7 @@ public class CreateArticleHandlerTests
 		result2.Success.Should().BeTrue();
 		result1.Value!.Id.Should().NotBe(result2.Value!.Id);
 
-		// Verify both exist in database
+		// Verify both exist in a database
 		var allArticles = await _repository.GetArticles();
 		allArticles.Success.Should().BeTrue();
 		allArticles.Value.Should().HaveCount(2);
@@ -226,6 +225,3 @@ public class CreateArticleHandlerTests
 	}
 
 }
-
-
-

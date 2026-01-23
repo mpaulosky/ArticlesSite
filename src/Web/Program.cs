@@ -1,4 +1,12 @@
 using Blazored.LocalStorage;
+using Shared.Abstractions;
+using Web.Components.Features.Articles.ArticleEdit;
+using Web.Components.Features.Articles.Models;
+using System.Linq;
+using Polly;
+using Web.Infrastructure;
+using Web.Components.Features.Articles.Entities;
+using Polly.Registry;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +33,19 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<IFileStorage, FileStorage>();
 builder.Services.AddBlazoredLocalStorage();
+
+// Concurrency options from configuration
+builder.Services.Configure<Web.Infrastructure.ConcurrencyOptions>(builder.Configuration.GetSection("ConcurrencyOptions"));
+
+// Register centralized Polly policy for concurrency retries as a strongly-typed IAsyncPolicy<Result<Article>>
+builder.Services.AddSingleton<IAsyncPolicy<Result<Web.Components.Features.Articles.Entities.Article>>>(sp =>
+{
+	var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<Web.Infrastructure.ConcurrencyOptions>>().Value;
+	return Web.Infrastructure.ConcurrencyPolicies.CreatePolicy(options);
+});
+
+// Metrics publisher (no-op by default; apps can replace with real telemetry publisher)
+builder.Services.AddSingleton<IMetricsPublisher, NoOpMetricsPublisher>();
 
 // --- Build App ---
 WebApplication app = builder.Build();
@@ -111,6 +132,51 @@ app.MapGet("/api/files/{fileName}", (string fileName, IWebHostEnvironment enviro
 
 	return Task.FromResult(Results.File(filePath, contentType));
 });
+
+// Minimal API: expose PUT endpoint for article edits so non-Blazor clients can detect concurrency conflicts (returns 409)
+app.MapPut("/api/articles/{id}", async (string id, ArticleDto dto, EditArticle.IEditArticleHandler handler) =>
+{
+	if (!ObjectId.TryParse(id, out var objectId))
+	{
+		return Results.BadRequest(new { error = "Invalid article id" });
+	}
+
+	if (dto is null)
+	{
+		return Results.BadRequest(new { error = "Article data cannot be null" });
+	}
+
+	if (objectId != dto.Id)
+	{
+		return Results.BadRequest(new { error = "Id in route does not match DTO Id" });
+	}
+
+	var result = await handler.HandleAsync(dto);
+
+	if (result.Success)
+	{
+		return Results.Ok(result.Value);
+	}
+
+	if (result.ErrorCode == ResultErrorCode.Concurrency)
+	{
+		if (result.Details is Web.Infrastructure.ConcurrencyConflictInfo conflict)
+		{
+			var conflictDto = new Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto(result.Error, (int)result.ErrorCode, conflict.ServerVersion, conflict.ServerArticle, conflict.ChangedFields);
+			return Results.Conflict(conflictDto);
+		}
+
+		return Results.Conflict(new Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto(result.Error, (int)result.ErrorCode, -1, null, null));
+	}
+
+	// Default to 400 for other failures
+	return Results.BadRequest(new { error = result.Error });
+})
+.WithName("UpdateArticle")
+.WithTags("Articles")
+.Produces<ArticleDto>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status400BadRequest)
+.Produces<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>(StatusCodes.Status409Conflict);
 
 // --- Startup Logic (Database Seeding) ---
 

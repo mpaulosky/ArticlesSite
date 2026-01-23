@@ -7,6 +7,10 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
+using Microsoft.Extensions.Options;
+using Web.Components.Features.Articles.ArticleEdit;
+using Web.Infrastructure;
+
 namespace Web.Tests.Integration.Handlers.Articles;
 
 /// <summary>
@@ -21,16 +25,16 @@ public class EditArticleHandlerTests
 
 	private readonly IArticleRepository _repository;
 
-	private readonly Components.Features.Articles.ArticleEdit.EditArticle.IEditArticleHandler _handler;
-
-	private readonly ILogger<Components.Features.Articles.ArticleEdit.EditArticle.Handler> _logger;
+	private readonly EditArticle.IEditArticleHandler _handler;
 
 	public EditArticleHandlerTests(MongoDbFixture fixture)
 	{
 		_fixture = fixture;
 		_repository = new ArticleRepository(_fixture.ContextFactory);
-		_logger = Substitute.For<ILogger<Components.Features.Articles.ArticleEdit.EditArticle.Handler>>();
-		_handler = new Components.Features.Articles.ArticleEdit.EditArticle.Handler(_repository, _logger);
+		ILogger<EditArticle.Handler> logger = Substitute.For<ILogger<EditArticle.Handler>>();
+		IValidator<ArticleDto> validator = Substitute.For<IValidator<ArticleDto>>();
+		var options = Options.Create(new ConcurrencyOptions());
+		_handler = new EditArticle.Handler(_repository, logger, validator, options);
 	}
 
 	[Fact]
@@ -74,7 +78,7 @@ public class EditArticleHandlerTests
 		result.Value.Content.Should().Be("Updated Content");
 		result.Value.ModifiedOn.Should().NotBeNull();
 
-		// Verify it was actually updated in database
+		// Verify it was actually updated in a database
 		var saved = await _repository.GetArticleByIdAsync(article.Id);
 		saved.Success.Should().BeTrue();
 		saved.Value!.Title.Should().Be("Updated Title");
@@ -379,9 +383,3 @@ public class EditArticleHandlerTests
 	}
 
 }
-
-
-
-
-
-

@@ -8,6 +8,7 @@
 // =======================================================
 
 using System.Linq.Expressions;
+using Web.Components.Features.Articles.Extensions;
 
 namespace Web.Data.Repositories;
 
@@ -142,7 +143,37 @@ public class ArticleRepository
 		try
 		{
 			IMongoDbContext context = contextFactory.CreateDbContext();
-			await context.Articles.ReplaceOneAsync(a => a.Id == post.Id, post);
+
+			// Capture the expected version from the caller (optimistic concurrency)
+			int expectedVersion = post.Version;
+
+			// Prepare the filter to match both Id and expected version
+			var filter = Builders<Article>.Filter.Where(a => a.Id == post.Id && a.Version == expectedVersion);
+
+			// Increment the version on the incoming document so the stored document will have the next version
+			post.Version = expectedVersion + 1;
+
+			var replaceResult = await context.Articles.ReplaceOneAsync(filter, post);
+
+			if (replaceResult.MatchedCount == 0)
+			{
+				// No document matched the id+version filter -> concurrency conflict
+				var current = await context.Articles.Find(a => a.Id == post.Id).FirstOrDefaultAsync();
+				var serverDto = current is null ? null : current.ToDto(canEdit: false);
+				// Compute changed fields between incoming post and current (simple list)
+				var changed = new List<string>();
+				if (current is not null)
+				{
+					if (current.Title != post.Title) changed.Add("Title");
+					if (current.Introduction != post.Introduction) changed.Add("Introduction");
+					if (current.Content != post.Content) changed.Add("Content");
+					if (current.CoverImageUrl != post.CoverImageUrl) changed.Add("CoverImageUrl");
+					if (current.IsPublished != post.IsPublished) changed.Add("IsPublished");
+					if (current.IsArchived != post.IsArchived) changed.Add("IsArchived");
+				}
+				var details = new Web.Infrastructure.ConcurrencyConflictInfo(current?.Version ?? -1, serverDto, changed);
+				return Result.Fail<Article>("Concurrency conflict: article was modified by another process", Shared.Abstractions.ResultErrorCode.Concurrency, details);
+			}
 
 			return Result.Ok(post);
 		}

@@ -9,13 +9,23 @@
 
 namespace Shared.Abstractions;
 
+public enum ResultErrorCode
+{
+	None = 0,
+	Concurrency = 1,
+	NotFound = 2,
+	Validation = 3,
+	Conflict = 4
+}
+
 public class Result
 {
-
-	protected Result(bool success, string? errorMessage = null)
+	protected Result(bool success, string? errorMessage = null, ResultErrorCode errorCode = ResultErrorCode.None, object? details = null)
 	{
 		Success = success;
 		Error = errorMessage;
+		ErrorCode = errorCode;
+		Details = details;
 	}
 
 	public bool Success { get; }
@@ -24,6 +34,13 @@ public class Result
 
 	public string? Error { get; }
 
+	public ResultErrorCode ErrorCode { get; }
+
+	/// <summary>
+	/// Optional structured error details (e.g., server version on concurrency conflict).
+	/// </summary>
+	public object? Details { get; }
+
 	public static Result Ok()
 	{
 		return new Result(true);
@@ -31,7 +48,17 @@ public class Result
 
 	public static Result Fail(string errorMessage)
 	{
-		return new Result(false, errorMessage);
+		return new Result(false, errorMessage, ResultErrorCode.None, null);
+	}
+
+	public static Result Fail(string errorMessage, ResultErrorCode code)
+	{
+		return new Result(false, errorMessage, code, null);
+	}
+
+	public static Result Fail(string errorMessage, ResultErrorCode code, object? details)
+	{
+		return new Result(false, errorMessage, code, details);
 	}
 
 	public static Result<T> Ok<T>(T value)
@@ -44,6 +71,16 @@ public class Result
 		return new Result<T>(default, false, errorMessage);
 	}
 
+	public static Result<T> Fail<T>(string errorMessage, ResultErrorCode code)
+	{
+		return new Result<T>(default, false, errorMessage, code);
+	}
+
+	public static Result<T> Fail<T>(string errorMessage, ResultErrorCode code, object? details)
+	{
+		return new Result<T>(default, false, errorMessage, code, details);
+	}
+
 	public static Result<T> FromValue<T>(T? value)
 	{
 		return value is not null ? Ok(value) : Result<T>.Fail("Provided value is null.");
@@ -53,9 +90,8 @@ public class Result
 
 public sealed class Result<T> : Result
 {
-
-	internal Result(T? value, bool success, string? errorMessage = null)
-			: base(success, errorMessage)
+	internal Result(T? value, bool success, string? errorMessage = null, ResultErrorCode errorCode = ResultErrorCode.None, object? details = null)
+		: base(success, errorMessage, errorCode, details)
 	{
 		Value = value;
 	}
@@ -72,6 +108,16 @@ public sealed class Result<T> : Result
 		return new Result<T>(default, false, errorMessage);
 	}
 
+	public static new Result<T> Fail(string errorMessage, ResultErrorCode code)
+	{
+		return new Result<T>(default, false, errorMessage, code);
+	}
+
+	public static new Result<T> Fail(string errorMessage, ResultErrorCode code, object? details)
+	{
+		return new Result<T>(default, false, errorMessage, code, details);
+	}
+
 	public static implicit operator T?(Result<T> result)
 	{
 		ArgumentNullException.ThrowIfNull(result);
@@ -83,5 +129,4 @@ public sealed class Result<T> : Result
 	{
 		return Ok(value);
 	}
-
 }

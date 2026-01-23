@@ -19,23 +19,18 @@ public class CreateCategoryHandlerTests
 
 	private readonly MongoDbFixture _fixture;
 
-	private readonly ICategoryRepository _repository;
+	private readonly CreateCategory.ICreateCategoryHandler _handler;
 
-	private readonly Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler _handler;
-
-	private readonly ILogger<Components.Features.Categories.CategoryCreate.CreateCategory.Handler> _logger;
-
-	private readonly IValidator<CategoryDto> _validator;
+	private readonly CategoryRepository _repository;
 
 	public CreateCategoryHandlerTests(MongoDbFixture fixture)
 	{
 		_fixture = fixture;
 		_repository = new CategoryRepository(_fixture.ContextFactory);
-		_logger = Substitute.For<ILogger<Components.Features.Categories.CategoryCreate.CreateCategory.Handler>>();
-		_validator = new Shared.Validators.CategoryDtoValidator();
+		ILogger<CreateCategory.Handler> logger = Substitute.For<ILogger<CreateCategory.Handler>>();
+		CategoryDtoValidator categoryDtoValidator = Substitute.For<CategoryDtoValidator>();
 
-		_handler = new Components.Features.Categories.CategoryCreate.CreateCategory.Handler(_repository, _logger,
-				_validator);
+		_handler = new CreateCategory.Handler(_repository, logger, categoryDtoValidator);
 	}
 
 	[Fact]
@@ -58,7 +53,7 @@ public class CreateCategoryHandlerTests
 		result.Value.IsArchived.Should().BeFalse();
 		result.Value.Id.Should().NotBe(ObjectId.Empty);
 
-		// Verify it was actually saved to database
+		// Verify it was actually saved to a database
 		var saved = await _repository.GetCategoryByIdAsync(result.Value.Id);
 		saved.Success.Should().BeTrue();
 		saved.Value.Should().NotBeNull();
@@ -172,7 +167,7 @@ public class CreateCategoryHandlerTests
 		result2.Success.Should().BeTrue();
 		result1.Value!.Id.Should().NotBe(result2.Value!.Id);
 
-		// Verify both exist in database
+		// Verify both exist in a database
 		var allCategories = await _repository.GetCategories();
 		allCategories.Success.Should().BeTrue();
 		allCategories.Value.Should().HaveCount(2);
@@ -205,6 +200,3 @@ public class CreateCategoryHandlerTests
 	}
 
 }
-
-
-
