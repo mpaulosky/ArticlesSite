@@ -1,4 +1,7 @@
 using Blazored.LocalStorage;
+using Shared.Abstractions;
+using Web.Components.Features.Articles.ArticleEdit;
+using Web.Components.Features.Articles.Models;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +28,9 @@ builder.Services.AddRazorComponents()
 builder.Services.AddScoped<DatabaseSeeder>();
 builder.Services.AddScoped<IFileStorage, FileStorage>();
 builder.Services.AddBlazoredLocalStorage();
+
+// Concurrency options from configuration
+builder.Services.Configure<Web.Infrastructure.ConcurrencyOptions>(builder.Configuration.GetSection("ConcurrencyOptions"));
 
 // --- Build App ---
 WebApplication app = builder.Build();
@@ -111,6 +117,45 @@ app.MapGet("/api/files/{fileName}", (string fileName, IWebHostEnvironment enviro
 
 	return Task.FromResult(Results.File(filePath, contentType));
 });
+
+// Minimal API: expose PUT endpoint for article edits so non-Blazor clients can detect concurrency conflicts (returns 409)
+app.MapPut("/api/articles/{id}", async (string id, ArticleDto dto, EditArticle.IEditArticleHandler handler) =>
+{
+	if (!ObjectId.TryParse(id, out var objectId))
+	{
+		return Results.BadRequest(new { error = "Invalid article id" });
+	}
+
+	if (dto is null)
+	{
+		return Results.BadRequest(new { error = "Article data cannot be null" });
+	}
+
+	if (objectId != dto.Id)
+	{
+		return Results.BadRequest(new { error = "Id in route does not match DTO Id" });
+	}
+
+	var result = await handler.HandleAsync(dto);
+
+	if (result.Success)
+	{
+		return Results.Ok(result.Value);
+	}
+
+	if (result.ErrorCode == ResultErrorCode.Concurrency)
+	{
+		return Results.Conflict(new { error = result.Error, code = (int)result.ErrorCode, details = result.Details });
+	}
+
+	// Default to 400 for other failures
+	return Results.BadRequest(new { error = result.Error });
+})
+.WithName("UpdateArticle")
+.WithTags("Articles")
+.Produces<ArticleDto>(StatusCodes.Status200OK)
+.Produces(StatusCodes.Status400BadRequest)
+.Produces(StatusCodes.Status409Conflict, typeof(object));
 
 // --- Startup Logic (Database Seeding) ---
 

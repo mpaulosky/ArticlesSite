@@ -100,6 +100,27 @@ else if (_editModel != ArticleDto.Empty)
         </button>
       </div>
     </EditForm>
+
+    @if (_isConcurrencyConflict && _latestArticle is not null)
+    {
+      <div class="mt-6 border border-yellow-300 bg-yellow-50 p-4 rounded">
+        <h4 class="font-bold text-yellow-800">Concurrency Conflict</h4>
+        <p class="text-sm text-yellow-700">The article was modified by another user while you were editing. Choose an action:</p>
+
+        <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
+          <button class="btn-primary" @onclick="ReloadLatestAsync">Reload Latest</button>
+          <button class="btn-warning" @onclick="ForceOverwriteAsync">Force Overwrite</button>
+          <button class="btn-secondary" @onclick="CancelToDetails">Cancel</button>
+        </div>
+
+        <div class="mt-4">
+          <h5 class="font-semibold">Latest on server:</h5>
+          <div class="p-2 bg-white rounded border">@_latestArticle.Title</div>
+          <h5 class="font-semibold mt-2">Your draft:</h5>
+          <div class="p-2 bg-white rounded border">@_editModel.Title</div>
+        </div>
+      </div>
+    }
   </div>
 }
 
@@ -119,9 +140,11 @@ else if (_editModel != ArticleDto.Empty)
 
   private List<CategoryDto>? _categories;
 
-  // private bool _showRawMarkdown;
-
   private string _selectedCategoryId = string.Empty;
+
+  // Concurrency UI state
+  private bool _isConcurrencyConflict = false;
+  private ArticleDto? _latestArticle;
 
   protected override async Task OnInitializedAsync()
   {
@@ -143,7 +166,6 @@ else if (_editModel != ArticleDto.Empty)
         _editModel = articleResult.Value;
         _editModel.CanEdit = await UserCanEditArticleAsync(_editModel);
         _selectedCategoryId = _editModel.Category?.Id.ToString() ?? string.Empty;
-        //UpdatePreview();
         _errorMessage = null;
       }
       else
@@ -245,12 +267,31 @@ else if (_editModel != ArticleDto.Empty)
       if (result.Success)
       {
         Logger?.LogInformation("Article saved: {ArticleId}", RecordId);
+        _isConcurrencyConflict = false;
         Navigation.NavigateTo($"/articles/details/{RecordId}");
       }
       else
       {
-        _errorMessage = result.Error ?? "Failed to save article.";
-        Logger?.LogWarning("Failed to save article {ArticleId}: {Error}", RecordId, _errorMessage);
+        // Detect optimistic concurrency conflict and surface UI to user
+        if (result.Error is not null && result.Error.Contains("Concurrency conflict", StringComparison.OrdinalIgnoreCase))
+        {
+          _isConcurrencyConflict = true;
+
+          // Load latest article to show to user
+          var latest = await GetArticleHandler.HandleAsync(RecordId);
+          if (latest is { Success: true, Value: not null })
+          {
+            _latestArticle = latest.Value;
+          }
+
+          _errorMessage = "A concurrency conflict occurred. Choose an action below.";
+          Logger?.LogWarning("HandleValidSubmit: Concurrency conflict saving article {ArticleId}", RecordId);
+        }
+        else
+        {
+          _errorMessage = result.Error ?? "Failed to save article.";
+          Logger?.LogWarning("Failed to save article {ArticleId}: {Error}", RecordId, _errorMessage);
+        }
       }
     }
     catch (Exception ex)
@@ -258,6 +299,62 @@ else if (_editModel != ArticleDto.Empty)
       _errorMessage = ex.Message;
       Logger?.LogError(ex, "Error saving article {ArticleId}", RecordId);
     }
+  }
+
+  private async Task ReloadLatestAsync()
+  {
+    if (RecordId == ObjectId.Empty) return;
+
+    var latest = await GetArticleHandler.HandleAsync(RecordId);
+    if (latest is { Success: true, Value: not null })
+    {
+      _editModel = latest.Value;
+      _editModel.CanEdit = await UserCanEditArticleAsync(_editModel);
+      _selectedCategoryId = _editModel.Category?.Id.ToString() ?? string.Empty;
+      _isConcurrencyConflict = false;
+      _errorMessage = null;
+    }
+    else
+    {
+      _errorMessage = latest.Error ?? "Failed to load latest article.";
+    }
+  }
+
+  private async Task ForceOverwriteAsync()
+  {
+    if (_latestArticle is null)
+    {
+      _errorMessage = "No latest article available to base overwrite on.";
+      return;
+    }
+
+    // Set our DTO version to the latest server version so Replace will match and allow overwrite
+    _editModel.Version = _latestArticle.Version;
+
+    var result = await EditArticleHandler.HandleAsync(_editModel);
+    if (result.Success)
+    {
+      _isConcurrencyConflict = false;
+      Navigation.NavigateTo($"/articles/details/{RecordId}");
+    }
+    else
+    {
+      _errorMessage = result.Error ?? "Failed to overwrite article.";
+      // If it's still a concurrency conflict, refresh latest to present to user again
+      if (result.Error is not null && result.Error.Contains("Concurrency conflict", StringComparison.OrdinalIgnoreCase))
+      {
+        var latest = await GetArticleHandler.HandleAsync(RecordId);
+        if (latest is { Success: true, Value: not null })
+        {
+          _latestArticle = latest.Value;
+        }
+      }
+    }
+  }
+
+  private void CancelToDetails()
+  {
+    Navigation.NavigateTo($"/articles/details/{RecordId}");
   }
 
   private async Task LoadCategoriesAsync()
@@ -306,27 +403,5 @@ else if (_editModel != ArticleDto.Empty)
       _editModel.Category = null;
     }
   }
-  //
-  // private void UpdatePreview()
-  // {
-  // if (_editModel != ArticleDto.Empty)
-  // {
-  // var content = _editModel.Content;
-  // _previewHtml = Markdown.ToHtml(content, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
-  // }
-  // else
-  // {
-  // _previewHtml = string.Empty;
-  // }
-  // }
-  //
-  // private void TogglePreviewMode()
-  // {
-  // _showRawMarkdown = !_showRawMarkdown;
-  // if (!_showRawMarkdown)
-  // {
-  // UpdatePreview();
-  // }
-  // }
 
 }

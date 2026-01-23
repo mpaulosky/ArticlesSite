@@ -142,7 +142,25 @@ public class ArticleRepository
 		try
 		{
 			IMongoDbContext context = contextFactory.CreateDbContext();
-			await context.Articles.ReplaceOneAsync(a => a.Id == post.Id, post);
+
+			// Capture the expected version from the caller (optimistic concurrency)
+			int expectedVersion = post.Version;
+
+			// Prepare the filter to match both Id and expected version
+			var filter = Builders<Article>.Filter.Where(a => a.Id == post.Id && a.Version == expectedVersion);
+
+			// Increment the version on the incoming document so the stored document will have the next version
+			post.Version = expectedVersion + 1;
+
+			var replaceResult = await context.Articles.ReplaceOneAsync(filter, post);
+
+			if (replaceResult.MatchedCount == 0)
+			{
+				// No document matched the id+version filter -> concurrency conflict
+				var current = await context.Articles.Find(a => a.Id == post.Id).FirstOrDefaultAsync();
+				var details = new { serverVersion = current?.Version ?? -1 };
+				return Result.Fail<Article>("Concurrency conflict: article was modified by another process", Shared.Abstractions.ResultErrorCode.Concurrency, details);
+			}
 
 			return Result.Ok(post);
 		}

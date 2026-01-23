@@ -7,15 +7,15 @@
 // Project Name :  Web
 // =======================================================
 
-global using Auth0.AspNetCore.Authentication;
-
-global using FluentValidation;
-
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.Linq.Expressions;
 
+global using Auth0.AspNetCore.Authentication;
+
 global using Bogus;
+
+global using FluentValidation;
 
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Authentication.Cookies;

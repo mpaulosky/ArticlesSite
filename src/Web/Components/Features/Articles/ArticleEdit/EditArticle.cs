@@ -7,6 +7,9 @@
 // Project Name :  Web
 // =======================================================
 
+using Shared.Abstractions;
+using Web.Infrastructure;
+
 namespace Web.Components.Features.Articles.ArticleEdit;
 
 public static class EditArticle
@@ -34,9 +37,11 @@ public static class EditArticle
 	(
 			IArticleRepository repository,
 			ILogger<Handler> logger,
-			IValidator<ArticleDto> validator
+			IValidator<ArticleDto> validator,
+			Microsoft.Extensions.Options.IOptions<Web.Infrastructure.ConcurrencyOptions> concurrencyOptions
 	) : IEditArticleHandler
 	{
+			private readonly ConcurrencyOptions _concurrencyOptions = concurrencyOptions?.Value ?? new ConcurrencyOptions();
 
 		/// <inheritdoc />
 		public async Task<Result<ArticleDto>> HandleAsync(ArticleDto? dto)
@@ -96,10 +101,72 @@ public static class EditArticle
 			article.Author = dto.Author;
 			article.Category = dto.Category;
 
-			Result<Article> result = await repository.UpdateArticle(article);
+			// Optimistic concurrency: retry a few times if we detect a concurrency conflict
+			int attempt = 0;
+			Result<Article> result;
+			do
+			{
+				result = await repository.UpdateArticle(article);
+				if (result.Failure && result.ErrorCode == global::Shared.Abstractions.ResultErrorCode.Concurrency)
+				{
+					attempt++;
+					if (attempt >= _concurrencyOptions.MaxRetries)
+					{
+						// give up and return the concurrency failure
+						logger.LogWarning("EditArticle: Concurrency conflict after {Attempts} attempts for article {Id}", attempt, article.Id);
+						return Result.Fail<ArticleDto>(result.Error ?? "Concurrency conflict: article was modified by another process", global::Shared.Abstractions.ResultErrorCode.Concurrency);
+					}
+
+					// Backoff before retrying: exponential backoff with jitter
+					int baseMs = _concurrencyOptions.BaseDelayMilliseconds;
+					int capMs = _concurrencyOptions.MaxDelayMilliseconds;
+					int exponential = baseMs * (int)Math.Pow(2, attempt - 1);
+					int delayMs = Math.Min(capMs, exponential);
+					int jitter = Random.Shared.Next(0, _concurrencyOptions.JitterMilliseconds);
+					int totalDelay = delayMs + jitter;
+					logger.LogDebug("EditArticle: Concurrency conflict detected, retrying attempt {Attempt} after {Delay}ms for article {Id}", attempt, totalDelay, article.Id);
+					await Task.Delay(totalDelay);
+
+					// Reload latest article and reapply changes
+					var latest = await repository.GetArticleByIdAsync(article.Id);
+					if (latest.Failure || latest.Value is null)
+					{
+						return Result.Fail<ArticleDto>(latest.Error ?? "Article not found");
+					}
+
+					article = latest.Value;
+					try
+					{
+						article.Update(
+							dto.Title,
+							dto.Introduction,
+							dto.Content,
+							dto.CoverImageUrl,
+							dto.IsPublished,
+							dto.PublishedOn,
+							dto.IsArchived
+						);
+					}
+					catch (ArgumentException ex)
+					{
+						logger.LogWarning(ex, "EditArticle: Validation failed during retry update for article {Id}", dto.Id);
+						return Result.Fail<ArticleDto>(ex.Message);
+					}
+
+					article.Author = dto.Author;
+					article.Category = dto.Category;
+					// loop and try update again
+				}
+				else
+				{
+					// either success or a non-concurrency failure
+					break;
+				}
+			} while (true);
 
 			if (result.Failure)
 			{
+				// If the repository indicates a failure, propagate a meaningful failure
 				logger.LogWarning("EditArticle: Failed to update article. Error: {Error}", result.Error);
 
 				return Result.Fail<ArticleDto>(result.Error ?? "Failed to update article");
