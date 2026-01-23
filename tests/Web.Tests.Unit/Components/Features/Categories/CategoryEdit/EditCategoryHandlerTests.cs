@@ -7,8 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Web.Components.Features.Categories.CategoryEdit;
-
 namespace Web.Tests.Unit.Components.Features.Categories.CategoryEdit;
 
 /// <summary>
@@ -25,8 +23,9 @@ public class EditCategoryHandlerTests
 	public EditCategoryHandlerTests()
 	{
 		_mockRepository = Substitute.For<ICategoryRepository>();
+		CategoryDtoValidator categoryDtoValidator = Substitute.For<CategoryDtoValidator>();
 		var mockLogger = Substitute.For<ILogger<EditCategory.Handler>>();
-		_handler = new EditCategory.Handler(_mockRepository, mockLogger);
+		_handler = new EditCategory.Handler(_mockRepository, mockLogger, categoryDtoValidator);
 	}
 
 	[Fact]
