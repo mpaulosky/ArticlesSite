@@ -8,6 +8,7 @@
 // =======================================================
 
 using System.Linq.Expressions;
+using Web.Components.Features.Articles.Extensions;
 
 namespace Web.Data.Repositories;
 
@@ -158,7 +159,19 @@ public class ArticleRepository
 			{
 				// No document matched the id+version filter -> concurrency conflict
 				var current = await context.Articles.Find(a => a.Id == post.Id).FirstOrDefaultAsync();
-				var details = new { serverVersion = current?.Version ?? -1 };
+				var serverDto = current is null ? null : current.ToDto(canEdit: false);
+				// Compute changed fields between incoming post and current (simple list)
+				var changed = new List<string>();
+				if (current is not null)
+				{
+					if (current.Title != post.Title) changed.Add("Title");
+					if (current.Introduction != post.Introduction) changed.Add("Introduction");
+					if (current.Content != post.Content) changed.Add("Content");
+					if (current.CoverImageUrl != post.CoverImageUrl) changed.Add("CoverImageUrl");
+					if (current.IsPublished != post.IsPublished) changed.Add("IsPublished");
+					if (current.IsArchived != post.IsArchived) changed.Add("IsArchived");
+				}
+				var details = new Web.Infrastructure.ConcurrencyConflictInfo(current?.Version ?? -1, serverDto, changed);
 				return Result.Fail<Article>("Concurrency conflict: article was modified by another process", Shared.Abstractions.ResultErrorCode.Concurrency, details);
 			}
 
