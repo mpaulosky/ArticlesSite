@@ -21,16 +21,15 @@ public class EditCategoryHandlerTests
 
 	private readonly ICategoryRepository _repository;
 
-	private readonly Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler _handler;
-
-	private readonly ILogger<Components.Features.Categories.CategoryEdit.EditCategory.Handler> _logger;
+	private readonly EditCategory.IEditCategoryHandler _handler;
 
 	public EditCategoryHandlerTests(MongoDbFixture fixture)
 	{
 		_fixture = fixture;
 		_repository = new CategoryRepository(_fixture.ContextFactory);
-		_logger = Substitute.For<ILogger<Components.Features.Categories.CategoryEdit.EditCategory.Handler>>();
-		_handler = new Components.Features.Categories.CategoryEdit.EditCategory.Handler(_repository, _logger);
+		ILogger<EditCategory.Handler> logger = Substitute.For<ILogger<EditCategory.Handler>>();
+		CategoryDtoValidator categoryDtoValidator = Substitute.For<CategoryDtoValidator>();
+		_handler = new EditCategory.Handler(_repository, logger, categoryDtoValidator);
 	}
 
 	[Fact]
@@ -63,7 +62,7 @@ public class EditCategoryHandlerTests
 		result.Value!.CategoryName.Should().Be("Updated Category Name");
 		result.Value.ModifiedOn.Should().NotBeNull();
 
-		// Verify it was actually updated in database
+		// Verify it was actually updated in a database
 		var saved = await _repository.GetCategoryByIdAsync(category.Id);
 		saved.Success.Should().BeTrue();
 		saved.Value!.CategoryName.Should().Be("Updated Category Name");
@@ -155,7 +154,7 @@ public class EditCategoryHandlerTests
 		{
 			Id = category.Id,
 			CategoryName = "New Category Name",
-			Slug = "old-slug", // Old slug, should be regenerated
+			Slug = "old-slug", // Old slug should be regenerated
 			CreatedOn = category.CreatedOn ?? DateTimeOffset.UtcNow,
 			IsArchived = false
 		};
@@ -366,6 +365,3 @@ public class EditCategoryHandlerTests
 	}
 
 }
-
-
-

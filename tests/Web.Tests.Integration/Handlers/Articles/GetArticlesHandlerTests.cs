@@ -7,8 +7,6 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-using System.Security.Claims;
-
 namespace Web.Tests.Integration.Handlers.Articles;
 
 /// <summary>
@@ -21,18 +19,14 @@ public class GetArticlesHandlerTests
 
 	private readonly MongoDbFixture _fixture;
 
-	private readonly IArticleRepository _repository;
-
-	private readonly Components.Features.Articles.ArticlesList.GetArticles.IGetArticlesHandler _handler;
-
-	private readonly ILogger<Components.Features.Articles.ArticlesList.GetArticles.Handler> _logger;
+	private readonly GetArticles.IGetArticlesHandler _handler;
 
 	public GetArticlesHandlerTests(MongoDbFixture fixture)
 	{
 		_fixture = fixture;
-		_repository = new ArticleRepository(_fixture.ContextFactory);
-		_logger = Substitute.For<ILogger<Components.Features.Articles.ArticlesList.GetArticles.Handler>>();
-		_handler = new Components.Features.Articles.ArticlesList.GetArticles.Handler(_repository, _logger);
+		IArticleRepository repository = new ArticleRepository(_fixture.ContextFactory);
+		ILogger<GetArticles.Handler> logger = Substitute.For<ILogger<GetArticles.Handler>>();
+		_handler = new GetArticles.Handler(repository, logger);
 	}
 
 	[Fact]
@@ -262,6 +256,3 @@ public class GetArticlesHandlerTests
 	}
 
 }
-
-
-

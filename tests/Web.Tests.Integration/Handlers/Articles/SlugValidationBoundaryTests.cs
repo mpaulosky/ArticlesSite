@@ -7,16 +7,11 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-using Web.Components.Features.Articles.Interfaces;
-using Web.Components.Features.Articles.Models;
-using Web.Components.Features.Articles.Validators;
-using Web.Components.Features.AuthorInfo.Fakes;
-
 namespace Web.Tests.Integration.Handlers.Articles;
 
 /// <summary>
 /// Integration tests for slug validation boundary cases.
-/// Tests regex pattern: ^[a-z0-9_]+$
+/// Tests a regex pattern: ^[a-z0-9_]+$
 /// Valid: lowercase letters, numbers, underscores only
 /// Invalid: uppercase, spaces, special characters
 /// </summary>
@@ -27,21 +22,15 @@ public class SlugValidationBoundaryTests
 
 	private readonly MongoDbFixture _fixture;
 
-	private readonly IArticleRepository _repository;
-
-	private readonly Components.Features.Articles.ArticleCreate.CreateArticle.ICreateArticleHandler _createHandler;
-
-	private readonly ILogger<Components.Features.Articles.ArticleCreate.CreateArticle.Handler> _logger;
-
-	private readonly IValidator<ArticleDto> _validator;
+	private readonly CreateArticle.ICreateArticleHandler _createHandler;
 
 	public SlugValidationBoundaryTests(MongoDbFixture fixture)
 	{
 		_fixture = fixture;
-		_repository = new ArticleRepository(_fixture.ContextFactory);
-		_logger = Substitute.For<ILogger<Components.Features.Articles.ArticleCreate.CreateArticle.Handler>>();
-		_validator = new ArticleDtoValidator();
-		_createHandler = new Components.Features.Articles.ArticleCreate.CreateArticle.Handler(_repository, _logger, _validator);
+		IArticleRepository repository = new ArticleRepository(_fixture.ContextFactory);
+		ILogger<CreateArticle.Handler> logger = Substitute.For<ILogger<CreateArticle.Handler>>();
+		IValidator<ArticleDto> validator = new ArticleDtoValidator();
+		_createHandler = new CreateArticle.Handler(repository, logger, validator);
 	}
 
 	[Fact]
@@ -68,7 +57,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -103,7 +92,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -138,7 +127,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -172,7 +161,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -206,7 +195,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -241,7 +230,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -275,7 +264,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -309,7 +298,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -343,7 +332,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -377,7 +366,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -411,7 +400,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -445,7 +434,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -484,7 +473,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
@@ -523,7 +512,7 @@ public class SlugValidationBoundaryTests
 			DateTimeOffset.UtcNow,
 			null,
 			false,
-			false, 0`r`n`t);
+			false, 0);
 
 		// Act
 		var result = await _createHandler.HandleAsync(dto);
