@@ -27,11 +27,11 @@ public class ArticleConcurrencyTestcontainersStressTests : IClassFixture<WebAppl
 		var article = FakeArticle.GetNewArticle(useSeed: true);
 		article.Version = 0;
 		var collection = _fixture.Database.GetCollection<Article>("Articles");
-		await collection.InsertOneAsync(article);
+		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
 
 		// Verify the article was inserted by querying it back
 		var verifyCollection = _fixture.Database.GetCollection<Article>("Articles");
-		var insertedArticle = await verifyCollection.Find(a => a.Id == article.Id).FirstOrDefaultAsync();
+		var insertedArticle = await verifyCollection.Find(a => a.Id == article.Id).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 		if (insertedArticle == null)
 		{
 			throw new InvalidOperationException($"Article was not inserted! ID: {article.Id}, Database: {verifyCollection.Database.DatabaseNamespace.DatabaseName}");
@@ -85,7 +85,7 @@ public class ArticleConcurrencyTestcontainersStressTests : IClassFixture<WebAppl
 		// If any conflict responses contained structured details, ensure serverVersion is present
 		foreach (var resp in responses.Where(r => r.StatusCode == System.Net.HttpStatusCode.Conflict))
 		{
-			var conflict = await resp.Content.ReadFromJsonAsync<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>();
+			var conflict = await resp.Content.ReadFromJsonAsync<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
 			conflict.Should().NotBeNull();
 			conflict!.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
 		}
