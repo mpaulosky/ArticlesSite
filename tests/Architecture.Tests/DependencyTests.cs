@@ -16,7 +16,7 @@ namespace Architecture.Tests;
 public class DependencyTests
 {
 
-	private static readonly Assembly SharedAssembly = typeof(Article).Assembly;
+	private static readonly Assembly SharedAssembly = typeof(ISharedMarker).Assembly;
 
 	private static readonly Assembly WebAssembly = typeof(IAppMarker).Assembly;
 

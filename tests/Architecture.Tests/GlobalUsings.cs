@@ -15,17 +15,10 @@ global using FluentAssertions;
 
 global using NetArchTest.Rules;
 
+global using Shared;
+
 global using Web;
 global using Web.Components.Features.Articles.Entities;
-global using Web.Components.Features.Articles.Fakes;
-global using Web.Components.Features.Articles.Interfaces;
-global using Web.Components.Features.Articles.Models;
-global using Web.Components.Features.AuthorInfo.Entities;
-global using Web.Components.Features.AuthorInfo.Fakes;
-global using Web.Components.Features.Categories.Entities;
-global using Web.Components.Features.Categories.Fakes;
-global using Web.Components.Features.Categories.Interfaces;
-global using Web.Components.Features.Categories.Models;
 
 global using Xunit;
 
