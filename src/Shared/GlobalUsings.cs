@@ -7,11 +7,12 @@
 // Project Name :  Shared
 // =======================================================
 
+global using System;
+global using System.IO;
 global using System.ComponentModel;
 global using System.ComponentModel.DataAnnotations;
 global using System.Linq.Expressions;
 global using System.Text.RegularExpressions;
-global using System.Web;
 
 global using Bogus;
 
