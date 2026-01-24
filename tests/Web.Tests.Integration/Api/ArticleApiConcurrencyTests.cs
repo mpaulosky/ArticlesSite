@@ -72,8 +72,8 @@ public class ArticleApiConcurrencyTests : IClassFixture<WebApplicationFactory<Pr
 		var editDto2 = new ArticleDto(article.Id, article.Slug, "Edit Title B", article.Introduction, article.Content, article.CoverImageUrl, article.Author, article.Category, article.IsPublished, article.PublishedOn, article.CreatedOn, DateTimeOffset.UtcNow, article.IsArchived, true, article.Version);
 
 		// Act - send both updates concurrently
-		var task1 = client.PutAsJsonAsync($"/api/articles/{article.Id}", editDto1);
-		var task2 = client.PutAsJsonAsync($"/api/articles/{article.Id}", editDto2);
+		var task1 = client.PutAsJsonAsync($"/api/articles/{article.Id}", editDto1, TestContext.Current.CancellationToken);
+		var task2 = client.PutAsJsonAsync($"/api/articles/{article.Id}", editDto2, TestContext.Current.CancellationToken);
 
 		await Task.WhenAll(task1, task2);
 
@@ -95,14 +95,14 @@ public class ArticleApiConcurrencyTests : IClassFixture<WebApplicationFactory<Pr
 		// If conflict response contains ConcurrencyConflictResponseDto, validate structure
 		if (resp1.StatusCode == System.Net.HttpStatusCode.Conflict)
 		{
-			var conflict = await resp1.Content.ReadFromJsonAsync<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>();
+			var conflict = await resp1.Content.ReadFromJsonAsync<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
 			conflict.Should().NotBeNull();
 			conflict!.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
 		}
 
 		if (resp2.StatusCode == System.Net.HttpStatusCode.Conflict)
 		{
-			var conflict = await resp2.Content.ReadFromJsonAsync<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>();
+			var conflict = await resp2.Content.ReadFromJsonAsync<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
 			conflict.Should().NotBeNull();
 			conflict!.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
 		}

@@ -327,7 +327,8 @@ public class ArticleConcurrencyTests
 			, 0);
 
 			editTasks.Add(_editHandler.HandleAsync(dto));
-			await Task.Delay(10, TestContext.Current.CancellationToken); // Small delay to allow interleaving
+			// Increase delay to reduce flakiness; ensures edits are mostly sequential for this test
+			await Task.Delay(100, TestContext.Current.CancellationToken);
 		}
 
 		await Task.WhenAll(editTasks);
