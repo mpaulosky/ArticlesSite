@@ -1,17 +1,20 @@
-using System.IO;
-using System.Threading.Tasks;
-
-using FluentAssertions;
+// =======================================================
+// Copyright (c) 2025. All rights reserved.
+// File Name :     FileStorageTests.cs
+// Company :       mpaulosky
+// Author :        Matthew Paulosky
+// Solution Name : ArticleSite
+// Project Name :  Web.Tests.Unit
+// =======================================================
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
-
-using NSubstitute;
-
-using Web.Services;
 
 namespace Web.Tests.Unit.Services;
 
+/// <summary>
+///   Unit tests for FileStorage service
+/// </summary>
+[ExcludeFromCodeCoverage]
 public class FileStorageTests
 {
 	[Fact]
