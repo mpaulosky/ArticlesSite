@@ -4,31 +4,31 @@
 	{
 		case "1":
 
-			<h1 class="@($"text-2xl font-semibold tracking-tight py-4 {TextColorClass}")">@HeaderText</h1>
+			<h1 class="@($"text-3xl font-semibold tracking-tight py-4")">@HeaderText</h1>
 
 			break;
 
 		case "2":
 
-			<h2 class="@($"text-xl font-semibold tracking-tight py-4 {TextColorClass}")">@HeaderText</h2>
+			<h2 class="@($"text-2xl font-semibold tracking-tight py-4")">@HeaderText</h2>
 
 			break;
 
 		case "3":
 
-			<h3 class="@($"text-lg font-semibold tracking-tight py-4 {TextColorClass}")">@HeaderText</h3>
+			<h3 class="@($"text-1xl font-semibold tracking-tight py-4")">@HeaderText</h3>
 
 			break;
 
 		case "4":
 
-			<h4 class="@($"text-md font-semibold tracking-tight py-4 {TextColorClass}")">@HeaderText</h4>
+			<h4 class="@($"text-lg font-semibold tracking-tight py-4")">@HeaderText</h4>
 
 			break;
 
 		case "5":
 
-			<h5 class="@($"text-sm font-semibold tracking-tight py-4 {TextColorClass}")">@HeaderText</h5>
+			<h5 class="@($"text-md font-semibold tracking-tight py-4")">@HeaderText</h5>
 
 			break;
 	}
@@ -37,10 +37,8 @@
 
 @code {
 
-	[Parameter] public string HeaderText { get; set; } = "My Component";
+	[Parameter] public string HeaderText { get; set; } = "My Blog";
 
-	[Parameter] public string Level { get; set; } = "3";
-
-	[Parameter] public string TextColorClass { get; set; } = "text-gray-50";
+	[Parameter] public string Level { get; set; } = "1";
 
 }

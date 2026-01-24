@@ -12,7 +12,8 @@ namespace Web.Components.Features.Categories.Models;
 /// <summary>
 ///   Represents a data transfer object for a category.
 /// </summary>
-public class CategoryDto
+[Serializable]
+public sealed class CategoryDto
 {
 
 	/// <summary>

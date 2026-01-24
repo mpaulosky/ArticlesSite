@@ -6,19 +6,19 @@
 	{
 		case "1":
 
-			<h1 class=@($"text-3xl")>@HeaderText</h1>
+			<h1 class=@($"text-3xl {TextColorClass}".Trim())>@HeaderText</h1>
 
 			break;
 
 		case "2":
 
-			<h2 class=@($"text-2xl")>@HeaderText</h2>
+			<h2 class=@($"text-2xl {TextColorClass}".Trim())>@HeaderText</h2>
 
 			break;
 
 		case "3":
 
-			<h3 class=@($"text-1xl")>@HeaderText</h3>
+			<h3 class=@($"text-1xl {TextColorClass}".Trim())>@HeaderText</h3>
 
 			break;
 	}
@@ -30,5 +30,7 @@
 	[Parameter] public string HeaderText { get; set; } = "My Blog";
 
 	[Parameter] public string Level { get; set; } = "1";
+
+	[Parameter] public string TextColorClass { get; set; } = string.Empty;
 
 }

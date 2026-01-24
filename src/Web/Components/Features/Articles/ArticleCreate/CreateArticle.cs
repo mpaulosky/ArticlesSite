@@ -53,15 +53,24 @@ public static class CreateArticle
 				return Result.Fail<ArticleDto>("Article data cannot be null");
 			}
 
-			if (_validator is not null)
+			// Always apply the concrete validator rules. If an injected validator is present, use it as well
+			var concreteValidation = new Web.Components.Features.Articles.Validators.ArticleDtoValidator().Validate(dto);
+			if (_validator != null)
 			{
-				var validation = await _validator.ValidateAsync(dto);
-				if (!validation.IsValid)
+				var injectedValidation = await _validator.ValidateAsync(dto);
+				if (injectedValidation != null && !injectedValidation.IsValid)
 				{
-					string errors = string.Join("; ", validation.Errors.Select(e => e.ErrorMessage));
+					string errors = string.Join("; ", (injectedValidation.Errors ?? System.Linq.Enumerable.Empty<FluentValidation.Results.ValidationFailure>()).Select(e => e.ErrorMessage));
 					_logger.LogWarning("CreateArticle: Validation failed for article {Id}: {Errors}", dto.Id, errors);
 					return Result.Fail<ArticleDto>(errors);
 				}
+			}
+
+			if (concreteValidation is null || !concreteValidation.IsValid)
+			{
+				string errors = string.Join("; ", (concreteValidation?.Errors ?? System.Linq.Enumerable.Empty<FluentValidation.Results.ValidationFailure>()).Select(e => e.ErrorMessage));
+				_logger.LogWarning("CreateArticle: Validation failed for article {Id}: {Errors}", dto.Id, errors);
+				return Result.Fail<ArticleDto>(errors);
 			}
 
 			var article = new Article(
