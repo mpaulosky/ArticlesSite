@@ -43,7 +43,7 @@ public class CreateArticleHandlerTests
 
 		var dto = new ArticleDto(
 				ObjectId.Empty,
-				"test-article",
+				"test_article",
 				"Test Article",
 				"Test Introduction",
 				"Test Content",
@@ -103,7 +103,7 @@ public class CreateArticleHandlerTests
 
 		var dto = new ArticleDto(
 				ObjectId.Empty,
-				"test-article",
+				"test_article",
 				"Test Article",
 				"Test Introduction",
 				"Test Content",
@@ -140,7 +140,7 @@ public class CreateArticleHandlerTests
 
 		var dto1 = new ArticleDto(
 				ObjectId.Empty,
-				"article-one",
+				"article_one",
 				"Article One",
 				"Introduction One",
 				"Content One",
@@ -157,7 +157,7 @@ public class CreateArticleHandlerTests
 
 		var dto2 = new ArticleDto(
 				ObjectId.Empty,
-				"article-two",
+				"article_two",
 				"Article Two",
 				"Introduction Two",
 				"Content Two",
@@ -198,7 +198,7 @@ public class CreateArticleHandlerTests
 
 		var dto = new ArticleDto(
 				ObjectId.Empty,
-				"unpublished-article",
+				"unpublished_article",
 				"Unpublished Article",
 				"Test Introduction",
 				"Test Content",

@@ -20,12 +20,12 @@ public sealed class MongoDbFixture : IAsyncLifetime
 	private IMongoClient? _mongoClient;
 	private IMongoDatabase? _database;
 	private IMongoDbContextFactory? _contextFactory;
+	private const string DatabaseNameValue = "articledb";
 
 	public MongoDbFixture()
 	{
 		_mongoContainer = new MongoDbBuilder()
 			.WithImage("mongo:7.0")  // Use MongoDB 7.0 for better compatibility with current driver
-			.WithPortBinding(27017, true)
 			.Build();
 	}
 
@@ -41,6 +41,11 @@ public sealed class MongoDbFixture : IAsyncLifetime
 		?? throw new InvalidOperationException("Database not initialized. Call InitializeAsync first.");
 
 	/// <summary>
+	///   Gets the database name used for testing
+	/// </summary>
+	public string DatabaseName => DatabaseNameValue;
+
+	/// <summary>
 	///   Gets the context factory for creating MongoDbContext instances
 	/// </summary>
 	public IMongoDbContextFactory ContextFactory => _contextFactory
@@ -53,11 +58,15 @@ public sealed class MongoDbFixture : IAsyncLifetime
 	{
 		await _mongoContainer.StartAsync();
 
+		// Re-set environment variables after container starts in case timing matters
+		Environment.SetEnvironmentVariable("MONGODB_CONNECTION_STRING", ConnectionString, EnvironmentVariableTarget.Process);
+		Environment.SetEnvironmentVariable("MONGODB_DATABASE_NAME", DatabaseNameValue, EnvironmentVariableTarget.Process);
+
 		_mongoClient = new MongoClient(ConnectionString);
-		_database = _mongoClient.GetDatabase("ArticleDb_Test");
+		_database = _mongoClient.GetDatabase(DatabaseNameValue);
 
 		// Create context factory
-		_contextFactory = new TestMongoDbContextFactory(_mongoClient, "ArticleDb_Test");
+		_contextFactory = new TestMongoDbContextFactory(_mongoClient, DatabaseNameValue);
 
 		// Create collections
 		await _database.CreateCollectionAsync("Articles");
