@@ -8,6 +8,7 @@
 // =======================================================
 
 using Microsoft.Extensions.Options;
+
 using Web.Components.Features.Articles.ArticleEdit;
 using Web.Infrastructure;
 
@@ -173,6 +174,45 @@ public class EditArticleHandlerTests
 		result.Value.Should().NotBeNull();
 		result.Value!.IsArchived.Should().BeTrue();
 		result.Value.CanEdit.Should().BeFalse();
+	}
+
+	[Fact]
+	public async Task HandleAsync_UnarchivingArticle_UpdatesIsArchived()
+	{
+		// Arrange
+		await _fixture.ClearCollectionsAsync();
+
+		var article = FakeArticle.GetNewArticle(useSeed: true);
+		article.IsArchived = true;
+
+		var collection = _fixture.Database.GetCollection<Article>("Articles");
+		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
+
+		var updatedDto = new ArticleDto(
+				article.Id,
+				article.Slug,
+				article.Title,
+				article.Introduction,
+				article.Content,
+				article.CoverImageUrl,
+				article.Author,
+				article.Category,
+				article.IsPublished,
+				article.PublishedOn,
+				article.CreatedOn,
+				DateTimeOffset.UtcNow,
+				false, // Unarchive it
+				true
+		);
+
+		// Act
+		var result = await _handler.HandleAsync(updatedDto);
+
+		// Assert
+		result.Should().NotBeNull();
+		result.Success.Should().BeTrue();
+		result.Value.Should().NotBeNull();
+		result.Value!.IsArchived.Should().BeFalse();
 	}
 
 	[Fact]

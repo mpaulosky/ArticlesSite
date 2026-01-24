@@ -61,7 +61,7 @@ public class CategoryDtoValidatorTests
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "CategoryName" && e.ErrorMessage == "Name is required");
+		result.Errors.Should().Contain(e => e.PropertyName == "CategoryName" && e.ErrorMessage == "Category name is required");
 	}
 
 	[Fact]

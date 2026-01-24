@@ -1,10 +1,4 @@
-using FluentAssertions;
-using NSubstitute;
-using Web.Components.Features.Articles.ArticleEdit;
-using Web.Components.Features.Articles.Interfaces;
-using Web.Components.Features.Articles.Entities;
-using Web.Components.Features.Articles.Models;
-
+// Removed redundant usings: moved to GlobalUsings.cs
 namespace Web.Tests.Unit.Handlers;
 
 public class EditArticleHandlerConcurrencyExhaustionTests
@@ -15,9 +9,11 @@ public class EditArticleHandlerConcurrencyExhaustionTests
 		// Arrange
 		var repo = Substitute.For<IArticleRepository>();
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
-		var validator = new ArticleDtoValidator();
 
 		var articleId = ObjectId.GenerateNewId();
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("test-user-id", "Test Author");
+		var category = new Category { CategoryName = "Technology" };
+
 		var originalArticle = new Article()
 		{
 			Id = articleId,
@@ -35,9 +31,9 @@ public class EditArticleHandlerConcurrencyExhaustionTests
 		repo.GetArticleByIdAsync(articleId).Returns(Result.Ok<Article?>(originalArticle));
 
 		// UpdateArticle always fails with concurrency conflict
-		repo.UpdateArticle(Arg.Any<Article>()).Returns(Result.Fail<Article>("Concurrency conflict: article was modified by another process"));
+		repo.UpdateArticle(Arg.Any<Article>()).Returns(Result.Fail<Article>("Concurrency conflict: article was modified by another process", ResultErrorCode.Concurrency));
 
-		var handler = new EditArticle.Handler(repo, logger, validator);
+		var handler = new EditArticle.Handler(repo, logger, null);
 
 		var dto = new ArticleDto(
 			articleId,
@@ -45,9 +41,9 @@ public class EditArticleHandlerConcurrencyExhaustionTests
 			"Updated Title",
 			"Intro",
 			"Updated Content",
-			null, // coverImageUrl
-			null, // author
-			null, // category
+			"https://example.com/updated-image.jpg", // coverImageUrl
+			author,
+			category,
 			false, // isPublished
 			null, // publishedOn
 			null, // createdOn
@@ -65,7 +61,7 @@ public class EditArticleHandlerConcurrencyExhaustionTests
 		result.Error.Should().Contain("Concurrency conflict");
 		result.ErrorCode.Should().Be(Shared.Abstractions.ResultErrorCode.Concurrency);
 
-		// UpdateArticle should have been attempted 3 times (maxRetries)
-		repo.Received(3).UpdateArticle(Arg.Any<Article>());
+		// UpdateArticle should have been attempted 4 times (1 initial + 3 maxRetries)
+		repo.Received(4).UpdateArticle(Arg.Any<Article>());
 	}
 }

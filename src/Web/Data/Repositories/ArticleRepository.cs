@@ -7,7 +7,6 @@
 // Project Name :  Web
 // =======================================================
 
-using System.Linq.Expressions;
 using Web.Components.Features.Articles.Extensions;
 
 namespace Web.Data.Repositories;
@@ -17,9 +16,11 @@ namespace Web.Data.Repositories;
 /// </summary>
 public class ArticleRepository
 (
-		IMongoDbContextFactory contextFactory
+				IMongoDbContextFactory contextFactory,
+				Microsoft.Extensions.Logging.ILogger<ArticleRepository>? logger = null
 ) : IArticleRepository
 {
+	private readonly Microsoft.Extensions.Logging.ILogger<ArticleRepository> _logger = logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger<ArticleRepository>.Instance;
 
 	/// <summary>
 	/// Gets an article by its unique identifier.
@@ -147,35 +148,53 @@ public class ArticleRepository
 			// Capture the expected version from the caller (optimistic concurrency)
 			int expectedVersion = post.Version;
 
-			// Prepare the filter to match both Id and expected version
-			var filter = Builders<Article>.Filter.Where(a => a.Id == post.Id && a.Version == expectedVersion);
+			// Prepare the filter to match Id and either matching version or missing version field (some documents may not include the version field)
+			var idFilter = Builders<Article>.Filter.Eq(a => a.Id, post.Id);
+			var versionFilter = Builders<Article>.Filter.Or(
+				Builders<Article>.Filter.Eq(a => a.Version, expectedVersion),
+				Builders<Article>.Filter.Exists("version", false)
+			);
+			var filter = Builders<Article>.Filter.And(idFilter, versionFilter);
 
-			// Increment the version on the incoming document so the stored document will have the next version
-			post.Version = expectedVersion + 1;
+			// Create a replacement clone and increment its version. Do not mutate caller object.
+			var replacement = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<Article>(post.ToBsonDocument());
+			replacement.Version = expectedVersion + 1;
+			replacement.ModifiedOn = DateTimeOffset.UtcNow;
 
-			var replaceResult = await context.Articles.ReplaceOneAsync(filter, post);
+			_logger.LogInformation("ArticleRepository.UpdateArticle: Attempting FindOneAndReplace for Id={Id} ExpectedVersion={ExpectedVersion} ReplacementVersion={ReplacementVersion}", post.Id, expectedVersion, replacement.Version);
 
-			if (replaceResult.MatchedCount == 0)
+			// Use FindOneAndReplaceAsync to atomically find and replace the document
+			// This is more atomic than ReplaceOne and better handles concurrent updates
+			var options = new FindOneAndReplaceOptions<Article>()
 			{
-				// No document matched the id+version filter -> concurrency conflict
-				var current = await context.Articles.Find(a => a.Id == post.Id).FirstOrDefaultAsync();
-				var serverDto = current is null ? null : current.ToDto(canEdit: false);
-				// Compute changed fields between incoming post and current (simple list)
-				var changed = new List<string>();
-				if (current is not null)
-				{
-					if (current.Title != post.Title) changed.Add("Title");
-					if (current.Introduction != post.Introduction) changed.Add("Introduction");
-					if (current.Content != post.Content) changed.Add("Content");
-					if (current.CoverImageUrl != post.CoverImageUrl) changed.Add("CoverImageUrl");
-					if (current.IsPublished != post.IsPublished) changed.Add("IsPublished");
-					if (current.IsArchived != post.IsArchived) changed.Add("IsArchived");
-				}
-				var details = new Web.Infrastructure.ConcurrencyConflictInfo(current?.Version ?? -1, serverDto, changed);
-				return Result.Fail<Article>("Concurrency conflict: article was modified by another process", Shared.Abstractions.ResultErrorCode.Concurrency, details);
+				ReturnDocument = ReturnDocument.After,
+				IsUpsert = false
+			};
+
+			var result = await context.Articles.FindOneAndReplaceAsync(filter, replacement, options);
+
+			if (result != null)
+			{
+				_logger.LogInformation("ArticleRepository.UpdateArticle: FindOneAndReplace succeeded. NewVersion={NewVersion}", result.Version);
+				return Result.Ok(result);
 			}
 
-			return Result.Ok(post);
+			// No document matched the id+version filter -> concurrency conflict
+			var server = await context.Articles.Find(a => a.Id == post.Id).FirstOrDefaultAsync();
+			var serverDto = server is null ? null : server.ToDto(canEdit: false);
+			var changed2 = new List<string>();
+			if (server is not null)
+			{
+				if (server.Title != post.Title) changed2.Add("Title");
+				if (server.Introduction != post.Introduction) changed2.Add("Introduction");
+				if (server.Content != post.Content) changed2.Add("Content");
+				if (server.CoverImageUrl != post.CoverImageUrl) changed2.Add("CoverImageUrl");
+				if (server.IsPublished != post.IsPublished) changed2.Add("IsPublished");
+				if (server.IsArchived != post.IsArchived) changed2.Add("IsArchived");
+			}
+			var details2 = new Web.Infrastructure.ConcurrencyConflictInfo(server?.Version ?? -1, serverDto, changed2);
+			_logger.LogInformation("ArticleRepository.UpdateArticle: FindOneAndReplace did not find a matching document (conflict)");
+			return Result.Fail<Article>("Concurrency conflict: article was modified by another process", Shared.Abstractions.ResultErrorCode.Concurrency, details2);
 		}
 		catch (Exception ex)
 		{
@@ -195,3 +214,4 @@ public class ArticleRepository
 	}
 
 }
+

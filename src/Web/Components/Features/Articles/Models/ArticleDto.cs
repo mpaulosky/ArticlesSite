@@ -13,6 +13,7 @@ namespace Web.Components.Features.Articles.Models;
 ///   Data Transfer Object (DTO) representing an article.
 ///   All validations are handled by <see cref="ArticleDtoValidator" />.
 /// </summary>
+[Serializable]
 public sealed class ArticleDto
 {
 

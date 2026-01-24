@@ -24,7 +24,7 @@ public class CategoryDtoValidator : AbstractValidator<CategoryDto>
 	{
 
 		RuleFor(x => x.CategoryName)
-				.NotEmpty().WithMessage("Name is required")
+				.NotEmpty().WithMessage("Category name is required")
 				.MaximumLength(80).WithMessage("Category name cannot exceed 80 characters");
 
 	}

@@ -7,13 +7,6 @@
 // Project Name :  Architecture.Tests
 // =======================================================
 
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-
-using FluentAssertions;
-
-using Xunit;
-
 namespace Architecture.Tests;
 
 [ExcludeFromCodeCoverage]

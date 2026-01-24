@@ -1,3 +1,4 @@
+// Namespace + usings moved to GlobalUsings.cs
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleEdit;
 
 [ExcludeFromCodeCoverage]
@@ -80,7 +81,7 @@ public class EditArticleHandlerTests
 
 		var articleDto = new ArticleDto(
 				objectId,
-				"updated-article",
+				"updated_article",
 				"Updated Article",
 				"Updated Intro",
 				"Updated Content",
@@ -126,7 +127,7 @@ public class EditArticleHandlerTests
 
 		var articleDto = new ArticleDto(
 				objectId,
-				"test-article",
+				"test_article",
 				"Test Article",
 				"Test Intro",
 				"Test Content",
@@ -153,17 +154,19 @@ public class EditArticleHandlerTests
 	public async Task HandleAsync_WhenUpdateFails_ShouldReturnFailure()
 	{
 		var objectId = ObjectId.GenerateNewId();
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("user1", "Test Author");
+		var category = new Category { CategoryName = "Tech" };
 		var existingArticle = new Article { Id = objectId, Title = "Old Title" };
 
 		var articleDto = new ArticleDto(
 				objectId,
-				"test-article",
+				"test_article",
 				"Test Article",
 				"Test Intro",
 				"Test Content",
-				"",
-				null,
-				null,
+				"https://example.com/image.jpg",
+				author,
+				category,
 				false,
 				null,
 				DateTimeOffset.UtcNow,
@@ -191,7 +194,7 @@ public class EditArticleHandlerTests
 
 		var articleDto = new ArticleDto(
 				objectId,
-				"updated-slug",
+				"updated_slug",
 				"Updated Title",
 				"Updated Intro",
 				"Updated Content",

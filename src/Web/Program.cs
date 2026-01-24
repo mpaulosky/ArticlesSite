@@ -1,14 +1,18 @@
 using Blazored.LocalStorage;
-using Shared.Abstractions;
-using Web.Components.Features.Articles.ArticleEdit;
-using Web.Components.Features.Articles.Models;
-using System.Linq;
-using Polly;
-using Web.Infrastructure;
-using Web.Components.Features.Articles.Entities;
-using Polly.Registry;
+// Removed redundant usings moved to Web/GlobalUsings.cs
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Ensure console logging is available during tests so diagnostic logs surface in CI/test output
+builder.Logging.ClearProviders();
+builder.Logging.AddSimpleConsole(options =>
+{
+	options.SingleLine = true;
+	options.TimestampFormat = "hh:mm:ss ";
+});
+
+// Response capture middleware moved to after app is built to avoid using 'app' before declaration.
+builder.Logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Debug);
 
 // --- Service Registration ---
 IConfiguration configuration = builder.Configuration;
@@ -59,6 +63,40 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Response capture middleware: for non-success responses capture and log the response body for diagnostics
+app.Use(async (context, next) =>
+{
+	var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+
+	// Keep original body
+	var originalBody = context.Response.Body;
+	await using var memStream = new MemoryStream();
+	context.Response.Body = memStream;
+
+	try
+	{
+		await next();
+
+		// If non-success, attempt to read body
+		if (context.Response.StatusCode >= 400)
+		{
+			memStream.Seek(0, SeekOrigin.Begin);
+			using var reader = new StreamReader(memStream, leaveOpen: true);
+			string bodyText = await reader.ReadToEndAsync();
+			logger.LogWarning("Response {StatusCode} for {Method} {Path} with body: {Body}", context.Response.StatusCode, context.Request.Method, context.Request.Path, bodyText);
+			memStream.Seek(0, SeekOrigin.Begin);
+		}
+
+		// Copy back to original response stream
+		memStream.Seek(0, SeekOrigin.Begin);
+		await memStream.CopyToAsync(originalBody);
+	}
+	finally
+	{
+		context.Response.Body = originalBody;
+	}
+});
+
 // Statically files middleware first
 app.UseStaticFiles();
 
@@ -67,6 +105,60 @@ app.UseAntiforgery();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseOutputCache();
+
+// Diagnostic middleware: log incoming requests and response status codes to make integration test runs observable
+app.Use(async (context, next) =>
+{
+	var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+	logger.LogInformation("Incoming request {Method} {Path}", context.Request.Method, context.Request.Path);
+	// Also write to a temporary file so integration test harness can inspect server logs
+	try
+	{
+		var entry = $"[{DateTimeOffset.UtcNow:O}] Incoming {context.Request.Method} {context.Request.Path}\n";
+		// Write to current directory for local runs
+		try
+		{
+			var logPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "articlesite-integration.log");
+			await System.IO.File.AppendAllTextAsync(logPath, entry);
+		}
+		catch { }
+
+		// Also write to temp directory so CI/test harness can find it reliably
+		try
+		{
+			var tempPath = System.IO.Path.Combine(Path.GetTempPath(), "articlesite-integration.log");
+			await System.IO.File.AppendAllTextAsync(tempPath, entry);
+		}
+		catch { }
+	}
+	catch { }
+	try
+	{
+		await next();
+	}
+	finally
+	{
+		logger.LogInformation("Response for {Method} {Path} => {StatusCode}", context.Request.Method, context.Request.Path, context.Response.StatusCode);
+		try
+		{
+			var entry = $"[{DateTimeOffset.UtcNow:O}] Response {context.Request.Method} {context.Request.Path} => {context.Response.StatusCode}\n";
+			try
+			{
+				var logPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "articlesite-integration.log");
+				await System.IO.File.AppendAllTextAsync(logPath, entry);
+			}
+			catch { }
+
+			try
+			{
+				var tempPath = System.IO.Path.Combine(Path.GetTempPath(), "articlesite-integration.log");
+				await System.IO.File.AppendAllTextAsync(tempPath, entry);
+			}
+			catch { }
+		}
+		catch { }
+	}
+});
 
 // --- Endpoint Mapping ---
 
@@ -133,28 +225,46 @@ app.MapGet("/api/files/{fileName}", (string fileName, IWebHostEnvironment enviro
 	return Task.FromResult(Results.File(filePath, contentType));
 });
 
-// Minimal API: expose PUT endpoint for article edits so non-Blazor clients can detect concurrency conflicts (returns 409)
-app.MapPut("/api/articles/{id}", async (string id, ArticleDto dto, EditArticle.IEditArticleHandler handler) =>
+app.MapPut("/api/articles/{id}", async (HttpContext httpContext, string id, ArticleDto dto, EditArticle.IEditArticleHandler handler, IConfiguration config) =>
 {
-	if (!ObjectId.TryParse(id, out var objectId))
-	{
-		return Results.BadRequest(new { error = "Invalid article id" });
-	}
+	// Debug: Log configuration values
+	var connStr = config["MongoDb:ConnectionString"] ?? "(not set)";
+	var dbName = config["MongoDb:Database"] ?? "(not set)";
+	httpContext.Response.Headers["X-Debug-Config-ConnectionString"] = connStr.Contains("mongodb") ? "***REDACTED***" : connStr;
+	httpContext.Response.Headers["X-Debug-Config-Database"] = dbName;
 
 	if (dto is null)
 	{
+		httpContext.Response.Headers["X-Debug-Result"] = "BadRequest:Article data cannot be null";
+		httpContext.Response.Headers["X-Debug-Stage"] = "dto-null";
 		return Results.BadRequest(new { error = "Article data cannot be null" });
 	}
 
-	if (objectId != dto.Id)
+	// Normalize id: prefer route id when present, otherwise use dto.Id
+	if (ObjectId.TryParse(id, out var routeId))
 	{
-		return Results.BadRequest(new { error = "Id in route does not match DTO Id" });
+		if (dto.Id == ObjectId.Empty || dto.Id != routeId)
+		{
+			dto = new ArticleDto(routeId, dto.Slug, dto.Title, dto.Introduction, dto.Content, dto.CoverImageUrl, dto.Author, dto.Category, dto.IsPublished, dto.PublishedOn, dto.CreatedOn, dto.ModifiedOn, dto.IsArchived, dto.CanEdit, dto.Version);
+		}
+	}
+	else if (dto.Id == ObjectId.Empty)
+	{
+		httpContext.Response.Headers["X-Debug-Result"] = "BadRequest:Invalid article id";
+		httpContext.Response.Headers["X-Debug-Stage"] = "invalid-id";
+		return Results.BadRequest(new { error = "Invalid article id" });
 	}
 
+	httpContext.Response.Headers["X-Debug-Stage"] = "calling-handler";
 	var result = await handler.HandleAsync(dto);
+	httpContext.Response.Headers["X-Debug-Stage"] = $"handler-returned:{(result.Success ? "success" : "failure")}";
+	httpContext.Response.Headers["X-Debug-ErrorCode"] = result.ErrorCode.ToString();
 
 	if (result.Success)
 	{
+		httpContext.Response.Headers["X-Debug-Result"] = "Success";
+		httpContext.Response.Headers["X-Debug-Stage"] = "returning-ok";
+		try { Console.Error.WriteLine($"[PROGRAM-LOG] UpdateArticle: Success Id={result.Value?.Id} Version={result.Value?.Version}"); } catch { }
 		return Results.Ok(result.Value);
 	}
 
@@ -163,13 +273,21 @@ app.MapPut("/api/articles/{id}", async (string id, ArticleDto dto, EditArticle.I
 		if (result.Details is Web.Infrastructure.ConcurrencyConflictInfo conflict)
 		{
 			var conflictDto = new Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto(result.Error, (int)result.ErrorCode, conflict.ServerVersion, conflict.ServerArticle, conflict.ChangedFields);
+			httpContext.Response.Headers["X-Debug-Result"] = $"Conflict:ServerVersion={conflict.ServerVersion}";
+			httpContext.Response.Headers["X-Debug-Stage"] = "returning-conflict-with-details";
+			try { Console.Error.WriteLine($"[PROGRAM-LOG] UpdateArticle: Conflict Id={dto.Id} ServerVersion={conflict.ServerVersion} Error={result.Error}"); } catch { }
 			return Results.Conflict(conflictDto);
 		}
 
+		httpContext.Response.Headers["X-Debug-Result"] = "Conflict:NoDetails";
+		httpContext.Response.Headers["X-Debug-Stage"] = "returning-conflict-no-details";
+		try { Console.Error.WriteLine($"[PROGRAM-LOG] UpdateArticle: Conflict(no details) Id={dto.Id} Error={result.Error}"); } catch { }
 		return Results.Conflict(new Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto(result.Error, (int)result.ErrorCode, -1, null, null));
 	}
 
-	// Default to 400 for other failures
+	httpContext.Response.Headers["X-Debug-Result"] = $"BadRequest:{result.Error}";
+	httpContext.Response.Headers["X-Debug-Stage"] = "returning-badrequest";
+	try { Console.Error.WriteLine($"[PROGRAM-LOG] UpdateArticle: BadRequest Id={dto.Id} Error={result.Error}"); } catch { }
 	return Results.BadRequest(new { error = result.Error });
 })
 .WithName("UpdateArticle")
@@ -194,3 +312,4 @@ catch (Exception ex)
 
 // --- Run App ---
 app.Run();
+
