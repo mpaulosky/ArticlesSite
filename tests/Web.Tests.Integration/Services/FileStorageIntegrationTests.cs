@@ -1,16 +1,21 @@
-using System.IO;
-using System.Threading.Tasks;
-
-using FluentAssertions;
+// =======================================================
+// Copyright (c) 2025. All rights reserved.
+// File Name :     FileStorageIntegrationTests.cs
+// Company :       mpaulosky
+// Author :        Matthew Paulosky
+// Solution Name : ArticleSite
+// Project Name :  Web.Tests.Integration
+// =======================================================
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
 
 using Web.Services;
 
 namespace Web.Tests.Integration.Services;
 
+/// <summary>
+///   Integration tests for FileStorage service with dependency injection
+/// </summary>
 [ExcludeFromCodeCoverage]
 public class FileStorageIntegrationTests : IDisposable
 {
