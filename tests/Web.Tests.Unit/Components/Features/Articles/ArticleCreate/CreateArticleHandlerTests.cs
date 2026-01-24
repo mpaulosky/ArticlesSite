@@ -41,7 +41,7 @@ public class CreateArticleHandlerTests
 
 		var articleDto = new ArticleDto(
 				ObjectId.GenerateNewId(),
-				"test-article",
+				"test_article",
 				"Test Article",
 				"Test Intro",
 				"Test Content",
@@ -108,7 +108,7 @@ public class CreateArticleHandlerTests
 		// Arrange
 		var articleDto = new ArticleDto(
 				ObjectId.GenerateNewId(),
-				"test-article",
+				"test_article",
 				"Test Article",
 				"Test Intro",
 				"Test Content",
@@ -147,7 +147,7 @@ public class CreateArticleHandlerTests
 
 		var articleDto = new ArticleDto(
 				ObjectId.GenerateNewId(),
-				"test-slug",
+				"test_slug",
 				"Test Title",
 				"Test Intro",
 				"Test Content",

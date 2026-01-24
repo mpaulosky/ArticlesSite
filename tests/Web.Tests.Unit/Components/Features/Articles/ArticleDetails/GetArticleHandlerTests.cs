@@ -7,8 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Web.Components.Features.Articles.ArticleDetails;
-
 namespace Web.Tests.Unit.Components.Features.Articles.ArticleDetails;
 
 /// <summary>
@@ -40,7 +38,7 @@ public class GetArticleHandlerTests
 		var category = new Category { CategoryName = "Tech" };
 
 		var article = new Article("Test Article", "Test Intro", "Test Content", null, author, category, true, null, false,
-				"test-article")
+				"test_article")
 		{ Id = objectId };
 
 		_mockRepository.GetArticleByIdAsync(objectId).Returns(Task.FromResult(Result.Ok<Article?>(article)));

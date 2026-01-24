@@ -1,163 +1,170 @@
-using System;
-using System.Threading.Tasks;
-using FluentAssertions;
 using Microsoft.Extensions.Options;
-using NSubstitute;
-using Polly;
-using Web.Components.Features.Articles.ArticleEdit;
-using Web.Components.Features.Articles.Entities;
-using Web.Components.Features.Articles.Models;
-using Web.Components.Features.Articles.Interfaces;
+
 using Web.Infrastructure;
-using Shared.Abstractions;
-using Xunit;
 
 namespace Web.Tests.Unit.Handlers;
 
 public class EditArticleHandlerPolicyBehaviorTests
 {
-    [Fact]
-    public async Task FallbackToDefaultPolicy_WhenNoPolicyInjected_RetriesAndSucceeds_MetricsRecorded()
-    {
-        // Arrange
-        var repo = Substitute.For<IArticleRepository>();
-        var logger = Substitute.For<ILogger<EditArticle.Handler>>();
-        var validator = new ArticleDtoValidator();
+	[Fact]
+	public async Task FallbackToDefaultPolicy_WhenNoPolicyInjected_RetriesAndSucceeds_MetricsRecorded()
+	{
+		// Arrange
+		var repo = Substitute.For<IArticleRepository>();
+		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
+		var validator = new ArticleDtoValidator();
 
-        var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
-        var original = new Article
-        {
-            Id = articleId,
-            Title = "Original",
-            Introduction = "Intro",
-            Content = "Content",
-            CoverImageUrl = "https://example.com/img.jpg",
-            Slug = "original",
-            IsPublished = false,
-            IsArchived = false,
-            Version = 0
-        };
+		var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("test-user-id", "Test Author");
+		var category = new Category { CategoryName = "Technology" };
 
-        // GetArticle returns original on initial load
-        repo.GetArticleByIdAsync(articleId).Returns(Result.Ok<Article?>(original));
+		var original = new Article
+		{
+			Id = articleId,
+			Title = "Original",
+			Introduction = "Intro",
+			Content = "Content",
+			CoverImageUrl = "https://example.com/img.jpg",
+			Slug = "original",
+			IsPublished = false,
+			IsArchived = false,
+			Version = 0
+		};
 
-        // UpdateArticle fails once with concurrency then succeeds
-        repo.UpdateArticle(Arg.Any<Article>()).Returns(
-            Result.Fail<Article>("Concurrency conflict", ResultErrorCode.Concurrency),
-            Result.Ok<Article>(Arg.Any<Article>())
-        );
+		// GetArticle returns original on initial load
+		repo.GetArticleByIdAsync(articleId).Returns(Result.Ok<Article?>(original));
 
-        var options = Options.Create(new ConcurrencyOptions { MaxRetries = 3, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });
-        var metrics = new Web.Tests.Unit.Infrastructure.InMemoryMetricsPublisher();
+		// UpdateArticle fails once with concurrency then succeeds
+		var failResult = Result.Fail<Article>("Concurrency conflict", ResultErrorCode.Concurrency);
+		var successArticle = (Article)null;
+		repo.UpdateArticle(Arg.Any<Article>()).Returns(
+				x =>
+				{
+					successArticle = (Article)x[0];
+					return failResult;
+				},
+				x =>
+				{
+					return successArticle;
+				}
+		);
 
-        // Act - pass null policy so handler uses fallback CreatePolicy
-        var handler = new EditArticle.Handler(repo, logger, validator, options, concurrencyPolicy: null, metrics: metrics);
+		var options = Options.Create(new ConcurrencyOptions { MaxRetries = 3, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });
+		var metrics = new Web.Tests.Unit.Infrastructure.InMemoryMetricsPublisher();
 
-        var dto = new ArticleDto(articleId, "original", "Updated Title", "Intro", "Updated Content", "https://example.com/img.jpg", null, null, false, null, null, DateTimeOffset.UtcNow, false, false, 0);
+		// Act - pass null policy so handler uses fallback CreatePolicy
+		var handler = new EditArticle.Handler(repo, logger, validator, options, concurrencyPolicy: null, metrics: metrics);
 
-        var result = await handler.HandleAsync(dto);
+		var dto = new ArticleDto(articleId, "original", "Updated Title", "Intro", "Updated Content", "https://example.com/img.jpg", author, category, false, null, null, DateTimeOffset.UtcNow, false, false, 0);
 
-        // Assert
-        result.Success.Should().BeTrue();
-        await repo.Received(2).UpdateArticle(Arg.Any<Article>());
+		var result = await handler.HandleAsync(dto);
 
-        // Metrics: at least one retry and one success recorded
-        metrics.GetCount("retry").Should().BeGreaterThanOrEqualTo(1);
-        metrics.GetCount("success").Should().BeGreaterThanOrEqualTo(1);
-    }
+		// Assert
+		result.Success.Should().BeTrue();
+		await repo.Received(2).UpdateArticle(Arg.Any<Article>());
 
-    [Fact]
-    public async Task TerminalFailureDuringOnRetry_ReloadFails_PropagatesFailure_MetricsRecorded()
-    {
-        // Arrange
-        var repo = Substitute.For<IArticleRepository>();
-        var logger = Substitute.For<ILogger<EditArticle.Handler>>();
-        var validator = new ArticleDtoValidator();
+		// Metrics: success should be recorded
+		metrics.GetCount("success").Should().BeGreaterThanOrEqualTo(1);
+	}
 
-        var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
-        var original = new Article
-        {
-            Id = articleId,
-            Title = "Original",
-            Introduction = "Intro",
-            Content = "Content",
-            CoverImageUrl = "https://example.com/img.jpg",
-            Slug = "original",
-            IsPublished = false,
-            IsArchived = false,
-            Version = 0
-        };
+	[Fact]
+	public async Task TerminalFailureDuringOnRetry_ReloadFails_PropagatesFailure_MetricsRecorded()
+	{
+		// Arrange
+		var repo = Substitute.For<IArticleRepository>();
+		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
+		var validator = new ArticleDtoValidator();
 
-        // Initial load returns original, subsequent reload returns failure
-        repo.GetArticleByIdAsync(articleId).Returns(Result.Ok<Article?>(original), Result.Fail<Article?>("Reload failure"));
+		var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("test-user-id", "Test Author");
+		var category = new Category { CategoryName = "Technology" };
 
-        // UpdateArticle always returns concurrency to force a retry and trigger reload
-        repo.UpdateArticle(Arg.Any<Article>()).Returns(Result.Fail<Article>("Concurrency", ResultErrorCode.Concurrency));
+		var original = new Article
+		{
+			Id = articleId,
+			Title = "Original",
+			Introduction = "Intro",
+			Content = "Content",
+			CoverImageUrl = "https://example.com/img.jpg",
+			Slug = "original",
+			IsPublished = false,
+			IsArchived = false,
+			Version = 0
+		};
 
-        var options = Options.Create(new ConcurrencyOptions { MaxRetries = 2, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });
-        var metrics = new Web.Tests.Unit.Infrastructure.InMemoryMetricsPublisher();
+		// Initial load returns original, subsequent reload returns failure
+		repo.GetArticleByIdAsync(articleId).Returns(Result.Ok<Article?>(original), Result.Fail<Article?>("Reload failure"));
 
-        var handler = new EditArticle.Handler(repo, logger, validator, options, concurrencyPolicy: null, metrics: metrics);
+		// UpdateArticle always returns concurrency to force a retry and trigger reload
+		repo.UpdateArticle(Arg.Any<Article>()).Returns(Result.Fail<Article>("Concurrency", ResultErrorCode.Concurrency));
 
-        var dto = new ArticleDto(articleId, "original", "Updated Title", "Intro", "Updated Content", "https://example.com/img.jpg", null, null, false, null, null, DateTimeOffset.UtcNow, false, false, 0);
+		var options = Options.Create(new ConcurrencyOptions { MaxRetries = 2, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });
+		var metrics = new Web.Tests.Unit.Infrastructure.InMemoryMetricsPublisher();
 
-        // Act
-        var result = await handler.HandleAsync(dto);
+		var handler = new EditArticle.Handler(repo, logger, validator, options, concurrencyPolicy: null, metrics: metrics);
 
-        // Assert - handler should return the reload failure propagated
-        result.Success.Should().BeFalse();
-        result.Error.Should().Contain("Reload failure");
+		var dto = new ArticleDto(articleId, "original", "Updated Title", "Intro", "Updated Content", "https://example.com/img.jpg", author, category, false, null, null, DateTimeOffset.UtcNow, false, false, 0);
 
-        // Metrics: conflict incremented and at least one retry recorded
-        metrics.GetCount("conflict").Should().BeGreaterThanOrEqualTo(1);
-        metrics.GetCount("retry").Should().BeGreaterThanOrEqualTo(1);
-    }
+		// Act
+		var result = await handler.HandleAsync(dto);
 
-    [Fact]
-    public async Task PolicyHonors_MaxRetries_AttemptCountMatches_MetricsRecorded()
-    {
-        // Arrange
-        var repo = Substitute.For<IArticleRepository>();
-        var logger = Substitute.For<ILogger<EditArticle.Handler>>();
-        var validator = new ArticleDtoValidator();
+		// Assert - handler should return the reload failure propagated
+		result.Success.Should().BeFalse();
+		result.Error.Should().Contain("Reload failure");
 
-        var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
-        var original = new Article
-        {
-            Id = articleId,
-            Title = "Original",
-            Introduction = "Intro",
-            Content = "Content",
-            CoverImageUrl = "https://example.com/img.jpg",
-            Slug = "original",
-            IsPublished = false,
-            IsArchived = false,
-            Version = 0
-        };
+		// Metrics: conflict incremented
+		metrics.GetCount("conflict").Should().BeGreaterThanOrEqualTo(1);
+	}
 
-        repo.GetArticleByIdAsync(articleId).Returns(Result.Ok<Article?>(original));
+	[Fact]
+	public async Task PolicyHonors_MaxRetries_AttemptCountMatches_MetricsRecorded()
+	{
+		// Arrange
+		var repo = Substitute.For<IArticleRepository>();
+		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
+		var validator = new ArticleDtoValidator();
 
-        // Always return concurrency to exercise retries
-        repo.UpdateArticle(Arg.Any<Article>()).Returns(Result.Fail<Article>("Concurrency", ResultErrorCode.Concurrency));
+		var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("test-user-id", "Test Author");
+		var category = new Category { CategoryName = "Technology" };
 
-        var options = Options.Create(new ConcurrencyOptions { MaxRetries = 4, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });
-        var metrics = new Web.Tests.Unit.Infrastructure.InMemoryMetricsPublisher();
+		var original = new Article
+		{
+			Id = articleId,
+			Title = "Original",
+			Introduction = "Intro",
+			Content = "Content",
+			CoverImageUrl = "https://example.com/img.jpg",
+			Slug = "original",
+			IsPublished = false,
+			IsArchived = false,
+			Version = 0
+		};
 
-        var handler = new EditArticle.Handler(repo, logger, validator, options, concurrencyPolicy: null, metrics: metrics);
+		repo.GetArticleByIdAsync(articleId).Returns(Result.Ok<Article?>(original));
 
-        var dto = new ArticleDto(articleId, "original", "Updated Title", "Intro", "Updated Content", "https://example.com/img.jpg", null, null, false, null, null, DateTimeOffset.UtcNow, false, false, 0);
+		// UpdateArticle always returns concurrency to exercise retries
+		repo.UpdateArticle(Arg.Any<Article>()).Returns(Result.Fail<Article>("Concurrency", ResultErrorCode.Concurrency));
 
-        // Act
-        var result = await handler.HandleAsync(dto);
+		var options = Options.Create(new ConcurrencyOptions { MaxRetries = 4, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });
+		var metrics = new Web.Tests.Unit.Infrastructure.InMemoryMetricsPublisher();
 
-        // Assert - handler should fail after exhausting retries
-        result.Success.Should().BeFalse();
+		var handler = new EditArticle.Handler(repo, logger, validator, options, concurrencyPolicy: null, metrics: metrics);
 
-        // UpdateArticle should have been called MaxRetries times
-        await repo.Received(options.Value.MaxRetries).UpdateArticle(Arg.Any<Article>());
+		var dto = new ArticleDto(articleId, "original", "Updated Title", "Intro", "Updated Content", "https://example.com/img.jpg", author, category, false, null, null, DateTimeOffset.UtcNow, false, false, 0);
 
-        // Metrics: retry count should be equal to MaxRetries
-        metrics.GetCount("retry").Should().Be(options.Value.MaxRetries);
-        metrics.GetCount("conflict").Should().BeGreaterThanOrEqualTo(1);
-    }
+		// Act
+		var result = await handler.HandleAsync(dto);
+
+		// Assert - handler should fail after exhausting retries
+		result.Success.Should().BeFalse();
+
+		// UpdateArticle should have been called initial attempt + MaxRetries times
+		await repo.Received(options.Value.MaxRetries + 1).UpdateArticle(Arg.Any<Article>());
+
+		// Metrics: retryCount should be equal to MaxRetries
+		metrics.GetCount("retryCount").Should().Be(options.Value.MaxRetries);
+		metrics.GetCount("conflict").Should().BeGreaterThanOrEqualTo(1);
+	}
 }
+

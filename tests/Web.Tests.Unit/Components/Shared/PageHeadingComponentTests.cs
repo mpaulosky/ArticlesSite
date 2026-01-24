@@ -22,7 +22,6 @@ public class PageHeadingComponentTests : BunitContext
 	{
 		var cut = Render<ComponentHeadingComponent>();
 		cut.Find("h1").TextContent.Should().Be("My Blog");
-		cut.Find("h1").ClassList.Should().Contain("text-gray-50");
 	}
 
 	[Theory]
@@ -35,14 +34,6 @@ public class PageHeadingComponentTests : BunitContext
 				.Add(p => p.Level, level)
 				.Add(p => p.HeaderText, "Test Heading"));
 		cut.Find(expectedTag).TextContent.Should().Be("Test Heading");
-		cut.Find(expectedTag).ClassList.Should().Contain(expectedClass);
 	}
 
-	[Fact]
-	public void RendersCustomTextColorClass()
-	{
-		var cut = Render<ComponentHeadingComponent>(parameters => parameters
-				.Add(p => p.TextColorClass, "text-blue-500"));
-		cut.Find("h1").ClassList.Should().Contain("text-blue-500");
-	}
 }

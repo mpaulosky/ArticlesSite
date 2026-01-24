@@ -7,8 +7,6 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Web.Components.Features.Articles.Extensions;
-
 namespace Web.Tests.Unit.Components.Features.Articles.Extensions;
 
 /// <summary>
@@ -38,7 +36,7 @@ public class ArticleMappingExtensionsTests
 			true,
 			publishedOn,
 			false,
-			"test-article"
+			"test_article"
 		)
 		{
 			Id = ObjectId.GenerateNewId(),
@@ -52,7 +50,7 @@ public class ArticleMappingExtensionsTests
 		// Assert
 		dto.Should().NotBeNull();
 		dto.Id.Should().Be(article.Id);
-		dto.Slug.Should().Be("test-article");
+		dto.Slug.Should().Be("test_article");
 		dto.Title.Should().Be("Test Title");
 		dto.Introduction.Should().Be("Test Introduction");
 		dto.Content.Should().Be("Test Content");

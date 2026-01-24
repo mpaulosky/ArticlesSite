@@ -1,11 +1,4 @@
-using FluentAssertions;
-using NSubstitute;
-using Web.Components.Features.Articles.ArticleEdit;
-using Web.Components.Features.Articles.Interfaces;
-using Web.Components.Features.Articles.Entities;
-using Web.Components.Features.Articles.Models;
-using Shared.Abstractions;
-
+// Removed redundant usings: moved to GlobalUsings.cs
 namespace Web.Tests.Unit.Handlers;
 
 public class EditArticleHandlerConcurrencyRetryTests
@@ -16,9 +9,11 @@ public class EditArticleHandlerConcurrencyRetryTests
 		// Arrange
 		var repo = Substitute.For<IArticleRepository>();
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
-		var validator = new ArticleDtoValidator();
 
 		var articleId = ObjectId.GenerateNewId();
+		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("test-user-id", "Test Author");
+		var category = new Category { CategoryName = "Technology" };
+
 		var originalArticle = new Article()
 		{
 			Id = articleId,
@@ -49,12 +44,13 @@ public class EditArticleHandlerConcurrencyRetryTests
 		repo.GetArticleByIdAsync(articleId).Returns(Result.Ok<Article?>(originalArticle), Result.Ok<Article?>(latestArticle));
 
 		// UpdateArticle should fail first with concurrency conflict (typed), then succeed
+		var successResult = Result.Ok<Article>(latestArticle);
 		repo.UpdateArticle(Arg.Any<Article>()).Returns(
 			Result.Fail<Article>("Concurrency conflict: article was modified by another process", ResultErrorCode.Concurrency),
-			Result.Ok<Article>(Arg.Any<Article>())
+			successResult
 		);
 
-		var handler = new EditArticle.Handler(repo, logger, validator);
+		var handler = new EditArticle.Handler(repo, logger, null);
 
 		var dto = new ArticleDto(
 			articleId,
@@ -62,9 +58,9 @@ public class EditArticleHandlerConcurrencyRetryTests
 			"Updated Title",
 			"Intro",
 			"Updated Content",
-			null, // coverImageUrl
-			null, // author
-			null, // category
+			"https://example.com/updated-image.jpg", // coverImageUrl
+			author,
+			category,
 			false, // isPublished
 			null, // publishedOn
 			null, // createdOn

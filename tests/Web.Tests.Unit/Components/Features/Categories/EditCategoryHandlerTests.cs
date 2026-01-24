@@ -16,8 +16,9 @@ public class EditCategoryHandlerTests
 	public async Task HandleAsync_Should_Edit_Category()
 	{
 		var repoMock = new Mock<ICategoryRepository>();
-		var category = new Category { Id = ObjectId.GenerateNewId(), CategoryName = "Test", IsArchived = false };
+		var category = new Category { Id = ObjectId.GenerateNewId(), CategoryName = "Test", IsArchived = false, Slug = "test" };
 		repoMock.Setup(r => r.GetCategoryByIdAsync(category.Id)).ReturnsAsync(Result.Ok(category));
+		repoMock.Setup(r => r.UpdateCategory(It.IsAny<Category>())).ReturnsAsync(Result.Ok(category));
 		var loggerMock = new Mock<ILogger<EditCategory.Handler>>();
 
 		var handler = new EditCategory.Handler(repoMock.Object, loggerMock.Object, _categoryDtoValidator);
