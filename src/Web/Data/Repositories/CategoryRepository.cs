@@ -7,8 +7,6 @@
 // Project Name :  Web
 // =======================================================
 
-using System.Linq.Expressions;
-
 namespace Web.Data.Repositories;
 
 /// <summary>
@@ -141,9 +139,43 @@ public class CategoryRepository
 		try
 		{
 			IMongoDbContext context = contextFactory.CreateDbContext();
-			await context.Categories.ReplaceOneAsync(c => c.Id == category.Id, category);
 
-			return Result.Ok(category);
+			// Optimistic concurrency: filter by id and expected version
+			int expectedVersion = category.Version;
+			var idFilter = Builders<Category>.Filter.Eq(c => c.Id, category.Id);
+			var versionFilter = Builders<Category>.Filter.Or(
+				Builders<Category>.Filter.Eq(c => c.Version, expectedVersion),
+				Builders<Category>.Filter.Exists("version", false)
+			);
+			var filter = Builders<Category>.Filter.And(idFilter, versionFilter);
+
+			// Clone incoming entity so we can set ModifiedOn and increment version without mutating caller
+			var replacement = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<Category>(category.ToBsonDocument());
+			replacement.ModifiedOn = DateTimeOffset.UtcNow;
+			replacement.Version = expectedVersion + 1;
+
+			var replaceResult = await context.Categories.ReplaceOneAsync(filter, replacement);
+
+			if (replaceResult.IsAcknowledged && replaceResult.ModifiedCount > 0)
+			{
+				var current = await context.Categories.Find(c => c.Id == category.Id).FirstOrDefaultAsync();
+				return current is not null ? Result.Ok(current) : Result.Fail<Category>("Error updating category: replaced but could not read back document");
+			}
+
+			// Check if the document exists at all
+			var server = await context.Categories.Find(c => c.Id == category.Id).FirstOrDefaultAsync();
+			if (server is null)
+			{
+				// Document doesn't exist - not a concurrency conflict, just not found
+				return Result.Ok(category);
+			}
+
+			// Concurrency conflict: return structured details for callers
+			var changed = new List<string>();
+			if (server.CategoryName != category.CategoryName) changed.Add("CategoryName");
+			if (server.IsArchived != category.IsArchived) changed.Add("IsArchived");
+			var details = new Web.Infrastructure.ConcurrencyConflictInfo(server.Version, null, changed);
+			return Result.Fail<Category>("Concurrency conflict: category was modified by another process", Shared.Abstractions.ResultErrorCode.Concurrency, details);
 		}
 		catch (Exception ex)
 		{
@@ -158,7 +190,7 @@ public class CategoryRepository
 	public async Task ArchiveCategory(string slug)
 	{
 		IMongoDbContext context = contextFactory.CreateDbContext();
-		UpdateDefinition<Category>? update = Builders<Category>.Update.Set(c => c.IsArchived, true);
+		UpdateDefinition<Category>? update = Builders<Category>.Update.Set(c => c.IsArchived, true).Set(c => c.ModifiedOn, DateTimeOffset.UtcNow);
 		await context.Categories.UpdateOneAsync(c => c.Slug == slug, update);
 	}
 

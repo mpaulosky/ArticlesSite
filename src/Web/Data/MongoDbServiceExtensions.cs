@@ -7,14 +7,7 @@
 // Project Name :  Web
 // =======================================================
 
-using Web.Components.Features.Articles.ArticleCreate;
-using Web.Components.Features.Articles.ArticleDetails;
-using Web.Components.Features.Articles.ArticleEdit;
-using Web.Components.Features.Articles.ArticlesList;
-using Web.Components.Features.Categories.CategoriesList;
-using Web.Components.Features.Categories.CategoryCreate;
-using Web.Components.Features.Categories.CategoryDetails;
-using Web.Components.Features.Categories.CategoryEdit;
+// Removed redundant usings: these namespaces are included in Web/GlobalUsings.cs
 
 namespace Web.Data;
 
@@ -37,22 +30,32 @@ public static class MongoDbServiceExtensions
 		IServiceCollection services = builder.Services;
 		var configuration = builder.Configuration;
 
-		// Get MongoDB connection string from an environment variable or configuration
-		string connectionString = configuration["ConnectionStrings:articlesdb"] ??
-															Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING") ??
-															throw new InvalidOperationException("MongoDB connection string not found.");
+		// Get MongoDB connection string from configuration or environment variables.
+		// Support both "MongoDb:ConnectionString" and legacy "ConnectionStrings:articlesdb" keys so tests and environments work.
+		string? connectionString = configuration["MongoDb:ConnectionString"] ?? configuration["ConnectionStrings:articlesdb"];
+		connectionString ??= Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING");
+		if (string.IsNullOrWhiteSpace(connectionString))
+		{
+			throw new InvalidOperationException("MongoDB connection string not found.");
+		}
 
-		string databaseName = configuration["MongoDb:DatabaseName"] ??
+		// Support both "MongoDb:Database" and "MongoDb:DatabaseName" keys for compatibility with tests and config sources
+		string databaseName = configuration["MongoDb:Database"] ?? configuration["MongoDb:DatabaseName"] ??
 													Environment.GetEnvironmentVariable("MONGODB_DATABASE_NAME") ?? "articlesdb";
 
 		// Register IMongoClient and IMongoDatabase manually
 		services.AddSingleton<IMongoClient>(_ => new MongoClient(connectionString));
 
+		// Use a factory pattern for the database to ensure the database name is resolved at runtime, not at registration time
 		services.AddScoped(sp =>
 		{
 			IMongoClient client = sp.GetRequiredService<IMongoClient>();
-
-			return client.GetDatabase(databaseName);
+			// Re-read database name in case it changed after registration
+			var runtimeDatabaseName = sp.GetRequiredService<IConfiguration>()["MongoDb:Database"]
+				?? sp.GetRequiredService<IConfiguration>()["MongoDb:DatabaseName"]
+				?? Environment.GetEnvironmentVariable("MONGODB_DATABASE_NAME")
+				?? "articlesdb";
+			return client.GetDatabase(runtimeDatabaseName);
 		});
 
 		services.AddScoped<IMongoDbContext>(sp =>
