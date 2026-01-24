@@ -8,15 +8,15 @@ namespace Web.Tests.Integration.Stress;
 [ExcludeFromCodeCoverage]
 public class ArticleConcurrencyTestcontainersStressTests : IClassFixture<WebApplicationFactory<Program>>
 {
-    private readonly MongoDbFixture _fixture;
-    private readonly WebApplicationFactory<Program> _factory;
+	private readonly MongoDbFixture _fixture;
+	private readonly WebApplicationFactory<Program> _factory;
 
-    public ArticleConcurrencyTestcontainersStressTests(MongoDbFixture fixture, WebApplicationFactory<Program> factory)
-    {
-        _fixture = fixture;
-        // Don't use WithWebHostBuilder - just let the factory use the environment variables set by the fixture
-        _factory = factory;
-    }
+	public ArticleConcurrencyTestcontainersStressTests(MongoDbFixture fixture, WebApplicationFactory<Program> factory)
+	{
+		_fixture = fixture;
+		// Don't use WithWebHostBuilder - just let the factory use the environment variables set by the fixture
+		_factory = factory;
+	}
 
 	[Fact(Timeout = 120_000, Skip = "MongoDB container connection issue in test harness - article inserted into fixture's DB but app cannot find it in its connection. Requires further infrastructure investigation.")]
 	public async Task Stress_ManyConcurrentApiWrites_UsingSharedTestFixture()
