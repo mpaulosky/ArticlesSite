@@ -1,8 +1,6 @@
 using Microsoft.Extensions.Options;
 
-using Web.Infrastructure;
-
-namespace Web.Tests.Unit.Infrastructure;
+namespace Web.Infrastructure;
 
 public class PolicyRegistrationTests
 {

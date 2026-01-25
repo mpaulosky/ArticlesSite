@@ -7,9 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Web.Components.Features.Articles.ArticlesList;
-
-namespace Web.Tests.Unit.Components.Features.Articles.ArticlesList;
+namespace Web.Components.Features.Articles.ArticlesList;
 
 /// <summary>
 ///   Unit tests for GetArticles.Handler

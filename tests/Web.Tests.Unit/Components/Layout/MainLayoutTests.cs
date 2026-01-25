@@ -7,7 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-namespace Web.Tests.Unit.Components.Layout;
+namespace Web.Components.Layout;
 
 /// <summary>
 /// Unit tests for MainLayout component

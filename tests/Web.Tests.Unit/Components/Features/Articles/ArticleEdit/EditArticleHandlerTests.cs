@@ -1,5 +1,5 @@
 // Namespace + usings moved to GlobalUsings.cs
-namespace Web.Tests.Unit.Components.Features.Articles.ArticleEdit;
+namespace Web.Components.Features.Articles.ArticleEdit;
 
 [ExcludeFromCodeCoverage]
 public class EditArticleHandlerTests

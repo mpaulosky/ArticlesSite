@@ -7,7 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-namespace Web.Tests.Unit.Components.Pages;
+namespace Web.Components.Pages;
 
 /// <summary>
 /// Unit tests for Profile component

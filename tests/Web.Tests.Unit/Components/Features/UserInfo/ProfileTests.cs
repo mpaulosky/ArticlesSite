@@ -1,6 +1,6 @@
 using Web.Components.User;
 
-namespace Web.Tests.Unit.Components.User;
+namespace Web.Components.Features.UserInfo;
 
 public class ProfileTests
 {

@@ -7,7 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-namespace Web.Tests.Unit.Components.Features.Categories.CategoryEdit;
+namespace Web.Components.Features.Categories.CategoryEdit;
 
 /// <summary>
 ///   Unit tests for EditCategory.Handler

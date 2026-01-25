@@ -7,7 +7,7 @@
 //Project Name :  Web.Tests.Unit
 //=======================================================
 
-namespace Web.Tests.Unit.Components.Features.Articles.Validators;
+namespace Web.Components.Features.Articles.Validators;
 
 /// <summary>
 ///   Unit tests for the <see cref="ArticleDtoValidator" /> class.

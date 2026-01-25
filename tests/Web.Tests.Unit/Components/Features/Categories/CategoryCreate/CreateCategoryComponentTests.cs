@@ -9,9 +9,7 @@
 
 using Microsoft.AspNetCore.Components;
 
-using Create = Web.Components.Features.Categories.CategoryCreate.Create;
-
-namespace Web.Tests.Unit.Components.Features.Categories.CategoryCreate;
+namespace Web.Components.Features.Categories.CategoryCreate;
 
 /// <summary>
 ///   bUnit tests for the Create category component

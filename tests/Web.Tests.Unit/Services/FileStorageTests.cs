@@ -9,7 +9,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 
-namespace Web.Tests.Unit.Services;
+namespace Web.Services;
 
 /// <summary>
 ///   Unit tests for FileStorage service

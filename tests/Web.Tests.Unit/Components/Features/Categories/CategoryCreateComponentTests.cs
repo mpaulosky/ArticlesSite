@@ -7,7 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-namespace Web.Tests.Unit.Components.Features.Categories;
+namespace Web.Components.Features.Categories;
 
 [ExcludeFromCodeCoverage]
 public class CategoryCreateComponentTests : BunitContext

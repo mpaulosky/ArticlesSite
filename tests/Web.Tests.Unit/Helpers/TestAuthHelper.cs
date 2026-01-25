@@ -1,4 +1,4 @@
-namespace Web.Tests.Unit.Helpers;
+namespace Web.Helpers;
 
 public static class TestAuthHelper
 {

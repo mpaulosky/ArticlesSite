@@ -9,11 +9,7 @@
 
 using Microsoft.AspNetCore.Components;
 
-using Web.Components.Features.Categories.CategoryEdit;
-
-using Edit = Web.Components.Features.Categories.CategoryEdit.Edit;
-
-namespace Web.Tests.Unit.Components.Features.Categories.CategoryEdit;
+namespace Web.Components.Features.Categories.CategoryEdit;
 
 [ExcludeFromCodeCoverage]
 public class EditComponentTests : BunitContext

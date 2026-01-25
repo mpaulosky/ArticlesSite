@@ -1,4 +1,4 @@
-namespace Web.Tests.Unit.Fakes
+namespace Web.Fakes
 {
 	public class FakeAuthenticationStateProvider : AuthenticationStateProvider
 	{

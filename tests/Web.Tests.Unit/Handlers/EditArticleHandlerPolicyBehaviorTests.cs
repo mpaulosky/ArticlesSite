@@ -2,7 +2,7 @@ using Microsoft.Extensions.Options;
 
 using Web.Infrastructure;
 
-namespace Web.Tests.Unit.Handlers;
+namespace Web.Handlers;
 
 public class EditArticleHandlerPolicyBehaviorTests
 {
@@ -50,7 +50,7 @@ public class EditArticleHandlerPolicyBehaviorTests
 		);
 
 		var options = Options.Create(new ConcurrencyOptions { MaxRetries = 3, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });
-		var metrics = new Web.Tests.Unit.Infrastructure.InMemoryMetricsPublisher();
+		var metrics = new InMemoryMetricsPublisher();
 
 		// Act - pass null policy so handler uses fallback CreatePolicy
 		var handler = new EditArticle.Handler(repo, logger, validator, options, concurrencyPolicy: null, metrics: metrics);
@@ -99,7 +99,7 @@ public class EditArticleHandlerPolicyBehaviorTests
 		repo.UpdateArticle(Arg.Any<Article>()).Returns(Result.Fail<Article>("Concurrency", ResultErrorCode.Concurrency));
 
 		var options = Options.Create(new ConcurrencyOptions { MaxRetries = 2, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });
-		var metrics = new Web.Tests.Unit.Infrastructure.InMemoryMetricsPublisher();
+		var metrics = new InMemoryMetricsPublisher();
 
 		var handler = new EditArticle.Handler(repo, logger, validator, options, concurrencyPolicy: null, metrics: metrics);
 
@@ -147,7 +147,7 @@ public class EditArticleHandlerPolicyBehaviorTests
 		repo.UpdateArticle(Arg.Any<Article>()).Returns(Result.Fail<Article>("Concurrency", ResultErrorCode.Concurrency));
 
 		var options = Options.Create(new ConcurrencyOptions { MaxRetries = 4, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });
-		var metrics = new Web.Tests.Unit.Infrastructure.InMemoryMetricsPublisher();
+		var metrics = new InMemoryMetricsPublisher();
 
 		var handler = new EditArticle.Handler(repo, logger, validator, options, concurrencyPolicy: null, metrics: metrics);
 
@@ -167,4 +167,3 @@ public class EditArticleHandlerPolicyBehaviorTests
 		metrics.GetCount("conflict").Should().BeGreaterThanOrEqualTo(1);
 	}
 }
-
