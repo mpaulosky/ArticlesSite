@@ -1,5 +1,5 @@
 // Removed redundant usings: moved to GlobalUsings.cs
-namespace Web.Tests.Unit.Handlers;
+namespace Web.Handlers;
 
 public class EditArticleHandlerConcurrencyExhaustionTests
 {
@@ -62,6 +62,6 @@ public class EditArticleHandlerConcurrencyExhaustionTests
 		result.ErrorCode.Should().Be(Shared.Abstractions.ResultErrorCode.Concurrency);
 
 		// UpdateArticle should have been attempted 4 times (1 initial + 3 maxRetries)
-		repo.Received(4).UpdateArticle(Arg.Any<Article>());
+		await repo.Received(4).UpdateArticle(Arg.Any<Article>());
 	}
 }

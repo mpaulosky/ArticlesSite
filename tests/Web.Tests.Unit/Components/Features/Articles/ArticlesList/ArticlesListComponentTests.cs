@@ -1,6 +1,5 @@
-namespace Web.Tests.Unit.Components.Features.Articles.ArticlesList;
+namespace Web.Components.Features.Articles.ArticlesList;
 
-using Bunit;
 [ExcludeFromCodeCoverage]
 public class ArticlesListComponentTests : BunitContext
 {

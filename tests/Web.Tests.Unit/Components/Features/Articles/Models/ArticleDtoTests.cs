@@ -7,7 +7,7 @@
 //Project Name :  Web.Tests.Unit
 //=======================================================
 
-namespace Web.Tests.Unit.Components.Features.Articles.Models;
+namespace Web.Components.Features.Articles.Models;
 
 /// <summary>
 ///   Unit tests for the <see cref="ArticleDto" /> class.

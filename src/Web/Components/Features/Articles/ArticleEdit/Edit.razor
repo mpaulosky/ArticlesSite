@@ -16,18 +16,25 @@
 {
   <LoadingComponent />
 }
-else if (_errorMessage is not null)
+else if (_errorMessage is not null && _editModel.Id == ObjectId.Empty)
 {
   <ErrorAlertComponent Title="Unable to load article">
     @_errorMessage
   </ErrorAlertComponent>
 }
-else if (_editModel != ArticleDto.Empty)
+else if (_editModel.Id != ObjectId.Empty)
 {
   <div class="container-card">
     <EditForm Model="_editModel" OnValidSubmit="HandleValidSubmit">
       <DataAnnotationsValidator />
       <ValidationSummary />
+
+      @if (_errorMessage is not null && !_isConcurrencyConflict)
+      {
+        <ErrorAlertComponent Title="Error updating article">
+          @_errorMessage
+        </ErrorAlertComponent>
+      }
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div>

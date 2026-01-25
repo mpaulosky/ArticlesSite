@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Components;
 
-using Web.Components.Features.Categories.CategoriesList;
-
 using CategoriesListComponent = Web.Components.Features.Categories.CategoriesList.CategoriesList;
 
 
-namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
+namespace Web.Components.Features.Categories.CategoriesList
 {
 	[ExcludeFromCodeCoverage]
 	public class CategoriesListComponentTests : BunitContext

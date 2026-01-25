@@ -1,14 +1,6 @@
-using System;
-using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
-using Polly;
-using Shared.Abstractions;
-using Web.Components.Features.Articles.Entities;
-using Web.Infrastructure;
-using Xunit;
 
-namespace Web.Tests.Unit.Infrastructure;
+namespace Web.Infrastructure;
 
 public class PolicyDiRegistrationTests
 {

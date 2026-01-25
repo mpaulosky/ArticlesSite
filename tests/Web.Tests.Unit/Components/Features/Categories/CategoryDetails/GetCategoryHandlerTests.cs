@@ -7,7 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-namespace Web.Tests.Unit.Components.Features.Categories.CategoryDetails;
+namespace Web.Components.Features.Categories.CategoryDetails;
 
 /// <summary>
 ///   Unit tests for GetCategory.Handler

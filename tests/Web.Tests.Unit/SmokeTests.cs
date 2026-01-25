@@ -7,7 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-namespace Web.Tests.Unit;
+namespace Web;
 
 [ExcludeFromCodeCoverage]
 public class SmokeTests

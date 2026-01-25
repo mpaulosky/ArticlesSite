@@ -2,7 +2,7 @@ using Microsoft.Extensions.Options;
 
 using Web.Infrastructure;
 
-namespace Web.Tests.Unit.Handlers;
+namespace Web.Handlers;
 
 public class EditArticleHandlerPolicyInjectionTests
 {

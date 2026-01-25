@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Concurrent;
-using Web.Infrastructure;
 
-namespace Web.Tests.Unit.Infrastructure;
+namespace Web.Infrastructure;
 
 /// <summary>
 /// Simple in-memory metrics publisher used by unit tests to assert metrics were recorded.

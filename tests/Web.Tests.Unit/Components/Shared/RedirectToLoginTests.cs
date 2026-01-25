@@ -9,9 +9,7 @@
 
 using Microsoft.AspNetCore.Components;
 
-using Web.Components.Shared;
-
-namespace Web.Tests.Unit.Components.Shared;
+namespace Web.Components.Shared;
 
 /// <summary>
 /// Unit tests for RedirectToLogin using Bunit

@@ -7,9 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using FluentValidation;
-
-namespace Web.Tests.Unit.Components.Features.Categories.CategoryCreate;
+namespace Web.Components.Features.Categories.CategoryCreate;
 
 /// <summary>
 ///   Unit tests for CreateCategory.Handler

@@ -57,6 +57,38 @@ public class ResultTests
 		failureResult.Failure.Should().BeTrue();
 	}
 
+	[Fact]
+	public void Fail_WithErrorCode_ShouldSetErrorCode()
+	{
+		// Arrange
+		const string errorMessage = "Test error message";
+
+		// Act
+		Result result = Result.Fail(errorMessage, ResultErrorCode.Conflict);
+
+		// Assert
+		result.Success.Should().BeFalse();
+		result.ErrorCode.Should().Be(ResultErrorCode.Conflict);
+		result.Error.Should().Be(errorMessage);
+	}
+
+	[Fact]
+	public void Fail_WithErrorCodeAndDetails_ShouldSetDetailsAndErrorCode()
+	{
+		// Arrange
+		const string errorMessage = "Test error message";
+		var details = new { ServerVersion = "1.2.3" };
+
+		// Act
+		Result result = Result.Fail(errorMessage, ResultErrorCode.Concurrency, details);
+
+		// Assert
+		result.Success.Should().BeFalse();
+		result.ErrorCode.Should().Be(ResultErrorCode.Concurrency);
+		result.Details.Should().BeSameAs(details);
+		result.Error.Should().Be(errorMessage);
+	}
+
 }
 
 /// <summary>
@@ -153,6 +185,107 @@ public class ResultOfTTests
 		// Assert
 		result.Success.Should().BeTrue();
 		result.Value.Should().Be(value);
+	}
+
+	[Fact]
+	public void ImplicitConversion_ToValue_WithNullResult_ShouldThrowArgumentNullException()
+	{
+		Result<int>? result = null;
+		Action act = () => { int? value = result; };
+		act.Should().Throw<ArgumentNullException>();
+	}
+
+	[Fact]
+	public void Fail_WithErrorCode_ShouldSetErrorCode_OnGeneric()
+	{
+		// Arrange
+		const string errorMessage = "Test error message";
+
+		// Act
+		Result<string> result = Result.Fail<string>(errorMessage, ResultErrorCode.NotFound);
+
+		// Assert
+		result.Success.Should().BeFalse();
+		result.ErrorCode.Should().Be(ResultErrorCode.NotFound);
+		result.Error.Should().Be(errorMessage);
+		result.Value.Should().BeNull();
+	}
+
+	[Fact]
+	public void Fail_WithErrorCodeAndDetails_ShouldSetDetailsAndErrorCode_OnGeneric()
+	{
+		// Arrange
+		const string errorMessage = "Test error message";
+		var details = new { Attempt = 5 };
+
+		// Act
+		Result<string> result = Result.Fail<string>(errorMessage, ResultErrorCode.Conflict, details);
+
+		// Assert
+		result.Success.Should().BeFalse();
+		result.ErrorCode.Should().Be(ResultErrorCode.Conflict);
+		result.Details.Should().BeSameAs(details);
+		result.Value.Should().BeNull();
+	}
+
+	[Fact]
+	public void ImplicitConversion_ToValue_ForReferenceTypeFailure_ShouldReturnNull()
+	{
+		// Arrange
+		Result<string> result = Result.Fail<string>("err");
+
+		// Act
+		string? value = result;
+
+		// Assert
+		value.Should().BeNull();
+	}
+
+	[Fact]
+	public void GenericStaticFail_OnGenericType_ShouldSetErrorCode()
+	{
+		// Arrange
+		const string errorMessage = "Test error message";
+
+		// Act
+		Result<string> result = Result<string>.Fail(errorMessage, ResultErrorCode.NotFound);
+
+		// Assert
+		result.Success.Should().BeFalse();
+		result.ErrorCode.Should().Be(ResultErrorCode.NotFound);
+		result.Error.Should().Be(errorMessage);
+		result.Value.Should().BeNull();
+	}
+
+	[Fact]
+	public void GenericStaticFail_OnGenericType_WithDetails_ShouldSetDetails()
+	{
+		// Arrange
+		const string errorMessage = "Test error message";
+		var details = new { Attempt = 7 };
+
+		// Act
+		Result<string> result = Result<string>.Fail(errorMessage, ResultErrorCode.Conflict, details);
+
+		// Assert
+		result.Success.Should().BeFalse();
+		result.ErrorCode.Should().Be(ResultErrorCode.Conflict);
+		result.Details.Should().BeSameAs(details);
+		result.Value.Should().BeNull();
+	}
+
+	[Fact]
+	public void ImplicitConversion_FromNullValue_ShouldCreateSuccessWithNullValue()
+	{
+		// Arrange
+		string? value = null;
+
+		// Act
+		Result<string> result = value;
+
+		// Assert
+		result.Success.Should().BeTrue();
+		result.Value.Should().BeNull();
 	}
 
 }

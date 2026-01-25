@@ -1,3 +1,5 @@
+namespace Web.Data;
+
 public class CategoryRepositoryTests
 {
 	// Note: These tests have been temporarily removed because Moq cannot mock extension methods

@@ -7,7 +7,7 @@
 //Project Name :  Web.Tests.Unit
 //=======================================================
 
-namespace Web.Tests.Unit.Components.Features.Articles.Entities;
+namespace Web.Components.Features.Articles.Entities;
 
 /// <summary>
 ///   Unit tests for the <see cref="Category" /> entity.

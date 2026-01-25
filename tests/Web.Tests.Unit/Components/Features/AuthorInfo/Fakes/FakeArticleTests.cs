@@ -7,7 +7,7 @@
 //Project Name :  Web.Tests.Unit
 //=======================================================
 
-namespace Web.Tests.Unit.Components.Features.AuthorInfo.Fakes;
+namespace Web.Components.Features.AuthorInfo.Fakes;
 
 [ExcludeFromCodeCoverage]
 public class FakeArticleTests

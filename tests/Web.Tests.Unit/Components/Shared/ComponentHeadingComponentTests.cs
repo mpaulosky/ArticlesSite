@@ -7,9 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Web.Components.Shared;
-
-namespace Web.Tests.Unit.Components.Shared;
+namespace Web.Components.Shared;
 
 /// <summary>
 /// Unit tests for ComponentHeadingComponent using Bunit
@@ -81,7 +79,7 @@ public class ComponentHeadingComponentTests : BunitContext
 		var h2Element = headerElement.QuerySelector("h2");
 
 		h2Element.Should().NotBeNull();
-		h2Element!.TextContent.Should().Be("Section Title");
+		h2Element.TextContent.Should().Be("Section Title");
 	}
 
 	[Fact]

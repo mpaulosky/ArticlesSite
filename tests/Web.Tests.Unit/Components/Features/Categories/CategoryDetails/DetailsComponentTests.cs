@@ -9,9 +9,7 @@
 
 using Microsoft.AspNetCore.Components;
 
-using Details = Web.Components.Features.Categories.CategoryDetails.Details;
-
-namespace Web.Tests.Unit.Components.Features.Categories.CategoryDetails;
+namespace Web.Components.Features.Categories.CategoryDetails;
 
 /// <summary>
 /// bUnit tests for the Category Details component

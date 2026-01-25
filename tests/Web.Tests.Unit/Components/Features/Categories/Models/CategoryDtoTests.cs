@@ -7,7 +7,7 @@
 //Project Name :  Web.Tests.Unit
 //=======================================================
 
-namespace Web.Tests.Unit.Components.Features.Categories.Models;
+namespace Web.Components.Features.Categories.Models;
 
 /// <summary>
 ///   Unit tests for the <see cref="CategoryDto" /> class.

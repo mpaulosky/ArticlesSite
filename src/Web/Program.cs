@@ -167,7 +167,19 @@ app.MapRazorComponents<App>()
 		.AddInteractiveServerRenderMode();
 
 // Then map static assets (for wwwroot files)
-app.MapStaticAssets();
+try
+{
+	app.MapStaticAssets();
+}
+catch (FileNotFoundException)
+{
+	app.Logger.LogWarning("Static web assets manifest not found; skipping MapStaticAssets during tests.");
+}
+catch (InvalidOperationException ex)
+{
+	// MapStaticAssets may throw when the manifest path is invalid in test environments; log and continue.
+	app.Logger.LogWarning(ex, "MapStaticAssets skipped due to invalid static assets manifest.");
+}
 
 app.MapDefaultEndpoints();
 

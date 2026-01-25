@@ -7,9 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Web.Components.Shared;
-
-namespace Web.Tests.Unit.Components.Shared;
+namespace Web.Components.Shared;
 
 /// <summary>
 /// Unit tests for PageHeaderComponent using Bunit

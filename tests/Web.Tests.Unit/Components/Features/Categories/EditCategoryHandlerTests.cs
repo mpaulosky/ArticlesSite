@@ -1,6 +1,6 @@
 using Moq;
 
-namespace Web.Tests.Unit.Components.Features.Categories;
+namespace Web.Components.Features.Categories;
 
 public class EditCategoryHandlerTests
 {

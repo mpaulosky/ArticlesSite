@@ -7,9 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Web.Components.Shared;
-
-namespace Web.Tests.Unit.Components.Shared;
+namespace Web.Components.Shared;
 
 /// <summary>
 /// Unit tests for PageHeadingComponent using Bunit
@@ -25,6 +23,18 @@ public class PageHeadingComponentTests : BunitContext
 	}
 
 	[Theory]
+	[InlineData("1", "h1", "My Blog")]
+	[InlineData("2", "h2", "My Blog")]
+	[InlineData("3", "h3", "My Blog")]
+	public void RendersCorrectHeaderLevel(string level, string expectedTag, string expectedText)
+	{
+		var cut = Render<PageHeaderComponent>(parameters => parameters
+				.Add(p => p.Level, level)
+				.Add(p => p.HeaderText, expectedText));
+		cut.Find(expectedTag).TextContent.Should().Be(expectedText);
+	}
+
+	[Theory]
 	[InlineData("1", "h1", "text-3xl")]
 	[InlineData("2", "h2", "text-2xl")]
 	[InlineData("3", "h3", "text-1xl")]
@@ -33,7 +43,10 @@ public class PageHeadingComponentTests : BunitContext
 		var cut = Render<ComponentHeadingComponent>(parameters => parameters
 				.Add(p => p.Level, level)
 				.Add(p => p.HeaderText, "Test Heading"));
-		cut.Find(expectedTag).TextContent.Should().Be("Test Heading");
+
+		var element = cut.Find(expectedTag);
+		element.TextContent.Should().Be("Test Heading");
+		element.ClassList.Should().Contain(expectedClass);
 	}
 
 }

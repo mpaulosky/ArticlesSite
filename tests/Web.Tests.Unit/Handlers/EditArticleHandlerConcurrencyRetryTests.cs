@@ -1,5 +1,5 @@
 // Removed redundant usings: moved to GlobalUsings.cs
-namespace Web.Tests.Unit.Handlers;
+namespace Web.Handlers;
 
 public class EditArticleHandlerConcurrencyRetryTests
 {
@@ -75,6 +75,6 @@ public class EditArticleHandlerConcurrencyRetryTests
 		// Assert
 		result.Success.Should().BeTrue();
 		// UpdateArticle should have been attempted at least twice (initial + retry)
-		repo.Received(2).UpdateArticle(Arg.Any<Article>());
+		await repo.Received(2).UpdateArticle(Arg.Any<Article>());
 	}
 }

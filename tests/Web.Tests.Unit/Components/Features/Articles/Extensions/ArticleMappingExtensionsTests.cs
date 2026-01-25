@@ -7,7 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-namespace Web.Tests.Unit.Components.Features.Articles.Extensions;
+namespace Web.Components.Features.Articles.Extensions;
 
 /// <summary>
 /// Unit tests for <see cref="ArticleMappingExtensions"/> mapping methods.

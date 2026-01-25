@@ -7,7 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-namespace Web.Tests.Unit.Components.Features.Articles.ArticleCreate;
+namespace Web.Components.Features.Articles.ArticleCreate;
 
 /// <summary>
 ///   Unit tests for CreateArticle.Handler
