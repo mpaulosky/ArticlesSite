@@ -1,32 +1,32 @@
-namespace Web.Fakes
+namespace Web.Fakes;
+
+[ExcludeFromCodeCoverage]
+public class FakeAuthenticationStateProvider : AuthenticationStateProvider
 {
-	public class FakeAuthenticationStateProvider : AuthenticationStateProvider
+	private readonly string _userName;
+	private readonly string[] _roles;
+	private readonly bool _isAuthenticated;
+
+	public FakeAuthenticationStateProvider(string userName, string[] roles, bool isAuthenticated = true)
 	{
-		private readonly string _userName;
-		private readonly string[] _roles;
-		private readonly bool _isAuthenticated;
+		_userName = userName;
+		_roles = roles ?? [];
+		_isAuthenticated = isAuthenticated;
+	}
 
-		public FakeAuthenticationStateProvider(string userName, string[] roles, bool isAuthenticated = true)
+	public override Task<AuthenticationState> GetAuthenticationStateAsync()
+	{
+		var claims = new List<Claim>();
+		if (_isAuthenticated)
 		{
-			_userName = userName;
-			_roles = roles ?? new string[0];
-			_isAuthenticated = isAuthenticated;
+			claims.Add(new Claim(ClaimTypes.Name, _userName));
+			claims.AddRange(_roles.Select(role => new Claim(ClaimTypes.Role, role)));
 		}
+		var identity = _isAuthenticated
+				? new ClaimsIdentity(claims, "FakeAuth")
+				: new ClaimsIdentity();
 
-		public override Task<AuthenticationState> GetAuthenticationStateAsync()
-		{
-			var claims = new List<Claim>();
-			if (_isAuthenticated)
-			{
-				claims.Add(new Claim(ClaimTypes.Name, _userName));
-				claims.AddRange(_roles.Select(role => new Claim(ClaimTypes.Role, role)));
-			}
-			var identity = _isAuthenticated
-					? new ClaimsIdentity(claims, "FakeAuth")
-					: new ClaimsIdentity();
-
-			var principal = new ClaimsPrincipal(identity);
-			return Task.FromResult(new AuthenticationState(principal));
-		}
+		var principal = new ClaimsPrincipal(identity);
+		return Task.FromResult(new AuthenticationState(principal));
 	}
 }
