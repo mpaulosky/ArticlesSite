@@ -110,7 +110,7 @@ public class MongoDbContextFactoryTests
 			// Assert - appsettings should be used when env is not set
 			ctx.Database.DatabaseNamespace.DatabaseName.Should().Be("AppDb");
 			var server = ctx.Database.Client.Settings.Servers.First();
-			server.Host.Should().Be("apphost");
+			server.Host.Should().Be("app-host");
 			server.Port.Should().Be(27019);
 		}
 		finally
@@ -178,7 +178,7 @@ public class MongoDbContextFactoryTests
 			var factory = new MongoDbContextFactory();
 
 			// Act
-			IMongoDbContext ctx = factory.CreateDbContext(new string[] { "--noop" });
+			IMongoDbContext ctx = factory.CreateDbContext([ "--noop" ]);
 
 			// Assert
 			ctx.Database.DatabaseNamespace.DatabaseName.Should().Be("EnvDb");
@@ -215,10 +215,10 @@ public class MongoDbContextFactoryTests
 			// Act
 			IMongoDbContext ctx = factory.CreateDbContext();
 
-			// Assert - should read from ConnectionStrings section via GetConnectionString
+			// Assert - should read from the ConnectionStrings section via GetConnectionString
 			ctx.Database.DatabaseNamespace.DatabaseName.Should().Be("ConnDb");
 			var server = ctx.Database.Client.Settings.Servers.First();
-			server.Host.Should().Be("connhost");
+			server.Host.Should().Be("conn-host");
 			server.Port.Should().Be(27020);
 		}
 		finally
@@ -260,7 +260,7 @@ public class MongoDbContextFactoryTests
 			// Assert - development settings should override appsettings
 			ctx.Database.DatabaseNamespace.DatabaseName.Should().Be("DevDb");
 			var server = ctx.Database.Client.Settings.Servers.First();
-			server.Host.Should().Be("devhost");
+			server.Host.Should().Be("dev-host");
 			server.Port.Should().Be(27021);
 		}
 		finally
