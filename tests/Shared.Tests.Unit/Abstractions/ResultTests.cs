@@ -7,6 +7,8 @@
 //Project Name :  Shared.Tests.Unit
 //=======================================================
 
+using System.Reflection;
+
 using Shared.Abstractions;
 
 namespace Shared.Tests.Unit.Abstractions;
@@ -188,12 +190,17 @@ public class ResultOfTTests
 	}
 
 	[Fact]
-	public void ImplicitConversion_ToValue_WithNullResult_ShouldThrowArgumentNullException()
+	public void ImplicitConversion_ToValue_WithNullResult_ShouldReturnDefault()
 	{
 		Result<int>? result = null;
-		Action act = () => { int? value = result; };
-		act.Should().Throw<ArgumentNullException>();
+
+		// Act
+		int? value = result;
+
+		// Assert - for value types the conversion returns the default value (0)
+		value.Should().Be(0);
 	}
+
 
 	[Fact]
 	public void Fail_WithErrorCode_ShouldSetErrorCode_OnGeneric()
