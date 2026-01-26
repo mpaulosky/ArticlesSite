@@ -7,20 +7,22 @@
 @inject IFileStorage FileStorage
 
 
-<MarkdownEditor @bind-Value="@MyContent"
-								CustomImageUpload="@HandleImageUpload"
-								UploadImage="true"
-								CustomButtonClicked="@OnCustomButtonClicked"
-								@ref="@_textEditor">
+<MarkdownEditor @bind-Value="@MyContent" CustomImageUpload="@HandleImageUpload" UploadImage="true"
+								CustomButtonClicked="@OnCustomButtonClicked" @ref="@_textEditor">
 	<Toolbar>
 		<MarkdownToolbarButton Action="MarkdownAction.Bold" Name="Bold" Icon="fa fa-bold" Title="Bold" />
 		<MarkdownToolbarButton Action="MarkdownAction.Italic" Name="Italic" Icon="fa fa-italic" Title="Italic" />
-		<MarkdownToolbarButton Action="MarkdownAction.Strikethrough" Name="Strike Through" Icon="fa fa-strikethrough" Title="Strike Through" />
-		<MarkdownToolbarButton Action="MarkdownAction.HorizontalRule" Name="Horizontal Rule" Icon="fa fa-window-minimize" Title="Horizontal Rule" />
-		<MarkdownToolbarButton Separator Action="MarkdownAction.Heading" Name="Header" Icon="fa fa-header" Title="Heading" />
+		<MarkdownToolbarButton Action="MarkdownAction.Strikethrough" Name="Strike Through" Icon="fa fa-strikethrough"
+													 Title="Strike Through" />
+		<MarkdownToolbarButton Action="MarkdownAction.HorizontalRule" Name="Horizontal Rule" Icon="fa fa-window-minimize"
+													 Title="Horizontal Rule" />
+		<MarkdownToolbarButton Separator Action="MarkdownAction.Heading" Name="Header" Icon="fa fa-header"
+													 Title="Heading" />
 		<MarkdownToolbarButton Action="MarkdownAction.Quote" Name="Add Quote" Icon="fa fa-quote-left" Title="Quote" />
-		<MarkdownToolbarButton Action="MarkdownAction.UnorderedList" Name="Add Un-ordered-List" Icon="fa fa-list-ul" Title="Unordered List" />
-		<MarkdownToolbarButton Action="MarkdownAction.OrderedList" Name="Add Ordered-List" Icon="fa fa-list-ol" Title="ordered List" />
+		<MarkdownToolbarButton Action="MarkdownAction.UnorderedList" Name="Add Un-ordered-List" Icon="fa fa-list-ul"
+													 Title="Unordered List" />
+		<MarkdownToolbarButton Action="MarkdownAction.OrderedList" Name="Add Ordered-List" Icon="fa fa-list-ol"
+													 Title="ordered List" />
 
 		@if (AlignmentOptionsEnabled)
 		{
@@ -32,10 +34,13 @@
 		<MarkdownToolbarButton Separator Action="MarkdownAction.Link" Name="Add Link" Icon="fa fa-link" Title="Link" />
 		<MarkdownToolbarButton Action="MarkdownAction.Image" Name="Add Image" Icon="fa fa-image" Title="Image" />
 		<MarkdownToolbarButton Action="MarkdownAction.Table" Name="Add Table" Icon="fa fa-table" Title="Add Table" />
-		<MarkdownToolbarButton Separator Action="MarkdownAction.Preview" Name="preview" Icon="no-disable fa fa-eye" Title="Toggle Preview" />
+		<MarkdownToolbarButton Separator Action="MarkdownAction.Preview" Name="preview" Icon="no-disable fa fa-eye"
+													 Title="Toggle Preview" />
 		<MarkdownToolbarButton Action="MarkdownAction.Code" Name="Code Block" Icon="fa fa-code" Title="Code Block" />
-		<MarkdownToolbarButton Separator Action="MarkdownAction.Fullscreen" Name="Fullscreen" Icon="fa fa-arrows-alt" Title="Fullscreen" />
-		<MarkdownToolbarButton Separator Action="MarkdownAction.Guide" Name="Markdown Guide" Icon="fa fa-question-circle" Title="Markdown Guide" />
+		<MarkdownToolbarButton Separator Action="MarkdownAction.Fullscreen" Name="Fullscreen" Icon="fa fa-arrows-alt"
+													 Title="Fullscreen" />
+		<MarkdownToolbarButton Separator Action="MarkdownAction.Guide" Name="Markdown Guide" Icon="fa fa-question-circle"
+													 Title="Markdown Guide" />
 	</Toolbar>
 </MarkdownEditor>
 
@@ -47,7 +52,7 @@
 	public bool AlignmentOptionsEnabled { get; set; }
 
 	private string _content = string.Empty;
-	private string MyContent
+	public string MyContent
 	{
 		get => _content;
 		set
@@ -63,7 +68,7 @@
 	[Parameter]
 	public EventCallback<string> ContentChanged { get; set; }
 
-	async Task<FileEntry> HandleImageUpload(MarkdownEditor editor, FileEntry file)
+	public async Task<FileEntry> HandleImageUpload(MarkdownEditor editor, FileEntry file)
 	{
 		Console.WriteLine($"Image: {file.Name} Size: {file.Size}");
 
@@ -77,7 +82,7 @@
 		return file;
 	}
 
-	private async Task OnCustomButtonClicked(MarkdownButtonEventArgs args)
+	public async Task OnCustomButtonClicked(MarkdownButtonEventArgs args)
 	{
 		// Get the selected text using JavaScript
 		var selectedText = await JsRuntime.InvokeAsync<string>("getSelectedText", ".EasyMDEContainer textarea");

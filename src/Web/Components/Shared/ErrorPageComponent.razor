@@ -69,13 +69,22 @@
 		};
 	}
 
-	/// <summary>
-	///   Handles errors from ErrorBoundaryBase.
-	/// </summary>
-	/// <param name="exception">The exception thrown.</param>
-	protected override Task OnErrorAsync(Exception exception)
-	{
-		return Task.CompletedTask;
-	}
+  /// <summary>
+  ///   Handles errors from ErrorBoundaryBase.
+  /// </summary>
+  /// <param name="exception">The exception thrown.</param>
+  protected override Task OnErrorAsync(Exception exception)
+  {
+    return Task.CompletedTask;
+  }
+
+  /// <summary>
+  ///   Public method to trigger error handling for testing purposes.
+  /// </summary>
+  /// <param name="exception">The exception to handle.</param>
+  public Task TriggerErrorAsync(Exception exception)
+  {
+    return OnErrorAsync(exception);
+  }
 
 }
