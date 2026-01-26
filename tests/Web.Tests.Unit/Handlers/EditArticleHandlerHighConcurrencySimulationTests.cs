@@ -4,6 +4,7 @@ using Web.Infrastructure;
 
 namespace Web.Handlers;
 
+[ExcludeFromCodeCoverage]
 public class EditArticleHandlerHighConcurrencySimulationTests
 {
 	[Fact]
@@ -14,7 +15,7 @@ public class EditArticleHandlerHighConcurrencySimulationTests
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
 		var validator = new ArticleDtoValidator();
 
-		var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
+		var articleId = ObjectId.GenerateNewId();
 		var author = new AuthorInfo("test-user-id", "Test Author");
 		var category = new Category { CategoryName = "Test Category", Slug = "test_category" };
 
@@ -36,17 +37,17 @@ public class EditArticleHandlerHighConcurrencySimulationTests
 		// Always return current article on GetArticle
 		repo.GetArticleByIdAsync(articleId).Returns(Result.Ok<Article?>(original));
 
-		// Simulate UpdateArticle behavior: first 10 calls fail with concurrency, subsequent calls succeed
+		// Simulate UpdateArticle behavior: first 10 calls fail with concurrency, further calls succeed
 		// This will cause handlers to retry until some succeed
 		var sequence = new List<Result<Article>>();
 		for (int i = 0; i < 10; i++) sequence.Add(Result.Fail<Article>("Concurrency", ResultErrorCode.Concurrency));
 		// Add many successes to allow many callers to eventually succeed
-		for (int i = 0; i < 50; i++) sequence.Add(Result.Ok<Article>(original));
+		for (int i = 0; i < 50; i++) sequence.Add(Result.Ok(original));
 
-		repo.UpdateArticle(Arg.Any<Article>()).Returns(x => sequence.Count > 0 ? sequence[0] : Result.Fail<Article>("No more responses"), x =>
+		repo.UpdateArticle(Arg.Any<Article>()).Returns(_ => sequence.Count > 0 ? sequence[0] : Result.Fail<Article>("No more responses"), _ =>
 		{
 			if (sequence.Count > 0) sequence.RemoveAt(0);
-			return sequence.Count >= 0 ? Result.Ok<Article>(original) : Result.Fail<Article>("No more responses");
+			return sequence.Count >= 0 ? Result.Ok(original) : Result.Fail<Article>("No more responses");
 		});
 
 		var options = Options.Create(new ConcurrencyOptions { MaxRetries = 3, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });

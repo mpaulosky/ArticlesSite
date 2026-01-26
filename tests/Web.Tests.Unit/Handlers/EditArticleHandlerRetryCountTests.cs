@@ -4,6 +4,7 @@ using Web.Infrastructure;
 
 namespace Web.Handlers;
 
+[ExcludeFromCodeCoverage]
 public class EditArticleHandlerRetryCountTests
 {
 	[Fact]
@@ -14,7 +15,7 @@ public class EditArticleHandlerRetryCountTests
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
 		var validator = new ArticleDtoValidator();
 
-		var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
+		var articleId = ObjectId.GenerateNewId();
 		var original = new Article
 		{
 			Id = articleId,
@@ -43,7 +44,7 @@ public class EditArticleHandlerRetryCountTests
 		// Act
 		var result = await handler.HandleAsync(dto);
 
-		// Assert - final result is failure and update was attempted initial + MaxRetries times
+		// Assert - the final result is failure and update was attempted initial + MaxRetries times
 		result.Success.Should().BeFalse();
 		var expectedCalls = 1 + options.Value.MaxRetries;
 		await repo.Received(expectedCalls).UpdateArticle(Arg.Any<Article>());
@@ -57,7 +58,7 @@ public class EditArticleHandlerRetryCountTests
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
 		var validator = new ArticleDtoValidator();
 
-		var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
+		var articleId = ObjectId.GenerateNewId();
 		var original = new Article
 		{
 			Id = articleId,
@@ -77,9 +78,9 @@ public class EditArticleHandlerRetryCountTests
 		int failCount = 2;
 		var seq = new object[failCount + 1];
 		for (int i = 0; i < failCount; i++) seq[i] = Result.Fail<Article>("Concurrency", ResultErrorCode.Concurrency);
-		seq[failCount] = Result.Ok<Article>(original);
+		seq[failCount] = Result.Ok(original);
 
-		repo.UpdateArticle(Arg.Any<Article>()).Returns(callInfo =>
+		repo.UpdateArticle(Arg.Any<Article>()).Returns(_ =>
 		{
 			var ret = seq[0];
 			// shift left
@@ -98,7 +99,7 @@ public class EditArticleHandlerRetryCountTests
 		// Act
 		var result = await handler.HandleAsync(dto);
 
-		// Assert - final result is success and UpdateArticle called initial + failCount times
+		// Assert - a final result is success and UpdateArticle called initial + failCount times
 		result.Success.Should().BeTrue();
 		var expectedCalls = 1 + failCount;
 		await repo.Received(expectedCalls).UpdateArticle(Arg.Any<Article>());

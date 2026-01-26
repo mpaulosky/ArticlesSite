@@ -4,6 +4,7 @@ using Web.Infrastructure;
 
 namespace Web.Handlers;
 
+[ExcludeFromCodeCoverage]
 public class EditArticleHandlerPolicyBehaviorTests
 {
 	[Fact]
@@ -14,8 +15,8 @@ public class EditArticleHandlerPolicyBehaviorTests
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
 		var validator = new ArticleDtoValidator();
 
-		var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
-		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("test-user-id", "Test Author");
+		var articleId = ObjectId.GenerateNewId();
+		var author = new AuthorInfo("test-user-id", "Test Author");
 		var category = new Category { CategoryName = "Technology" };
 
 		var original = new Article
@@ -36,23 +37,19 @@ public class EditArticleHandlerPolicyBehaviorTests
 
 		// UpdateArticle fails once with concurrency then succeeds
 		var failResult = Result.Fail<Article>("Concurrency conflict", ResultErrorCode.Concurrency);
-		var successArticle = (Article)null;
+		Article? successArticle = null;
 		repo.UpdateArticle(Arg.Any<Article>()).Returns(
 				x =>
 				{
-					successArticle = (Article)x[0];
+					successArticle = (Article?)x[0];
 					return failResult;
 				},
-				x =>
-				{
-					return successArticle;
-				}
-		);
+				_ => Result.Ok(successArticle!));
 
 		var options = Options.Create(new ConcurrencyOptions { MaxRetries = 3, BaseDelayMilliseconds = 0, MaxDelayMilliseconds = 0, JitterMilliseconds = 0 });
 		var metrics = new InMemoryMetricsPublisher();
 
-		// Act - pass null policy so handler uses fallback CreatePolicy
+		// Act - pass null policy so the handler uses fallback CreatePolicy
 		var handler = new EditArticle.Handler(repo, logger, validator, options, concurrencyPolicy: null, metrics: metrics);
 
 		var dto = new ArticleDto(articleId, "original", "Updated Title", "Intro", "Updated Content", "https://example.com/img.jpg", author, category, false, null, null, DateTimeOffset.UtcNow, false, false, 0);
@@ -75,8 +72,8 @@ public class EditArticleHandlerPolicyBehaviorTests
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
 		var validator = new ArticleDtoValidator();
 
-		var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
-		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("test-user-id", "Test Author");
+		var articleId = ObjectId.GenerateNewId();
+		var author = new AuthorInfo("test-user-id", "Test Author");
 		var category = new Category { CategoryName = "Technology" };
 
 		var original = new Article
@@ -124,8 +121,8 @@ public class EditArticleHandlerPolicyBehaviorTests
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
 		var validator = new ArticleDtoValidator();
 
-		var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
-		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("test-user-id", "Test Author");
+		var articleId = ObjectId.GenerateNewId();
+		var author = new AuthorInfo("test-user-id", "Test Author");
 		var category = new Category { CategoryName = "Technology" };
 
 		var original = new Article
