@@ -23,7 +23,7 @@ public class CreateCategoryComponentTests : BunitContext
 	public void InitialRender_ShouldShowFormAndHeading()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
 		Services.AddSingleton(handler);
 
@@ -42,7 +42,7 @@ public class CreateCategoryComponentTests : BunitContext
 	public void CancelButton_Click_ShouldNavigateToList()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
 		Services.AddSingleton(handler);
 
@@ -60,7 +60,7 @@ public class CreateCategoryComponentTests : BunitContext
 	public void SubmittingForm_ShouldShowLoading()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
 		Services.AddSingleton(handler);
 
@@ -81,7 +81,7 @@ public class CreateCategoryComponentTests : BunitContext
 	public async Task HandleSubmit_WithSuccess_ShouldNavigateToList()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
 
 		handler.HandleAsync(Arg.Any<CategoryDto>()).Returns(Task.FromResult(
@@ -113,7 +113,7 @@ public class CreateCategoryComponentTests : BunitContext
 	public async Task HandleSubmit_WithFailure_ShouldShowError()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 		CreateCategory.ICreateCategoryHandler handler = Substitute.For<CreateCategory.ICreateCategoryHandler>();
 
 		handler.HandleAsync(Arg.Any<CategoryDto>())

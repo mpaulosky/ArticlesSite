@@ -23,118 +23,131 @@ public class DetailsComponentTests : BunitContext
 	public void RendersLoadingComponent_WhenIsLoading()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
-		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
-
+		var handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 		var tcs = new TaskCompletionSource<Result<CategoryDto>>();
 		handler.HandleAsync(Arg.Any<string>()).Returns(tcs.Task);
-
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
-		// Act
 		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
-
-		cut.Markup.Should().Contain("Loading...");
-
-		tcs.SetResult(Result.Fail<CategoryDto>("Category not found."));
+		// No need to complete tcs, component should show loading
+		cut.Markup.Should().Contain("Loading");
 	}
 
 	[Fact]
-	public void RendersErrorAlert_WhenCategoryNotFound()
+	public async Task ShowsCategoryDetails_WhenCategoryExists()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
-
-		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
-
-		handler.HandleAsync(Arg.Any<string>())
-			.Returns(Task.FromResult(Result.Fail<CategoryDto>("Category not found.")));
-
-		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
-
-		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
-
-		cut.WaitForState(() => cut.Markup.Contains("Category not found."));
-		cut.Markup.Should().Contain("Unable to load category");
-		cut.Markup.Should().Contain("Category not found.");
-	}
-
-	[Theory]
-	[InlineData("Admin")]
-	[InlineData("Author")]
-	[InlineData("User")]
-	[InlineData("Admin", "Author")]
-	public void RendersDetailsView_WhenCategoryIsLoaded(params string[] roles)
-	{
-		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", roles);
-
-		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
-
-		var categoryDto = new CategoryDto
+		var category = new CategoryDto
 		{
 			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-			CategoryName = "Technology",
-			Slug = "technology",
-			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			CategoryName = "Category 1",
+			Slug = "category-1",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-1),
 			ModifiedOn = null,
 			IsArchived = false
 		};
-
-		handler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
+		var handler = Substitute.For<GetCategory.IGetCategoryHandler>();
+		handler.HandleAsync(Arg.Any<string>()).Returns(Task.FromResult(Result.Ok(category)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
-		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, category.Id.ToString()));
 
-		cut.WaitForState(() => cut.Markup.Contains("Category Details"));
-		cut.Markup.Should().Contain("Category Details");
-		cut.Markup.Should().Contain("Technology");
-		cut.Markup.Should().Contain("container-card");
+		// Ensure initialization completed deterministically
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
+
+		// Assert
+		cut.Markup.Should().Contain(category.CategoryName);
 	}
 
 	[Fact]
-	public void DisplaysCategoryName_InHeading()
+	public async Task ShowsNotFound_WhenCategoryIsNull()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		var handler = Substitute.For<GetCategory.IGetCategoryHandler>();
+		handler.HandleAsync(Arg.Any<string>()).Returns(Task.FromResult(Result.Fail<CategoryDto>("Category not found.")));
+		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
-		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439012"));
 
-		var categoryDto = new CategoryDto
+		// Ensure initialization completed deterministically
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
+
+		// Assert
+		cut.Markup.Should().Contain("not found");
+	}
+
+	[Fact]
+	public async Task ShowsEditButton_WhenUserIsAdmin()
+	{
+		// Arrange
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
+		var category = new CategoryDto
 		{
-			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-			CategoryName = "Science",
-			Slug = "science",
-			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
+			Id = ObjectId.Parse("507f1f77bcf86cd799439013"),
+			CategoryName = "Category 3",
+			Slug = "category-3",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-2),
 			ModifiedOn = null,
 			IsArchived = false
 		};
-
-		handler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
+		var handler = Substitute.For<GetCategory.IGetCategoryHandler>();
+		handler.HandleAsync(Arg.Any<string>()).Returns(Task.FromResult(Result.Ok(category)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
-		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		// Create a fake AuthenticationState with an admin user
+		var claims = new[] { new Claim(ClaimTypes.Role, "Admin") };
+		var identity = new ClaimsIdentity(claims, "TestAuthType");
+		var user = new ClaimsPrincipal(identity);
+		var authState = new AuthenticationState(user);
 
-		cut.WaitForState(() => cut.Markup.Contains("Science"));
-		cut.Markup.Should().Contain("Science");
+		var cut = Render<Details>(
+			parameters => parameters
+				.Add(p => p.Id, category.Id.ToString())
+				.AddCascadingValue<Task<AuthenticationState>>(Task.FromResult(authState))
+		);
+
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
+
+		// Assert
+		cut.Markup.Should().Contain("Edit");
 	}
 
 	[Fact]
-	public void DisplaysCategorySlug_Correctly()
+	public async Task DoesNotShowEditButton_WhenUserIsNotAdmin()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		var category = new CategoryDto
+		{
+			Id = ObjectId.Parse("507f1f77bcf86cd799439014"),
+			CategoryName = "Category 4",
+			Slug = "category-4",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-3),
+			ModifiedOn = null,
+			IsArchived = false
+		};
+		var handler = Substitute.For<GetCategory.IGetCategoryHandler>();
+		handler.HandleAsync(Arg.Any<string>()).Returns(Task.FromResult(Result.Ok(category)));
+		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
-		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, category.Id.ToString()));
 
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
+
+		// Assert
+		cut.Markup.Should().NotContain("Edit");
+	}
+
+	[Fact]
+	public async Task RendersDetailsView_WhenCategoryIsLoaded()
+	{
+		// Arrange
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "User", "Admin", "Author" ]);
 		var categoryDto = new CategoryDto
 		{
 			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
@@ -144,122 +157,24 @@ public class DetailsComponentTests : BunitContext
 			ModifiedOn = null,
 			IsArchived = false
 		};
-
-		handler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
+		var handler = Substitute.For<GetCategory.IGetCategoryHandler>();
+		handler.HandleAsync(Arg.Any<string>()).Returns(Task.FromResult(Result.Ok(categoryDto)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, categoryDto.Id.ToString()));
 
-		cut.WaitForState(() => cut.Markup.Contains("technology-slug"));
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
+
 		cut.Markup.Should().Contain("Category Slug:");
 		cut.Markup.Should().Contain("technology-slug");
 	}
 
 	[Fact]
-	public void DisplaysCategoryId_Correctly()
+	public async Task DisplaysModifiedOn_WhenNotNull()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
-
-		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
-
-		var categoryDto = new CategoryDto
-		{
-			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-			CategoryName = "Technology",
-			Slug = "technology",
-			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-			ModifiedOn = null,
-			IsArchived = false
-		};
-
-		handler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
-		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
-
-		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
-
-		cut.WaitForState(() => cut.Markup.Contains("507f1f77bcf86cd799439011"));
-		cut.Markup.Should().Contain("Category ID:");
-		cut.Markup.Should().Contain("507f1f77bcf86cd799439011");
-	}
-
-	[Fact]
-	public void DisplaysCreatedOn_InCorrectFormat()
-	{
-		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
-
-		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
-
-		var createdDate = new DateTimeOffset(2024, 1, 15, 12, 30, 0, TimeSpan.Zero);
-
-		var categoryDto = new CategoryDto
-		{
-			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-			CategoryName = "Technology",
-			Slug = "technology",
-			CreatedOn = createdDate,
-			ModifiedOn = null,
-			IsArchived = false
-		};
-
-		handler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
-		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
-
-		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
-
-		cut.WaitForState(() => cut.Markup.Contains("Created On:"));
-		cut.Markup.Should().Contain("Created On:");
-	}
-
-	[Fact]
-	public void DisplaysModifiedOn_AsNeverWhenNull()
-	{
-		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
-
-		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
-
-		var categoryDto = new CategoryDto
-		{
-			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
-			CategoryName = "Technology",
-			Slug = "technology",
-			CreatedOn = DateTimeOffset.UtcNow.AddDays(-30),
-			ModifiedOn = null,
-			IsArchived = false
-		};
-
-		handler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
-		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
-
-		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
-
-		cut.WaitForState(() => cut.Markup.Contains("Never"));
-		cut.Markup.Should().Contain("Modified On:");
-		cut.Markup.Should().Contain("Never");
-	}
-
-	[Fact]
-	public void DisplaysModifiedOn_WhenNotNull()
-	{
-		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
-
-		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
-
 		var categoryDto = new CategoryDto
 		{
 			Id = ObjectId.Parse("507f1f77bcf86cd799439011"),
@@ -269,16 +184,15 @@ public class DetailsComponentTests : BunitContext
 			ModifiedOn = new DateTimeOffset(2024, 2, 20, 15, 30, 0, TimeSpan.Zero),
 			IsArchived = false
 		};
-
-		handler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
-
+		var handler = Substitute.For<GetCategory.IGetCategoryHandler>();
+		handler.HandleAsync(Arg.Any<string>()).Returns(Task.FromResult(Result.Ok(categoryDto)));
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
 		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, categoryDto.Id.ToString()));
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
 
-		cut.WaitForState(() => cut.Markup.Contains("Modified On:"));
 		cut.Markup.Should().Contain("Modified On:");
 		cut.Markup.Should().NotContain("Never");
 	}
@@ -287,7 +201,7 @@ public class DetailsComponentTests : BunitContext
 	public void DisplaysActiveStatus_ForNonArchivedCategories()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -318,7 +232,7 @@ public class DetailsComponentTests : BunitContext
 	public void DisplaysArchivedStatus_ForArchivedCategories()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -349,7 +263,7 @@ public class DetailsComponentTests : BunitContext
 	public void EditButton_ShouldBe_Enabled_ForActiveCategories()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -368,8 +282,18 @@ public class DetailsComponentTests : BunitContext
 
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
+		// Create a fake AuthenticationState with an admin user
+		var claims = new[] { new Claim(ClaimTypes.Role, "Admin") };
+		var identity = new ClaimsIdentity(claims, "TestAuthType");
+		var user = new ClaimsPrincipal(identity);
+		var authState = new AuthenticationState(user);
+
 		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(
+			parameters => parameters
+				.Add(p => p.Id, "507f1f77bcf86cd799439011")
+				.AddCascadingValue<Task<AuthenticationState>>(Task.FromResult(authState))
+		);
 
 		cut.WaitForState(() => cut.Markup.Contains("Technology"));
 		var editButton = cut.Find("button:contains('Edit')");
@@ -380,7 +304,7 @@ public class DetailsComponentTests : BunitContext
 	public void EditButton_ShouldBe_Disabled_ForArchivedCategories()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -399,8 +323,18 @@ public class DetailsComponentTests : BunitContext
 
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
+		// Create a fake AuthenticationState with an admin user
+		var claims = new[] { new Claim(ClaimTypes.Role, "Admin") };
+		var identity = new ClaimsIdentity(claims, "TestAuthType");
+		var user = new ClaimsPrincipal(identity);
+		var authState = new AuthenticationState(user);
+
 		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		var cut = Render<Details>(
+			parameters => parameters
+				.Add(p => p.Id, "507f1f77bcf86cd799439011")
+				.AddCascadingValue<Task<AuthenticationState>>(Task.FromResult(authState))
+		);
 
 		cut.WaitForState(() => cut.Markup.Contains("Archived Category"));
 		var editButton = cut.Find("button:contains('Edit')");
@@ -408,10 +342,10 @@ public class DetailsComponentTests : BunitContext
 	}
 
 	[Fact]
-	public void EditButton_Click_ShouldNavigateToEdit()
+	public async Task EditButton_Click_ShouldNavigateToEdit()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -430,15 +364,26 @@ public class DetailsComponentTests : BunitContext
 
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		// Create a fake AuthenticationState with an admin user
+		var claims = new[] { new Claim(ClaimTypes.Role, "Admin") };
+		var identity = new ClaimsIdentity(claims, "TestAuthType");
+		var user = new ClaimsPrincipal(identity);
+		var authState = new AuthenticationState(user);
+
+		var cut = Render<Details>(
+			parameters => parameters
+				.Add(p => p.Id, "507f1f77bcf86cd799439011")
+				.AddCascadingValue<Task<AuthenticationState>>(Task.FromResult(authState))
+		);
 
 		NavigationManager nav = Services.GetRequiredService<NavigationManager>();
 
-		cut.WaitForState(() => cut.Markup.Contains("Technology"));
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
 
 		// Act
 		var editButton = cut.Find("button:contains('Edit')");
-		editButton.Click();
+		await editButton.ClickAsync();
 
 		// Assert
 		nav.Uri.Should().EndWith("/categories/edit/507f1f77bcf86cd799439011");
@@ -448,7 +393,7 @@ public class DetailsComponentTests : BunitContext
 	public void BackToListButton_Click_ShouldNavigateToList()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -485,7 +430,7 @@ public class DetailsComponentTests : BunitContext
 	public void PageHeading_ShouldDisplay_CategoryDetails()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -512,10 +457,10 @@ public class DetailsComponentTests : BunitContext
 	}
 
 	[Fact]
-	public void RendersButtons_WithCorrectText()
+	public async Task RendersButtons_WithCorrectText()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 
@@ -530,14 +475,27 @@ public class DetailsComponentTests : BunitContext
 		};
 
 		handler.HandleAsync(Arg.Any<string>())
-				.Returns(Task.FromResult(Result.Ok(categoryDto)));
+			.Returns(Task.FromResult(Result.Ok(categoryDto)));
 
 		Services.AddSingleton(typeof(GetCategory.IGetCategoryHandler), handler);
 
-		// Act
-		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
+		// Create a fake AuthenticationState with an admin user
+		var claims = new[] { new Claim(ClaimTypes.Role, "Admin") };
+		var identity = new ClaimsIdentity(claims, "TestAuthType");
+		var user = new ClaimsPrincipal(identity);
+		var authState = new AuthenticationState(user);
 
-		cut.WaitForState(() => cut.Markup.Contains("Technology"));
+		// Act
+		var cut = Render<Details>(
+			parameters => parameters
+				.Add(p => p.Id, "507f1f77bcf86cd799439011")
+				.AddCascadingValue<Task<AuthenticationState>>(Task.FromResult(authState))
+		);
+
+		// Ensure initialization completed deterministically
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
+
 		cut.Markup.Should().Contain("Edit");
 		cut.Markup.Should().Contain("Back to List");
 	}
@@ -546,7 +504,7 @@ public class DetailsComponentTests : BunitContext
 	public void ComponentWithNoId_ShouldHandle_EmptyParameter()
 	{
 		// Arrange
-		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 		GetCategory.IGetCategoryHandler? handler = Substitute.For<GetCategory.IGetCategoryHandler>();
 

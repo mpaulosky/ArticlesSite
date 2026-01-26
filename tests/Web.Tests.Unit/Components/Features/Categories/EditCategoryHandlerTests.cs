@@ -2,6 +2,7 @@ using Moq;
 
 namespace Web.Components.Features.Categories;
 
+[ExcludeFromCodeCoverage]
 public class EditCategoryHandlerTests
 {
 
