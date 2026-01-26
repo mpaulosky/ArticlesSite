@@ -4,6 +4,7 @@ using Web.Infrastructure;
 
 namespace Web.Handlers;
 
+[ExcludeFromCodeCoverage]
 public class EditArticleHandlerPolicyInjectionTests
 {
 	[Fact]
@@ -14,7 +15,7 @@ public class EditArticleHandlerPolicyInjectionTests
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
 		var validator = new ArticleDtoValidator();
 
-		var articleId = MongoDB.Bson.ObjectId.GenerateNewId();
+		var articleId = ObjectId.GenerateNewId();
 		var author = new AuthorInfo("auth0|12345", "John Doe");
 		var category = new Category
 		{
@@ -50,7 +51,7 @@ public class EditArticleHandlerPolicyInjectionTests
 		// Create a policy with an onRetry that increments our counter
 		var policy = Policy<Result<Article>>
 				.HandleResult(r => r.Failure && r.ErrorCode == ResultErrorCode.Concurrency)
-				.WaitAndRetryAsync(new[] { TimeSpan.Zero }, onRetryAsync: (outcome, timespan, retryCount, context) =>
+				.WaitAndRetryAsync([ TimeSpan.Zero ], onRetryAsync: (outcome, timespan, retryCount, context) =>
 				{
 					policyRetryInvocations++;
 					return Task.CompletedTask;

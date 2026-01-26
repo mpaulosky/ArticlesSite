@@ -2,6 +2,7 @@ using Web.Components.User;
 
 namespace Web.Components.Features.UserInfo;
 
+[ExcludeFromCodeCoverage]
 public class ProfileTests
 {
 	[Fact]
@@ -12,8 +13,8 @@ public class ProfileTests
 						new Claim(ClaimTypes.Email, "test@example.com")
 				};
 		var principal = new ClaimsPrincipal(new ClaimsIdentity(claims));
-		var value = typeof(Profile).GetMethod("GetClaimValue", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
-				.Invoke(null, new object[] { principal, new[] { ClaimTypes.Email } });
+		var value = typeof(Profile).GetMethod("GetClaimValue", BindingFlags.NonPublic | BindingFlags.Static)!
+				.Invoke(null, [ principal, new[] { ClaimTypes.Email } ]);
 		Assert.Equal("test@example.com", value);
 	}
 }

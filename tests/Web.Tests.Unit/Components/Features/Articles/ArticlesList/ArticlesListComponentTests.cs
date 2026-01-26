@@ -23,16 +23,18 @@ public class ArticlesListComponentTests : BunitContext
 		Services.AddSingleton(mockHandler);
 
 		// Act
-		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<ArticlesList>();
 
 		// Assert
-		await cut.WaitForAssertionAsync(() =>
-		{
-			var titleElements = cut.FindAll("h2");
-			titleElements.Should().HaveCount(2);
-			titleElements[0].TextContent.Should().Be("Title1");
-			titleElements[1].TextContent.Should().Be("Title2");
-		});
+		// Ensure initialization completed deterministically
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
+
+		// Assert
+		var titleElements = cut.FindAll("h2");
+		titleElements.Should().HaveCount(2);
+		titleElements[0].TextContent.Should().Be("Title1");
+		titleElements[1].TextContent.Should().Be("Title2");
 	}
 
 	[Fact]
@@ -52,7 +54,7 @@ public class ArticlesListComponentTests : BunitContext
 		Services.AddSingleton(mockHandler);
 
 		// Act
-		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<ArticlesList>();
 
 		// Find and check the 'Include Archived' checkbox
 		var checkboxes = cut.FindAll("input[type='checkbox']");
@@ -60,9 +62,7 @@ public class ArticlesListComponentTests : BunitContext
 				c.Parent?.TextContent.Contains("Include Archived") == true);
 
 		includeArchivedCheckbox.Should().NotBeNull();
-		await includeArchivedCheckbox.ChangeAsync(true);
-
-		await cut.WaitForStateAsync(() => mockHandler.ReceivedCalls().Count() >= 2, timeout: TimeSpan.FromSeconds(2));
+		await cut.InvokeAsync(() => includeArchivedCheckbox.Change(true));
 
 		// Assert - Handler should be called twice: once on init (includeArchived=false), once after change (includeArchived=true)
 		await mockHandler.Received(1).HandleAsync(Arg.Any<ClaimsPrincipal?>());
@@ -86,7 +86,7 @@ public class ArticlesListComponentTests : BunitContext
 		Services.AddSingleton(mockHandler);
 
 		// Act
-		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<ArticlesList>();
 
 		// Find and check the 'Show My Articles Only' checkbox
 		var checkboxes = cut.FindAll("input[type='checkbox']");
@@ -94,9 +94,7 @@ public class ArticlesListComponentTests : BunitContext
 				c.Parent?.TextContent.Contains("Show My Articles Only") == true);
 
 		myArticlesCheckbox.Should().NotBeNull();
-		await myArticlesCheckbox.ChangeAsync(true);
-
-		await cut.WaitForStateAsync(() => mockHandler.ReceivedCalls().Count() >= 2, timeout: TimeSpan.FromSeconds(2));
+		await cut.InvokeAsync(() => myArticlesCheckbox.Change(true));
 
 		// Assert - Handler should be called twice: once on init (filterByUser=false), once after change (filterByUser=true)
 		await mockHandler.Received(1).HandleAsync(Arg.Any<ClaimsPrincipal?>());
@@ -114,14 +112,15 @@ public class ArticlesListComponentTests : BunitContext
 		Services.AddSingleton(mockHandler);
 
 		// Act
-		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<ArticlesList>();
+
+		// Ensure initialization completed deterministically
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
 
 		// Assert
-		await cut.WaitForAssertionAsync(() =>
-		{
-			var emptyMessage = cut.Find("p");
-			emptyMessage.TextContent.Should().Match("*No*articles available yet*");
-		});
+		var emptyMessage = cut.Find("p");
+		emptyMessage.TextContent.Should().Match("*No*articles available yet*");
 	}
 
 	[Fact]
@@ -135,14 +134,14 @@ public class ArticlesListComponentTests : BunitContext
 		Services.AddSingleton(mockHandler);
 
 		// Act
-		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<ArticlesList>();
 
+		// Ensure initialization completed deterministically
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
 		// Assert
-		await cut.WaitForAssertionAsync(() =>
-		{
-			cut.Markup.Should().Contain("Error loading articles");
-			cut.Markup.Should().Contain("Database connection failed");
-		});
+		cut.Markup.Should().Contain("Error loading articles");
+		cut.Markup.Should().Contain("Database connection failed");
 	}
 
 	[Theory]
@@ -162,25 +161,23 @@ public class ArticlesListComponentTests : BunitContext
 
 		// Act
 		var cut = Render<CascadingAuthenticationState>(parameters =>
-			parameters.AddChildContent<Web.Components.Features.Articles.ArticlesList.ArticlesList>());
+			parameters.AddChildContent<ArticlesList>());
 
-		// Wait for the top bar to render (h1 'All Articles')
-		await cut.WaitForStateAsync(() => cut.FindAll("h1").Any(h => h.TextContent.Contains("All Articles")), timeout: TimeSpan.FromSeconds(2));
+		// Ensure initialization completed deterministically
+		var onInit = cut.Instance.GetType().GetMethod("OnInitializedAsync", BindingFlags.Instance | BindingFlags.NonPublic);
+		if (onInit?.Invoke(cut.Instance, null) is Task onInitTask) await onInitTask;
 
 		// Assert
-		await cut.WaitForAssertionAsync(() =>
+		if (roles.Contains("Admin") || roles.Contains("Author"))
 		{
-			if (roles.Contains("Admin") || roles.Contains("Author"))
-			{
-				var createButton = cut.FindAll("button.btn-primary").FirstOrDefault(b => b.TextContent.Contains("Create"));
-				createButton.Should().NotBeNull();
-			}
-			else
-			{
-				var buttons = cut.FindAll("button.btn-primary").Where(b => b.TextContent.Contains("Create"));
-				buttons.Should().BeEmpty();
-			}
-		}, timeout: TimeSpan.FromSeconds(2));
+			var createButton = cut.FindAll("button.btn-primary").FirstOrDefault(b => b.TextContent.Contains("Create"));
+			createButton.Should().NotBeNull();
+		}
+		else
+		{
+			var buttons = cut.FindAll("button.btn-primary").Where(b => b.TextContent.Contains("Create"));
+			buttons.Should().BeEmpty();
+		}
 	}
 
 	[Fact]
@@ -200,10 +197,8 @@ public class ArticlesListComponentTests : BunitContext
 		Services.AddSingleton(mockHandler);
 
 		// Act
-		var cut = Render<Web.Components.Features.Articles.ArticlesList.ArticlesList>();
+		var cut = Render<ArticlesList>();
 
-		// Wait for initial render
-		await cut.WaitForStateAsync(() => cut.FindAll("input[type='checkbox']").Count == 2, timeout: TimeSpan.FromSeconds(2));
 
 		// Find checkboxes
 		var checkboxes = cut.FindAll("input[type='checkbox']");
@@ -217,7 +212,6 @@ public class ArticlesListComponentTests : BunitContext
 
 		// Trigger the first checkbox change
 		await cut.InvokeAsync(() => myArticlesCheckbox.Change(true));
-		await cut.WaitForStateAsync(() => mockHandler.ReceivedCalls().Count() >= 2, timeout: TimeSpan.FromSeconds(2));
 
 		// Re-find checkboxes after re-render
 		checkboxes = cut.FindAll("input[type='checkbox']");
@@ -226,7 +220,6 @@ public class ArticlesListComponentTests : BunitContext
 
 		// Trigger the second checkbox change
 		await cut.InvokeAsync(() => includeArchivedCheckbox!.Change(true));
-		await cut.WaitForStateAsync(() => mockHandler.ReceivedCalls().Count() >= 3, timeout: TimeSpan.FromSeconds(2));
 
 		// Assert - Handler should be called three times with different parameters
 		await mockHandler.Received(1).HandleAsync(Arg.Any<ClaimsPrincipal?>()); // Initial load

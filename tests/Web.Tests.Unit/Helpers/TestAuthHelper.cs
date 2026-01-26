@@ -1,5 +1,6 @@
 namespace Web.Helpers;
 
+[ExcludeFromCodeCoverage]
 public static class TestAuthHelper
 {
 	/// <summary>

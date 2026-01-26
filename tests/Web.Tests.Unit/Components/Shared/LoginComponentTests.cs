@@ -58,8 +58,8 @@ public class LoginComponentTests : BunitContext
 		public TestAuthStateProvider(bool isAuthenticated) => _isAuthenticated = isAuthenticated;
 		public override Task<AuthenticationState> GetAuthenticationStateAsync()
 		{
-			var identity = _isAuthenticated ? new System.Security.Claims.ClaimsIdentity(new[] { new System.Security.Claims.Claim("name", "TestUser") }, "TestAuth") : new System.Security.Claims.ClaimsIdentity();
-			return Task.FromResult(new AuthenticationState(new System.Security.Claims.ClaimsPrincipal(identity)));
+			var identity = _isAuthenticated ? new ClaimsIdentity([ new Claim("name", "TestUser") ], "TestAuth") : new ClaimsIdentity();
+			return Task.FromResult(new AuthenticationState(new ClaimsPrincipal(identity)));
 		}
 	}
 }

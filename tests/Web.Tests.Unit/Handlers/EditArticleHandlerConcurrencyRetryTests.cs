@@ -1,6 +1,7 @@
 // Removed redundant usings: moved to GlobalUsings.cs
 namespace Web.Handlers;
 
+[ExcludeFromCodeCoverage]
 public class EditArticleHandlerConcurrencyRetryTests
 {
 	[Fact]
@@ -11,7 +12,7 @@ public class EditArticleHandlerConcurrencyRetryTests
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
 
 		var articleId = ObjectId.GenerateNewId();
-		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("test-user-id", "Test Author");
+		var author = new AuthorInfo("test-user-id", "Test Author");
 		var category = new Category { CategoryName = "Technology" };
 
 		var originalArticle = new Article()
@@ -40,11 +41,11 @@ public class EditArticleHandlerConcurrencyRetryTests
 			Version = 1
 		};
 
-		// GetArticleByIdAsync should return original first, then latest on retry
+		// GetArticleByIdAsync should return the original first, then latest on retry
 		repo.GetArticleByIdAsync(articleId).Returns(Result.Ok<Article?>(originalArticle), Result.Ok<Article?>(latestArticle));
 
 		// UpdateArticle should fail first with concurrency conflict (typed), then succeed
-		var successResult = Result.Ok<Article>(latestArticle);
+		var successResult = Result.Ok(latestArticle);
 		repo.UpdateArticle(Arg.Any<Article>()).Returns(
 			Result.Fail<Article>("Concurrency conflict: article was modified by another process", ResultErrorCode.Concurrency),
 			successResult

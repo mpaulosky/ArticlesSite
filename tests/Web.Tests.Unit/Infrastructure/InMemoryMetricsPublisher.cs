@@ -5,6 +5,7 @@ namespace Web.Infrastructure;
 /// <summary>
 /// Simple in-memory metrics publisher used by unit tests to assert metrics were recorded.
 /// </summary>
+[ExcludeFromCodeCoverage]
 public sealed class InMemoryMetricsPublisher : IMetricsPublisher
 {
     private readonly ConcurrentDictionary<string, long> _counts = new();

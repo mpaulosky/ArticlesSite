@@ -156,4 +156,126 @@ public class GetCategoryHandlerTests
 		dto.IsArchived.Should().BeFalse();
 	}
 
+	[Fact]
+	public async Task HandleAsync_WithSlug_RepositoryFailure_ReturnsFailure()
+	{
+		// Arrange
+		_mockRepository.GetCategory("nope").Returns(Task.FromResult(Result.Fail<Category>("not found")));
+
+		// Act
+		var result = await _handler.HandleAsync("nope");
+
+		// Assert
+		result.Failure.Should().BeTrue();
+		result.Error.Should().Be("not found");
+		var logCalls = _mockLogger.ReceivedCalls();
+		logCalls.Any(c => c.GetMethodInfo().Name == "Log" && c.GetArguments().Any(a => a?.ToString()?.Contains("Category not found with slug") == true)).Should().BeTrue();
+	}
+
+	[Fact]
+	public async Task HandleAsync_WithSlug_RepositoryReturnsNull_ReturnsNotFound()
+	{
+		// Arrange
+		_mockRepository.GetCategory("nopers").Returns(Task.FromResult<Result<Category>>((Result<Category>)(object)Result.Ok((Category?)null)));
+
+		// Act
+		var result = await _handler.HandleAsync("nopers");
+
+		// Assert
+		result.Failure.Should().BeTrue();
+		result.Error.Should().Be("Category not found");
+		var logCalls = _mockLogger.ReceivedCalls();
+		logCalls.Any(c => c.GetMethodInfo().Name == "Log" && c.GetArguments().Any(a => a?.ToString()?.Contains("Category not found with slug") == true)).Should().BeTrue();
+	}
+
+	[Fact]
+	public async Task HandleAsync_WithSlug_RepositoryReturnsCategory_ReturnsDtoAndLogsInfo()
+	{
+		// Arrange
+		var category = new Category
+		{
+			CategoryName = "SlugCat",
+			Slug = "slug-cat",
+			CreatedOn = DateTimeOffset.UtcNow.AddDays(-1),
+			IsArchived = false
+		};
+
+		_mockRepository.GetCategory("slug-cat").Returns(Task.FromResult(Result.Ok(category)));
+
+		// Act
+		var result = await _handler.HandleAsync("slug-cat");
+
+		// Assert
+		result.Success.Should().BeTrue();
+		result.Value.Should().NotBeNull();
+		result.Value!.CategoryName.Should().Be("SlugCat");
+		var logCalls = _mockLogger.ReceivedCalls();
+		logCalls.Any(c => c.GetMethodInfo().Name == "Log" && c.GetArguments().Any(a => a?.ToString()?.Contains("Successfully retrieved category with slug") == true)).Should().BeTrue();
+	}
+
+	[Fact]
+	public async Task HandleAsync_WithNonObjectId_UsesSlugPath()
+	{
+		// Arrange
+		_mockRepository.GetCategory("my-slug").Returns(Task.FromResult(Result.Ok(new Category { CategoryName = "My" })));
+
+		// Act
+		var result = await _handler.HandleAsync("my-slug");
+
+		// Assert
+		result.Success.Should().BeTrue();
+		var calls = _mockRepository.ReceivedCalls();
+		calls.Any(c => c.GetMethodInfo().Name == nameof(ICategoryRepository.GetCategory) && c.GetArguments().OfType<string>().Any(s => s == "my-slug")).Should().BeTrue();
+		calls.Any(c => c.GetMethodInfo().Name == nameof(ICategoryRepository.GetCategoryByIdAsync)).Should().BeFalse();
+	}
+
+	[Fact]
+	public async Task HandleByIdAsync_WhenRepositoryFails_ReturnsFailure()
+	{
+		// Arrange
+		var id = ObjectId.GenerateNewId();
+		_mockRepository.GetCategoryByIdAsync(id).Returns(Task.FromResult(Result.Fail<Category>("no id")));
+
+		// Act
+		var result = await _handler.HandleByIdAsync(id);
+
+		// Assert
+		result.Failure.Should().BeTrue();
+		result.Error.Should().Be("no id");
+	}
+
+	[Fact]
+	public async Task HandleByIdAsync_WhenRepositoryReturnsNull_ReturnsNotFound()
+	{
+		// Arrange
+		var id = ObjectId.GenerateNewId();
+		_mockRepository.GetCategoryByIdAsync(id).Returns(Task.FromResult<Result<Category>>((Result<Category>)(object)Result.Ok((Category?)null)));
+
+		// Act
+		var result = await _handler.HandleByIdAsync(id);
+
+		// Assert
+		result.Failure.Should().BeTrue();
+		result.Error.Should().Be("Category not found");
+	}
+
+	[Fact]
+	public async Task HandleByIdAsync_WithCategory_ReturnsDtoAndLogsInfo()
+	{
+		// Arrange
+		var id = ObjectId.GenerateNewId();
+		var category = new Category { Id = id, CategoryName = "ById", Slug = "by-id", IsArchived = true };
+		_mockRepository.GetCategoryByIdAsync(id).Returns(Task.FromResult(Result.Ok(category)));
+
+		// Act
+		var result = await _handler.HandleByIdAsync(id);
+
+		// Assert
+		result.Success.Should().BeTrue();
+		result.Value.Should().NotBeNull();
+		result.Value!.Id.Should().Be(id);
+		result.Value.CategoryName.Should().Be("ById");
+		var logCalls = _mockLogger.ReceivedCalls();
+		logCalls.Any(c => c.GetMethodInfo().Name == "Log" && c.GetArguments().Any(a => a?.ToString()?.Contains("Successfully retrieved category with ID") == true)).Should().BeTrue();
+	}
 }

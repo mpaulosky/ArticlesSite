@@ -4,6 +4,7 @@ using Web.Components.Features.Categories.CategoriesList;
 
 namespace Web.Components.Features.Categories;
 
+[ExcludeFromCodeCoverage]
 public class GetCategoriesHandlerTests
 {
 	[Fact]
@@ -38,7 +39,7 @@ public class GetCategoriesHandlerTests
 	public async Task HandleAsync_Should_Return_Failure_When_RepositoryReturnsNull()
 	{
 		var repoMock = new Mock<ICategoryRepository>();
-		repoMock.Setup(r => r.GetCategories()).ReturnsAsync(Result.Ok<IEnumerable<Category>>(default!));
+		repoMock.Setup(r => r.GetCategories()).ReturnsAsync(Result.Ok<IEnumerable<Category>>(null!));
 		var loggerMock = new Mock<ILogger<GetCategories.Handler>>();
 		var handler = new GetCategories.Handler(repoMock.Object, loggerMock.Object);
 		var result = await handler.HandleAsync();

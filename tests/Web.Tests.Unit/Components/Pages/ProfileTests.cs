@@ -144,14 +144,14 @@ public class ProfileTests
 	// Helper method to test the private static GetClaimValue method via reflection
 	private static string InvokeGetClaimValue(ClaimsPrincipal user, params string[] claimTypes)
 	{
-		var profileType = typeof(Web.Components.User.Profile);
+		var profileType = typeof(User.Profile);
 
 		var method = profileType.GetMethod("GetClaimValue",
 				BindingFlags.NonPublic | BindingFlags.Static);
 
 		method.Should().NotBeNull("GetClaimValue method should exist");
 
-		var result = method!.Invoke(null, new object[] { user, claimTypes });
+		var result = method.Invoke(null, [ user, claimTypes ]);
 
 		return (string)result!;
 	}

@@ -6,6 +6,8 @@
 
 @attribute [Authorize]
 
+@using Microsoft.AspNetCore.Components.Authorization
+
 
 <ComponentHeadingComponent HeaderText="Category Details" Level="1" />
 
@@ -55,8 +57,11 @@ else
 				</div>
 			</div>
 			<div class="mt-6 flex gap-3 justify-end">
-				<button class="btn-primary"
-					@onclick="GoToEdit" disabled="@_category.IsArchived">Edit</button>
+				@if (_isAdmin)
+				{
+					<button class="btn-primary"
+						@onclick="GoToEdit" disabled="@_category.IsArchived">Edit</button>
+				}
 				<button class="btn-secondary"
 					@onclick="GoToList">Back to List</button>
 			</div>
@@ -90,6 +95,11 @@ else
 	private string? _errorMessage;
 
 	/// <summary>
+	/// Indicates whether the current user is an admin.
+	/// </summary>
+	private bool _isAdmin;
+
+	/// <summary>
 	/// Initializes the component by loading the category data using the GetCategoryHandler.
 	/// </summary>
 	protected override async Task OnInitializedAsync()
@@ -112,6 +122,17 @@ else
 				_category = null;
 				_errorMessage = result?.Error ?? "Category not found.";
 				Logger?.LogWarning("Failed to load category: {CategoryId}. Error: {Error}", Id, _errorMessage);
+			}
+
+			if (AuthenticationState is not null)
+			{
+				var authState = await AuthenticationState;
+				var user = authState.User;
+				_isAdmin = user.IsInRole("Admin");
+			}
+			else
+			{
+				_isAdmin = false;
 			}
 		}
 		finally

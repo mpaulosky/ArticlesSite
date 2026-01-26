@@ -1,6 +1,7 @@
 // Removed redundant usings: moved to GlobalUsings.cs
 namespace Web.Handlers;
 
+[ExcludeFromCodeCoverage]
 public class EditArticleHandlerConcurrencyExhaustionTests
 {
 	[Fact]
@@ -11,7 +12,7 @@ public class EditArticleHandlerConcurrencyExhaustionTests
 		var logger = Substitute.For<ILogger<EditArticle.Handler>>();
 
 		var articleId = ObjectId.GenerateNewId();
-		var author = new Web.Components.Features.AuthorInfo.Entities.AuthorInfo("test-user-id", "Test Author");
+		var author = new AuthorInfo("test-user-id", "Test Author");
 		var category = new Category { CategoryName = "Technology" };
 
 		var originalArticle = new Article()
@@ -59,7 +60,7 @@ public class EditArticleHandlerConcurrencyExhaustionTests
 		// Assert - handler should ultimately return a failure with concurrency message
 		result.Success.Should().BeFalse();
 		result.Error.Should().Contain("Concurrency conflict");
-		result.ErrorCode.Should().Be(Shared.Abstractions.ResultErrorCode.Concurrency);
+		result.ErrorCode.Should().Be(ResultErrorCode.Concurrency);
 
 		// UpdateArticle should have been attempted 4 times (1 initial + 3 maxRetries)
 		await repo.Received(4).UpdateArticle(Arg.Any<Article>());

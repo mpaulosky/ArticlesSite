@@ -98,7 +98,7 @@ public sealed class Result<T> : Result
 
 	public T? Value { get; }
 
-	private static Result<T> Ok(T value)
+	private static Result<T> Ok(T? value)
 	{
 		return new Result<T>(value, true);
 	}
@@ -118,14 +118,19 @@ public sealed class Result<T> : Result
 		return new Result<T>(default, false, errorMessage, code, details);
 	}
 
-	public static implicit operator T?(Result<T> result)
+	public static implicit operator T?(Result<T>? result)
 	{
-		ArgumentNullException.ThrowIfNull(result);
+		if (result is null)
+		{
+			// Return the language default for T? when the Result is null. For value types this will
+			// be the underlying default (e.g., 0 for int) which matches existing behavior.
+			return default;
+		}
 
 		return result.Value;
 	}
 
-	public static implicit operator Result<T>(T value)
+	public static implicit operator Result<T>(T? value)
 	{
 		return Ok(value);
 	}
