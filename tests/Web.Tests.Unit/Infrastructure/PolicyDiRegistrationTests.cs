@@ -2,6 +2,7 @@ using Microsoft.Extensions.Options;
 
 namespace Web.Infrastructure;
 
+[ExcludeFromCodeCoverage]
 public class PolicyDiRegistrationTests
 {
     [Fact]

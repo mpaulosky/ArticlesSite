@@ -146,8 +146,8 @@ public class FileStorageTests
 
 		// Verify logger was called with an error log
 		logger.Received().Log(
-			Arg.Is<Microsoft.Extensions.Logging.LogLevel>(l => l == Microsoft.Extensions.Logging.LogLevel.Error),
-			Arg.Any<Microsoft.Extensions.Logging.EventId>(),
+			Arg.Is<LogLevel>(l => l == LogLevel.Error),
+			Arg.Any<EventId>(),
 			Arg.Any<object>(),
 			Arg.Any<Exception>(),
 			Arg.Any<Func<object, Exception?, string>>());

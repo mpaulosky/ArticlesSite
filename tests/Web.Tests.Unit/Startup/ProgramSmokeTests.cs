@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace Web.Startup;
 
+[ExcludeFromCodeCoverage]
 public class ProgramSmokeTests
 {
 	private sealed class TestFactory : WebApplicationFactory<Program>
