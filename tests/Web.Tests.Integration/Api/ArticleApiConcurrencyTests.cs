@@ -25,7 +25,7 @@ public class ArticleApiConcurrencyTests : IClassFixture<WebApplicationFactory<Pr
 							["MongoDb:ConnectionString"] = _fixture.ConnectionString,
 							["MongoDb:Database"] = _fixture.Database.DatabaseNamespace.DatabaseName
 						};
-						conf.AddInMemoryCollection(dict!);
+						conf.AddInMemoryCollection(dict);
 					});
 
 			// Override the IMongoDbContextFactory with the test fixture's factory so the app uses the Testcontainer MongoDB instance
@@ -85,8 +85,8 @@ public class ArticleApiConcurrencyTests : IClassFixture<WebApplicationFactory<Pr
 		var stage2 = resp2.Headers.FirstOrDefault(h => h.Key == "X-Debug-Stage").Value.FirstOrDefault() ?? "unknown";
 		var errorCode1 = resp1.Headers.FirstOrDefault(h => h.Key == "X-Debug-ErrorCode").Value.FirstOrDefault() ?? "none";
 		var errorCode2 = resp2.Headers.FirstOrDefault(h => h.Key == "X-Debug-ErrorCode").Value.FirstOrDefault() ?? "none";
-		System.Console.WriteLine($"[TEST] Resp1: Status={resp1.StatusCode} Stage={stage1} ErrorCode={errorCode1}");
-		System.Console.WriteLine($"[TEST] Resp2: Status={resp2.StatusCode} Stage={stage2} ErrorCode={errorCode2}");
+		Console.WriteLine($"[TEST] Resp1: Status={resp1.StatusCode} Stage={stage1} ErrorCode={errorCode1}");
+		Console.WriteLine($"[TEST] Resp2: Status={resp2.StatusCode} Stage={stage2} ErrorCode={errorCode2}");
 
 		// Assert - at least one success, at least one 409 conflict
 		(resp1.IsSuccessStatusCode || resp2.IsSuccessStatusCode).Should().BeTrue();
@@ -95,19 +95,19 @@ public class ArticleApiConcurrencyTests : IClassFixture<WebApplicationFactory<Pr
 		// If conflict response contains ConcurrencyConflictResponseDto, validate structure
 		if (resp1.StatusCode == System.Net.HttpStatusCode.Conflict)
 		{
-			var conflict = await resp1.Content.ReadFromJsonAsync<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
+			var conflict = await resp1.Content.ReadFromJsonAsync<ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
 			conflict.Should().NotBeNull();
-			conflict!.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
+			conflict.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
 		}
 
 		if (resp2.StatusCode == System.Net.HttpStatusCode.Conflict)
 		{
-			var conflict = await resp2.Content.ReadFromJsonAsync<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
+			var conflict = await resp2.Content.ReadFromJsonAsync<ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
 			conflict.Should().NotBeNull();
-			conflict!.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
+			conflict.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
 		}
 
-		// Verify article exists in DB
+		// Verify the article exists in DB
 		var saved = await collection.Find(a => a.Id == article.Id).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 		saved.Should().NotBeNull();
 	}
