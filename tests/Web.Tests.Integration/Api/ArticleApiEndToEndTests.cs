@@ -25,7 +25,7 @@ public class ArticleApiEndToEndTests : IClassFixture<WebApplicationFactory<Progr
 							["MongoDb:ConnectionString"] = _fixture.ConnectionString,
 							["MongoDb:Database"] = _fixture.Database.DatabaseNamespace.DatabaseName
 						};
-						conf.AddInMemoryCollection(dict!);
+						conf.AddInMemoryCollection(dict);
 					});
 
 			// Override the IMongoDbContextFactory with the test fixture's factory so the app uses the Testcontainer MongoDB instance
@@ -87,19 +87,19 @@ public class ArticleApiEndToEndTests : IClassFixture<WebApplicationFactory<Progr
 		(r1.IsSuccessStatusCode || r2.IsSuccessStatusCode).Should().BeTrue();
 		(r1.StatusCode == System.Net.HttpStatusCode.Conflict || r2.StatusCode == System.Net.HttpStatusCode.Conflict).Should().BeTrue();
 
-		// If we got Conflict, ensure the response contains structured payload
+		// If we got Conflict, ensure the response contains a structured payload
 		if (r1.StatusCode == System.Net.HttpStatusCode.Conflict)
 		{
-			var conflict = await r1.Content.ReadFromJsonAsync<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
+			var conflict = await r1.Content.ReadFromJsonAsync<ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
 			conflict.Should().NotBeNull();
-			conflict!.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
+			conflict.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
 		}
 
 		if (r2.StatusCode == System.Net.HttpStatusCode.Conflict)
 		{
-			var conflict = await r2.Content.ReadFromJsonAsync<Web.Components.Features.Articles.Models.ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
+			var conflict = await r2.Content.ReadFromJsonAsync<ConcurrencyConflictResponseDto>(cancellationToken: TestContext.Current.CancellationToken);
 			conflict.Should().NotBeNull();
-			conflict!.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
+			conflict.ServerVersion.Should().BeGreaterThanOrEqualTo(0);
 		}
 	}
 }

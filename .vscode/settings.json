@@ -12,6 +12,7 @@
 		"/^pwsh \\./scripts/run-coverage\\.ps1 -Project Web\\.Tests\\.Unit$/": {
 			"approve": true,
 			"matchCommandLine": true
-		}
+		},
+		"mv": true
 	}
 }

@@ -29,6 +29,7 @@ global using MongoDB.Driver;
 global using NSubstitute;
 
 global using Shared.Abstractions;
+global using static Shared.Constants.Constants;
 
 global using Testcontainers.MongoDb;
 

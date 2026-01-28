@@ -95,7 +95,7 @@ public class MongoDbContextFactoryTests
 		try
 		{
 			// Create an appsettings.json in a temp dir
-			string json = "{\"DefaultConnection\": \"mongodb://apphost:27019\", \"DatabaseName\": \"AppDb\" }";
+			string json = "{\"DefaultConnection\": \"mongodb://app-host:27019\", \"DatabaseName\": \"AppDb\" }";
 			File.WriteAllText(Path.Combine(tempDir, "appsettings.json"), json);
 
 			Directory.SetCurrentDirectory(tempDir);
@@ -136,7 +136,7 @@ public class MongoDbContextFactoryTests
 		try
 		{
 			// Create an appsettings.json in a temp dir
-			string json = "{\"DefaultConnection\": \"mongodb://apphost:27019\", \"DatabaseName\": \"AppDb\" }";
+			string json = "{\"DefaultConnection\": \"mongodb://app-host:27019\", \"DatabaseName\": \"AppDb\" }";
 			File.WriteAllText(Path.Combine(tempDir, "appsettings.json"), json);
 
 			Directory.SetCurrentDirectory(tempDir);
@@ -178,7 +178,7 @@ public class MongoDbContextFactoryTests
 			var factory = new MongoDbContextFactory();
 
 			// Act
-			IMongoDbContext ctx = factory.CreateDbContext([ "--noop" ]);
+			IMongoDbContext ctx = factory.CreateDbContext(["--noop"]);
 
 			// Assert
 			ctx.Database.DatabaseNamespace.DatabaseName.Should().Be("EnvDb");
@@ -203,7 +203,7 @@ public class MongoDbContextFactoryTests
 
 		try
 		{
-			string json = "{\"ConnectionStrings\": { \"DefaultConnection\": \"mongodb://connhost:27020\", \"DatabaseName\": \"ConnDb\" } }";
+			string json = "{\"ConnectionStrings\": { \"DefaultConnection\": \"mongodb://conn-host:27020\", \"DatabaseName\": \"ConnDb\" } }";
 			File.WriteAllText(Path.Combine(tempDir, "appsettings.json"), json);
 
 			Directory.SetCurrentDirectory(tempDir);
@@ -243,8 +243,8 @@ public class MongoDbContextFactoryTests
 
 		try
 		{
-			string baseJson = "{ \"DefaultConnection\": \"mongodb://apphost:27019\", \"DatabaseName\": \"AppDb\" }";
-			string devJson = "{ \"DefaultConnection\": \"mongodb://devhost:27021\", \"DatabaseName\": \"DevDb\" }";
+			string baseJson = "{ \"DefaultConnection\": \"mongodb://app-host:27019\", \"DatabaseName\": \"AppDb\" }";
+			string devJson = "{ \"DefaultConnection\": \"mongodb://dev-host:27021\", \"DatabaseName\": \"DevDb\" }";
 			File.WriteAllText(Path.Combine(tempDir, "appsettings.json"), baseJson);
 			File.WriteAllText(Path.Combine(tempDir, "appsettings.Development.json"), devJson);
 

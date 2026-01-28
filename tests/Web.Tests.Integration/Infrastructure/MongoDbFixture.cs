@@ -13,84 +13,116 @@ namespace Web.Tests.Integration.Infrastructure;
 ///   Provides a MongoDB container for integration tests using Testcontainers
 /// </summary>
 [ExcludeFromCodeCoverage]
-public sealed class MongoDbFixture : IAsyncLifetime
+public class MongoDbFixture : IAsyncLifetime
 {
 
-	private readonly MongoDbContainer _mongoContainer;
-	private IMongoClient? _mongoClient;
-	private IMongoDatabase? _database;
+	private MongoDbContainer? _mongoDbContainer;
 	private IMongoDbContextFactory? _contextFactory;
-	private const string DatabaseNameValue = "articledb";
-
-	public MongoDbFixture()
-	{
-		_mongoContainer = new MongoDbBuilder()
-			.WithImage("mongo:7.0")  // Use MongoDB 7.0 for better compatibility with current driver
-			.Build();
-	}
 
 	/// <summary>
-	///   Gets the MongoDB connection string for the container
+	/// Gets the MongoDB connection string from the running container.
 	/// </summary>
-	public string ConnectionString => _mongoContainer.GetConnectionString();
+	public string ConnectionString =>
+			_mongoDbContainer?.GetConnectionString()
+			?? throw new InvalidOperationException("MongoDB container not initialized");
 
 	/// <summary>
-	///   Gets the configured MongoDB database instance
+	/// Gets the MongoDB client connected to the test container.
 	/// </summary>
-	public IMongoDatabase Database => _database
-		?? throw new InvalidOperationException("Database not initialized. Call InitializeAsync first.");
+	private static IMongoClient MongoClient { get; set; } = null!;
 
 	/// <summary>
-	///   Gets the database name used for testing
+	/// Gets the test database name.
 	/// </summary>
-	public string DatabaseName => DatabaseNameValue;
+	public static string DatabaseName => ArticleDatabase;
+
+	/// <summary>
+	/// Gets the MongoDB database for testing.
+	/// </summary>
+	public IMongoDatabase Database =>
+		MongoClient?.GetDatabase(DatabaseName)
+		?? throw new InvalidOperationException("MongoDB client not initialized");
 
 	/// <summary>
 	///   Gets the context factory for creating MongoDbContext instances
 	/// </summary>
-	public IMongoDbContextFactory ContextFactory => _contextFactory
-		?? throw new InvalidOperationException("Context factory not initialized. Call InitializeAsync first.");
+	public IMongoDbContextFactory ContextFactory =>
+			_contextFactory
+			?? throw new InvalidOperationException("Context factory not initialized. Call InitializeAsync first.");
 
 	/// <summary>
-	///   Initializes the MongoDB container and database
+	/// Initializes the MongoDB container before tests run.
 	/// </summary>
 	public async ValueTask InitializeAsync()
 	{
-		await _mongoContainer.StartAsync();
 
-		// Re-set environment variables after container starts in case timing matters
-		Environment.SetEnvironmentVariable("MONGODB_CONNECTION_STRING", ConnectionString, EnvironmentVariableTarget.Process);
-		Environment.SetEnvironmentVariable("MONGODB_DATABASE_NAME", DatabaseNameValue, EnvironmentVariableTarget.Process);
+		_mongoDbContainer = new MongoDbBuilder()
+				.WithImage("mongo:8.0")
+				.WithCleanUp(true)
+				.WithPortBinding(0, 27017) // Use random available port mapped to container's 27017
+				.Build();
 
-		_mongoClient = new MongoClient(ConnectionString);
-		_database = _mongoClient.GetDatabase(DatabaseNameValue);
+		await _mongoDbContainer.StartAsync();
 
-		// Create context factory
-		_contextFactory = new TestMongoDbContextFactory(_mongoClient, DatabaseNameValue);
+		MongoClient = new MongoClient(ConnectionString);
+
+		try
+		{
+			// Verify connection
+			await MongoClient.GetDatabase(DatabaseName).RunCommandAsync((Command<BsonDocument>)"{ping:1}");
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"MongoDB connection verification failed: {ex.Message}");
+
+			return;
+		}
+
+		// Re-set environment variables after the container starts in case timing matters
+		Environment.SetEnvironmentVariable("MONGODB_CONNECTION_STRING", ConnectionString,
+				EnvironmentVariableTarget.Process);
+
+		Environment.SetEnvironmentVariable("MONGODB_DATABASE_NAME", DatabaseName, EnvironmentVariableTarget.Process);
+
+		// Create a context factory
+		_contextFactory = new TestMongoDbContextFactory(MongoClient, DatabaseName);
 
 		// Create collections
-		await _database.CreateCollectionAsync("Articles");
-		await _database.CreateCollectionAsync("Categories");
-		await _database.CreateCollectionAsync("Authors");
+		await Database.CreateCollectionAsync("Articles");
+		await Database.CreateCollectionAsync("Categories");
 
 		// Create indexes for better query performance
-		var articlesCollection = _database.GetCollection<Article>("Articles");
-		await articlesCollection.Indexes.CreateOneAsync(
-			new CreateIndexModel<Article>(
-				Builders<Article>.IndexKeys.Ascending(a => a.Title)));
+		var articlesCollection = Database.GetCollection<Article>("Articles");
 
-		var categoriesCollection = _database.GetCollection<Category>("Categories");
+		await articlesCollection.Indexes.CreateOneAsync(
+				new CreateIndexModel<Article>(
+						Builders<Article>.IndexKeys.Ascending(a => a.Title)));
+
+		var categoriesCollection = Database.GetCollection<Category>("Categories");
+
 		await categoriesCollection.Indexes.CreateOneAsync(
-			new CreateIndexModel<Category>(
-				Builders<Category>.IndexKeys.Ascending(c => c.CategoryName)));
+				new CreateIndexModel<Category>(
+						Builders<Category>.IndexKeys.Ascending(c => c.CategoryName)));
+
 	}
 
 	/// <summary>
-	///   Cleans up the MongoDB container
+	/// Disposes the MongoDB container after tests complete.
 	/// </summary>
 	public async ValueTask DisposeAsync()
 	{
-		await _mongoContainer.DisposeAsync();
+		if (_mongoDbContainer is not null)
+		{
+			await _mongoDbContainer.DisposeAsync();
+		}
+	}
+
+	/// <summary>
+	/// Creates a new MongoDbContext for testing.
+	/// </summary>
+	public IMongoDbContext CreateDbContext()
+	{
+		return new MongoDbContext(MongoClient, DatabaseName);
 	}
 
 	/// <summary>
@@ -100,7 +132,9 @@ public sealed class MongoDbFixture : IAsyncLifetime
 	{
 		// Delete all documents from each collection and wait for completion
 		var articlesTask = Database.GetCollection<Article>("Articles").DeleteManyAsync(FilterDefinition<Article>.Empty);
-		var categoriesTask = Database.GetCollection<Category>("Categories").DeleteManyAsync(FilterDefinition<Category>.Empty);
+
+		var categoriesTask =
+				Database.GetCollection<Category>("Categories").DeleteManyAsync(FilterDefinition<Category>.Empty);
 
 		// Wait for all deletions to complete
 		await Task.WhenAll(articlesTask, categoriesTask);
@@ -114,7 +148,9 @@ public sealed class MongoDbFixture : IAsyncLifetime
 	/// </summary>
 	private sealed class TestMongoDbContextFactory : IMongoDbContextFactory
 	{
+
 		private readonly IMongoClient _client;
+
 		private readonly string _databaseName;
 
 		public TestMongoDbContextFactory(IMongoClient client, string databaseName)
@@ -127,6 +163,6 @@ public sealed class MongoDbFixture : IAsyncLifetime
 		{
 			return new MongoDbContext(_client, _databaseName);
 		}
-	}
 
+	}
 }
