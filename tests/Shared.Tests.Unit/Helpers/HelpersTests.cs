@@ -131,7 +131,8 @@ public class HelpersTests
 	public void GenerateSlug_ShouldReturnEmpty_ForNullOrWhitespace()
 	{
 		// Arrange & Act
-		string a = ((string?)null).GenerateSlug();
+		string? nullString = null;
+		string a = nullString!.GenerateSlug();
 		string b = "".GenerateSlug();
 		string c = "   ".GenerateSlug();
 
