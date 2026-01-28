@@ -30,7 +30,7 @@ public class MongoDbContextFactoryIntegrationTests
 		try
 		{
 			Environment.SetEnvironmentVariable("DefaultConnection", _fixture.ConnectionString);
-			Environment.SetEnvironmentVariable("DatabaseName", _fixture.DatabaseName);
+			Environment.SetEnvironmentVariable("DatabaseName", MongoDbFixture.DatabaseName);
 
 			// Act
 			var factory = new MongoDbContextFactory();
@@ -38,7 +38,7 @@ public class MongoDbContextFactoryIntegrationTests
 
 			// Assert
 			ctx.Should().NotBeNull();
-			ctx.Database.DatabaseNamespace.DatabaseName.Should().Be(_fixture.DatabaseName);
+			ctx.Database.DatabaseNamespace.DatabaseName.Should().Be(MongoDbFixture.DatabaseName);
 			var server = ctx.Database.Client.Settings.Servers.First();
 			server.Should().NotBeNull();
 			server.Host.Should().NotBeNullOrWhiteSpace();
@@ -60,9 +60,9 @@ public class MongoDbContextFactoryIntegrationTests
 		try
 		{
 			Environment.SetEnvironmentVariable("DefaultConnection", _fixture.ConnectionString);
-			Environment.SetEnvironmentVariable("DatabaseName", _fixture.DatabaseName);
+			Environment.SetEnvironmentVariable("DatabaseName", MongoDbFixture.DatabaseName);
 
-			// Now change runtime DB name
+			// Now change the runtime DB name
 			Environment.SetEnvironmentVariable("DatabaseName", "runtime_db_test");
 
 			var factory = new MongoDbContextFactory();

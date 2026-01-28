@@ -44,7 +44,7 @@ public class DatabaseSeederIntegrationTests
 
 		var article = await _fixture.Database.GetCollection<Article>("Articles").Find(FilterDefinition<Article>.Empty).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 		article.Should().NotBeNull();
-		article!.Title.Should().NotBeNullOrWhiteSpace();
+		article.Title.Should().NotBeNullOrWhiteSpace();
 	}
 
 	[Fact]

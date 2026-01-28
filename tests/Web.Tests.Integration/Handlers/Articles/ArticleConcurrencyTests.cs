@@ -463,12 +463,12 @@ public class ArticleConcurrencyTests
 
 		if (!editResult.Success)
 		{
-			editResult.ErrorCode.Should().Be(Shared.Abstractions.ResultErrorCode.Concurrency);
+			editResult.ErrorCode.Should().Be(ResultErrorCode.Concurrency);
 		}
 
 		if (!deleteResult.Success)
 		{
-			deleteResult.ErrorCode.Should().Be(Shared.Abstractions.ResultErrorCode.Concurrency);
+			deleteResult.ErrorCode.Should().Be(ResultErrorCode.Concurrency);
 		}
 
 		// Verify article still exists (one of the operations applied)

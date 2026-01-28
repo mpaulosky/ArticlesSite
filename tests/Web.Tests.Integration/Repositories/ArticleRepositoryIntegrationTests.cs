@@ -12,7 +12,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Web.Tests.Integration.Repositories;
 
 /// <summary>
-///   Integration tests for ArticleRepository with real MongoDB container
+///   Integration tests for ArticleRepository with a real MongoDB container
 /// </summary>
 [Collection("MongoDb Collection")]
 [ExcludeFromCodeCoverage]
@@ -136,7 +136,7 @@ public class ArticleRepositoryIntegrationTests
 		var collection = _fixture.Database.GetCollection<Article>("Articles");
 		var dbArticle = await collection.Find(a => a.Id == result.Value.Id).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 		dbArticle.Should().NotBeNull();
-		dbArticle!.Title.Should().Be(article.Title);
+		dbArticle.Title.Should().Be(article.Title);
 	}
 
 	[Fact]
@@ -168,7 +168,7 @@ public class ArticleRepositoryIntegrationTests
 		// Verify in database
 		var dbArticle = await collection.Find(a => a.Id == article.Id).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 		dbArticle.Should().NotBeNull();
-		dbArticle!.Title.Should().Be("Updated Title");
+		dbArticle.Title.Should().Be("Updated Title");
 	}
 
 	[Fact]
@@ -190,7 +190,7 @@ public class ArticleRepositoryIntegrationTests
 		// Assert - Verify in database
 		var dbArticle = await collection.Find(a => a.Slug == article.Slug).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 		dbArticle.Should().NotBeNull();
-		dbArticle!.IsArchived.Should().BeTrue();
+		dbArticle.IsArchived.Should().BeTrue();
 	}
 
 	[Fact]
@@ -271,7 +271,7 @@ public class ArticleRepositoryIntegrationTests
 		// Verify in database
 		var dbArticle = await collection.Find(a => a.Id == article.Id).FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 		dbArticle.Should().NotBeNull();
-		dbArticle!.Version.Should().Be(result.Value.Version);
+		dbArticle.Version.Should().Be(result.Value.Version);
 	}
 
 	[Fact]
@@ -302,7 +302,7 @@ public class ArticleRepositoryIntegrationTests
 			Version = 0
 		};
 
-		// First update with stale1 should succeed (expected version 0)
+		// The first update with stale1 should succeed (expected version 0)
 		var res1 = await _repository.UpdateArticle(stale1);
 		res1.Success.Should().BeTrue();
 
@@ -324,10 +324,9 @@ public class ArticleRepositoryIntegrationTests
 			Version = 0
 		};
 
-		// Second update should fail with concurrency conflict because DB version has moved to 1
+		// The second update should fail with concurrency conflict because a DB version has moved to 1
 		var res2 = await _repository.UpdateArticle(stale2);
 		res2.Success.Should().BeFalse();
 		res2.Error.Should().Contain("Concurrency conflict");
 	}
 }
-

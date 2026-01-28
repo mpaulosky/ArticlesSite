@@ -25,7 +25,7 @@ public class CategoryConcurrencyTests
 
 	private readonly EditCategory.IEditCategoryHandler _editHandler;
 
-	private readonly Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler _createHandler;
+	private readonly CreateCategory.ICreateCategoryHandler _createHandler;
 
 	private readonly Components.Features.Categories.CategoryDetails.GetCategory.IGetCategoryHandler _getHandler;
 
@@ -46,11 +46,11 @@ public class CategoryConcurrencyTests
 				JitterMilliseconds = 50  // Adjusted from default 100
 			}
 		);
-		var concurrencyPolicy = Web.Infrastructure.ConcurrencyPolicies.CreatePolicy<Web.Components.Features.Categories.Entities.Category>(concurrencyOptions.Value);
+		var concurrencyPolicy = Web.Infrastructure.ConcurrencyPolicies.CreatePolicy<Category>(concurrencyOptions.Value);
 		_editHandler = new EditCategory.Handler(_repository, editLogger, validator, concurrencyOptions, concurrencyPolicy);
 
-		var createLogger = Substitute.For<ILogger<Components.Features.Categories.CategoryCreate.CreateCategory.Handler>>();
-		_createHandler = new Components.Features.Categories.CategoryCreate.CreateCategory.Handler(_repository, createLogger, validator);
+		var createLogger = Substitute.For<ILogger<CreateCategory.Handler>>();
+		_createHandler = new CreateCategory.Handler(_repository, createLogger, validator);
 
 		var getLogger = Substitute.For<ILogger<Components.Features.Categories.CategoryDetails.GetCategory.Handler>>();
 		_getHandler = new Components.Features.Categories.CategoryDetails.GetCategory.Handler(_repository, getLogger);
