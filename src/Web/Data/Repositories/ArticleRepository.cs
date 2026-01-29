@@ -46,12 +46,11 @@ public class ArticleRepository
 	}
 
 	/// <summary>
-	/// Gets an article by its date string and slug.
+	/// Gets an article by its slug.
 	/// </summary>
-	/// <param name="dateString">The date string of the article.</param>
 	/// <param name="slug">The slug of the article.</param>
 	/// <returns>A <see cref="Result{Article}"/> containing the article if found, or an error message.</returns>
-	public async Task<Result<Article?>> GetArticle(string dateString, string slug)
+	public async Task<Result<Article?>> GetArticleBySlugAsync(string slug)
 	{
 		try
 		{
@@ -63,8 +62,19 @@ public class ArticleRepository
 
 			return Result.Ok<Article?>(article);
 		}
+		catch (OperationCanceledException ex)
+		{
+			_logger.LogWarning(ex, "Operation cancelled while getting article by slug: {Slug}", slug);
+			return Result.Fail<Article?>("Request was cancelled");
+		}
+		catch (MongoException ex)
+		{
+			_logger.LogError(ex, "Database error getting article by slug: {Slug}", slug);
+			return Result.Fail<Article?>($"Database error: {ex.Message}");
+		}
 		catch (Exception ex)
 		{
+			_logger.LogError(ex, "Unexpected error getting article by slug: {Slug}", slug);
 			return Result.Fail<Article?>($"Error getting article: {ex.Message}");
 		}
 	}
