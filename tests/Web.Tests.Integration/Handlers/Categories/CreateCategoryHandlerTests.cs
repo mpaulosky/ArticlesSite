@@ -7,7 +7,9 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-namespace Web.Tests.Integration.Handlers.Categories;
+using Web.Infrastructure;
+
+namespace Web.Handlers.Categories;
 
 /// <summary>
 ///   Integration tests for CreateCategory handler

@@ -7,7 +7,19 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-namespace Web.Tests.Integration.Repositories;
+
+// =======================================================
+// Copyright (c) 2025. All rights reserved.
+// File Name :     CategoryRepositoryIntegrationTests.cs
+// Company :       mpaulosky
+// Author :        Matthew Paulosky
+// Solution Name : ArticleSite
+// Project Name :  Web.Tests.Integration
+// =======================================================
+
+using Web.Infrastructure;
+
+namespace Web.Repositories;
 
 /// <summary>
 ///   Integration tests for CategoryRepository with real MongoDB container

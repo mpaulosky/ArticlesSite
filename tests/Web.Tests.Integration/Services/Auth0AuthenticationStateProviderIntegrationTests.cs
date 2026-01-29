@@ -19,7 +19,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Web.Tests.Integration.Services;
+namespace Web.Services;
 
 [ExcludeFromCodeCoverage]
 public class Auth0AuthenticationStateProviderIntegrationTests : IClassFixture<WebApplicationFactory<Program>>

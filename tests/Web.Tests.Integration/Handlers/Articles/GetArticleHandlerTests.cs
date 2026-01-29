@@ -7,7 +7,19 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-namespace Web.Tests.Integration.Handlers.Articles;
+
+// =======================================================
+// Copyright (c) 2025. All rights reserved.
+// File Name :     GetArticleHandlerTests.cs
+// Company :       mpaulosky
+// Author :        Matthew Paulosky
+// Solution Name : ArticleSite
+// Project Name :  Web.Tests.Integration
+// =======================================================
+
+using Web.Infrastructure;
+
+namespace Web.Handlers.Articles;
 
 /// <summary>
 ///   Integration tests for GetArticle handler

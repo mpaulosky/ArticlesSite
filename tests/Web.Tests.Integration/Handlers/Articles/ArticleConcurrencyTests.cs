@@ -12,7 +12,7 @@ using Microsoft.Extensions.Options;
 using Web.Components.Features.Articles.ArticleEdit;
 using Web.Infrastructure;
 
-namespace Web.Tests.Integration.Handlers.Articles;
+namespace Web.Handlers.Articles;
 
 /// <summary>
 /// Integration tests for concurrency and race condition scenarios in Article handlers.

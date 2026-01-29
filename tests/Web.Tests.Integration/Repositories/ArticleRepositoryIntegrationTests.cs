@@ -9,7 +9,9 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Web.Tests.Integration.Repositories;
+using Web.Infrastructure;
+
+namespace Web.Repositories;
 
 /// <summary>
 ///   Integration tests for ArticleRepository with a real MongoDB container
