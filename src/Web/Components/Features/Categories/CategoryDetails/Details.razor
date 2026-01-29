@@ -59,10 +59,10 @@ else
 			<div class="mt-6 flex gap-3 justify-end">
 				@if (_isAdmin)
 				{
-					<button class="btn-primary"
+					<button class="btn btn-primary"
 						@onclick="GoToEdit" disabled="@_category.IsArchived">Edit</button>
 				}
-				<button class="btn-secondary"
+				<button class="btn btn-secondary"
 					@onclick="GoToList">Back to List</button>
 			</div>
 		</div>

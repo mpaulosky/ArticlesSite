@@ -1,4 +1,4 @@
-﻿@* Add global render mode *@
+@* Add global render mode *@
 @rendermode InteractiveServer
 
 <CascadingAuthenticationState>
@@ -6,7 +6,9 @@
 		<Found Context="routeData">
 			<AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)">
 				<NotAuthorized>
-					<ErrorPageComponent ErrorType="404" ShadowColor="shadow-red-500" TextColor="red-600"></ErrorPageComponent>
+					<LayoutView Layout="typeof(MainLayout)">
+						<ErrorPageComponent ErrorCode="403" ShadowColor="shadow-orange-500" TextColor="orange-600"></ErrorPageComponent>
+					</LayoutView>
 				</NotAuthorized>
 				<Authorizing>
 					<div class="main">Please wait...</div>
@@ -15,7 +17,7 @@
 		</Found>
 		<NotFound>
 			<LayoutView Layout="typeof(MainLayout)">
-				<ErrorPageComponent ErrorType="404" ShadowColor="shadow-yellow-500" TextColor="yellow-600"></ErrorPageComponent>
+				<ErrorPageComponent ErrorCode="404" ShadowColor="shadow-yellow-500" TextColor="yellow-600"></ErrorPageComponent>
 			</LayoutView>
 		</NotFound>
 	</Router>

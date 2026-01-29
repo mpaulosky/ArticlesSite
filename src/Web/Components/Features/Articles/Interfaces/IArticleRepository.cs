@@ -23,12 +23,11 @@ public interface IArticleRepository
 	Task<Result<Article?>> GetArticleByIdAsync(ObjectId id);
 
 	/// <summary>
-	/// Gets an article by its date string and slug.
+	/// Gets an article by its slug.
 	/// </summary>
-	/// <param name="dateString">The date string of the article.</param>
 	/// <param name="slug">The slug of the article.</param>
 	/// <returns>A <see cref="Result{Article?}"/> containing the article if found, or an error message.</returns>
-	Task<Result<Article?>> GetArticle(string dateString, string slug);
+	Task<Result<Article?>> GetArticleBySlugAsync(string slug);
 
 	/// <summary>
 	/// Gets all non-archived articles.
