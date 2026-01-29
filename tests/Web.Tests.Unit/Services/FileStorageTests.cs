@@ -30,14 +30,14 @@ public class FileStorageTests
 
 		var contentBytes = System.Text.Encoding.UTF8.GetBytes("hello");
 		using var ms = new MemoryStream(contentBytes);
-		var metadata = new FileMetaData("test.txt", "text/plain", DateTime.UtcNow);
+		var metadata = new FileMetaData("test.png", "image/png", DateTime.UtcNow);
 		var fileData = new FileData(ms, metadata);
 
 		// Act
 		var returned = await svc.AddFile(fileData);
 
 		// Assert
-		returned.Should().EndWith(".txt");
+		returned.Should().EndWith(".png");
 		var savedPath = Path.Combine(webRoot, "uploads", returned);
 		File.Exists(savedPath).Should().BeTrue();
 		var savedBytes = await File.ReadAllBytesAsync(savedPath);
@@ -58,7 +58,7 @@ public class FileStorageTests
 		var svc = new FileStorage(env, logger);
 
 		using var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes("data"));
-		var metadata = new FileMetaData("file.bin", "application/octet-stream", DateTime.UtcNow);
+		var metadata = new FileMetaData("file.jpg", "image/jpeg", DateTime.UtcNow);
 		var fileData = new FileData(ms, metadata);
 
 		// Act
@@ -85,7 +85,7 @@ public class FileStorageTests
 		var svc = new FileStorage(env, logger);
 
 		using var ms = new MemoryStream(); // empty
-		var metadata = new FileMetaData("empty.txt", "text/plain", DateTime.UtcNow);
+		var metadata = new FileMetaData("empty.png", "image/png", DateTime.UtcNow);
 		var fileData = new FileData(ms, metadata);
 
 		// Act
@@ -112,15 +112,11 @@ public class FileStorageTests
 		var svc = new FileStorage(env, logger);
 
 		using var ms = new MemoryStream(System.Text.Encoding.UTF8.GetBytes("data"));
-		var metadata = new FileMetaData("file", "application/octet-stream", DateTime.UtcNow);
+		var metadata = new FileMetaData("file", "image/jpeg", DateTime.UtcNow);
 		var fileData = new FileData(ms, metadata);
 
-		// Act
-		var returned = await svc.AddFile(fileData);
-
-		// Assert
-		returned.Should().NotContain(".");
-		File.Exists(Path.Combine(webRoot, "uploads", returned)).Should().BeTrue();
+		// Act & Assert
+		await Assert.ThrowsAsync<InvalidOperationException>(() => svc.AddFile(fileData));
 
 		// Cleanup
 		Directory.Delete(webRoot, true);
@@ -138,15 +134,15 @@ public class FileStorageTests
 		var svc = new FileStorage(env, logger);
 
 		using var ms = new ThrowingStream();
-		var metadata = new FileMetaData("bad.txt", "text/plain", DateTime.UtcNow);
+		var metadata = new FileMetaData("bad.png", "image/png", DateTime.UtcNow);
 		var fileData = new FileData(ms, metadata);
 
 		// Act & Assert
 		await Assert.ThrowsAsync<InvalidOperationException>(() => svc.AddFile(fileData));
 
-		// Verify logger was called with an error log
+		// Verify logger was called with a warning log
 		logger.Received().Log(
-			Arg.Is<LogLevel>(l => l == LogLevel.Error),
+			Arg.Is<LogLevel>(l => l == LogLevel.Warning),
 			Arg.Any<EventId>(),
 			Arg.Any<object>(),
 			Arg.Any<Exception>(),

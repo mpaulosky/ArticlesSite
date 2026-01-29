@@ -1,3 +1,12 @@
+// =======================================================
+// Copyright (c) 2025. All rights reserved.
+// File Name :     DatabaseSeederTests.cs
+// Company :       mpaulosky
+// Author :        Matthew Paulosky
+// Solution Name : ArticleSite
+// Project Name :  Web.Tests.Unit
+// =======================================================
+
 using MongoDB.Driver;
 
 namespace Web.Services;
@@ -39,8 +48,8 @@ public class DatabaseSeederTests
 		logger.Received().Log(LogLevel.Information, Arg.Any<EventId>(), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
 
 		// Verify the actual log messages were produced
-		logger.ReceivedCalls().Any(c => c.GetMethodInfo().Name == "Log" && ((c.GetArguments().Length > 2 && c.GetArguments()[2]?.ToString()?.Contains("Categories already seeded.") == true))).Should().BeTrue();
-		logger.ReceivedCalls().Any(c => c.GetMethodInfo().Name == "Log" && ((c.GetArguments().Length > 2 && c.GetArguments()[2]?.ToString()?.Contains("Articles already seeded.") == true))).Should().BeTrue();
+		logger.ReceivedCalls().Any(c => c.GetMethodInfo().Name == "Log" && ((c.GetArguments().Length > 2 && c.GetArguments()[2]?.ToString()?.Contains("Categories already seeded") == true))).Should().BeTrue();
+		logger.ReceivedCalls().Any(c => c.GetMethodInfo().Name == "Log" && ((c.GetArguments().Length > 2 && c.GetArguments()[2]?.ToString()?.Contains("Articles already seeded") == true))).Should().BeTrue();
 	}
 
 	[Fact]
@@ -85,6 +94,6 @@ public class DatabaseSeederTests
 		logger.Received().Log(LogLevel.Information, Arg.Any<EventId>(), Arg.Any<object>(), null, Arg.Any<Func<object, Exception?, string>>());
 
 		logger.ReceivedCalls().Any(c => c.GetMethodInfo().Name == "Log" && ((c.GetArguments().Length > 2 && c.GetArguments()[2]?.ToString()?.Contains("Seeded") == true && c.GetArguments()[2]?.ToString()?.Contains("categories") == true))).Should().BeTrue();
-		logger.ReceivedCalls().Any(c => c.GetMethodInfo().Name == "Log" && ((c.GetArguments().Length > 2 && c.GetArguments()[2]?.ToString()?.Contains("Seeded one article.") == true))).Should().BeTrue();
+		logger.ReceivedCalls().Any(c => c.GetMethodInfo().Name == "Log" && ((c.GetArguments().Length > 2 && c.GetArguments()[2]?.ToString()?.Contains("Seeded one article") == true))).Should().BeTrue();
 	}
 }
