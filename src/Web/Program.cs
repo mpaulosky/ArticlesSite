@@ -121,7 +121,10 @@ app.Use(async (context, next) =>
 			var logPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "articlesite-integration.log");
 			await System.IO.File.AppendAllTextAsync(logPath, entry);
 		}
-		catch { }
+	catch (IOException ex)
+		{
+			logger.LogDebug(ex, "Failed to write integration log to current directory");
+		}
 
 		// Also write to temp directory so CI/test harness can find it reliably
 		try
@@ -129,9 +132,15 @@ app.Use(async (context, next) =>
 			var tempPath = System.IO.Path.Combine(Path.GetTempPath(), "articlesite-integration.log");
 			await System.IO.File.AppendAllTextAsync(tempPath, entry);
 		}
-		catch { }
+		catch (IOException ex)
+		{
+			logger.LogDebug(ex, "Failed to write integration log to temp directory");
+		}
 	}
-	catch { }
+	catch (Exception ex)
+	{
+		logger.LogWarning(ex, "Unexpected error writing request entry logs");
+	}
 	try
 	{
 		await next();
@@ -182,6 +191,8 @@ catch (InvalidOperationException ex)
 }
 
 app.MapDefaultEndpoints();
+
+// Health check endpoints are already mapped by AddServiceDefaults()
 
 app.MapGet("/Account/Login", async (HttpContext httpContext, string returnUrl = "/") =>
 {
