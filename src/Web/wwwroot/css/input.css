@@ -46,11 +46,10 @@
 
 	.btn {
 		@apply inline-block
-		font-semibold px-5 py-0
+		font-semibold px-5 py-2
 		rounded-full text-base
-		leading-tight
-		transition-all duration-200
-		cursor-pointer;
+		leading-tight border-none
+		cursor-pointer transition shadow-sm;
 	}
 
 	.btn-primary {
@@ -75,11 +74,20 @@
 	}
 
 	.edit-label {
-		@apply block text-theme-neutral-800 dark:text-theme-neutral-300 font-semibold mb-2;
+		@apply block text-theme-primary-800 dark:text-theme-primary-100 font-semibold mb-2;
+	}
+
+	.info-label {
+		@apply text-theme-primary-800 dark:text-white font-semibold;
 	}
 
 	.input-textbox {
-		@apply bg-theme-neutral-50 dark:bg-theme-neutral-800 text-theme-neutral-900 dark:text-white border-2 border-theme-primary-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-theme-accent-500 w-full;
+		@apply border-2 px-3 py-2 rounded-md w-full
+		bg-theme-primary-50 dark:bg-theme-primary-800
+		text-theme-primary-900 dark:text-white
+		border-theme-primary-700 dark:border-theme-primary-300
+		hover:border-theme-primary-900 dark:hover:border-theme-primary-500
+		focus:outline-none focus:ring-2 focus:ring-theme-accent-500;
 	}
 
 	.theme-selector-container {
@@ -92,11 +100,11 @@
 
 	.color-selector,
 	.brightness-selector {
-		@apply flex flex-col gap-2 py-2;
+		@apply flex flex-col gap-2;
 	}
 
 	.theme-selector-label {
-		@apply font-bold text-theme-primary-700 dark:text-theme-primary-100 text-sm uppercase tracking-wider;
+		@apply font-semibold text-theme-neutral-700 dark:text-theme-neutral-300 text-sm uppercase tracking-wider;
 	}
 
 	.button-group {
@@ -105,49 +113,21 @@
 
 	.color-btn,
 	.brightness-btn {
-		@apply border-2 bg-theme-primary-600 dark:bg-theme-primary-500
-				text-theme-primary-50 dark:text-theme-primary-50
-				border-theme-primary-100 dark:border-theme-primary-100;
+		@apply px-3 py-2 rounded-full font-medium text-sm transition-all duration-200
+		bg-theme-neutral-200 dark:bg-theme-neutral-700
+		hover:bg-theme-primary-300 dark:hover:bg-theme-primary-700
+		text-theme-neutral-700 dark:text-theme-neutral-300
+		border-2 border-transparent
+		cursor-pointer;
 	}
 
-		.color-btn.active,
-		.brightness-btn.active {
-			@apply border-3
-						bg-theme-primary-600 dark:bg-theme-primary-500
-						text-theme-primary-950 dark:text-theme-primary-950
-						border-theme-primary-100 dark:border-theme-primary-100;
-		}
-
-	.color-btn-red {
-		@apply bg-red-200 dark:bg-red-500
-				text-red-600 dark:text-red-200
-				hover:bg-red-600 dark:hover:bg-red-200
-				hover:text-red-50 dark:hover:text-red-600;
-	}
-
-	.color-btn-blue {
-		@apply bg-blue-200 dark:bg-blue-600
-				text-blue-600 dark:text-blue-200
-				hover:bg-blue-600 dark:hover:bg-blue-200
-				hover:text-blue-50 dark:hover:text-blue-600;
-	}
-
-	.color-btn-green {
-		@apply bg-green-200 dark:bg-green-600
-				text-green-600 dark:text-green-200
-				hover:bg-green-600 dark:hover:bg-green-200
-				hover:text-green-50 dark:hover:text-green-600;
-	}
-
-	.color-btn-yellow {
-		@apply bg-yellow-200 dark:bg-yellow-600
-				text-yellow-600 dark:text-yellow-200
-				hover:bg-yellow-600 dark:hover:bg-yellow-200
-				hover:text-yellow-50 dark:hover:text-yellow-600;
+	.color-btn.active,
+	.brightness-btn.active {
+		@apply bg-theme-primary-500 text-white border-theme-primary-700 dark:border-theme-primary-300;
 	}
 
 	.theme-info {
-		@apply text-sm font-medium text-theme-primary-600 dark:text-theme-primary-400;
+		@apply text-sm font-medium text-theme-neutral-600 dark:text-theme-neutral-400;
 	}
 
 	section {
@@ -169,7 +149,7 @@
 	h4,
 	h5,
 	h6 {
-		@apply font-bold tracking-tight text-theme-primary-700 dark:text-theme-primary-50;
+		@apply font-bold tracking-tight text-theme-primary-700 dark:text-theme-neutral-50;
 	}
 
 	a {

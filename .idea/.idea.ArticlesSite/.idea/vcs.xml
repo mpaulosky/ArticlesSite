@@ -9,5 +9,15 @@
   </component>
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../BlazorWebFormsComponents" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../IssueTracker" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../MyMediatR" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../NotesApp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../SuggestionApp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../TailwindBlog" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../TailwindBlogApp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../awesome-copilot" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../dotfiles" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../mpaulosky" vcs="Git" />
   </component>
 </project>
