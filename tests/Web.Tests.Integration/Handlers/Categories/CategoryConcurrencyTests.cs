@@ -7,7 +7,19 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-namespace Web.Tests.Integration.Handlers.Categories;
+
+// =======================================================
+// Copyright (c) 2025. All rights reserved.
+// File Name :     CategoryConcurrencyTests.cs
+// Company :       mpaulosky
+// Author :        Matthew Paulosky
+// Solution Name : ArticlesSite
+// Project Name :  Web.Tests.Integration
+// =======================================================
+
+using Web.Infrastructure;
+
+namespace Web.Handlers.Categories;
 
 /// <summary>
 /// Integration tests for concurrency and race condition scenarios in Category handlers.
@@ -38,7 +50,7 @@ public class CategoryConcurrencyTests
 		ILogger<EditCategory.Handler> editLogger = Substitute.For<ILogger<EditCategory.Handler>>();
 		var validator = new CategoryDtoValidator();
 		var concurrencyOptions = Microsoft.Extensions.Options.Options.Create(
-			new Web.Infrastructure.ConcurrencyOptions
+			new ConcurrencyOptions
 			{
 				MaxRetries = 5,  // Increased from default 3 for concurrent test scenarios
 				BaseDelayMilliseconds = 50,  // Reduced from default 100 for faster retries

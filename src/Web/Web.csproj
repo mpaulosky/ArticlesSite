@@ -9,6 +9,7 @@
 		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<UserSecretsId>9f19aa7d-1776-4ecc-9232-49061aafd9f2</UserSecretsId>
+		<RootNamespace>Web</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

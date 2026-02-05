@@ -7,7 +7,9 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-namespace Web.Tests.Integration.Handlers.Articles;
+using Web.Infrastructure;
+
+namespace Web.Handlers.Articles;
 
 /// <summary>
 ///   Integration tests for GetArticles handler

@@ -6,7 +6,6 @@
 @inject GetCategories.IGetCategoriesHandler GetCategoriesHandler
 @inject GetArticle.IGetArticleHandler GetArticleHandler
 @inject EditArticle.IEditArticleHandler EditArticleHandler
-@inject IJSRuntime JSRuntime
 
 @attribute [Authorize]
 
@@ -44,8 +43,7 @@ else if (_editModel.Id != ObjectId.Empty)
         </div>
 
         <div>
-          <label for="introductionEdit"
-            class="edit-label">Introduction</label>
+          <label for="introductionEdit" class="edit-label">Introduction</label>
           <InputTextArea id="introductionEdit" class="form-control input-textbox"
             @bind-Value="_editModel.Introduction" rows="2" />
         </div>
@@ -70,14 +68,11 @@ else if (_editModel.Id != ObjectId.Empty)
         </div>
 
         <div>
-          <label class="edit-label">
-            <i class="bi bi-person-circle me-1"></i> Author
-            <i class="bi bi-lock-fill text-gray-500 ms-1" title="Not editable"></i>
-          </label>
-          <div
-            class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-blue-500 rounded px-3 py-2 font-semibold">
-            @_editModel.Author?.Name
-          </div>
+          <label class="edit-label">Author</label>
+          <input id="authorEdit"
+                 class="form-control input-textbox border-2 rounded-md"
+                 value="@(_editModel.Author?.Name ?? string.Empty)"
+                 disabled />
         </div>
       </div>
 
@@ -99,10 +94,10 @@ else if (_editModel.Id != ObjectId.Empty)
       </div>
 
       <div class="mt-8 flex gap-3 justify-end">
-        <button type="submit" class="btn-primary">
+        <button type="submit" class="btn btn-primary">
           <i class="bi bi-save"></i> Save Changes
         </button>
-        <button type="button" class="btn-secondary" @onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
+        <button type="button" class="btn btn-secondary" @onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
           <i class="bi bi-arrow-left"></i> Cancel
         </button>
       </div>
@@ -115,9 +110,9 @@ else if (_editModel.Id != ObjectId.Empty)
         <p class="text-sm text-yellow-700">The article was modified by another user while you were editing. Choose an action:</p>
 
         <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
-          <button class="btn-primary" @onclick="ReloadLatestAsync">Reload Latest</button>
-          <button class="btn-warning" @onclick="ForceOverwriteAsync">Force Overwrite</button>
-          <button class="btn-secondary" @onclick="CancelToDetails">Cancel</button>
+          <button class="btn btn-primary" @onclick="ReloadLatestAsync">Reload Latest</button>
+          <button class="btn btn-warning" @onclick="ForceOverwriteAsync">Force Overwrite</button>
+          <button class="btn btn-secondary" @onclick="CancelToDetails">Cancel</button>
         </div>
 
         <div class="mt-4">
@@ -126,23 +121,7 @@ else if (_editModel.Id != ObjectId.Empty)
           <h5 class="font-semibold mt-2">Your draft:</h5>
           <div class="p-2 bg-white rounded border">@_editModel.Title</div>
 
-          @{
-            // Compute changed fields between latest and draft for display
-            var changedFields = new List<string>();
-            if (_latestArticle is not null && _editModel is not null)
-            {
-              if (_latestArticle.Title != _editModel.Title) changedFields.Add("Title");
-              if (_latestArticle.Introduction != _editModel.Introduction) changedFields.Add("Introduction");
-              if (_latestArticle.Content != _editModel.Content) changedFields.Add("Content");
-              if (_latestArticle.CoverImageUrl != _editModel.CoverImageUrl) changedFields.Add("CoverImageUrl");
-              if (_latestArticle.IsPublished != _editModel.IsPublished) changedFields.Add("IsPublished");
-              if (_latestArticle.IsArchived != _editModel.IsArchived) changedFields.Add("IsArchived");
-            }
-
-            if (changedFields.Any())
-            {
-          }
-          }
+          @{ var changedFields = ComputeChangedFields(_latestArticle, _editModel); }
 
           @if (changedFields.Any())
           {
@@ -182,7 +161,7 @@ else if (_editModel.Id != ObjectId.Empty)
   private string _selectedCategoryId = string.Empty;
 
   // Concurrency UI state
-  private bool _isConcurrencyConflict = false;
+	private bool _isConcurrencyConflict;
   private ArticleDto? _latestArticle;
 
   protected override async Task OnInitializedAsync()
@@ -251,7 +230,7 @@ else if (_editModel.Id != ObjectId.Empty)
 
       // Prefer stable identifier claims (Auth0 uses "sub"). Fall back to NameIdentifier.
       var currentUserId = user.FindFirst("sub")?.Value
-      ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+      ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
       var authorId = a?.Author?.UserId;
 
@@ -316,7 +295,7 @@ else if (_editModel.Id != ObjectId.Empty)
         {
           _isConcurrencyConflict = true;
 
-          // Load latest article to show to user
+          // Load the latest article to show to user
           var latest = await GetArticleHandler.HandleAsync(RecordId);
           if (latest is { Success: true, Value: not null })
           {
@@ -367,7 +346,7 @@ else if (_editModel.Id != ObjectId.Empty)
       return;
     }
 
-    // Set our DTO version to the latest server version so Replace will match and allow overwrite
+    // Set our DTO version to the latest server version so Replace will match and allow overwriting
     _editModel.Version = _latestArticle.Version;
 
     var result = await EditArticleHandler.HandleAsync(_editModel);
@@ -379,7 +358,7 @@ else if (_editModel.Id != ObjectId.Empty)
     else
     {
       _errorMessage = result.Error ?? "Failed to overwrite article.";
-      // If it's still a concurrency conflict, refresh latest to present to user again
+      // If it's still a concurrency conflict, refresh the latest to present to the user again
       if (result.Error is not null && result.Error.Contains("Concurrency conflict", StringComparison.OrdinalIgnoreCase))
       {
         var latest = await GetArticleHandler.HandleAsync(RecordId);
@@ -441,6 +420,22 @@ else if (_editModel.Id != ObjectId.Empty)
     {
       _editModel.Category = null;
     }
+  }
+
+  private static List<string> ComputeChangedFields(ArticleDto? latest, ArticleDto? draft)
+  {
+    var changedFields = new List<string>();
+    if (latest is null || draft is null) return changedFields;
+
+    // At this point 'latest' and 'draft' are non-null. Use string.Equals which is null-safe for comparison.
+    if (!string.Equals(latest.Title, draft.Title, StringComparison.Ordinal)) changedFields.Add("Title");
+    if (!string.Equals(latest.Introduction, draft.Introduction, StringComparison.Ordinal)) changedFields.Add("Introduction");
+    if (!string.Equals(latest.Content, draft.Content, StringComparison.Ordinal)) changedFields.Add("Content");
+    if (!string.Equals(latest.CoverImageUrl, draft.CoverImageUrl, StringComparison.Ordinal)) changedFields.Add("CoverImageUrl");
+    if (latest.IsPublished != draft.IsPublished) changedFields.Add("IsPublished");
+    if (latest.IsArchived != draft.IsArchived) changedFields.Add("IsArchived");
+
+    return changedFields;
   }
 
 }

@@ -7,12 +7,11 @@ using Microsoft.Extensions.Logging.Abstractions;
 using MongoDB.Driver;
 
 using Web.Components.Features.Articles.Models;
-using Web.Services;
-using Web.Tests.Integration.Infrastructure;
+using Web.Infrastructure;
 
 using Xunit;
 
-namespace Web.Tests.Integration.Services;
+namespace Web.Services;
 
 [Collection("MongoDb Collection")]
 [ExcludeFromCodeCoverage]

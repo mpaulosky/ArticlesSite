@@ -7,7 +7,9 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-namespace Web.Tests.Integration.Repositories;
+using Web.Infrastructure;
+
+namespace Web.Repositories;
 
 /// <summary>
 ///   Integration tests that verify interactions between Article and Category repositories

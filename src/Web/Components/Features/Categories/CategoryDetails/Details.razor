@@ -6,10 +6,8 @@
 
 @attribute [Authorize]
 
-@using Microsoft.AspNetCore.Components.Authorization
 
-
-<ComponentHeadingComponent HeaderText="Category Details" Level="1" />
+<PageHeadingComponent HeaderText="Category Details" Level="1" />
 
 @if (_isLoading)
 {
@@ -23,46 +21,38 @@ else if (_category is null)
 }
 else
 {
-	<div class="container-card bg-gray-700 rounded-lg shadow-lg p-8 max-w-2xl mx-auto mt-6">
+	<div class="container-card">
 		<div class="flex flex-col gap-2">
-			<h2 class="text-2xl font-bold text-blue-300 mb-2">@_category.CategoryName</h2>
-			<hr class="border-blue-500 mb-4" />
+			<h2 class="mb-2">@_category.CategoryName</h2>
 			<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 				<div>
-					<span class="font-semibold text-gray-400">Category Slug:</span>
-					<span class="text-gray-100">@_category.Slug</span>
+					<span class="info-label">Category ID:</span>
+					<span class="info-label">@_category.Id</span>
 				</div>
 				<div>
-					<span class="font-semibold text-gray-400">Category ID:</span>
-					<span class="text-gray-100">@_category.Id</span>
+					<span class="info-label">Category Slug:</span>
+					<span class="info-label">@_category.Slug</span>
 				</div>
 				<div>
-					<span class="font-semibold text-gray-400">Created On:</span>
-					<span class="text-gray-100">@_category.CreatedOn.ToString("f")</span>
+					<span class="info-label">Created On:</span>
+					<span class="info-label">@_category.CreatedOn.ToString("f")</span>
 				</div>
 				<div>
-					<span class="font-semibold text-gray-400">Modified On:</span>
-					<span class="text-gray-100">@(_category.ModifiedOn?.ToString("f") ?? "Never")</span>
+					<span class="info-label">Modified On:</span>
+					<span class="info-label">@(_category.ModifiedOn?.ToString("f") ?? "Never")</span>
 				</div>
 				<div>
-					<span class="font-semibold text-gray-400">Status:</span>
-					@if (_category.IsArchived)
-					{
-						<span class="badge bg-secondary">Archived</span>
-					}
-					else
-					{
-						<span class="badge bg-success">Active</span>
-					}
+					<i class="bi bi-archive me-1"></i><strong>Archived:</strong> @_category.IsArchived
 				</div>
 			</div>
+			<hr class="border-blue-500 mb-4" />
 			<div class="mt-6 flex gap-3 justify-end">
 				@if (_isAdmin)
 				{
-					<button class="btn-primary"
+					<button class="btn btn-primary"
 						@onclick="GoToEdit" disabled="@_category.IsArchived">Edit</button>
 				}
-				<button class="btn-secondary"
+				<button class="btn btn-secondary"
 					@onclick="GoToList">Back to List</button>
 			</div>
 		</div>

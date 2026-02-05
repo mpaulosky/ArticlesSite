@@ -36,6 +36,9 @@ public static class Extensions
 
 			// Turn on service discovery by default
 			http.AddServiceDiscovery();
+
+			// Configure HTTP client timeout to prevent hanging requests
+			http.ConfigureHttpClient(client => client.Timeout = TimeSpan.FromSeconds(30));
 		});
 
 		// Uncomment the following to restrict the allowed schemes for service discovery.

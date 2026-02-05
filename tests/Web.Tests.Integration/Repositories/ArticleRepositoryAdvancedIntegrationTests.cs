@@ -7,7 +7,19 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-namespace Web.Tests.Integration.Repositories;
+
+// =======================================================
+// Copyright (c) 2025. All rights reserved.
+// File Name :     ArticleRepositoryAdvancedIntegrationTests.cs
+// Company :       mpaulosky
+// Author :        Matthew Paulosky
+// Solution Name : ArticleSite
+// Project Name :  Web.Tests.Integration
+// =======================================================
+
+using Web.Infrastructure;
+
+namespace Web.Repositories;
 
 /// <summary>
 ///   Advanced integration tests for ArticleRepository covering edge cases and complex scenarios
@@ -44,7 +56,7 @@ public class ArticleRepositoryAdvancedIntegrationTests
 		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
 
 		// Act
-		var result = await _repository.GetArticle("2025-10-15", article.Slug);
+		var result = await _repository.GetArticleBySlugAsync(article.Slug);
 
 		// Assert
 		result.Should().NotBeNull();
@@ -68,7 +80,7 @@ public class ArticleRepositoryAdvancedIntegrationTests
 		await collection.InsertOneAsync(article, cancellationToken: TestContext.Current.CancellationToken);
 
 		// Act
-		var result = await _repository.GetArticle("2025-10-15", article.Slug);
+		var result = await _repository.GetArticleBySlugAsync(article.Slug);
 
 		// Assert
 		result.Should().NotBeNull();

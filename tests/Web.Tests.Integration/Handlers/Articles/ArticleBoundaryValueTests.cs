@@ -8,9 +8,10 @@
 // =======================================================
 
 using Microsoft.Extensions.Options;
+
 using Web.Infrastructure;
 
-namespace Web.Tests.Integration.Handlers.Articles;
+namespace Web.Handlers.Articles;
 
 /// <summary>
 /// Integration tests for boundary value scenarios in Article handlers.

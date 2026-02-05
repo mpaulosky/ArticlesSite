@@ -67,12 +67,12 @@ else
 			<div class="mt-4 flex gap-2">
 				@if (@Article.CanEdit)
 				{
-					<button class="btn-primary" @onclick="GoToEdit">
+					<button class="btn btn-primary" @onclick="GoToEdit">
 						<i class="bi bi-pencil-square"></i> Edit
 					</button>
 				}
 
-				<button class="btn-secondary" @onclick="GoToList">
+				<button class="btn btn-secondary" @onclick="GoToList">
 					<i class="bi bi-arrow-left"></i> Back to List
 				</button>
 			</div>

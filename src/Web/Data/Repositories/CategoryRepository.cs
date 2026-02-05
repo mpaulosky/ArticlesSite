@@ -35,6 +35,14 @@ public class CategoryRepository
 
 			return Result.Ok(category);
 		}
+		catch (OperationCanceledException)
+		{
+			return Result.Fail<Category>("Request was cancelled");
+		}
+		catch (MongoException ex)
+		{
+			return Result.Fail<Category>($"Database error: {ex.Message}");
+		}
 		catch (Exception ex)
 		{
 			return Result.Fail<Category>($"Error getting category by id: {ex.Message}");

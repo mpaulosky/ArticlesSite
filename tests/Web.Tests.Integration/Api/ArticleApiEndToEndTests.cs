@@ -2,7 +2,9 @@ using System.Net.Http.Json;
 
 using Microsoft.Extensions.Configuration;
 
-namespace Web.Tests.Integration.Api;
+using Web.Infrastructure;
+
+namespace Web.Api;
 
 [Collection("MongoDb Collection")]
 [ExcludeFromCodeCoverage]
@@ -43,12 +45,12 @@ public class ArticleApiEndToEndTests : IClassFixture<WebApplicationFactory<Progr
 
 						// For this integration test, disable retries so that concurrency conflicts are returned immediately to the client
 						// This allows us to test the 409 conflict response behavior instead of having the handler retry on every conflict
-						var optionsDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(Microsoft.Extensions.Options.IOptions<Web.Infrastructure.ConcurrencyOptions>));
+						var optionsDescriptor = services.FirstOrDefault(d => d.ServiceType == typeof(Microsoft.Extensions.Options.IOptions<ConcurrencyOptions>));
 						if (optionsDescriptor != null)
 						{
 							services.Remove(optionsDescriptor);
 						}
-						services.Configure<Web.Infrastructure.ConcurrencyOptions>(opts =>
+						services.Configure<ConcurrencyOptions>(opts =>
 								{
 									opts.MaxRetries = 0; // Disable retries for testing concurrent updates
 								});

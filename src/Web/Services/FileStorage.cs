@@ -20,15 +20,32 @@ namespace Web.Services
 		{
 			try
 			{
-				// Create uploads directory if it doesn't exist
-				var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads");
-				if (!Directory.Exists(uploadsPath))
+				// Validate WebRootPath is configured
+				if (string.IsNullOrEmpty(_environment.WebRootPath))
 				{
-					Directory.CreateDirectory(uploadsPath);
+					throw new InvalidOperationException("WebRootPath is not configured");
 				}
 
+				// Validate file size (max 10 MB)
+				const long maxFileSize = 10 * 1024 * 1024;
+				if (fileData.Content.Length > maxFileSize)
+				{
+					throw new InvalidOperationException("File exceeds maximum allowed size of 10 MB");
+				}
+
+				// Validate file extension
+				var extension = Path.GetExtension(fileData.MetaData.Name).ToLowerInvariant();
+				var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+				if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
+				{
+					throw new InvalidOperationException("File type not allowed. Only images are permitted.");
+				}
+
+				// Create uploads directory if it doesn't exist
+				var uploadsPath = Path.Combine(_environment.WebRootPath, "uploads");
+				Directory.CreateDirectory(uploadsPath);
+
 				// Generate a unique filename to prevent collisions
-				var extension = Path.GetExtension(fileData.MetaData.Name);
 				var uniqueFileName = $"{Guid.NewGuid()}{extension}";
 				var filePath = Path.Combine(uploadsPath, uniqueFileName);
 
@@ -41,9 +58,19 @@ namespace Web.Services
 				_logger.LogInformation("File saved successfully: {FileName}", uniqueFileName);
 				return uniqueFileName;
 			}
+			catch (InvalidOperationException ex)
+			{
+				_logger.LogWarning(ex, "Validation error saving file: {FileName}", fileData.MetaData.Name);
+				throw;
+			}
+			catch (IOException ex)
+			{
+				_logger.LogError(ex, "IO error saving file: {FileName}", fileData.MetaData.Name);
+				throw;
+			}
 			catch (Exception ex)
 			{
-				_logger.LogError(ex, "Error saving file: {FileName}", fileData.MetaData.Name);
+				_logger.LogError(ex, "Unexpected error saving file: {FileName}", fileData.MetaData.Name);
 				throw;
 			}
 		}

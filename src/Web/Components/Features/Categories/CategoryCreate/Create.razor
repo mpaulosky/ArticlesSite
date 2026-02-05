@@ -6,7 +6,7 @@
 
 @attribute [Authorize(Roles = "Admin")]
 
-<ComponentHeadingComponent HeaderText="Create New Category" Level="1" />
+<PageHeadingComponent HeaderText="Create New Category" Level="1" />
 
 @if (_isSubmitting)
 {
@@ -14,7 +14,7 @@
 }
 else
 {
-	<div class="container-card bg-gray-700 rounded-lg shadow-lg p-8 max-w-2xl mx-auto mt-6">
+	<div class="container-card">
 		<EditForm Model="@_category" OnValidSubmit="HandleSubmit">
 			<DataAnnotationsValidator />
 			<ValidationSummary />
@@ -27,16 +27,16 @@ else
 			}
 
 			<div class="mb-6">
-				<label for="categoryName" class="block text-gray-300 font-semibold mb-2">Category Name</label>
+				<label for="categoryName" class="edit-label">Category Name</label>
 				<InputText id="categoryName"
-					class="form-control bg-gray-800 text-white border-blue-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+					class="form-control input-textbox"
 					@bind-Value="_category.CategoryName" placeholder="Enter category name" />
 				<ValidationMessage For="@(() => _category.CategoryName)" />
 			</div>
 
-			<div class="mt-8 flex gap-3 justify-end">
+        <div class="mt-8 flex gap-3 justify-end">
 				<button type="submit"
-					class="btn-primary"
+					class="btn btn-primary"
 					disabled="@_isSubmitting">
 					@if (_isSubmitting)
 					{
@@ -49,7 +49,7 @@ else
 					}
 				</button>
 				<button type="button"
-					class="btn-secondary"
+					class="btn btn-secondary"
 					@onclick="GoToList" disabled="@_isSubmitting">Cancel</button>
 			</div>
 		</EditForm>
@@ -63,7 +63,7 @@ else
 	/// <summary>
 	/// The category data being created.
 	/// </summary>
-	private CategoryDto _category = new();
+	private readonly CategoryDto _category = new();
 
 	/// <summary>
 	/// Indicates whether the form is currently being submitted.

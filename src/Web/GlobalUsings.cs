@@ -20,6 +20,7 @@ global using FluentValidation;
 global using Microsoft.AspNetCore.Authentication;
 global using Microsoft.AspNetCore.Authentication.Cookies;
 global using Microsoft.AspNetCore.Components.Authorization;
+global using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.JSInterop;
 

@@ -76,7 +76,7 @@
 		var bytes = Convert.FromBase64String(file.ContentBase64);
 		var stream = new MemoryStream(bytes);
 
-		// Assign fileName from storage operation
+		// Assign fileName from a storage operation
 		var fileName = await FileStorage.AddFile(new FileData(stream, new FileMetaData(file.Name, "", file.LastModified)));
 		file.UploadUrl = new Uri(new Uri(NavigationManager.BaseUri), $"/api/files/{fileName}").ToString();
 		return file;

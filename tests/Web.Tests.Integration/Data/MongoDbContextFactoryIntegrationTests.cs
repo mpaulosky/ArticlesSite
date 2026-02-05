@@ -7,7 +7,9 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-namespace Web.Tests.Integration.Data;
+using Web.Infrastructure;
+
+namespace Web.Data;
 
 [Collection("MongoDb Collection")]
 [ExcludeFromCodeCoverage]

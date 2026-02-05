@@ -9,9 +9,7 @@
 
 using Microsoft.AspNetCore.Hosting;
 
-using Web.Services;
-
-namespace Web.Tests.Integration.Services;
+namespace Web.Services;
 
 /// <summary>
 ///   Integration tests for FileStorage service with dependency injection
@@ -40,16 +38,18 @@ public class FileStorageIntegrationTests : IDisposable
 		using var scope = provider.CreateScope();
 		var fileStorage = scope.ServiceProvider.GetRequiredService<IFileStorage>();
 
-		var bytes = System.Text.Encoding.UTF8.GetBytes("integration");
-		using var ms = new MemoryStream(bytes);
-		var metadata = new FileMetaData("integ.txt", "text/plain", DateTime.UtcNow);
+		// Create a minimal PNG file (1x1 transparent PNG)
+		var pngBytes = Convert.FromBase64String(
+			"iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+P+/HgAFhAJ/wlseKgAAAABJRU5ErkJggg==");
+		using var ms = new MemoryStream(pngBytes);
+		var metadata = new FileMetaData("integ.png", "image/png", DateTime.UtcNow);
 		var fileData = new FileData(ms, metadata);
 
 		// Act
 		var returned = await fileStorage.AddFile(fileData);
 
 		// Assert
-		returned.Should().EndWith(".txt");
+		returned.Should().EndWith(".png");
 		File.Exists(Path.Combine(_webRoot, "uploads", returned)).Should().BeTrue();
 	}
 
