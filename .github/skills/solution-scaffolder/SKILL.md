@@ -127,6 +127,7 @@ Create the **Vertical Slice Architecture** structure with complete .github folde
    - Dependabot configuration
    - CODEOWNERS file
    - Instructions folder with solution-specific coding standards
+   - Testing and debugging documentation (SETUP_SUMMARY.md, test-debugging-*.md)
    - **Copy agents/, prompts/, and skills/ folders** from source repository if they exist
 3. **Generate projects** based on solution type and features
 4. **Generate configuration files** (.editorconfig, Directory.Build.props, Directory.Packages.props, global.json)
@@ -260,6 +261,10 @@ All `.csproj` files must include:
 - **CONTRIBUTING.md**: Development setup, code style, PR process
 - **LICENSE.txt**: Default MIT (customizable)
 - **docs/ARCHITECTURE.md**: High-level architecture overview
+- **.github/SETUP_SUMMARY.md**: Comprehensive setup and debugging guide
+- **.github/test-debugging-unit.md**: Unit testing best practices and debugging
+- **.github/test-debugging-integration.md**: Integration testing with TestContainers
+- **.github/test-debugging-e2e.md**: E2E testing with Playwright
 
 ### Global Usings File
 
@@ -364,6 +369,10 @@ BlogEngine/
 │   │   ├── blazor.instructions.md
 │   │   ├── git-commit-instructions.md
 │   │   └── markdown.instructions.md
+│   ├── test-debugging-unit.md           (Unit testing and debugging guide)
+│   ├── test-debugging-integration.md    (Integration testing guide)
+│   ├── test-debugging-e2e.md            (E2E testing with Playwright)
+│   ├── SETUP_SUMMARY.md                 (Setup and debugging overview)
 │   ├── agents/                          (Copied from source if available)
 │   │   ├── solution-scaffolder.agent.md
 │   │   ├── code-reviewer.agent.md
