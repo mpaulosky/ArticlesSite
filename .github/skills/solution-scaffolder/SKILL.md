@@ -243,7 +243,7 @@ All `.csproj` files must include:
 - Target framework: `<TargetFramework>net10.0</TargetFramework>`
 - Language version: `<LangVersion>14.0</LangVersion>`
 - Nullable reference types: `<Nullable>enable</Nullable>`
-- ImplicitUsings: `<ImplicitUsingsScope>global</ImplicitUsingsScope>`
+- ImplicitUsings: `<ImplicitUsings>enable</ImplicitUsings>`
 - XML documentation: `<GenerateDocumentationFile>true</GenerateDocumentationFile>`
 
 ### Configuration Files
