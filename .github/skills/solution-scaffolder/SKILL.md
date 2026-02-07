@@ -459,6 +459,63 @@ Happy coding! 🎉
 
 ---
 
+## Copying From Source Repository
+
+### agents/, prompts/, and skills/ Folders
+
+When scaffolding a new solution, the skill will automatically copy these folders from the source repository if they exist:
+
+**agents/** - Custom AI agents that extend Copilot's capabilities
+- These agents automate complex workflows and analysis tasks
+- Copied so new solutions inherit the same AI automation
+- Examples: code reviewer, architecture analyzer, test generator
+
+**prompts/** - Pre-built prompt templates for consistent results
+- Standardized prompts for common development tasks
+- Ensures consistent AI-assisted workflows across projects
+- Examples: code review checklists, test generation patterns, documentation templates
+
+**skills/** - Specialized Copilot skill modules
+- Custom skills that solve project-specific problems
+- Enable guided workflows for complex operations
+- Examples: solution scaffolder (this skill), nuget manager, refactoring assistance
+
+### Copy Process
+
+1. **Detection**: Skill checks if `agents/`, `prompts/`, and `skills/` folders exist in source repository
+2. **Validation**: Ensures folders contain valid .md or .agent.md files
+3. **Recursive Copy**: Copies entire folder structures with all nested files
+4. **Preservation**: Maintains original file structure and content exactly as-is
+5. **Reporting**: Informs user what was copied (e.g., "Copied 3 agents, 5 prompts, 6 skills")
+
+### Benefits
+
+✅ **Immediate AI Assistance**: New solutions start with all custom agents and skills  
+✅ **Consistent Automation**: All projects use the same AI-assisted workflows  
+✅ **Knowledge Sharing**: Team standards and practices built into every solution  
+✅ **Easy Onboarding**: New developers inherit proven patterns and tools  
+✅ **Template Reuse**: Prompt templates ensure consistent output quality
+
+### Example Copy Result
+
+If the source repository has:
+```
+.github/agents/             (3 agents)
+.github/prompts/            (5 prompts)
+.github/skills/             (6 skills)
+```
+
+The new BlogEngine solution will have:
+```
+BlogEngine/.github/agents/   (Same 3 agents)
+BlogEngine/.github/prompts/  (Same 5 prompts)
+BlogEngine/.github/skills/   (Same 6 skills)
+```
+
+All ready to use immediately in the new solution.
+
+---
+
 ## Quality Checks
 
 After scaffolding, verify:
