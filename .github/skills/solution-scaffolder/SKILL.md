@@ -594,10 +594,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: '10.0.x'
+          global-json-file: global.json
       - run: dotnet restore
       - run: dotnet build
       - run: dotnet test --logger trx
