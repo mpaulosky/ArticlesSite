@@ -40,7 +40,7 @@ Before generating any files, conduct a guided discovery to understand the projec
 
 #### Question 1: Solution Name
 - **Prompt**: "What is the name of your new solution? (e.g., `MyWebApp`, `DataProcessor`, `ApiService`)"
-- **Validation**: Must be PascalCase, no spaces or special characters except hyphens
+- **Validation**: Must be PascalCase, starting with a letter and containing only letters and digits (no spaces, hyphens, or other special characters)
 - **Impact**: Used for folder structure, project names, namespace roots, and solution file
 
 #### Question 2: Destination Folder
