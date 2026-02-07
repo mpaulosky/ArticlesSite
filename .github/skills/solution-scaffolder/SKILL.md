@@ -904,9 +904,9 @@ tests/
 
 This skill should:
 
-1. Use `ask_user` tool for interactive questions (not plain text)
+1. Use interactive questions via the available agent tools (not plain text)
 2. Validate all inputs before generating files
-3. Create files using the `create` tool (avoid bash file generation)
+3. Create files using the repository's supported file-creation tools (for example, `create_file`) instead of shell commands
 4. Run `dotnet restore` after scaffolding to verify
 5. Provide clear, actionable next steps
 6. Reference ArticlesSite instructions (copilot-instructions.md, blazor.instructions.md, etc.) as generation rules
