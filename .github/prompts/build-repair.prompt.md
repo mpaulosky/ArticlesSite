@@ -1,6 +1,8 @@
 ---
-mode: 'agent'
-description: 'Universal .NET Solution Build & Error Resolution and warnings'
+name: build-repair-prompt
+description: Build and repair Prompt
+model: Claude Sonnet 4.5 (copilot)
+agent: agent
 ---
 
 # Copilot Build Prompt: Universal .NET Solution Build & Error Resolution
@@ -32,6 +34,16 @@ description: 'Universal .NET Solution Build & Error Resolution and warnings'
   - Ensure the final build output shows “Build succeeded” and no warnings.
   - Document any changes made to resolve issues.
 
+6. **Testing**
+  - Run unit tests to ensure the solution works as expected.
+  - If tests fail, identify and fix the issues in the codebase.
+  - Rebuild and retest until all tests pass.  
+
+7. **Documentation**
+  - Create a `build-log.txt` file in the solution directory.
+  - Log all build outputs, error resolutions, and changes made.
+
+
 ## Notes
 
 - These steps apply to any .NET solution (`*.slnx`).
@@ -40,5 +52,5 @@ description: 'Universal .NET Solution Build & Error Resolution and warnings'
 
 ---
 
-**Use this prompt to automate building any .NET solution and iteratively resolve all build errors and warnings until the
+**Use this prompt to automate building and testing any .NET solution and iteratively resolve all build and test errors and warnings until the
 build is clean.**
