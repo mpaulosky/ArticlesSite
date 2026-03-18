@@ -7,7 +7,7 @@
 //Project Name :  Web.Tests.Unit
 //=======================================================
 
-namespace Web.Tests.Unit.Components.Features.AuthorInfo;
+namespace Web.Components.Features.AuthorInfo;
 
 /// <summary>
 ///   Unit tests for the <see cref="AuthorInfo" /> record.

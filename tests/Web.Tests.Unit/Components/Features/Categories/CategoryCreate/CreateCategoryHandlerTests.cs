@@ -7,9 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using FluentValidation;
-
-namespace Web.Tests.Unit.Components.Features.Categories.CategoryCreate;
+namespace Web.Components.Features.Categories.CategoryCreate;
 
 /// <summary>
 ///   Unit tests for CreateCategory.Handler
@@ -46,7 +44,7 @@ public class CreateCategoryHandlerTests
 			IsArchived = false
 		};
 
-		var validationResult = new FluentValidation.Results.ValidationResult();
+		var validationResult = new ValidationResult();
 		_mockValidator.ValidateAsync(categoryDto, Arg.Any<CancellationToken>()).Returns(validationResult);
 		_mockRepository.AddCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result.Ok(new Category())));
 
@@ -85,8 +83,8 @@ public class CreateCategoryHandlerTests
 			IsArchived = false
 		};
 
-		var validationFailure = new FluentValidation.Results.ValidationFailure("CategoryName", "Category name is required");
-		var validationResult = new FluentValidation.Results.ValidationResult(new[] { validationFailure });
+		var validationFailure = new ValidationFailure("CategoryName", "Category name is required");
+		var validationResult = new ValidationResult([ validationFailure ]);
 		_mockValidator.ValidateAsync(categoryDto, Arg.Any<CancellationToken>()).Returns(validationResult);
 
 		// Act
@@ -110,7 +108,7 @@ public class CreateCategoryHandlerTests
 			IsArchived = false
 		};
 
-		var validationResult = new FluentValidation.Results.ValidationResult();
+		var validationResult = new ValidationResult();
 		_mockValidator.ValidateAsync(categoryDto, Arg.Any<CancellationToken>()).Returns(validationResult);
 		_mockRepository.AddCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result<Category>.Fail("Database error")));
 
@@ -134,7 +132,7 @@ public class CreateCategoryHandlerTests
 			IsArchived = false
 		};
 
-		var validationResult = new FluentValidation.Results.ValidationResult();
+		var validationResult = new ValidationResult();
 		_mockValidator.ValidateAsync(categoryDto, Arg.Any<CancellationToken>()).Returns(validationResult);
 		_mockRepository.AddCategory(Arg.Any<Category>()).Returns(Task.FromResult(Result.Ok(new Category())));
 

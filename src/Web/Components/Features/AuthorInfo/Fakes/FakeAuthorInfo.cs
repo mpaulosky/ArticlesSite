@@ -7,8 +7,6 @@
 // Project Name :  Web
 // =======================================================
 
-using Web.Components.Features.AuthorInfo.Entities;
-
 namespace Web.Components.Features.AuthorInfo.Fakes;
 
 /// <summary>

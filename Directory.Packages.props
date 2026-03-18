@@ -78,6 +78,7 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
     <PackageVersion Include="xunit.v3" Version="3.2.1" />
     <PackageVersion Include="Xunit.SkippableFact" Version="1.5.23" />
-    <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
-  </ItemGroup>
-</Project>
+        <PackageVersion Include="Microsoft.AspNetCore.OpenApi" Version="9.0.10" />
+        <PackageVersion Include="Polly" Version="7.2.3" />
+      </ItemGroup>
+    </Project>

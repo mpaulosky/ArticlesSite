@@ -7,8 +7,6 @@
 // Project Name :  Web
 // =======================================================
 
-using Web.Components.Features.Categories.Models;
-
 namespace Web.Components.Features.Categories.Fakes;
 
 /// <summary>

@@ -1,3 +1,17 @@
 {
-	"dotnet-test-explorer.testProjectPath": "tests/**/*Tests.csproj"
+	"dotnet-test-explorer.testProjectPath": "tests/**/*Tests.csproj",
+	"chat.tools.terminal.autoApprove": {
+		"/^powershell -ExecutionPolicy Bypass -File \\.\\\\scripts\\\\run-coverage\\.ps1 -TestProject tests\\\\Web\\.Tests\\.Unit\\\\Web\\.Tests\\.Unit\\.csproj -ResultsDir TestResults\\\\coverage-web -ReportDir coverage\\\\web$/": {
+			"approve": true,
+			"matchCommandLine": true
+		},
+		"/^pwsh \\./scripts/run-coverage\\.ps1$/": {
+			"approve": true,
+			"matchCommandLine": true
+		},
+		"/^pwsh \\./scripts/run-coverage\\.ps1 -Project Web\\.Tests\\.Unit$/": {
+			"approve": true,
+			"matchCommandLine": true
+		}
+	}
 }

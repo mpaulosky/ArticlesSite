@@ -1,7 +1,5 @@
 using System.Text.Json;
 
-using Shared.Fakes;
-
 namespace Web.Services;
 
 public class DatabaseSeeder
@@ -21,46 +19,87 @@ public class DatabaseSeeder
 
 	public async Task SeedAsync()
 	{
-		await SeedCategoriesAsync();
-		await SeedArticleAsync();
+		try
+		{
+			await SeedCategoriesAsync();
+			await SeedArticleAsync();
+			_logger.LogInformation("Database seeding completed successfully");
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error during database seeding");
+			throw;
+		}
 	}
 
 	private async Task SeedCategoriesAsync()
 	{
-		var categoriesCollection = _database.GetCollection<Category>("Categories");
-		var count = await categoriesCollection.CountDocumentsAsync(FilterDefinition<Category>.Empty);
-
-		if (count > 0)
+		try
 		{
-			_logger.LogInformation("Categories already seeded.");
+			var categoriesCollection = _database.GetCollection<Category>("Categories");
+			var count = await categoriesCollection.CountDocumentsAsync(FilterDefinition<Category>.Empty);
 
-			return;
+			if (count > 0)
+			{
+				_logger.LogInformation("Categories already seeded");
+				return;
+			}
+
+			var categories = JsonSerializer.Deserialize<List<Category>>(_categoriesJson);
+
+			if (categories is not null && categories.Count > 0)
+			{
+				await categoriesCollection.InsertManyAsync(categories);
+				_logger.LogInformation("Seeded {CategoryCount} categories", categories.Count);
+			}
 		}
-
-		var categories = JsonSerializer.Deserialize<List<Category>>(_categoriesJson);
-
-		if (categories != null)
+		catch (JsonException ex)
 		{
-			await categoriesCollection.InsertManyAsync(categories);
-			_logger.LogInformation($"Seeded {categories.Count} categories.");
+			_logger.LogError(ex, "Error deserializing categories JSON");
+			throw;
+		}
+		catch (MongoWriteException ex) when (ex.WriteError?.Category == ServerErrorCategory.DuplicateKey)
+		{
+			_logger.LogInformation("Categories already exist, skipping seed");
+		}
+		catch (MongoException ex)
+		{
+			_logger.LogError(ex, "MongoDB error seeding categories");
+			throw;
 		}
 	}
 
 	private async Task SeedArticleAsync()
 	{
-		var articlesCollection = _database.GetCollection<Article>("Articles");
-		var count = await articlesCollection.CountDocumentsAsync(FilterDefinition<Article>.Empty);
-
-		if (count > 0)
+		try
 		{
-			_logger.LogInformation("Articles already seeded.");
+			var articlesCollection = _database.GetCollection<Article>("Articles");
+			var count = await articlesCollection.CountDocumentsAsync(FilterDefinition<Article>.Empty);
 
-			return;
+			if (count > 0)
+			{
+				_logger.LogInformation("Articles already seeded");
+				return;
+			}
+
+			var article = FakeArticle.GetNewArticle(true);
+			await articlesCollection.InsertOneAsync(article);
+			_logger.LogInformation("Seeded one article");
 		}
-
-		var article = FakeArticle.GetNewArticle(true);
-		await articlesCollection.InsertOneAsync(article);
-		_logger.LogInformation("Seeded one article.");
+		catch (MongoWriteException ex) when (ex.WriteError?.Category == ServerErrorCategory.DuplicateKey)
+		{
+			_logger.LogInformation("Articles already exist, skipping seed");
+		}
+		catch (MongoException ex)
+		{
+			_logger.LogError(ex, "MongoDB error seeding articles");
+			throw;
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error seeding articles");
+			throw;
+		}
 	}
 
 	private static readonly string _categoriesJson = @"[

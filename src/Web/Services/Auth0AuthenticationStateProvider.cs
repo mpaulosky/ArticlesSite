@@ -7,8 +7,6 @@
 // Project Name :  Web
 // =======================================================
 
-using System.Security.Claims;
-
 namespace Web.Services;
 
 public class Auth0AuthenticationStateProvider : AuthenticationStateProvider

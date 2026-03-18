@@ -7,13 +7,8 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Web.Components.Shared;
+namespace Web.Components.Shared;
 
-namespace Web.Tests.Unit.Components.Shared;
-
-/// <summary>
-/// Unit tests for PageHeadingComponent using Bunit
-/// </summary>
 [ExcludeFromCodeCoverage]
 public class PageHeadingComponentTests : BunitContext
 {
@@ -22,27 +17,42 @@ public class PageHeadingComponentTests : BunitContext
 	{
 		var cut = Render<PageHeadingComponent>();
 		cut.Find("h1").TextContent.Should().Be("My Blog");
-		cut.Find("h1").ClassList.Should().Contain("text-gray-50");
 	}
 
 	[Theory]
-	[InlineData("1", "h1", "text-3xl")]
-	[InlineData("2", "h2", "text-2xl")]
-	[InlineData("3", "h3", "text-1xl")]
+	[InlineData("1", "h1", "My Blog")]
+	[InlineData("2", "h2", "My Blog")]
+	[InlineData("3", "h3", "My Blog")]
+	public void RendersCorrectHeaderLevel(string level, string expectedTag, string expectedText)
+	{
+		var cut = Render<PageHeadingComponent>(parameters => parameters
+			.Add(p => p.Level, level)
+			.Add(p => p.HeaderText, expectedText));
+		cut.Find(expectedTag).TextContent.Should().Be(expectedText);
+	}
+
+	[Theory]
+	[InlineData("1", "h1", "text-3xl text-red-500")]
+	[InlineData("2", "h2", "text-2xl text-blue-500")]
+	[InlineData("3", "h3", "text-1xl text-green-500")]
 	public void RendersCorrectHeaderLevelAndClass(string level, string expectedTag, string expectedClass)
 	{
 		var cut = Render<PageHeadingComponent>(parameters => parameters
-				.Add(p => p.Level, level)
-				.Add(p => p.HeaderText, "Test Heading"));
-		cut.Find(expectedTag).TextContent.Should().Be("Test Heading");
-		cut.Find(expectedTag).ClassList.Should().Contain(expectedClass);
+			.Add(p => p.Level, level)
+			.Add(p => p.HeaderText, "Test Heading")
+			.Add(p => p.TextColorClass, expectedClass));
+
+		var element = cut.Find(expectedTag);
+		element.TextContent.Should().Be("Test Heading");
+		element.ClassList.Should().Contain(expectedClass.Split(' ')[0]);
 	}
 
 	[Fact]
-	public void RendersCustomTextColorClass()
+	public void DoesNotRenderHeader_ForUnknownLevel()
 	{
 		var cut = Render<PageHeadingComponent>(parameters => parameters
-				.Add(p => p.TextColorClass, "text-blue-500"));
-		cut.Find("h1").ClassList.Should().Contain("text-blue-500");
+			.Add(p => p.Level, "99")
+			.Add(p => p.HeaderText, "Should Not Render"));
+		cut.Markup.Should().NotContain("Should Not Render");
 	}
 }

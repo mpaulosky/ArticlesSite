@@ -52,6 +52,7 @@ public interface ICategoryRepository
 
 	/// <summary>
 	/// Updates an existing category in the database.
+	/// Implementations should use ReplaceOneAsync for updates and filter by Id (e.g., Id ==) and Version when implemented.
 	/// </summary>
 	/// <param name="category">The category to update.</param>
 	/// <returns>A <see cref="Result{Category}"/> containing the updated category or an error message.</returns>

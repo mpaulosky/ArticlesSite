@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Components;
 
-using Web.Components.Features.Categories.CategoriesList;
-
 using CategoriesListComponent = Web.Components.Features.Categories.CategoriesList.CategoriesList;
 
 
-namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
+namespace Web.Components.Features.Categories.CategoriesList
 {
 	[ExcludeFromCodeCoverage]
 	public class CategoriesListComponentTests : BunitContext
@@ -19,7 +17,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void Should_FilterCategories_ByArchivedStatus_OnToggle()
 		{
 			// Arrange
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 			var activeCategory = new CategoryDto
 			{
@@ -77,7 +75,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void Should_DisplayEmptyMessage_WhenAllCategoriesArchived_AndNotIncluded()
 		{
 			// Arrange
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -117,7 +115,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		[Fact]
 		public void RendersErrorAlert_WhenLoadingFails()
 		{
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", Array.Empty<string>());
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", []);
 
 			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 			handler.HandleAsync(Arg.Any<bool>())
@@ -138,7 +136,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void RendersEmptyMessage_WhenNoCategoriesExist()
 		{
 			// Arrange
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -214,7 +212,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void DisplaysCategoryDetails_WithCorrectData()
 		{
 			// Arrange
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -256,7 +254,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void DisplaysArchivedStatus_ForArchivedCategories()
 		{
 			// Arrange
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -294,7 +292,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void ViewButton_Click_ShouldNavigateToDetails()
 		{
 			// Arrange
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -333,7 +331,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void EditButton_Click_ShouldNavigateToEdit()
 		{
 			// Arrange
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -452,7 +450,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void CreateButton_Click_ShouldNavigateToCreate()
 		{
 			// Arrange
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 			GetCategories.IGetCategoriesHandler? handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 
@@ -477,7 +475,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void PageHeading_ShouldDisplay_AllCategories()
 		{
 			// Arrange
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", Array.Empty<string>());
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", []);
 
 			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 			handler.HandleAsync()
@@ -497,7 +495,7 @@ namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList
 		public void DisplaysModifiedOn_AsNAWhenNull()
 		{
 			// Arrange
-			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", new[] { "Admin" });
+			Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 
 			var handler = Substitute.For<GetCategories.IGetCategoriesHandler>();
 			var categories = new List<CategoryDto>

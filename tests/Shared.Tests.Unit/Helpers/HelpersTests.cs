@@ -7,6 +7,9 @@
 //Project Name :  Shared.Tests.Unit
 //=======================================================
 
+using System.Reflection;
+using System.Text.RegularExpressions;
+
 using Shared.Helpers;
 
 namespace Shared.Tests.Unit.Helpers;
@@ -122,6 +125,33 @@ public class HelpersTests
 		{
 			validCategories.Should().Contain(result);
 		}
+	}
+
+	[Fact]
+	public void GenerateSlug_ShouldReturnEmpty_ForNullOrWhitespace()
+	{
+		// Arrange & Act
+		string a = ((string?)null).GenerateSlug();
+		string b = "".GenerateSlug();
+		string c = "   ".GenerateSlug();
+
+		// Assert
+		a.Should().BeEmpty();
+		b.Should().BeEmpty();
+		c.Should().BeEmpty();
+	}
+
+	[Fact]
+	public void MyRegex_PrivateGeneratedMethod_ShouldReturnExpectedPattern()
+	{
+		// Use reflection to call private static MyRegex()
+		var mi = typeof(Shared.Helpers.Helpers).GetMethod("MyRegex", BindingFlags.NonPublic | BindingFlags.Static);
+		mi.Should().NotBeNull();
+
+		var obj = mi!.Invoke(null, Array.Empty<object>());
+		obj.Should().NotBeNull();
+		var regex = (Regex)obj!;
+		regex.ToString().Should().Be("[^a-z0-9]+");
 	}
 
 }

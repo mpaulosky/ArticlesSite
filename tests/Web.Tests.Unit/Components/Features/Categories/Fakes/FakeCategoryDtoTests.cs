@@ -7,7 +7,7 @@
 //Project Name :  Web.Tests.Unit
 //=======================================================
 
-namespace Web.Tests.Unit.Components.Features.Categories.Fakes;
+namespace Web.Components.Features.Categories.Fakes;
 
 [ExcludeFromCodeCoverage]
 public class FakeCategoryDtoTests

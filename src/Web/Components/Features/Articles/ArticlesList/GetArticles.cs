@@ -7,7 +7,7 @@
 // Project Name :  Web
 // =======================================================
 
-using System.Security.Claims;
+using System.Text.RegularExpressions;
 
 namespace Web.Components.Features.Articles.ArticlesList;
 
@@ -92,7 +92,8 @@ public static class GetArticles
 					article.CreatedOn,
 					article.ModifiedOn,
 					article.IsArchived,
-					DetermineCanEdit(article, currentUserId, isAdmin)
+					DetermineCanEdit(article, currentUserId, isAdmin),
+					article.Version
 			)).ToList();
 
 			static string GenerateSlug(string title)
@@ -105,10 +106,10 @@ public static class GetArticles
 				string slug = title.ToLowerInvariant();
 
 				// Replace any sequence of non-alphanumeric characters with underscore
-				slug = System.Text.RegularExpressions.Regex.Replace(slug, "[^a-z0-9]+", "_");
+				slug = Regex.Replace(slug, "[^a-z0-9]+", "_");
 
 				// Collapse multiple underscores into one
-				slug = System.Text.RegularExpressions.Regex.Replace(slug, "_+", "_");
+				slug = Regex.Replace(slug, "_+", "_");
 
 				// Trim leading/trailing underscores
 				slug = slug.Trim('_');

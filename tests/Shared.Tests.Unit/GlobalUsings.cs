@@ -13,6 +13,3 @@ global using FluentAssertions;
 
 global using MongoDB.Bson;
 
-global using Shared.Entities;
-global using Shared.Fakes;
-global using Shared.Models;

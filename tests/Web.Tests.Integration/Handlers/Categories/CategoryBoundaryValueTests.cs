@@ -20,26 +20,20 @@ public class CategoryBoundaryValueTests
 
 	private readonly MongoDbFixture _fixture;
 
-	private readonly ICategoryRepository _repository;
+	private readonly CreateCategory.ICreateCategoryHandler _createHandler;
 
-	private readonly Components.Features.Categories.CategoryCreate.CreateCategory.ICreateCategoryHandler _createHandler;
-
-	private readonly Components.Features.Categories.CategoryEdit.EditCategory.IEditCategoryHandler _editHandler;
-
-	private readonly ILogger<Components.Features.Categories.CategoryCreate.CreateCategory.Handler> _logger;
-
-	private readonly IValidator<CategoryDto> _validator;
+	private readonly EditCategory.IEditCategoryHandler _editHandler;
 
 	public CategoryBoundaryValueTests(MongoDbFixture fixture)
 	{
 		_fixture = fixture;
-		_repository = new CategoryRepository(_fixture.ContextFactory);
-		_logger = Substitute.For<ILogger<Components.Features.Categories.CategoryCreate.CreateCategory.Handler>>();
-		_validator = new CategoryDtoValidator();
-		_createHandler = new Components.Features.Categories.CategoryCreate.CreateCategory.Handler(_repository, _logger, _validator);
+		ICategoryRepository repository = new CategoryRepository(_fixture.ContextFactory);
+		ILogger<CreateCategory.Handler> logger = Substitute.For<ILogger<CreateCategory.Handler>>();
+		CategoryDtoValidator validator = new ();
+		_createHandler = new CreateCategory.Handler(repository, logger, validator);
 
-		var editLogger = Substitute.For<ILogger<Components.Features.Categories.CategoryEdit.EditCategory.Handler>>();
-		_editHandler = new Components.Features.Categories.CategoryEdit.EditCategory.Handler(_repository, editLogger, _validator);
+		var editLogger = Substitute.For<ILogger<EditCategory.Handler>>();
+		_editHandler = new EditCategory.Handler(repository, editLogger, validator);
 	}
 
 	[Fact]
@@ -215,7 +209,7 @@ public class CategoryBoundaryValueTests
 		{
 			Id = existingCategory.Id,
 			CategoryName = maxLengthName,
-			Slug = existingCategory.Slug ?? "slug",
+			Slug = existingCategory.Slug,
 			CreatedOn = existingCategory.CreatedOn ?? DateTimeOffset.UtcNow,
 			IsArchived = false
 		};
@@ -244,7 +238,7 @@ public class CategoryBoundaryValueTests
 		{
 			Id = existingCategory.Id,
 			CategoryName = oversizedName,
-			Slug = existingCategory.Slug ?? "slug",
+			Slug = existingCategory.Slug,
 			CreatedOn = existingCategory.CreatedOn ?? DateTimeOffset.UtcNow,
 			IsArchived = false
 		};

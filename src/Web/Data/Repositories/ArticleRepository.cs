@@ -7,7 +7,11 @@
 // Project Name :  Web
 // =======================================================
 
-using System.Linq.Expressions;
+using Microsoft.Extensions.Logging.Abstractions;
+
+using MongoDB.Bson.Serialization;
+
+using Web.Components.Features.Articles.Extensions;
 
 namespace Web.Data.Repositories;
 
@@ -16,9 +20,11 @@ namespace Web.Data.Repositories;
 /// </summary>
 public class ArticleRepository
 (
-		IMongoDbContextFactory contextFactory
+				IMongoDbContextFactory contextFactory,
+				ILogger<ArticleRepository>? logger = null
 ) : IArticleRepository
 {
+	private readonly ILogger<ArticleRepository> _logger = logger ?? NullLogger<ArticleRepository>.Instance;
 
 	/// <summary>
 	/// Gets an article by its unique identifier.
@@ -44,12 +50,11 @@ public class ArticleRepository
 	}
 
 	/// <summary>
-	/// Gets an article by its date string and slug.
+	/// Gets an article by its slug.
 	/// </summary>
-	/// <param name="dateString">The date string of the article.</param>
 	/// <param name="slug">The slug of the article.</param>
 	/// <returns>A <see cref="Result{Article}"/> containing the article if found, or an error message.</returns>
-	public async Task<Result<Article?>> GetArticle(string dateString, string slug)
+	public async Task<Result<Article?>> GetArticleBySlugAsync(string slug)
 	{
 		try
 		{
@@ -61,8 +66,19 @@ public class ArticleRepository
 
 			return Result.Ok<Article?>(article);
 		}
+		catch (OperationCanceledException ex)
+		{
+			_logger.LogWarning(ex, "Operation cancelled while getting article by slug: {Slug}", slug);
+			return Result.Fail<Article?>("Request was cancelled");
+		}
+		catch (MongoException ex)
+		{
+			_logger.LogError(ex, "Database error getting article by slug: {Slug}", slug);
+			return Result.Fail<Article?>($"Database error: {ex.Message}");
+		}
 		catch (Exception ex)
 		{
+			_logger.LogError(ex, "Unexpected error getting article by slug: {Slug}", slug);
 			return Result.Fail<Article?>($"Error getting article: {ex.Message}");
 		}
 	}
@@ -142,9 +158,57 @@ public class ArticleRepository
 		try
 		{
 			IMongoDbContext context = contextFactory.CreateDbContext();
-			await context.Articles.ReplaceOneAsync(a => a.Id == post.Id, post);
 
-			return Result.Ok(post);
+			// Capture the expected version from the caller (optimistic concurrency)
+			int expectedVersion = post.Version;
+
+			// Prepare the filter to match Id and either matching version or missing version field (some documents may not include the version field)
+			var idFilter = Builders<Article>.Filter.Eq(a => a.Id, post.Id);
+			var versionFilter = Builders<Article>.Filter.Or(
+				Builders<Article>.Filter.Eq(a => a.Version, expectedVersion),
+				Builders<Article>.Filter.Exists("version", false)
+			);
+			var filter = Builders<Article>.Filter.And(idFilter, versionFilter);
+
+			// Create a replacement clone and increment its version. Do not mutate caller object.
+			var replacement = BsonSerializer.Deserialize<Article>(post.ToBsonDocument());
+			replacement.Version = expectedVersion + 1;
+			replacement.ModifiedOn = DateTimeOffset.UtcNow;
+
+			_logger.LogInformation("ArticleRepository.UpdateArticle: Attempting FindOneAndReplace for Id={Id} ExpectedVersion={ExpectedVersion} ReplacementVersion={ReplacementVersion}", post.Id, expectedVersion, replacement.Version);
+
+			// Use FindOneAndReplaceAsync to atomically find and replace the document
+			// This is more atomic than ReplaceOne and better handles concurrent updates
+			var options = new FindOneAndReplaceOptions<Article>
+			{
+				ReturnDocument = ReturnDocument.After,
+				IsUpsert = false
+			};
+
+			var result = await context.Articles.FindOneAndReplaceAsync(filter, replacement, options);
+
+			if (result != null)
+			{
+				_logger.LogInformation("ArticleRepository.UpdateArticle: FindOneAndReplace succeeded. NewVersion={NewVersion}", result.Version);
+				return Result.Ok(result);
+			}
+
+			// No document matched the id+version filter -> concurrency conflict
+			var server = await context.Articles.Find(a => a.Id == post.Id).FirstOrDefaultAsync();
+			var serverDto = server is null ? null : server.ToDto(canEdit: false);
+			var changed2 = new List<string>();
+			if (server is not null)
+			{
+				if (server.Title != post.Title) changed2.Add("Title");
+				if (server.Introduction != post.Introduction) changed2.Add("Introduction");
+				if (server.Content != post.Content) changed2.Add("Content");
+				if (server.CoverImageUrl != post.CoverImageUrl) changed2.Add("CoverImageUrl");
+				if (server.IsPublished != post.IsPublished) changed2.Add("IsPublished");
+				if (server.IsArchived != post.IsArchived) changed2.Add("IsArchived");
+			}
+			var details2 = new ConcurrencyConflictInfo(server?.Version ?? -1, serverDto, changed2);
+			_logger.LogInformation("ArticleRepository.UpdateArticle: FindOneAndReplace did not find a matching document (conflict)");
+			return Result.Fail<Article>("Concurrency conflict: article was modified by another process", ResultErrorCode.Concurrency, details2);
 		}
 		catch (Exception ex)
 		{
@@ -164,3 +228,4 @@ public class ArticleRepository
 	}
 
 }
+

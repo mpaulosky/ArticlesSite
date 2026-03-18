@@ -209,7 +209,7 @@ public class ArticleRepositoryAdvancedIntegrationTests
 				.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 
 		dbArticle.Should().NotBeNull();
-		dbArticle!.Id.Should().Be(originalId);
+		dbArticle.Id.Should().Be(originalId);
 		dbArticle.Title.Should().Be("New Title");
 	}
 
@@ -241,7 +241,7 @@ public class ArticleRepositoryAdvancedIntegrationTests
 				.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
 
 		dbArticle.Should().NotBeNull();
-		dbArticle!.Title.Should().Be(article.Title);
+		dbArticle.Title.Should().Be(article.Title);
 		dbArticle.Introduction.Should().Be(article.Introduction);
 		dbArticle.Content.Should().Be(article.Content);
 		dbArticle.CoverImageUrl.Should().Be(article.CoverImageUrl);

@@ -1,5 +1,4 @@
 @page "/articles/details/{id}"
-
 @using Markdig
 
 @inject NavigationManager Navigation
@@ -8,13 +7,13 @@
 
 @attribute [Authorize]
 
-<PageHeadingComponent HeaderText="Article Details" Level="1" TextColorClass="blue-500" />
+<PageHeadingComponent HeaderText="Article Details" Level="1" />
 
 @if (IsLoading)
 {
 	<LoadingComponent />
 }
-else if (@ErrorMessage is not null)
+else if (ErrorMessage is not null)
 {
 	<ErrorAlertComponent Title="Unable to load article">
 		@(ErrorMessage ?? "Article not found.")
@@ -65,14 +64,14 @@ else
 				</div>
 			</div>
 			<div class="mt-4 flex gap-2">
-				@if (@Article.CanEdit)
+				@if (Article.CanEdit)
 				{
-					<button class="btn-primary" @onclick="GoToEdit">
+					<button class="btn btn-primary" @onclick="GoToEdit">
 						<i class="bi bi-pencil-square"></i> Edit
 					</button>
 				}
 
-				<button class="btn-secondary" @onclick="GoToList">
+				<button class="btn btn-secondary" @onclick="GoToList">
 					<i class="bi bi-arrow-left"></i> Back to List
 				</button>
 			</div>
@@ -172,7 +171,7 @@ else
 
 			// Prefer stable identifier claims (Auth0 uses "sub"). Fall back to NameIdentifier.
 			var currentUserId = user.FindFirst("sub")?.Value
-													?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+													?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
 			var authorId = a?.Author?.UserId;
 

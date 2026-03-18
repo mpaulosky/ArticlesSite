@@ -7,15 +7,7 @@
 // Project Name : ServiceDefaults
 // =======================================================
 
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging;
-
-using OpenTelemetry;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
+// Removed redundant usings: moved to GlobalUsings.cs
 
 namespace Microsoft.Extensions.Hosting;
 

@@ -57,7 +57,7 @@ public class StructureTests
 				.That()
 				.HaveNameEndingWith("Dto")
 				.And()
-				.DoNotResideInNamespace("Shared.Fakes")
+				.DoNotResideInNamespaceMatching(".*\\.Fakes")
 				.GetTypes();
 
 		// Assert

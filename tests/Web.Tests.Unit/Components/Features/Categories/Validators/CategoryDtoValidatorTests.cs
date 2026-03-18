@@ -7,7 +7,7 @@
 //Project Name :  Web.Tests.Unit
 //=======================================================
 
-namespace Web.Tests.Unit.Components.Features.Categories.Validators;
+namespace Web.Components.Features.Categories.Validators;
 
 /// <summary>
 ///   Unit tests for the <see cref="CategoryDtoValidator" /> class.
@@ -61,7 +61,7 @@ public class CategoryDtoValidatorTests
 
 		// Assert
 		result.IsValid.Should().BeFalse();
-		result.Errors.Should().Contain(e => e.PropertyName == "CategoryName" && e.ErrorMessage == "Name is required");
+		result.Errors.Should().Contain(e => e.PropertyName == "CategoryName" && e.ErrorMessage == "Category name is required");
 	}
 
 	[Fact]

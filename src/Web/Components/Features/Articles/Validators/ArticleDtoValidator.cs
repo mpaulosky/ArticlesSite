@@ -37,11 +37,11 @@ public class ArticleDtoValidator : AbstractValidator<ArticleDto>
 				.MaximumLength(200);
 
 		RuleFor(x => x.Slug)
-				.NotEmpty()
-				.WithMessage("URL slug is required")
-				.MaximumLength(200)
-				.Matches(@"^[a-z0-9_]+$")
-				.WithMessage("URL slug can only contain lowercase letters, numbers, and underscores");
+						.NotEmpty()
+						.WithMessage("URL slug is required")
+						.MaximumLength(200)
+						.Matches(@"^[a-z0-9_]+$")
+						.WithMessage("URL slug can only contain lowercase letters, numbers, and underscores");
 
 		RuleFor(x => x.Author)
 				.NotNull()

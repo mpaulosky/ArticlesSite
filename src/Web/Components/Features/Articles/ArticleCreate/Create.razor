@@ -1,5 +1,7 @@
 @page "/articles/create"
 
+@using AuthorInfoEntity = Web.Components.Features.AuthorInfo.Entities.AuthorInfo
+
 @inject NavigationManager Navigation
 @inject CreateArticle.ICreateArticleHandler CreateHandler
 @inject GetCategories.IGetCategoriesHandler GetCategoriesHandler
@@ -92,10 +94,10 @@ else
             </div>
 
             <div class="mt-8 flex gap-3 justify-end">
-                <button type="submit" class="btn-primary">
+                <button type="submit" class="btn btn-primary">
                     <i class="bi bi-save"></i> Create
                 </button>
-                <button type="button" class="btn-secondary" @onclick="GoToList">
+                <button type="button" class="btn btn-secondary" @onclick="GoToList">
                     <i class="bi bi-arrow-left"></i> Cancel
                 </button>
             </div>
@@ -112,13 +114,13 @@ else
     private string? _errorMessage;
     private List<CategoryDto>? _categories;
     private string? _selectedCategoryId;
-    private AuthorInfo _authorInfo = AuthorInfo.Empty;
+    private AuthorInfoEntity _authorInfo = AuthorInfoEntity.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         _isLoading = true;
         await Task.Yield();
-        System.Security.Claims.ClaimsPrincipal? user = null;
+        ClaimsPrincipal? user = null;
         try
         {
             if (AuthenticationState is not null)
@@ -131,7 +133,7 @@ else
                 var authState = await AuthStateProvider.GetAuthenticationStateAsync();
                 user = authState.User;
             }
-            _authorInfo = new AuthorInfo(user?.Identity?.Name ?? string.Empty, user?.Identity?.Name ?? string.Empty);
+            _authorInfo = new AuthorInfoEntity(user?.Identity?.Name ?? string.Empty, user?.Identity?.Name ?? string.Empty);
             var result = await GetCategoriesHandler.HandleAsync();
             if (result is { Success: true, Value: not null })
             {

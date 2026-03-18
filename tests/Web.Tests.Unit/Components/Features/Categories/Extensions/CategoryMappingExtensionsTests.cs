@@ -7,7 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-namespace Web.Tests.Unit.Components.Features.Categories.Extensions;
+namespace Web.Components.Features.Categories.Extensions;
 
 /// <summary>
 /// Unit tests for <see cref="CategoryMappingExtensions"/> mapping methods.

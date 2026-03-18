@@ -7,9 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-using Web.Components.Features.Categories.CategoriesList;
-
-namespace Web.Tests.Unit.Components.Features.Categories.CategoriesList;
+namespace Web.Components.Features.Categories.CategoriesList;
 
 /// <summary>
 ///   Unit tests for GetCategories.Handler

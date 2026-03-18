@@ -1,6 +1,4 @@
 @page "/articles/edit/{Id}"
-
-@using Web.Components.Features.Articles.ArticleDetails
 @inject NavigationManager Navigation
 @inject ILogger<Edit> Logger
 @inject GetCategories.IGetCategoriesHandler GetCategoriesHandler
@@ -190,7 +188,7 @@ else if (_editModel != ArticleDto.Empty)
 
       // Prefer stable identifier claims (Auth0 uses "sub"). Fall back to NameIdentifier.
       var currentUserId = user.FindFirst("sub")?.Value
-      ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+      ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
       var authorId = a?.Author?.UserId;
 

@@ -13,6 +13,7 @@ namespace Web.Components.Features.Articles.Models;
 ///   Data Transfer Object (DTO) representing an article.
 ///   All validations are handled by <see cref="ArticleDtoValidator" />.
 /// </summary>
+[Serializable]
 public sealed class ArticleDto
 {
 
@@ -67,6 +68,40 @@ public sealed class ArticleDto
 		IsArchived = isArchived;
 		CanEdit = canEdit;
 		Version = version;
+	}
+
+	// Backwards-compatible constructor without version (keeps Version at 0)
+	public ArticleDto(
+			ObjectId id,
+			string slug,
+			string title,
+			string introduction,
+			string content,
+			string coverImageUrl,
+			AuthorInfo.Entities.AuthorInfo? author,
+			Category? category,
+			bool isPublished,
+			DateTimeOffset? publishedOn,
+			DateTimeOffset? createdOn,
+			DateTimeOffset? modifiedOn,
+			bool isArchived,
+			bool canEdit)
+	{
+		Id = id;
+		Slug = slug;
+		Title = title;
+		Introduction = introduction;
+		Content = content;
+		CoverImageUrl = coverImageUrl;
+		Author = author;
+		Category = category;
+		IsPublished = isPublished;
+		PublishedOn = publishedOn;
+		CreatedOn = createdOn;
+		ModifiedOn = modifiedOn;
+		IsArchived = isArchived;
+		CanEdit = canEdit;
+		Version = 0;
 	}
 
 	/// <summary>

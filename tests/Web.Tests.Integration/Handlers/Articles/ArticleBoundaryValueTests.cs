@@ -7,12 +7,8 @@
 // Project Name :  Web.Tests.Integration
 // =======================================================
 
-using Web.Components.Features.Articles.Entities;
-using Web.Components.Features.Articles.Fakes;
-using Web.Components.Features.Articles.Interfaces;
-using Web.Components.Features.Articles.Models;
-using Web.Components.Features.Articles.Validators;
-using Web.Components.Features.AuthorInfo.Fakes;
+using Microsoft.Extensions.Options;
+using Web.Infrastructure;
 
 namespace Web.Tests.Integration.Handlers.Articles;
 
@@ -27,26 +23,21 @@ public class ArticleBoundaryValueTests
 
 	private readonly MongoDbFixture _fixture;
 
-	private readonly IArticleRepository _repository;
-
-	private readonly Components.Features.Articles.ArticleCreate.CreateArticle.ICreateArticleHandler _createHandler;
+	private readonly CreateArticle.ICreateArticleHandler _createHandler;
 
 	private readonly Components.Features.Articles.ArticleEdit.EditArticle.IEditArticleHandler _editHandler;
-
-	private readonly ILogger<Components.Features.Articles.ArticleCreate.CreateArticle.Handler> _logger;
-
-	private readonly IValidator<ArticleDto> _validator;
 
 	public ArticleBoundaryValueTests(MongoDbFixture fixture)
 	{
 		_fixture = fixture;
-		_repository = new ArticleRepository(_fixture.ContextFactory);
-		_logger = Substitute.For<ILogger<Components.Features.Articles.ArticleCreate.CreateArticle.Handler>>();
-		_validator = new ArticleDtoValidator();
-		_createHandler = new Components.Features.Articles.ArticleCreate.CreateArticle.Handler(_repository, _logger, _validator);
+		IArticleRepository repository = new ArticleRepository(_fixture.ContextFactory);
+		ILogger<CreateArticle.Handler> logger = Substitute.For<ILogger<CreateArticle.Handler>>();
+		IValidator<ArticleDto> validator = new ArticleDtoValidator();
+		_createHandler = new CreateArticle.Handler(repository, logger, validator);
 
 		var editLogger = Substitute.For<ILogger<Components.Features.Articles.ArticleEdit.EditArticle.Handler>>();
-		_editHandler = new Components.Features.Articles.ArticleEdit.EditArticle.Handler(_repository, editLogger, _validator);
+		var options = Options.Create(new ConcurrencyOptions());
+		_editHandler = new Components.Features.Articles.ArticleEdit.EditArticle.Handler(repository, editLogger, validator, options);
 	}
 
 	[Fact]
@@ -74,7 +65,7 @@ public class ArticleBoundaryValueTests
 			null,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -112,7 +103,7 @@ public class ArticleBoundaryValueTests
 			null,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -149,7 +140,7 @@ public class ArticleBoundaryValueTests
 			null,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -186,7 +177,7 @@ public class ArticleBoundaryValueTests
 			null,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -223,7 +214,7 @@ public class ArticleBoundaryValueTests
 			null,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -260,7 +251,7 @@ public class ArticleBoundaryValueTests
 			null,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -297,7 +288,7 @@ public class ArticleBoundaryValueTests
 			null,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -334,7 +325,7 @@ public class ArticleBoundaryValueTests
 			null,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -370,7 +361,7 @@ public class ArticleBoundaryValueTests
 			null,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -407,7 +398,7 @@ public class ArticleBoundaryValueTests
 			null,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -438,7 +429,7 @@ public class ArticleBoundaryValueTests
 			maxLengthTitle,
 			maxLengthIntro,
 			maxLengthContent,
-			existingArticle.CoverImageUrl ?? "http://example.com/image.jpg",
+			existingArticle.CoverImageUrl,
 			existingArticle.Author,
 			existingArticle.Category,
 			false,
@@ -447,7 +438,7 @@ public class ArticleBoundaryValueTests
 			DateTimeOffset.UtcNow,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -479,7 +470,7 @@ public class ArticleBoundaryValueTests
 			oversizedTitle,
 			"Test Intro",
 			"Test Content",
-			existingArticle.CoverImageUrl ?? "http://example.com/image.jpg",
+			existingArticle.CoverImageUrl,
 			existingArticle.Author,
 			existingArticle.Category,
 			false,
@@ -488,7 +479,7 @@ public class ArticleBoundaryValueTests
 			DateTimeOffset.UtcNow,
 			false,
 			false
-		), 0
+		, 0
 	);
 
 		// Act
@@ -501,4 +492,3 @@ public class ArticleBoundaryValueTests
 	}
 
 }
-

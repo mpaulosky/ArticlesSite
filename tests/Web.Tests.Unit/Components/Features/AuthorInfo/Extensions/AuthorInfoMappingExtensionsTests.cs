@@ -7,7 +7,7 @@
 // Project Name :  Web.Tests.Unit
 // =======================================================
 
-namespace Web.Tests.Unit.Components.Features.AuthorInfo.Extensions;
+namespace Web.Components.Features.AuthorInfo.Extensions;
 
 /// <summary>
 /// Unit tests for <see cref="AuthorInfoMappingExtensions"/> helper methods.

@@ -9,7 +9,7 @@
 
 using Microsoft.AspNetCore.Http;
 
-namespace Web.Tests.Unit.Services;
+namespace Web.Services;
 
 /// <summary>
 /// Unit tests for Auth0AuthenticationStateProvider
@@ -256,5 +256,35 @@ public class Auth0AuthenticationStateProviderTests
 		result.User.IsInRole("Editor").Should().BeTrue();
 		result.User.IsInRole("Viewer").Should().BeTrue();
 		result.User.Claims.Where(c => c.Type == ClaimTypes.Role).Should().HaveCount(3);
+	}
+
+	[Fact]
+	public async Task GetAuthenticationStateAsync_LogsClaims_WhenUserAuthenticated()
+	{
+		// Arrange
+		var httpContext = new DefaultHttpContext();
+		var claims = new[]
+		{
+			new Claim("sub", "123"),
+			new Claim("roles", "Admin")
+		};
+		var identity = new ClaimsIdentity(claims, "TestAuth");
+		httpContext.User = new ClaimsPrincipal(identity);
+
+		var accessor = Substitute.For<IHttpContextAccessor>();
+		accessor.HttpContext.Returns(httpContext);
+
+		var mockLogger = new Moq.Mock<ILogger<Auth0AuthenticationStateProvider>>();
+		var provider = new Auth0AuthenticationStateProvider(accessor, mockLogger.Object);
+
+		// Act
+		var _ = await provider.GetAuthenticationStateAsync();
+
+		// Assert - Ensure that informational logs were written for authentication and claim lines
+		mockLogger.Invocations.Should().NotBeEmpty();
+		// At least one invocation should contain the authentication header
+		mockLogger.Invocations.Select(inv => inv.Arguments[2]?.ToString()).Should().Contain(s => s != null && s.Contains("User authenticated with claims:"));
+		// At least one invocation should contain a Claim: line
+		mockLogger.Invocations.Select(inv => inv.Arguments[2]?.ToString()).Should().Contain(s => s != null && s.Contains("Claim:"));
 	}
 }
