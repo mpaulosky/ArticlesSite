@@ -23,6 +23,11 @@ public static class ArticleMappingExtensions
 	/// <returns>A new ArticleDto instance.</returns>
 	public static ArticleDto ToDto(this Article article, bool canEdit = false)
 	{
+		if (article is null)
+		{
+			throw new ArgumentNullException(nameof(article), "Article cannot be null.");
+		}
+
 		return new ArticleDto(
 			article.Id,
 			article.Slug,
@@ -49,6 +54,8 @@ public static class ArticleMappingExtensions
 	/// <returns>A new Article entity instance.</returns>
 	public static Article ToEntity(this ArticleDto dto)
 	{
+		ArgumentNullException.ThrowIfNull(dto);
+
 		return new Article
 		{
 			Id = dto.Id,

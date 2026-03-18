@@ -1,31 +1,39 @@
 @page "/articles/edit/{Id}"
+
+@using Web.Components.Features.Articles.ArticleDetails
 @inject NavigationManager Navigation
 @inject ILogger<Edit> Logger
 @inject GetCategories.IGetCategoriesHandler GetCategoriesHandler
 @inject GetArticle.IGetArticleHandler GetArticleHandler
 @inject EditArticle.IEditArticleHandler EditArticleHandler
-@inject IJSRuntime JSRuntime
 
 @attribute [Authorize]
 
-<PageHeadingComponent HeaderText="Edit Article" Level="1" TextColorClass="blue-500" />
+<PageHeadingComponent HeaderText="Edit Article" Level="1" />
 
 @if (_isLoading)
 {
   <LoadingComponent />
 }
-else if (_errorMessage is not null)
+else if (_errorMessage is not null && _editModel.Id == ObjectId.Empty)
 {
   <ErrorAlertComponent Title="Unable to load article">
     @_errorMessage
   </ErrorAlertComponent>
 }
-else if (_editModel != ArticleDto.Empty)
+else if (_editModel.Id != ObjectId.Empty)
 {
   <div class="container-card">
     <EditForm Model="_editModel" OnValidSubmit="HandleValidSubmit">
       <DataAnnotationsValidator />
       <ValidationSummary />
+
+      @if (_errorMessage is not null && !_isConcurrencyConflict)
+      {
+        <ErrorAlertComponent Title="Error updating article">
+          @_errorMessage
+        </ErrorAlertComponent>
+      }
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <div>
@@ -35,8 +43,7 @@ else if (_editModel != ArticleDto.Empty)
         </div>
 
         <div>
-          <label for="introductionEdit"
-            class="edit-label">Introduction</label>
+          <label for="introductionEdit" class="edit-label">Introduction</label>
           <InputTextArea id="introductionEdit" class="form-control input-textbox"
             @bind-Value="_editModel.Introduction" rows="2" />
         </div>
@@ -61,14 +68,11 @@ else if (_editModel != ArticleDto.Empty)
         </div>
 
         <div>
-          <label class="edit-label">
-            <i class="bi bi-person-circle me-1"></i> Author
-            <i class="bi bi-lock-fill text-gray-500 ms-1" title="Not editable"></i>
-          </label>
-          <div
-            class="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-blue-500 rounded px-3 py-2 font-semibold">
-            @_editModel.Author?.Name
-          </div>
+          <label class="edit-label">Author</label>
+          <input id="authorEdit"
+                 class="form-control input-textbox border-2 rounded-md"
+                 value="@(_editModel.Author?.Name ?? string.Empty)"
+                 disabled />
         </div>
       </div>
 
@@ -90,14 +94,51 @@ else if (_editModel != ArticleDto.Empty)
       </div>
 
       <div class="mt-8 flex gap-3 justify-end">
-        <button type="submit" class="btn-primary">
+        <button type="submit" class="btn btn-primary">
           <i class="bi bi-save"></i> Save Changes
         </button>
-        <button type="button" class="btn-secondary" @onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
+        <button type="button" class="btn btn-secondary" @onclick="@(() => Navigation.NavigateTo($"/articles/details/{Id}"))">
           <i class="bi bi-arrow-left"></i> Cancel
         </button>
       </div>
     </EditForm>
+
+    @if (_isConcurrencyConflict && _latestArticle is not null)
+    {
+      <div class="mt-6 border border-yellow-300 bg-yellow-50 p-4 rounded" role="alert" aria-live="polite">
+        <h4 class="font-bold text-yellow-800">Concurrency Conflict</h4>
+        <p class="text-sm text-yellow-700">The article was modified by another user while you were editing. Choose an action:</p>
+
+        <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-2">
+          <button class="btn btn-primary" @onclick="ReloadLatestAsync">Reload Latest</button>
+          <button class="btn btn-warning" @onclick="ForceOverwriteAsync">Force Overwrite</button>
+          <button class="btn btn-secondary" @onclick="CancelToDetails">Cancel</button>
+        </div>
+
+        <div class="mt-4">
+          <h5 class="font-semibold">Latest on server:</h5>
+          <div class="p-2 bg-white rounded border">@_latestArticle.Title</div>
+          <h5 class="font-semibold mt-2">Your draft:</h5>
+          <div class="p-2 bg-white rounded border">@_editModel.Title</div>
+
+          @{ var changedFields = ComputeChangedFields(_latestArticle, _editModel); }
+
+          @if (changedFields.Any())
+          {
+            <div class="mt-3">
+              <h6 class="font-semibold">Changed fields:</h6>
+              <ul>
+                @foreach (var f in changedFields)
+                {
+                  <li>@f</li>
+                }
+              </ul>
+            </div>
+          }
+
+        </div>
+      </div>
+    }
   </div>
 }
 
@@ -117,9 +158,11 @@ else if (_editModel != ArticleDto.Empty)
 
   private List<CategoryDto>? _categories;
 
-  // private bool _showRawMarkdown;
-
   private string _selectedCategoryId = string.Empty;
+
+  // Concurrency UI state
+	private bool _isConcurrencyConflict;
+  private ArticleDto? _latestArticle;
 
   protected override async Task OnInitializedAsync()
   {
@@ -141,7 +184,6 @@ else if (_editModel != ArticleDto.Empty)
         _editModel = articleResult.Value;
         _editModel.CanEdit = await UserCanEditArticleAsync(_editModel);
         _selectedCategoryId = _editModel.Category?.Id.ToString() ?? string.Empty;
-        //UpdatePreview();
         _errorMessage = null;
       }
       else
@@ -243,12 +285,31 @@ else if (_editModel != ArticleDto.Empty)
       if (result.Success)
       {
         Logger?.LogInformation("Article saved: {ArticleId}", RecordId);
+        _isConcurrencyConflict = false;
         Navigation.NavigateTo($"/articles/details/{RecordId}");
       }
       else
       {
-        _errorMessage = result.Error ?? "Failed to save article.";
-        Logger?.LogWarning("Failed to save article {ArticleId}: {Error}", RecordId, _errorMessage);
+        // Detect optimistic concurrency conflict and surface UI to user
+        if (result.Error is not null && result.Error.Contains("Concurrency conflict", StringComparison.OrdinalIgnoreCase))
+        {
+          _isConcurrencyConflict = true;
+
+          // Load the latest article to show to user
+          var latest = await GetArticleHandler.HandleAsync(RecordId);
+          if (latest is { Success: true, Value: not null })
+          {
+            _latestArticle = latest.Value;
+          }
+
+          _errorMessage = "A concurrency conflict occurred. Choose an action below.";
+          Logger?.LogWarning("HandleValidSubmit: Concurrency conflict saving article {ArticleId}", RecordId);
+        }
+        else
+        {
+          _errorMessage = result.Error ?? "Failed to save article.";
+          Logger?.LogWarning("Failed to save article {ArticleId}: {Error}", RecordId, _errorMessage);
+        }
       }
     }
     catch (Exception ex)
@@ -256,6 +317,62 @@ else if (_editModel != ArticleDto.Empty)
       _errorMessage = ex.Message;
       Logger?.LogError(ex, "Error saving article {ArticleId}", RecordId);
     }
+  }
+
+  private async Task ReloadLatestAsync()
+  {
+    if (RecordId == ObjectId.Empty) return;
+
+    var latest = await GetArticleHandler.HandleAsync(RecordId);
+    if (latest is { Success: true, Value: not null })
+    {
+      _editModel = latest.Value;
+      _editModel.CanEdit = await UserCanEditArticleAsync(_editModel);
+      _selectedCategoryId = _editModel.Category?.Id.ToString() ?? string.Empty;
+      _isConcurrencyConflict = false;
+      _errorMessage = null;
+    }
+    else
+    {
+      _errorMessage = latest.Error ?? "Failed to load latest article.";
+    }
+  }
+
+  private async Task ForceOverwriteAsync()
+  {
+    if (_latestArticle is null)
+    {
+      _errorMessage = "No latest article available to base overwrite on.";
+      return;
+    }
+
+    // Set our DTO version to the latest server version so Replace will match and allow overwriting
+    _editModel.Version = _latestArticle.Version;
+
+    var result = await EditArticleHandler.HandleAsync(_editModel);
+    if (result.Success)
+    {
+      _isConcurrencyConflict = false;
+      Navigation.NavigateTo($"/articles/details/{RecordId}");
+    }
+    else
+    {
+      _errorMessage = result.Error ?? "Failed to overwrite article.";
+      // If it's still a concurrency conflict, refresh the latest to present to the user again
+      if (result.Error is not null && result.Error.Contains("Concurrency conflict", StringComparison.OrdinalIgnoreCase))
+      {
+        var latest = await GetArticleHandler.HandleAsync(RecordId);
+        if (latest is { Success: true, Value: not null })
+        {
+          _latestArticle = latest.Value;
+        }
+      }
+    }
+  }
+
+  private void CancelToDetails()
+  {
+    Navigation.NavigateTo($"/articles/details/{RecordId}");
   }
 
   private async Task LoadCategoriesAsync()
@@ -304,27 +421,20 @@ else if (_editModel != ArticleDto.Empty)
       _editModel.Category = null;
     }
   }
-  //
-  // private void UpdatePreview()
-  // {
-  // if (_editModel != ArticleDto.Empty)
-  // {
-  // var content = _editModel.Content;
-  // _previewHtml = Markdown.ToHtml(content, new MarkdownPipelineBuilder().UseAdvancedExtensions().Build());
-  // }
-  // else
-  // {
-  // _previewHtml = string.Empty;
-  // }
-  // }
-  //
-  // private void TogglePreviewMode()
-  // {
-  // _showRawMarkdown = !_showRawMarkdown;
-  // if (!_showRawMarkdown)
-  // {
-  // UpdatePreview();
-  // }
-  // }
+
+  private static List<string> ComputeChangedFields(ArticleDto? latest, ArticleDto? draft)
+  {
+    var changedFields = new List<string>();
+    if (latest is null || draft is null) return changedFields;
+
+    if (!string.Equals(latest.Title, draft.Title, StringComparison.Ordinal)) changedFields.Add("Title");
+    if (!string.Equals(latest.Introduction, draft.Introduction, StringComparison.Ordinal)) changedFields.Add("Introduction");
+    if (!string.Equals(latest.Content, draft.Content, StringComparison.Ordinal)) changedFields.Add("Content");
+    if (!string.Equals(latest.CoverImageUrl, draft.CoverImageUrl, StringComparison.Ordinal)) changedFields.Add("CoverImageUrl");
+    if (latest.IsPublished != draft.IsPublished) changedFields.Add("IsPublished");
+    if (latest.IsArchived != draft.IsArchived) changedFields.Add("IsArchived");
+
+    return changedFields;
+  }
 
 }

@@ -95,7 +95,7 @@ public class MongoDbContextFactoryTests
 		try
 		{
 			// Create an appsettings.json in a temp dir
-			string json = "{\"DefaultConnection\": \"mongodb://apphost:27019\", \"DatabaseName\": \"AppDb\" }";
+			string json = "{\"DefaultConnection\": \"mongodb://app-host:27019\", \"DatabaseName\": \"AppDb\" }";
 			File.WriteAllText(Path.Combine(tempDir, "appsettings.json"), json);
 
 			Directory.SetCurrentDirectory(tempDir);

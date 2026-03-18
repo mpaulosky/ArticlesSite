@@ -130,7 +130,9 @@ public class NamingConventionTests
 		{
 				"NavMenuComponent", "ConnectWithUsComponent", "ComponentHeadingComponent", "FooterComponent",
 				"ErrorAlertComponent", "ErrorPageComponent", "LoginComponent", "PageHeaderComponent",
-				"RecentRelatedComponent", "PostInfoComponent", "LoadingComponent", "PageHeadingComponent"
+				"RecentRelatedComponent", "PostInfoComponent", "LoadingComponent", "PageHeadingComponent",
+				"WelcomeComponent", "ThemeToggle", "ThemeSelector", "RedirectToLogin", "TextEditor",
+				"RecentComponent"
 		};
 
 		foreach (Type component in components)
