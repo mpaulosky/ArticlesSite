@@ -2,18 +2,32 @@
 
 **Last updated:** June 12, 2025
 
-These instructions define the required coding, architecture, and project rules for all .NET code in this repository.
-They are based on the actual practices and conventions in the Article ServiceApp solution. For more details,
-see [CONTRIBUTING.md](../docs/CONTRIBUTING.md).
+These instructions define the required coding, architecture, and project rules for all .NET code in this repository. They are based on the actual practices and conventions in the ArticlesSite solution. For more details, see [CONTRIBUTING.md](../docs/CONTRIBUTING.md).
 
 ---
 
-## Tone
+## Technology Stack (Required)
 
-- Be friendly and patient:** We're all here first and foremost to help each other.
-- Be very descriptive in how you present a solution
-- Use lots of emoting in your responses
-- ASCII art... lots of ascii art when called for
+### Framework and Language Versions
+
+- **.NET Version:** `10.0` (latest stable)
+  - All projects must target .NET 10
+  - Use the latest stable runtime and SDK
+- **C# Language Version:** `14.0` (latest stable)
+  - Leverage latest language features when appropriate
+  - Configure via `<LangVersion>14.0</LangVersion>` in project files or Directory.Build.props
+- **API Documentation:** `Scalar` with `OpenAPI 3.0+`
+  - Use Scalar for interactive API documentation
+  - All REST APIs must expose OpenAPI specifications
+  - See Documentation section for additional requirements
+
+### Platform Requirements
+
+- **Minimum SDK:** `.NET 10 SDK`
+- **Target Framework:** `net10.0`
+- **Runtime:** `.NET 10 Runtime` (latest stable patch version)
+
+---
 
 ## C# (Required)
 
@@ -57,15 +71,7 @@ see [CONTRIBUTING.md](../docs/CONTRIBUTING.md).
 ### Security (Required)
 
 - **Require HTTPS:** `true` (see `Web/Program.cs`)
-- **Require Authentication:** `true` (Auth0 integration)
-- **Use Auth0 Identity Provider:** `true` (configure Domain, ClientId, ClientSecret in appsettings.json)
-- **Use Auth0 .NET SDK:** `true` (AddAuth0WebAppAuthentication() in Program.cs)
-- **Use Cookie Authentication:** `true` (for Blazor Server session management)
-- **Protect API Endpoints:** `true` (use RequireAuthorization() for minimal APIs)
-- **Implement Auth0 Roles:** `true` (use Auth0 roles and permissions for authorization)
-- **Secure Configuration:** `true` (store Auth0 ClientSecret in user secrets, not appsettings.json)
-- **Configure Auth0 Callbacks:** `true` (set proper callback URLs in Auth0 dashboard)
-- **Implement Logout:** `true` (clear both local session and Auth0 session)
+- **Require Authentication:** `true` (Auth0 integration, see `README.md`)
 - **Require Authorization:** `true`
 - **Use Antiforgery Tokens:** `true` (see `Web/Program.cs`)
 - **Use CORS:** `true`
@@ -78,13 +84,12 @@ see [CONTRIBUTING.md](../docs/CONTRIBUTING.md).
 - **Enforce Async/Await:** `true` (async methods and tests)
 - **Enforce Strongly Typed Config:** `true`
 - **Enforce CQRS:** `true` (see `Domain/Abstractions/`, `MyMediator/`)
-- **Enforce Unit Tests:** `true` (see `tests/`)
-- **Enforce Integration Tests:** `true` (see `tests/`)
-- **Enforce Architecture Tests:** `true` (see `tests/Architecture.Tests.Unit/`)
+- **Enforce Unit Tests:** `true` (see `Tests/`)
+- **Enforce Integration Tests:** `true` (see `Tests/`)
+- **Enforce Architecture Tests:** `true` (see `Tests/Architecture.Tests/`)
 - **Enforce Vertical Slice Architecture:** `true`
 - **Enforce Aspire:** `true` (see `AppHost/`, `README.md`)
-- **Centralize NuGet Package Versions:** `true` (all package versions must be managed in `Directory.Packages.props` at
-  the repo root; do not specify versions in individual project files)
+- **Centralize NuGet Package Versions:** `true` (all package versions must be managed in `Directory.Packages.props` at the repo root; do not specify versions in individual project files)
 
 ### Blazor (Required)
 
@@ -102,26 +107,15 @@ see [CONTRIBUTING.md](../docs/CONTRIBUTING.md).
 ### Documentation (Required)
 
 - **Require XML Docs:** `true` (see `<summary>` in test and code files)
-- **Require Swagger:** `true` (for REST APIs)
-- **Require OpenAPI:** `true` (OpenAPI/Swagger must be provided for all APIs)
+- **Require Scalar:** `true` (Scalar is the required API documentation tool; use instead of Swagger UI)
+- **Require OpenAPI:** `true` (OpenAPI 3.0+ specifications must be provided for all REST APIs)
+- **Use Scalar for API Explorer:** `true` (interactive API documentation via Scalar, not Swagger UI)
 - **Require Component Documentation:** `true` (see `<summary>` in Blazor tests)
 - **Require README:** `true` (see `README.md`, `docs/README.md`)
 - **Require CONTRIBUTING.md:** `true` (see `docs/CONTRIBUTING.md`)
 - **Require LICENSE:** `true` (see `LICENSE`)
 - **Require Code of Conduct:** `true` (see `CODE_OF_CONDUCT.md`)
 - **Require File Copyright Headers:** `true`
-- **Use Copyright Header Format:** `true` (see below for format)
-
-```
-=======================================================
-Copyright (c) ${File.CreatedYear}. All rights reserved.
-File Name :     ${File.FileName}
-Company :       mpaulosky
-Author :        Matthew Paulosky
-Solution Name : ${File.SolutionName}
-Project Name :  ${File.ProjectName}
-=======================================================
-```
 
 ### Logging (Required)
 
@@ -133,26 +127,17 @@ Project Name :  ${File.ProjectName}
 ### Database (Required)
 
 - **Use Entity Framework Core:** `true`
+- **Use SQL Server:** `false`
+- **Use Migrations:** `false` (for SQL Server)
+- **Use PostgreSQL:** `false`
+- **Use Migrations:** `false` (for PostgreSQL)
 - **Use MongoDB:** `true` (see `Persistence.MongoDb/`)
-- **Prefer Async Operations:** `true`
 - **Use Migrations:** `false` (for MongoDB)
-- **Use TestContainers:** `true` (for Integration testing, see
-  `tests/Article Service.Persistence.MongoDb.Tests.Integration/`)
+- **Prefer Async Operations:** `true`
+- **Use TestContainers:** `true` (for Integration testing, see `Tests/`)
 - **Use Change Tracking:** `true`
 - **Use DbContext Pooling:** `true`
 - **Use In-Memory Database:** `false`
-
-### Auth0 Integration (Required)
-
-- **Configure Auth0 Application:** `true` (Regular Web Application type in Auth0 dashboard)
-- **Use Auth0 .NET SDK:** `true` (Auth0.AspNetCore.Authentication package)
-- **Configure Dependency Injection:** `true` (AddAuth0WebAppAuthentication() in Program.cs)
-- **Set Callback URLs:** `true` (configure in Auth0 dashboard to match application URLs)
-- **Implement User Management:** `true` (access user claims via ClaimsPrincipal)
-- **Use Auth0 Roles and Permissions:** `true` (implement role-based authorization)
-- **Handle Authentication Errors:** `true` (implement proper error handling for auth failures)
-- **Secure API Endpoints:** `true` (use [Authorize] attributes and RequireAuthorization())
-- **Test Authentication:** `true` (include auth scenarios in integration tests)
 
 ### Versioning (Required)
 
@@ -178,8 +163,7 @@ Project Name :  ${File.ProjectName}
 ### Environment (Required)
 
 - **Require Environment Config:** `true`
-- **Use User Secrets:** `true` (especially for Auth0 ClientSecret and sensitive configuration)
-- **Configure Auth0 Settings:** `true` (Domain, ClientId in appsettings.json; ClientSecret in user secrets)
+- **Use User Secrets:** `true`
 - **Use Key Vault:** `true`
 
 ### Validation (Required)
@@ -189,17 +173,15 @@ Project Name :  ${File.ProjectName}
 
 ### Testing (Required)
 
-- **Require Unit Tests:** `true` (see `tests/`)
-- **Require Integration Tests:** `true` (see `tests/`)
-- **Require Architecture Tests:** `true` (see `tests/Architecture.Tests.Unit/`)
-- **Use xUnit:** `true` (see `tests/`)
-- **Use FluentAssertions:** `true` (see `tests/`)
+- **Require Unit Tests:** `true` (see `Tests/`)
+- **Require Integration Tests:** `true` (see `Tests/`)
+- **Require Architecture Tests:** `true` (see `Tests/Architecture.Tests/`)
+- **Use xUnit:** `true` (see `Tests/`)
+- **Use FluentAssertions:** `true` (see `Tests/`)
 - **Use NSubstitute:** `true`
-- **Use Xunit:** `true` (see `tests/Shared.Tests.Unit/`)
-- **Use bUnit:** `true` (see `tests/Web.Tests.Unit/`)
+- **Use bUnit:** `true` (see `Tests/Web.Tests.Bunit/`)
 - **Use Playwright:** `true` (see `README.md`)
 
 ---
 
-**Note:** These rules are enforced via `.editorconfig and other tooling where possible. For questions or
-clarifications, see [CONTRIBUTING.md](../docs/CONTRIBUTING.md).
+**Note:** These rules are enforced via `.editorconfig`, StyleCop, and other tooling where possible. For questions or clarifications, see [CONTRIBUTING.md](../docs/CONTRIBUTING.md).
