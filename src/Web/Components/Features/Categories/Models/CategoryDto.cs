@@ -86,6 +86,11 @@ public class CategoryDto
 	public bool IsArchived { get; set; }
 
 	/// <summary>
+	///   Gets or sets the version for optimistic concurrency control.
+	/// </summary>
+	public int Version { get; set; } = 0;
+
+	/// <summary>
 	///   Gets an empty singleton category instance.
 	/// </summary>
 	public static CategoryDto Empty { get; } = new(ObjectId.Empty, string.Empty, string.Empty, DateTime.UtcNow, null, false);

@@ -47,7 +47,7 @@
 	public bool AlignmentOptionsEnabled { get; set; }
 
 	private string _content = string.Empty;
-	private string MyContent
+	public string MyContent
 	{
 		get => _content;
 		set
@@ -63,7 +63,7 @@
 	[Parameter]
 	public EventCallback<string> ContentChanged { get; set; }
 
-	async Task<FileEntry> HandleImageUpload(MarkdownEditor editor, FileEntry file)
+	public async Task<FileEntry> HandleImageUpload(MarkdownEditor editor, FileEntry file)
 	{
 		Console.WriteLine($"Image: {file.Name} Size: {file.Size}");
 
@@ -77,7 +77,7 @@
 		return file;
 	}
 
-	private async Task OnCustomButtonClicked(MarkdownButtonEventArgs args)
+	public async Task OnCustomButtonClicked(MarkdownButtonEventArgs args)
 	{
 		// Get the selected text using JavaScript
 		var selectedText = await JsRuntime.InvokeAsync<string>("getSelectedText", ".EasyMDEContainer textarea");

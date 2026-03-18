@@ -84,6 +84,41 @@ public class ArticleRepository
 	}
 
 	/// <summary>
+	/// Gets an article by its publication date string and slug.
+	/// </summary>
+	/// <param name="dateString">The publication date string (e.g. "2025-10-15"), used for URL routing context.</param>
+	/// <param name="slug">The slug of the article.</param>
+	/// <returns>A <see cref="Result{Article}"/> containing the article if found, or an error message.</returns>
+	public async Task<Result<Article?>> GetArticle(string dateString, string slug)
+	{
+		try
+		{
+			IMongoDbContext context = contextFactory.CreateDbContext();
+
+			Article? article = await context.Articles
+					.Find(a => a.Slug == slug)
+					.FirstOrDefaultAsync();
+
+			return Result.Ok<Article?>(article);
+		}
+		catch (OperationCanceledException ex)
+		{
+			_logger.LogWarning(ex, "Operation cancelled while getting article by slug: {Slug}", slug);
+			return Result.Fail<Article?>("Request was cancelled");
+		}
+		catch (MongoException ex)
+		{
+			_logger.LogError(ex, "Database error getting article by date/slug: {DateString}/{Slug}", dateString, slug);
+			return Result.Fail<Article?>($"Database error: {ex.Message}");
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Unexpected error getting article by date/slug: {DateString}/{Slug}", dateString, slug);
+			return Result.Fail<Article?>($"Error getting article: {ex.Message}");
+		}
+	}
+
+	/// <summary>
 	/// Gets all non-archived articles.
 	/// </summary>
 	/// <returns>A <see cref="Result{IEnumerable{Article}}"/> containing the articles or an error message.</returns>

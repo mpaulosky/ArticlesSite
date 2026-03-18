@@ -15,9 +15,10 @@ global using FluentAssertions;
 
 global using NetArchTest.Rules;
 
-global using Shared.Entities;
+global using Shared;
 
 global using Web;
+global using Web.Components.Features.Articles.Entities;
 
 global using Xunit;
 
