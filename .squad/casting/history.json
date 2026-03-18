@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "assignments": [
+    {
+      "assignment_id": "articlessite-2026-03-18",
+      "universe": "Lord of the Rings",
+      "project": "ArticlesSite",
+      "created_at": "2026-03-18T16:19:00Z",
+      "agents": ["Aragorn", "Legolas", "Sam", "Gimli", "Boromir", "Frodo", "Gandalf"],
+      "note": "Exported from IssueTrackerApp squad"
+    }
+  ]
+}
