@@ -31,9 +31,13 @@ public static class MongoDbServiceExtensions
 		var configuration = builder.Configuration;
 
 		// Get MongoDB connection string from configuration or environment variables.
-		// Support both "MongoDb:ConnectionString" and legacy "ConnectionStrings:articlesdb" keys so tests and environments work.
-		string? connectionString = configuration["MongoDb:ConnectionString"] ?? configuration["ConnectionStrings:articlesdb"];
-		connectionString ??= Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING");
+		// Use IsNullOrWhiteSpace so that empty strings (e.g. CI env vars like MongoDB__ConnectionString="")
+		// are treated as absent and the fallback chain continues.
+		string? connectionString = configuration["MongoDb:ConnectionString"];
+		if (string.IsNullOrWhiteSpace(connectionString))
+			connectionString = configuration["ConnectionStrings:articlesdb"];
+		if (string.IsNullOrWhiteSpace(connectionString))
+			connectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING");
 		if (string.IsNullOrWhiteSpace(connectionString))
 		{
 			throw new InvalidOperationException("MongoDB connection string not found.");
