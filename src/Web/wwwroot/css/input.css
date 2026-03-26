@@ -44,11 +44,11 @@
 		bg-theme-primary-300 dark:bg-theme-primary-700;
 	}
 
-	.btn {
-		@apply inline-block
-		font-semibold px-5 py-2
-		rounded-full text-base
-		leading-tight border-none
+	.btn { 
+		@apply inline-block 
+		font-semibold px-5 py-2 
+		rounded-full text-base 
+		leading-tight border-none 
 		cursor-pointer transition shadow-sm;
 	}
 
@@ -74,20 +74,11 @@
 	}
 
 	.edit-label {
-		@apply block text-theme-primary-800 dark:text-theme-primary-100 font-semibold mb-2;
-	}
-
-	.info-label {
-		@apply text-theme-primary-800 dark:text-white font-semibold;
+		@apply block text-theme-neutral-800 dark:text-theme-neutral-300 font-semibold mb-2;
 	}
 
 	.input-textbox {
-		@apply border-2 px-3 py-2 rounded-md w-full
-		bg-theme-primary-50 dark:bg-theme-primary-800
-		text-theme-primary-900 dark:text-white
-		border-theme-primary-700 dark:border-theme-primary-300
-		hover:border-theme-primary-900 dark:hover:border-theme-primary-500
-		focus:outline-none focus:ring-2 focus:ring-theme-accent-500;
+		@apply bg-theme-neutral-50 dark:bg-theme-neutral-800 text-theme-neutral-900 dark:text-white border-2 border-theme-primary-500 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-theme-accent-500 w-full;
 	}
 
 	.theme-selector-container {
@@ -115,8 +106,8 @@
 	.brightness-btn {
 		@apply px-3 py-2 rounded-full font-medium text-sm transition-all duration-200
 		bg-theme-neutral-200 dark:bg-theme-neutral-700
-		hover:bg-theme-primary-300 dark:hover:bg-theme-primary-700
 		text-theme-neutral-700 dark:text-theme-neutral-300
+		hover:bg-theme-primary-300 dark:hover:bg-theme-primary-700
 		border-2 border-transparent
 		cursor-pointer;
 	}

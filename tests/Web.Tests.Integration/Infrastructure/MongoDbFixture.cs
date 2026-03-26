@@ -111,6 +111,8 @@ public class MongoDbFixture : IAsyncLifetime
 	/// </summary>
 	public async ValueTask DisposeAsync()
 	{
+		Environment.SetEnvironmentVariable("MONGODB_CONNECTION_STRING", null, EnvironmentVariableTarget.Process);
+		Environment.SetEnvironmentVariable("MONGODB_DATABASE_NAME", null, EnvironmentVariableTarget.Process);
 		if (_mongoDbContainer is not null)
 		{
 			await _mongoDbContainer.DisposeAsync();

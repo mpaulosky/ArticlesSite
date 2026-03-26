@@ -27,6 +27,9 @@ public class MongoDbServiceExtensionsTests
 		File.WriteAllText(Path.Combine(tempDir, "appsettings.json"), json);
 
 		var builder = WebApplication.CreateBuilder(new WebApplicationOptions { ContentRootPath = tempDir });
+		// Override CI env vars (e.g. empty MongoDB__ConnectionString) — indexer assignment wins over env vars
+		builder.Configuration["MongoDb:ConnectionString"] = "mongodb://host:27021";
+		builder.Configuration["MongoDb:Database"] = "TestDb";
 
 		// Act
 		builder.AddMongoDb();
@@ -104,6 +107,8 @@ public class MongoDbServiceExtensionsTests
 			Environment.SetEnvironmentVariable("MONGODB_DATABASE_NAME", null);
 
 			var builder = WebApplication.CreateBuilder(new WebApplicationOptions { ContentRootPath = tempDir });
+			// Override CI env vars (e.g. empty MongoDB__ConnectionString) — indexer assignment wins over env vars
+			builder.Configuration["MongoDb:ConnectionString"] = "mongodb://host:27023";
 			builder.AddMongoDb();
 
 			using var sp = builder.Services.BuildServiceProvider();

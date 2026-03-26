@@ -127,6 +127,9 @@ public class MainLayoutComponentTests : BunitContext
 		Services.AddSingleton(authService);
 		// Register a fake authentication state provider and cascading auth state
 		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
+		// Mock JS calls made by ThemeColorDropdownComponent and ThemeBrightnessToggleComponent in NavMenu
+		JSInterop.Setup<string>("ThemeManager.getCurrentColor").SetResult("BLUE");
+		JSInterop.SetupVoid("ThemeManager.syncUI");
 	}
 	[Fact]
 	public async Task OnAfterRender_FirstRender_SetsInitializedFlag()

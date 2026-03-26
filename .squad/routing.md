@@ -8,8 +8,9 @@
 | Blazor, Razor, UI, frontend, components, CSS | Legolas | Frontend |
 | MongoDB, repositories, API endpoints, backend services, MediatR handlers | Sam | Backend |
 | Tests, quality, edge cases, test failures, test review | Gimli | Tester |
-| CI/CD, GitHub Actions, NuGet, deployment, Aspire infra, protected branch | Boromir | DevOps |
+| CI/CD, GitHub Actions, NuGet, deployment, Aspire infra, protected branch, pipelines, builds | Boromir | CI/CD Expert |
 | Docs, README, XML docs, comments, CONTRIBUTING | Frodo | Docs |
+| Blog posts, article content, content strategy, SEO, article features, content workflows | Pippin | Blog Post Expert |
 | Auth0, authentication, authorization, JWT, RBAC, security audit, vulnerabilities, injection, XSS, CSRF, secrets, HTTPS, CORS, security headers, security review | Gandalf | Security |
 | GitHub board, issues, PRs, backlog, work queue | Ralph | Work Monitor |
 | Untriaged issues (squad label, no squad:* sub-label) | Aragorn | Lead triages |
@@ -19,6 +20,7 @@
 | squad:gimli | Gimli | — |
 | squad:boromir | Boromir | — |
 | squad:frodo | Frodo | — |
+| squad:pippin | Pippin | — |
 | squad:gandalf | Gandalf | — |
 | squad:copilot | @copilot | Auto-assign: false |
 

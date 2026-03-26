@@ -11,10 +11,6 @@
 	<ItemGroup>
 		<FrameworkReference Include="Microsoft.AspNetCore.App"/>
 
-		<!-- Aspire hosting packages used by DatabaseService and RedisService -->
-		<PackageReference Include="Aspire.Hosting.AppHost"/>
-		<PackageReference Include="Aspire.Hosting.MongoDB"/>
-		<PackageReference Include="Aspire.Hosting.Redis"/>
 
 		<!-- Telemetry and extensions -->
 		<PackageReference Include="Microsoft.Extensions.Http.Resilience"/>
