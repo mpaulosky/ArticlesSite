@@ -7,7 +7,7 @@
 // Project Name :  Architecture.Tests
 // =======================================================
 
-namespace Architecture.Tests.Unit;
+namespace Architecture.Tests;
 
 /// <summary>
 ///   Tests to validate naming conventions across the solution
@@ -126,14 +126,14 @@ public class NamingConventionTests
 				.Where(t => t.Name.EndsWith("Component"));
 
 		// Assert - Only specific shared components should have Component suffix
-		string[] allowedComponentNames = new[]
-		{
+		string[] allowedComponentNames =
+		[
 				"NavMenuComponent", "ConnectWithUsComponent", "ComponentHeadingComponent", "FooterComponent",
 				"ErrorAlertComponent", "ErrorPageComponent", "LoginComponent", "PageHeaderComponent",
 				"RecentRelatedComponent", "PostInfoComponent", "LoadingComponent", "PageHeadingComponent",
 				"WelcomeComponent", "ThemeToggle", "ThemeSelector", "RedirectToLogin", "TextEditor",
 				"RecentComponent", "ThemeBrightnessToggleComponent", "ThemeColorDropdownComponent"
-		};
+		];
 
 		foreach (Type component in components)
 		{
