@@ -11,9 +11,6 @@
 // GlobalUsings for ServiceDefaults project
 // =======================================================
 
-// Aspire types for ServiceDefaults
-global using Aspire.Hosting;
-global using Aspire.Hosting.ApplicationModel;
 // Common ASP.NET and OpenTelemetry usings required by Extensions.cs
 global using Microsoft.AspNetCore.Builder;
 global using Microsoft.AspNetCore.Diagnostics.HealthChecks;

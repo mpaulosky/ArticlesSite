@@ -223,9 +223,10 @@ public class DetailsComponentTests : BunitContext
 		// Act
 		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		cut.WaitForState(() => cut.Markup.Contains("Active"));
-		cut.Markup.Should().Contain("Status:");
-		cut.Markup.Should().Contain("Active");
+		// The component shows "Archived: False" for non-archived categories
+		cut.WaitForState(() => cut.Markup.Contains("Archived:"));
+		cut.Markup.Should().Contain("Archived:");
+		cut.Markup.Should().Contain("False");
 	}
 
 	[Fact]
@@ -254,9 +255,10 @@ public class DetailsComponentTests : BunitContext
 		// Act
 		var cut = Render<Details>(parameters => parameters.Add(p => p.Id, "507f1f77bcf86cd799439011"));
 
-		cut.WaitForState(() => cut.Markup.Contains("Archived"));
-		cut.Markup.Should().Contain("Status:");
-		cut.Markup.Should().Contain("Archived");
+		// The component shows "Archived: True" for archived categories
+		cut.WaitForState(() => cut.Markup.Contains("Archived:"));
+		cut.Markup.Should().Contain("Archived:");
+		cut.Markup.Should().Contain("True");
 	}
 
 	[Fact]

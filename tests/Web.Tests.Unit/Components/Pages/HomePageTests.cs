@@ -5,11 +5,13 @@ public class HomePageTests : BunitContext
 {
 	private readonly GetArticles.IGetArticlesHandler _articlesHandler = Substitute.For<GetArticles.IGetArticlesHandler>();
 	private readonly ILogger<Home> _logger = Substitute.For<ILogger<Home>>();
+	private readonly ILogger<RecentComponent> _recentLogger = Substitute.For<ILogger<RecentComponent>>();
 
 	public HomePageTests()
 	{
 		Services.AddSingleton(_articlesHandler);
 		Services.AddSingleton(_logger);
+		Services.AddSingleton(_recentLogger);
 	}
 
 	[Fact]
@@ -110,8 +112,8 @@ public class HomePageTests : BunitContext
 		var cut = Render<Home>();
 		await cut.InvokeAsync(() => Task.CompletedTask);
 
-		// Assert
-		_logger.Received().Log(
+		// Assert - RecentComponent owns article loading and logging since Home delegates to it
+		_recentLogger.Received().Log(
 			LogLevel.Warning,
 			Arg.Any<EventId>(),
 			Arg.Any<object>(),
@@ -124,7 +126,7 @@ public class HomePageTests : BunitContext
 	public async Task HomePage_LogsError_WhenHandlerThrows()
 	{
 		// Arrange
-		_articlesHandler.HandleAsync(  )
+		_articlesHandler.HandleAsync()
 			.Returns(_ => Task.FromException<Result<IEnumerable<ArticleDto>>>(new Exception("fail")));
 
 		// Setup JSInterop for ThemeManager.syncUI
@@ -134,8 +136,8 @@ public class HomePageTests : BunitContext
 		var cut = Render<Home>();
 		await cut.InvokeAsync(() => Task.CompletedTask);
 
-		// Assert
-		_logger.Received().Log(
+		// Assert - RecentComponent owns article loading and logging since Home delegates to it
+		_recentLogger.Received().Log(
 			LogLevel.Error,
 			Arg.Any<EventId>(),
 			Arg.Any<object>(),

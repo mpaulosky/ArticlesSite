@@ -157,4 +157,20 @@
 		text-theme-primary-700 dark:text-theme-primary-50
 		hover:text-theme-primary-900 dark:hover:text-theme-primary-900;
 	}
+
+	/* Nav-compact brightness toggle wrapper */
+	.theme-brightness-toggle {
+		@apply flex gap-1 items-center;
+	}
+
+	/* Nav-compact color dropdown */
+	.theme-color-dropdown {
+		@apply text-sm font-medium rounded-full px-3 py-1.5
+		bg-theme-primary-200 dark:bg-theme-primary-800
+		text-theme-primary-800 dark:text-theme-primary-100
+		border border-theme-primary-500 dark:border-theme-primary-400
+		cursor-pointer transition-all duration-200
+		hover:bg-theme-primary-300 dark:hover:bg-theme-primary-700
+		focus:outline-none focus:ring-2 focus:ring-theme-accent-500;
+	}
 }

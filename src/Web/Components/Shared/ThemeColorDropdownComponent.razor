@@ -1,0 +1,57 @@
+@inject IJSRuntime Js
+
+<select class="theme-color-dropdown" value="@_selectedColor" @onchange="OnColorChangedAsync">
+	<option value="RED">🔴 Red</option>
+	<option value="BLUE">🔵 Blue</option>
+	<option value="GREEN">🟢 Green</option>
+	<option value="YELLOW">🟡 Yellow</option>
+</select>
+
+@code {
+	private string _selectedColor = "BLUE";
+
+	/// <summary>
+	/// Reads the currently active colour from ThemeManager on first render so the
+	/// dropdown reflects the persisted theme without requiring user interaction.
+	/// </summary>
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			try
+			{
+				_selectedColor = await Js.InvokeAsync<string>("ThemeManager.getCurrentColor");
+				StateHasChanged();
+			}
+			catch (TaskCanceledException)
+			{
+				// Ignore task cancellation if the circuit is disconnected during initialization
+			}
+			catch (JSDisconnectedException)
+			{
+				// Ignore JS disconnection if the circuit has been disconnected
+			}
+		}
+	}
+
+	/// <summary>
+	/// Applies the selected colour while preserving the current brightness, then
+	/// syncs all ThemeManager-managed colour buttons in the DOM.
+	/// </summary>
+	private async Task OnColorChangedAsync(ChangeEventArgs args)
+	{
+		_selectedColor = args.Value?.ToString() ?? "BLUE";
+		try
+		{
+			await Js.InvokeVoidAsync("ThemeManager.selectColorAndUpdateUI", _selectedColor);
+		}
+		catch (TaskCanceledException)
+		{
+			// Ignore task cancellation during color selection
+		}
+		catch (JSDisconnectedException)
+		{
+			// Ignore JS disconnection errors during user interaction
+		}
+	}
+}

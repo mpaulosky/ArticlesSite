@@ -1,0 +1,54 @@
+@inject IJSRuntime Js
+
+<div class="theme-brightness-toggle">
+	<button @onclick='() => SelectBrightnessAsync("light")' class="btn brightness-btn" id="nav-btn-light">
+		☀ Light
+	</button>
+	<button @onclick='() => SelectBrightnessAsync("dark")' class="btn brightness-btn" id="nav-btn-dark">
+		◐ Dark
+	</button>
+</div>
+
+@code {
+	/// <summary>
+	/// Syncs the active state of both brightness buttons with the current theme on first render.
+	/// </summary>
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			try
+			{
+				await Js.InvokeVoidAsync("ThemeManager.syncUI");
+			}
+			catch (TaskCanceledException)
+			{
+				// Ignore task cancellation if the circuit is disconnected during initialization
+			}
+			catch (JSDisconnectedException)
+			{
+				// Ignore JS disconnection if the circuit has been disconnected
+			}
+		}
+	}
+
+	/// <summary>
+	/// Applies the selected brightness ("light" or "dark") and updates all ThemeManager-managed
+	/// brightness buttons in the DOM, including those in the full ThemeSelector card.
+	/// </summary>
+	private async Task SelectBrightnessAsync(string brightness)
+	{
+		try
+		{
+			await Js.InvokeVoidAsync("ThemeManager.selectBrightnessAndUpdateUI", brightness);
+		}
+		catch (TaskCanceledException)
+		{
+			// Ignore task cancellation during brightness selection
+		}
+		catch (JSDisconnectedException)
+		{
+			// Ignore JS disconnection errors during user interaction
+		}
+	}
+}

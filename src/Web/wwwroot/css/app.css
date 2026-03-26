@@ -86,6 +86,7 @@
     --default-mono-font-family: var(--font-mono);
     --color-theme-primary-50: oklch(98.3% 0.008 264.52);
     --color-theme-primary-100: oklch(96.1% 0.018 266.34);
+    --color-theme-primary-200: oklch(93.5% 0.035 267.89);
     --color-theme-primary-300: oklch(89.8% 0.052 269.12);
     --color-theme-primary-400: oklch(83.6% 0.095 270.22);
     --color-theme-primary-500: oklch(77.2% 0.135 271.01);
@@ -1043,6 +1044,11 @@
       display: block;
     }
   }
+  .sm\:flex {
+    @media (width >= 40rem) {
+      display: flex;
+    }
+  }
   .sm\:text-2xl {
     @media (width >= 40rem) {
       font-size: var(--text-2xl);
@@ -1767,6 +1773,63 @@
       &:hover {
         @media (hover: hover) {
           color: var(--color-theme-primary-900);
+        }
+      }
+    }
+  }
+  .theme-brightness-toggle {
+    display: flex;
+    align-items: center;
+    gap: calc(var(--spacing) * 1);
+  }
+  .theme-color-dropdown {
+    cursor: pointer;
+    border-radius: calc(infinity * 1px);
+    border-style: var(--tw-border-style);
+    border-width: 1px;
+    border-color: var(--color-theme-primary-500);
+    background-color: var(--color-theme-primary-200);
+    padding-inline: calc(var(--spacing) * 3);
+    padding-block: calc(var(--spacing) * 1.5);
+    font-size: var(--text-sm);
+    line-height: var(--tw-leading, var(--text-sm--line-height));
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-theme-primary-800);
+    transition-property: all;
+    transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
+    transition-duration: var(--tw-duration, var(--default-transition-duration));
+    --tw-duration: 200ms;
+    transition-duration: 200ms;
+    &:hover {
+      @media (hover: hover) {
+        background-color: var(--color-theme-primary-300);
+      }
+    }
+    &:focus {
+      --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
+      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+    }
+    &:focus {
+      --tw-ring-color: var(--color-theme-accent-500);
+    }
+    &:focus {
+      --tw-outline-style: none;
+      outline-style: none;
+    }
+    &:where(.dark, .dark *) {
+      border-color: var(--color-theme-primary-400);
+    }
+    &:where(.dark, .dark *) {
+      background-color: var(--color-theme-primary-800);
+    }
+    &:where(.dark, .dark *) {
+      color: var(--color-theme-primary-100);
+    }
+    &:where(.dark, .dark *) {
+      &:hover {
+        @media (hover: hover) {
+          background-color: var(--color-theme-primary-700);
         }
       }
     }
