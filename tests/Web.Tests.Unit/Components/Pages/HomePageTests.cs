@@ -15,20 +15,16 @@ public class HomePageTests : BunitContext
 	}
 
 	[Fact]
-	public void HomePage_Renders_ThemeSelector_And_Headings()
+	public void HomePage_Renders_Headings()
 	{
 		// Arrange: Setup articles handler to return a non-null result
 		_articlesHandler.HandleAsync()
 			.Returns(Task.FromResult(Result.Ok((IEnumerable<ArticleDto>)new List<ArticleDto>())));
 
-		// Arrange: Setup JSInterop for ThemeManager.syncUI
-		JSInterop.SetupVoid("ThemeManager.syncUI");
-
 		// Act
 		var cut = Render<Home>();
 
 		// Assert
-		cut.Markup.Should().Contain("Choose Your Theme");
 		cut.Markup.Should().Contain("Welcome to the Article Site");
 		cut.Markup.Should().Contain("Recent Articles");
 	}
