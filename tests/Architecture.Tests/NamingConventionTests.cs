@@ -132,7 +132,7 @@ public class NamingConventionTests
 				"ErrorAlertComponent", "ErrorPageComponent", "LoginComponent", "PageHeaderComponent",
 				"RecentRelatedComponent", "PostInfoComponent", "LoadingComponent", "PageHeadingComponent",
 				"WelcomeComponent", "ThemeToggle", "ThemeSelector", "RedirectToLogin", "TextEditor",
-				"RecentComponent"
+				"RecentComponent", "ThemeBrightnessToggleComponent", "ThemeColorDropdownComponent"
 		};
 
 		foreach (Type component in components)
