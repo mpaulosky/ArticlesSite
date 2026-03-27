@@ -129,6 +129,7 @@ public class MainLayoutComponentTests : BunitContext
 		Helpers.TestAuthHelper.RegisterTestAuthentication(Services, "TEST USER", [ "Admin" ]);
 		// Mock JS calls made by ThemeColorDropdownComponent and ThemeBrightnessToggleComponent in NavMenu
 		JSInterop.Setup<string>("ThemeManager.getCurrentColor").SetResult("BLUE");
+		JSInterop.Setup<string>("ThemeManager.getCurrentBrightness").SetResult("light");
 		JSInterop.SetupVoid("ThemeManager.syncUI");
 	}
 	[Fact]

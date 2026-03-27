@@ -34,6 +34,7 @@ public class NavMenuComponentTests : BunitContext
 
 		// JS interop required by the two child theme components
 		JSInterop.Setup<string>("ThemeManager.getCurrentColor").SetResult("BLUE");
+		JSInterop.Setup<string>("ThemeManager.getCurrentBrightness").SetResult("light");
 		JSInterop.SetupVoid("ThemeManager.syncUI");
 	}
 
@@ -85,8 +86,8 @@ public class NavMenuComponentTests : BunitContext
 		var cut = Render<CascadingAuthenticationState>(
 			parameters => parameters.AddChildContent<NavMenuComponent>());
 
-		// Assert — brightness toggle wrapper is present
-		cut.Find(".theme-brightness-toggle").Should().NotBeNull(
+		// Assert — toggle button is present
+		cut.Find("#nav-btn-brightness-toggle").Should().NotBeNull(
 			"ThemeBrightnessToggleComponent must be rendered so brightness changes sync with ThemeSelector");
 	}
 
@@ -114,17 +115,17 @@ public class NavMenuComponentTests : BunitContext
 
 		// Assert — both components sit within the same hidden sm:flex wrapper
 		var themeWrapper = cut.Find(".hidden.sm\\:flex");
-		themeWrapper.QuerySelector(".theme-brightness-toggle").Should().NotBeNull(
+		themeWrapper.QuerySelector("#nav-btn-brightness-toggle").Should().NotBeNull(
 			"brightness toggle must be inside the hidden sm:flex div");
 		themeWrapper.QuerySelector(".theme-color-dropdown").Should().NotBeNull(
 			"colour dropdown must be inside the hidden sm:flex div");
 	}
 
 	/// <summary>
-	/// Brightness toggle renders 2 buttons inside the nav.
+	/// Brightness toggle renders one button inside the nav.
 	/// </summary>
 	[Fact]
-	public void NavMenu_ThemeBrightnessToggle_RendersTwoButtons()
+	public void NavMenu_ThemeBrightnessToggle_RendersOneButton()
 	{
 		// Act
 		var cut = Render<CascadingAuthenticationState>(
@@ -132,7 +133,7 @@ public class NavMenuComponentTests : BunitContext
 
 		// Assert
 		var brightnessButtons = cut.FindAll(".brightness-btn");
-		brightnessButtons.Should().HaveCount(2);
+		brightnessButtons.Should().HaveCount(1);
 	}
 
 	/// <summary>
@@ -172,7 +173,7 @@ public class NavMenuComponentTests : BunitContext
 	}
 
 	/// <summary>
-	/// Test list item 6 — clicking the brightness buttons calls the same JS function
+	/// Test list item 6 — clicking the brightness toggle calls the same JS function
 	/// that ThemeSelector uses, ensuring cross-component state sync.
 	/// </summary>
 	[Fact]
@@ -183,9 +184,10 @@ public class NavMenuComponentTests : BunitContext
 
 		var cut = Render<CascadingAuthenticationState>(
 			parameters => parameters.AddChildContent<NavMenuComponent>());
+		await cut.InvokeAsync(() => Task.CompletedTask); // let OnAfterRenderAsync complete first
 
-		// Act
-		await cut.Find("#nav-btn-dark").ClickAsync(new());
+		// Act — default brightness is "light", so toggle should call with "dark"
+		await cut.Find("#nav-btn-brightness-toggle").ClickAsync(new());
 
 		// Assert — same function ThemeSelector uses; syncUI will update .brightness-btn active states
 		JSInterop.VerifyInvoke("ThemeManager.selectBrightnessAndUpdateUI");
