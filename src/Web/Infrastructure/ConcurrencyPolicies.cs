@@ -1,18 +1,25 @@
 // Removed redundant usings: common namespaces are included in Web/GlobalUsings.cs
+// Polly.Retry types (RetryStrategyOptions) are globally included via Web/GlobalUsings.cs
 
 namespace Web.Infrastructure;
 
 /// <summary>
-/// Factory for concurrency retry policies used by handlers that update articles.
-/// Centralizes the Polly policy creation so it can be reused or swapped for testing/DI.
+/// Factory for concurrency retry pipelines used by handlers that update articles.
+/// Centralizes the Polly v8 ResiliencePipeline creation so it can be reused or swapped for testing/DI.
 /// </summary>
 public static class ConcurrencyPolicies
 {
+	/// <summary>Typed context key for the action to invoke on each retry.</summary>
+	public static readonly ResiliencePropertyKey<Func<Task>> OnRetryActionKey = new("onRetryAction");
+
+	/// <summary>Typed context key for tracking the retry attempt count.</summary>
+	public static readonly ResiliencePropertyKey<int> RetryCountKey = new("retryCount");
+
 	/// <summary>
-	/// Creates a generic Polly policy that retries on optimistic concurrency failures (<see cref="ResultErrorCode.Concurrency"/>).
-	/// The policy uses exponential backoff with jitter based on the provided options.
+	/// Creates a generic Polly resilience pipeline that retries on optimistic concurrency failures (<see cref="ResultErrorCode.Concurrency"/>).
+	/// Uses exponential backoff with jitter based on the provided options.
 	/// </summary>
-	public static IAsyncPolicy<Result<T>> CreatePolicy<T>(ConcurrencyOptions options) where T : class
+	public static ResiliencePipeline<Result<T>> CreatePolicy<T>(ConcurrencyOptions options) where T : class
 	{
 		if (options is null) throw new ArgumentNullException(nameof(options));
 
@@ -21,42 +28,45 @@ public static class ConcurrencyPolicies
 		var capMs = options.MaxDelayMilliseconds;
 		var jitterMs = options.JitterMilliseconds;
 
-		// If no retries are configured, return a policy with 0 retries
 		if (maxRetries <= 0)
 		{
-			return Policy<Result<T>>
-					.HandleResult(r => r.Failure && r.ErrorCode == ResultErrorCode.Concurrency)
-					.WaitAndRetryAsync(Array.Empty<TimeSpan>());
+			return new ResiliencePipelineBuilder<Result<T>>().Build();
 		}
 
-		var delays = Enumerable.Range(1, maxRetries).Select(attempt =>
+		var delays = Enumerable.Range(0, maxRetries).Select(i =>
 		{
-			var exponential = baseMs * (int)Math.Pow(2, attempt - 1);
+			var exponential = baseMs * (int)Math.Pow(2, i);
 			var delay = Math.Min(capMs, exponential);
 			var jitter = Random.Shared.Next(0, jitterMs);
 			return TimeSpan.FromMilliseconds(delay + jitter);
 		}).ToArray();
 
-		return Policy<Result<T>>
-				.HandleResult(r => r.Failure && r.ErrorCode == ResultErrorCode.Concurrency)
-				.WaitAndRetryAsync(delays, onRetryAsync: async (outcome, timespan, retryCount, context) =>
+		return new ResiliencePipelineBuilder<Result<T>>()
+			.AddRetry(new RetryStrategyOptions<Result<T>>
+			{
+				ShouldHandle = new PredicateBuilder<Result<T>>()
+					.HandleResult(r => r.Failure && r.ErrorCode == ResultErrorCode.Concurrency),
+				MaxRetryAttempts = maxRetries,
+				DelayGenerator = args =>
 				{
-					// expose retryCount in the context for metrics
-					context["retryCount"] = (int)retryCount;
-
-					// Handler will provide an onRetryAction in the Polly Context to reload state
-					if (context.TryGetValue("onRetryAction", out var obj) && obj is Func<Task> action)
-					{
+					var idx = Math.Min(args.AttemptNumber, delays.Length - 1);
+					return new ValueTask<TimeSpan?>(delays[idx]);
+				},
+				OnRetry = async args =>
+				{
+					args.Context.Properties.Set(RetryCountKey, args.AttemptNumber + 1);
+					if (args.Context.Properties.TryGetValue(OnRetryActionKey, out var action) && action is not null)
 						await action();
-					}
-				});
+				}
+			})
+			.Build();
 	}
 
 	/// <summary>
-	/// Creates a Polly policy that retries on optimistic concurrency failures for Article entities.
+	/// Creates a Polly resilience pipeline for Article concurrency retries.
 	/// Delegates to the generic CreatePolicy method for backwards compatibility.
 	/// </summary>
-	public static IAsyncPolicy<Result<Article>> CreatePolicy(ConcurrencyOptions options)
+	public static ResiliencePipeline<Result<Article>> CreatePolicy(ConcurrencyOptions options)
 	{
 		return CreatePolicy<Article>(options);
 	}
