@@ -37,7 +37,7 @@ public static class ConcurrencyPolicies
 		{
 			var exponential = baseMs * (int)Math.Pow(2, i);
 			var delay = Math.Min(capMs, exponential);
-			var jitter = Random.Shared.Next(0, jitterMs);
+			var jitter = jitterMs > 0 ? Random.Shared.Next(0, jitterMs) : 0;
 			return TimeSpan.FromMilliseconds(delay + jitter);
 		}).ToArray();
 
