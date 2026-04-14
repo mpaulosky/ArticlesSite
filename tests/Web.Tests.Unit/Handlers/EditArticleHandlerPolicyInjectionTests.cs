@@ -48,18 +48,27 @@ public class EditArticleHandlerPolicyInjectionTests
 
 		int policyRetryInvocations = 0;
 
-		// Create a policy with an onRetry that increments our counter
-		var policy = Policy<Result<Article>>
-				.HandleResult(r => r.Failure && r.ErrorCode == ResultErrorCode.Concurrency)
-				.WaitAndRetryAsync([ TimeSpan.Zero ], onRetryAsync: (outcome, timespan, retryCount, context) =>
+		// Create a Polly v8 resilience pipeline that counts retry invocations
+		var pipeline = new ResiliencePipelineBuilder<Result<Article>>()
+				.AddRetry(new RetryStrategyOptions<Result<Article>>
 				{
-					policyRetryInvocations++;
-					return Task.CompletedTask;
-				});
+					ShouldHandle = new PredicateBuilder<Result<Article>>()
+							.HandleResult(r => r.Failure && r.ErrorCode == ResultErrorCode.Concurrency),
+					MaxRetryAttempts = 1,
+					Delay = TimeSpan.Zero,
+					OnRetry = args =>
+					{
+						policyRetryInvocations++;
+						if (args.Context.Properties.TryGetValue(ConcurrencyPolicies.OnRetryActionKey, out var action) && action is not null)
+							return new ValueTask(action());
+						return default;
+					}
+				})
+				.Build();
 
 		var options = Options.Create(new ConcurrencyOptions { MaxRetries = 3, BaseDelayMilliseconds = 10, MaxDelayMilliseconds = 100, JitterMilliseconds = 5 });
 
-		var handler = new EditArticle.Handler(repo, logger, validator, options, policy);
+		var handler = new EditArticle.Handler(repo, logger, validator, options, pipeline);
 
 		var dto = new ArticleDto(
 				articleId,

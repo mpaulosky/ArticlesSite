@@ -6,7 +6,7 @@ namespace Web.Infrastructure;
 public class PolicyDiRegistrationTests
 {
     [Fact]
-    public void IAsyncPolicy_ResultArticle_IsResolvable_FromDI()
+    public void ResiliencePipeline_ResultArticle_IsResolvable_FromDI()
     {
         // Arrange
         var services = new ServiceCollection();
@@ -19,7 +19,7 @@ public class PolicyDiRegistrationTests
             opts.JitterMilliseconds = 50;
         });
 
-        services.AddSingleton<IAsyncPolicy<Result<Article>>>(sp =>
+        services.AddSingleton<ResiliencePipeline<Result<Article>>>(sp =>
         {
             var options = sp.GetRequiredService<IOptions<ConcurrencyOptions>>().Value;
             return ConcurrencyPolicies.CreatePolicy(options);
@@ -28,8 +28,8 @@ public class PolicyDiRegistrationTests
         var provider = services.BuildServiceProvider();
 
         // Act
-        var policy = provider.GetService<IAsyncPolicy<Result<Article>>>();
-        var policy2 = provider.GetService<IAsyncPolicy<Result<Article>>>();
+        var policy = provider.GetService<ResiliencePipeline<Result<Article>>>();
+        var policy2 = provider.GetService<ResiliencePipeline<Result<Article>>>();
 
         // Assert
         policy.Should().NotBeNull();

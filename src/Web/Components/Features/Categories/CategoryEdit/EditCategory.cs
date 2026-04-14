@@ -36,9 +36,9 @@ public static class EditCategory
 		private readonly ILogger<Handler> _logger;
 		private readonly FluentValidation.IValidator<CategoryDto>? _validator;
 		private readonly Web.Infrastructure.ConcurrencyOptions _concurrencyOptions;
-		private readonly IAsyncPolicy<Result<Category>> _concurrencyPolicy;
+		private readonly ResiliencePipeline<Result<Category>> _concurrencyPolicy;
 
-		public Handler(ICategoryRepository repository, ILogger<Handler>? logger, FluentValidation.IValidator<CategoryDto>? validator, Microsoft.Extensions.Options.IOptions<Web.Infrastructure.ConcurrencyOptions>? concurrencyOptions = null, IAsyncPolicy<Result<Category>>? concurrencyPolicy = null)
+		public Handler(ICategoryRepository repository, ILogger<Handler>? logger, FluentValidation.IValidator<CategoryDto>? validator, Microsoft.Extensions.Options.IOptions<Web.Infrastructure.ConcurrencyOptions>? concurrencyOptions = null, ResiliencePipeline<Result<Category>>? concurrencyPolicy = null)
 		{
 			_repository = repository ?? throw new ArgumentNullException(nameof(repository));
 			_logger = logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger<Handler>.Instance;
@@ -108,16 +108,17 @@ public static class EditCategory
 				return Result.Fail<CategoryDto>(ex.Message);
 			}
 
-			// Use centralized Polly policy to execute update with retries. We provide an onRetryAction via Context
-			var context = new Polly.Context();
-			context["onRetryAction"] = (Func<Task>)(async () =>
+			// Per-invocation closure state replaces Polly.Context dictionary (Polly v8)
+			Result<Category>? terminalResult = null;
+			var resCtx = ResilienceContextPool.Shared.Get();
+			resCtx.Properties.Set(Web.Infrastructure.ConcurrencyPolicies.OnRetryActionKey, (Func<Task>)(async () =>
 			{
 				_logger.LogDebug("EditCategory: onRetryAction invoked for category {Id}", category.Id);
 				_logger.LogInformation("EditCategory.onRetryAction invoked for category {Id}. Current local Version={Version}", category.Id, category.Version);
 				var latest = await _repository.GetCategoryByIdAsync(category.Id);
 				if (latest.Failure || latest.Value is null)
 				{
-					context["terminalFailure"] = Result.Fail<Category>(latest.Error ?? "Category not found");
+					terminalResult = Result.Fail<Category>(latest.Error ?? "Category not found");
 					return;
 				}
 
@@ -130,17 +131,19 @@ public static class EditCategory
 				}
 				catch (ArgumentException ex)
 				{
-					context["terminalFailure"] = Result.Fail<Category>(ex.Message);
+					terminalResult = Result.Fail<Category>(ex.Message);
 					return;
 				}
-			});
+			}));
 
 			_logger.LogInformation("EditCategory.HandleAsync: Calling UpdateCategory for category {Id} with Version={Version} DTO.Version={DtoVersion}", category.Id, category.Version, dto.Version);
 			Result<Category> policyResult;
 			try
 			{
 				_logger.LogDebug("EditCategory: Executing concurrency policy for category {Id}", category.Id);
-				policyResult = await _concurrencyPolicy.ExecuteAsync((ctx) => _repository.UpdateCategory(category), context);
+				policyResult = await _concurrencyPolicy.ExecuteAsync(
+					ctx => new ValueTask<Result<Category>>(_repository.UpdateCategory(category)),
+					resCtx);
 				_logger.LogDebug("EditCategory: Concurrency policy completed for category {Id}. Success={Success} ErrorCode={ErrorCode}", category.Id, !policyResult.Failure, policyResult.ErrorCode);
 				if (!policyResult.Failure && policyResult.Value is not null)
 				{
@@ -152,16 +155,20 @@ public static class EditCategory
 				_logger.LogError(ex, "EditCategory: Unexpected error during policy execution for category {Id}", category.Id);
 				return Result.Fail<CategoryDto>("Failed to update category");
 			}
+			finally
+			{
+				ResilienceContextPool.Shared.Return(resCtx);
+			}
 
 			// After retries check for terminal failure
-			if (context.TryGetValue("terminalFailure", out var term) && term is Result<Category> terminal && terminal.Failure)
+			if (terminalResult is not null && terminalResult.Failure)
 			{
-				_logger.LogInformation("EditCategory: terminal failure for ID={Id} Error={Error} Code={ErrorCode}", category.Id, terminal.Error, terminal.ErrorCode);
-				if (terminal.ErrorCode == global::Shared.Abstractions.ResultErrorCode.Concurrency)
+				_logger.LogInformation("EditCategory: terminal failure for ID={Id} Error={Error} Code={ErrorCode}", category.Id, terminalResult.Error, terminalResult.ErrorCode);
+				if (terminalResult.ErrorCode == global::Shared.Abstractions.ResultErrorCode.Concurrency)
 				{
-					return Result.Fail<CategoryDto>(terminal.Error ?? "Concurrency conflict: category was modified by another process", global::Shared.Abstractions.ResultErrorCode.Concurrency, terminal.Details);
+					return Result.Fail<CategoryDto>(terminalResult.Error ?? "Concurrency conflict: category was modified by another process", global::Shared.Abstractions.ResultErrorCode.Concurrency, terminalResult.Details);
 				}
-				return Result.Fail<CategoryDto>(terminal.Error ?? "Failed to update category");
+				return Result.Fail<CategoryDto>(terminalResult.Error ?? "Failed to update category");
 			}
 
 			if (policyResult.Failure)

@@ -36,10 +36,10 @@ public static class EditArticle
 		private readonly ILogger<Handler> logger;
 		private readonly IValidator<ArticleDto>? validator;
 		private readonly Web.Infrastructure.ConcurrencyOptions _concurrencyOptions;
-		private readonly IAsyncPolicy<Result<Web.Components.Features.Articles.Entities.Article>> _concurrencyPolicy;
+		private readonly ResiliencePipeline<Result<Web.Components.Features.Articles.Entities.Article>> _concurrencyPolicy;
 		private readonly Web.Infrastructure.IMetricsPublisher _metrics;
 
-		public Handler(IArticleRepository repository, ILogger<Handler> logger, IValidator<ArticleDto>? validator, Microsoft.Extensions.Options.IOptions<Web.Infrastructure.ConcurrencyOptions> concurrencyOptions, IAsyncPolicy<Result<Web.Components.Features.Articles.Entities.Article>>? concurrencyPolicy = null, Web.Infrastructure.IMetricsPublisher? metrics = null)
+		public Handler(IArticleRepository repository, ILogger<Handler> logger, IValidator<ArticleDto>? validator, Microsoft.Extensions.Options.IOptions<Web.Infrastructure.ConcurrencyOptions> concurrencyOptions, ResiliencePipeline<Result<Web.Components.Features.Articles.Entities.Article>>? concurrencyPolicy = null, Web.Infrastructure.IMetricsPublisher? metrics = null)
 		{
 			this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
 			this.logger = logger ?? Microsoft.Extensions.Logging.Abstractions.NullLogger<Handler>.Instance;
@@ -120,16 +120,19 @@ public static class EditArticle
 			article.Author = dto.Author;
 			article.Category = dto.Category;
 
-			// Use centralized Polly policy to execute update with retries. We provide an onRetryAction via Context
-			var context = new Polly.Context();
-			context["onRetryAction"] = (Func<Task>)(async () =>
+			// Per-invocation closure state replaces Polly.Context dictionary (Polly v8)
+			Result<Article>? terminalResult = null;
+			int retryCount = 0;
+			var resCtx = ResilienceContextPool.Shared.Get();
+			resCtx.Properties.Set(Web.Infrastructure.ConcurrencyPolicies.OnRetryActionKey, (Func<Task>)(async () =>
 			{
+				retryCount++;
 				logger.LogDebug("EditArticle: onRetryAction invoked for article {Id}", article.Id);
 				logger.LogInformation("EditArticle.onRetryAction invoked for article {Id}. Current local Version={Version}", article.Id, article.Version);
 				var latest = await repository.GetArticleByIdAsync(article.Id);
 				if (latest.Failure || latest.Value is null)
 				{
-					context["terminalFailure"] = Result.Fail<Article>(latest.Error ?? "Article not found");
+					terminalResult = Result.Fail<Article>(latest.Error ?? "Article not found");
 					return;
 				}
 
@@ -141,12 +144,12 @@ public static class EditArticle
 				}
 				catch (ArgumentException ex)
 				{
-					context["terminalFailure"] = Result.Fail<Article>(ex.Message);
+					terminalResult = Result.Fail<Article>(ex.Message);
 					return;
 				}
 				article.Author = dto.Author;
 				article.Category = dto.Category;
-			});
+			}));
 
 			// Before executing policy, increment attempt
 			_metrics.IncrementAttempt();
@@ -157,7 +160,9 @@ public static class EditArticle
 			try
 			{
 				logger.LogDebug("EditArticle: Executing concurrency policy for article {Id} (attempt)", article.Id);
-				policyResult = await _concurrencyPolicy.ExecuteAsync((ctx) => repository.UpdateArticle(article), context);
+				policyResult = await _concurrencyPolicy.ExecuteAsync(
+					ctx => new ValueTask<Result<Article>>(repository.UpdateArticle(article)),
+					resCtx);
 				logger.LogDebug("EditArticle: Concurrency policy completed for article {Id}. Success={Success} ErrorCode={ErrorCode}", article.Id, !policyResult.Failure, policyResult.ErrorCode);
 				if (!policyResult.Failure && policyResult.Value is not null)
 				{
@@ -166,26 +171,27 @@ public static class EditArticle
 			}
 			finally
 			{
+				ResilienceContextPool.Shared.Return(resCtx);
 				stopwatch.Stop();
 				_metrics.RecordRequestLatency("ArticleUpdate", stopwatch.Elapsed);
 			}
 
-			// If the policy context contains a 'retryCount' value, record it
-			if (context.TryGetValue("retryCount", out var rcObj) && rcObj is int rc)
+			// Record retry count from closure variable
+			if (retryCount > 0)
 			{
-				_metrics.RecordRetryCount(rc);
+				_metrics.RecordRetryCount(retryCount);
 			}
 
-			// After retries check metrics
-			if (context.TryGetValue("terminalFailure", out var term) && term is Result<Web.Components.Features.Articles.Entities.Article> terminal && terminal.Failure)
+			// After retries check for terminal failure
+			if (terminalResult is not null && terminalResult.Failure)
 			{
 				_metrics.IncrementConflict();
-				Console.Error.WriteLine($"[SERVER-LOG] EditArticle: terminal failure for ID={article.Id} Error={terminal.Error} Code={terminal.ErrorCode}");
-				if (terminal.ErrorCode == global::Shared.Abstractions.ResultErrorCode.Concurrency)
+				Console.Error.WriteLine($"[SERVER-LOG] EditArticle: terminal failure for ID={article.Id} Error={terminalResult.Error} Code={terminalResult.ErrorCode}");
+				if (terminalResult.ErrorCode == global::Shared.Abstractions.ResultErrorCode.Concurrency)
 				{
-					return Result.Fail<ArticleDto>(terminal.Error ?? "Concurrency conflict: article was modified by another process", global::Shared.Abstractions.ResultErrorCode.Concurrency, terminal.Details);
+					return Result.Fail<ArticleDto>(terminalResult.Error ?? "Concurrency conflict: article was modified by another process", global::Shared.Abstractions.ResultErrorCode.Concurrency, terminalResult.Details);
 				}
-				return Result.Fail<ArticleDto>(terminal.Error ?? "Failed to update article");
+				return Result.Fail<ArticleDto>(terminalResult.Error ?? "Failed to update article");
 			}
 
 			if (policyResult.Failure)
