@@ -1,5 +1,11 @@
 # ArticlesSite Squad
 
+## Coordinator
+
+| Name  | Role        | Notes                                              |
+| ----- | ----------- | -------------------------------------------------- |
+| Squad | Coordinator | Routes work, enforces handoffs and reviewer gates. |
+
 ## Project Context
 
 - **Project:** ArticlesSite
@@ -11,18 +17,18 @@
 
 ## Members
 
-| Name | Role | Squad Label | Emoji |
-|------|------|-------------|-------|
-| Aragorn | Lead | squad:aragorn | 🏗️ Lead |
-| Legolas | Frontend Dev | squad:legolas | ⚛️ Frontend |
-| Sam | Backend Dev | squad:sam | 🔧 Backend |
-| Gimli | Tester | squad:gimli | 🧪 Tester |
-| Boromir | CI/CD Expert | squad:boromir | ⚙️ DevOps |
-| Frodo | Tech Writer | squad:frodo | 📝 Docs |
-| Pippin | Blog Post Expert | squad:pippin | 📰 Content |
+| Name    | Role             | Squad Label   | Emoji      |
+| ------- | ---------------- | ------------- | ---------- |
+| Aragorn | Lead             | squad:aragorn | 🏗️ Lead     |
+| Legolas | Frontend Dev     | squad:legolas | ⚛️ Frontend |
+| Sam     | Backend Dev      | squad:sam     | 🔧 Backend  |
+| Gimli   | Tester           | squad:gimli   | 🧪 Tester   |
+| Boromir | CI/CD Expert     | squad:boromir | ⚙️ DevOps   |
+| Frodo   | Tech Writer      | squad:frodo   | 📝 Docs     |
+| Pippin  | Blog Post Expert | squad:pippin  | 📰 Content  |
 | Gandalf | Security Officer | squad:gandalf | 🔒 Security |
-| Scribe | (silent) | — | 📋 Scribe |
-| Ralph | Work Monitor | — | 🔄 Monitor |
+| Scribe  | (silent)         | —             | 📋 Scribe   |
+| Ralph   | Work Monitor     | —             | 🔄 Monitor  |
 
 <!-- copilot-auto-assign: false -->
 | @copilot | 🤖 Coding Agent | squad:copilot | Autonomous |
