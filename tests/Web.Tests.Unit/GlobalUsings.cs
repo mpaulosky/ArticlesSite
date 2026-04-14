@@ -22,10 +22,10 @@ global using FluentAssertions;
 global using FluentValidation;
 global using FluentValidation.Results;
 
-// Polly policy types used by concurrency tests
+// Polly resilience pipeline types used by concurrency tests
 global using Polly;
-global using Polly.Registry;
-global using IArticleConcurrencyPolicy = Polly.IAsyncPolicy<Shared.Abstractions.Result<Web.Components.Features.Articles.Entities.Article>>;
+global using Polly.Retry;
+global using IArticleConcurrencyPolicy = Polly.ResiliencePipeline<Shared.Abstractions.Result<Web.Components.Features.Articles.Entities.Article>>;
 
 global using Microsoft.AspNetCore.Components.Authorization;
 global using Microsoft.Extensions.DependencyInjection;

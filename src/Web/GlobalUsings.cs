@@ -60,7 +60,7 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Threading.Tasks;
 global using Polly;
-global using Polly.Registry;
+global using Polly.Retry;
 global using Microsoft.Extensions.Logging;
 global using System.IO;
 global using System.Security.Claims;
@@ -68,9 +68,9 @@ global using System.Diagnostics;
 // Infrastructure types
 global using Web.Infrastructure;
 
-// Alias for strongly-typed article concurrency policy used in DI and tests
-// Provide a public interface type for the strongly-typed policy used in DI and tests
-global using IArticleConcurrencyPolicy = Polly.IAsyncPolicy<Shared.Abstractions.Result<Web.Components.Features.Articles.Entities.Article>>;
+// Alias for strongly-typed article concurrency pipeline used in DI and tests
+// Provide a public type alias for the strongly-typed resilience pipeline used in DI and tests
+global using IArticleConcurrencyPolicy = Polly.ResiliencePipeline<Shared.Abstractions.Result<Web.Components.Features.Articles.Entities.Article>>;
 
 global using static Shared.Constants.Constants;
 global using static Shared.Helpers.Helpers;

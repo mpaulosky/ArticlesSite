@@ -41,8 +41,8 @@ builder.Services.AddBlazoredLocalStorage();
 // Concurrency options from configuration
 builder.Services.Configure<Web.Infrastructure.ConcurrencyOptions>(builder.Configuration.GetSection("ConcurrencyOptions"));
 
-// Register centralized Polly policy for concurrency retries as a strongly-typed IAsyncPolicy<Result<Article>>
-builder.Services.AddSingleton<IAsyncPolicy<Result<Web.Components.Features.Articles.Entities.Article>>>(sp =>
+// Register centralized Polly resilience pipeline for concurrency retries as a strongly-typed ResiliencePipeline<Result<Article>>
+builder.Services.AddSingleton<ResiliencePipeline<Result<Web.Components.Features.Articles.Entities.Article>>>(sp =>
 {
 	var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<Web.Infrastructure.ConcurrencyOptions>>().Value;
 	return Web.Infrastructure.ConcurrencyPolicies.CreatePolicy(options);
