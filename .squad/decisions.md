@@ -51,3 +51,38 @@
   2. Continue monitoring main for regressions
   3. If new build issues arise, create fresh PR from current main
 **Notes for Future:** Auto-generated PRs are time-sensitive; prefer incremental fixes; rebase frequently
+
+---
+
+### 2026-05-09: PR #97 CI Fix — XML Typo in Directory.Packages.props
+**By:** Sam (Backend Developer)  
+**Status:** ✅ Implemented & Merged
+**PR:** #97 (`build-repair-update-aspire`)  
+**Merge:** 2026-05-09T23:16:58Z (Commit: 0485b05)
+
+**Problem:** PR #97 failed CI with NU1015 errors (missing package versions) across all projects.
+
+**Root Cause:** Malformed XML in `Directory.Packages.props` line 16 — stray double-quote on Aspire.MongoDB.Driver:
+```xml
+<PackageVersion Include="Aspire.MongoDB.Driver" Version="13.3.0"" />  <!-- ❌ Extra quote -->
+```
+XML parsing stops at syntax error; all subsequent package versions not loaded → cascading NU1015 errors.
+
+**Additional Issues Found:**
+1. MongoDB.Driver.Core (3.7.1) version mismatch with MongoDB.Driver (3.8.0) — should match
+2. 8 .lscache files from VS Code C# Dev Kit committed (build cache should not be in source control)
+3. Transitive security warnings (NU1902/NU1903) from MongoDB.Driver dependencies (SharpCompress 0.30.1, Snappier 1.0.0)
+
+**Solution Applied:**
+1. Fixed XML typo: Removed stray double-quote → `Version="13.3.0"`
+2. Updated MongoDB.Driver.Core to 3.8.0 to match MongoDB.Driver
+3. Removed all 8 .lscache files from repository
+4. Added NU1902 and NU1903 to NoWarn (upstream MongoDB responsibility)
+
+**Verification:**
+- ✅ `dotnet restore` success
+- ✅ `dotnet build` success (1 unrelated warning)
+- ✅ All NU1015 errors resolved
+- ✅ Package version resolution complete across all projects
+
+**Key Learning:** XML parsing errors in centralized package files create cascading failures. One typo → dozens of errors across entire solution. Always verify XML syntax before commit. Always align related package versions (e.g., MongoDB.Driver ↔ MongoDB.Driver.Core).
