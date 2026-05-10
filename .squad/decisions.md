@@ -51,3 +51,145 @@
   2. Continue monitoring main for regressions
   3. If new build issues arise, create fresh PR from current main
 **Notes for Future:** Auto-generated PRs are time-sensitive; prefer incremental fixes; rebase frequently
+
+---
+
+### 2026-05-09: PR #97 CI Fix — XML Typo in Directory.Packages.props
+**By:** Sam (Backend Developer)  
+**Status:** ✅ Implemented & Merged
+**PR:** #97 (`build-repair-update-aspire`)  
+**Merge:** 2026-05-09T23:16:58Z (Commit: 0485b05)
+
+**Problem:** PR #97 failed CI with NU1015 errors (missing package versions) across all projects.
+
+**Root Cause:** Malformed XML in `Directory.Packages.props` line 16 — stray double-quote on Aspire.MongoDB.Driver:
+```xml
+<PackageVersion Include="Aspire.MongoDB.Driver" Version="13.3.0"" />  <!-- ❌ Extra quote -->
+```
+XML parsing stops at syntax error; all subsequent package versions not loaded → cascading NU1015 errors.
+
+**Additional Issues Found:**
+1. MongoDB.Driver.Core (3.7.1) version mismatch with MongoDB.Driver (3.8.0) — should match
+2. 8 .lscache files from VS Code C# Dev Kit committed (build cache should not be in source control)
+3. Transitive security warnings (NU1902/NU1903) from MongoDB.Driver dependencies (SharpCompress 0.30.1, Snappier 1.0.0)
+
+**Solution Applied:**
+1. Fixed XML typo: Removed stray double-quote → `Version="13.3.0"`
+2. Updated MongoDB.Driver.Core to 3.8.0 to match MongoDB.Driver
+3. Removed all 8 .lscache files from repository
+4. Added NU1902 and NU1903 to NoWarn (upstream MongoDB responsibility)
+
+**Verification:**
+- ✅ `dotnet restore` success
+- ✅ `dotnet build` success (1 unrelated warning)
+- ✅ All NU1015 errors resolved
+- ✅ Package version resolution complete across all projects
+
+**Key Learning:** XML parsing errors in centralized package files create cascading failures. One typo → dozens of errors across entire solution. Always verify XML syntax before commit. Always align related package versions (e.g., MongoDB.Driver ↔ MongoDB.Driver.Core).
+
+---
+
+### 2026-05-10: Build Repair Session — ProgramSmokeTests Auth0 Configuration Fix
+
+**Date:** 2026-05-10T04:40:52Z  
+**Session:** build-repair  
+**Status:** ✅ RESOLVED
+
+#### Agents Involved
+- **Boromir (DevOps):** Build validation
+- **Gimli (QA):** Test execution & failure identification
+- **Aragorn (Lead):** Root cause analysis & implementation
+
+#### Problem
+
+The `Web.Tests.Unit` test suite had 1 failure (621/622 passing):
+- **Test:** `ProgramSmokeTests.App_Should_Start_Without_Errors`
+- **Error:** `System.InvalidOperationException: Auth0:Domain configuration is missing.`
+- **Location:** `tests/Web.Tests.Unit/Startup/ProgramSmokeTests.cs:33`
+- **Stack Origin:** `src/Web/Services/AuthenticationServiceExtensions.cs:31`
+
+**Root Cause:** WebApplicationFactory-based smoke test lacked Auth0 configuration stubs. During app startup, `AddAuthenticationAndAuthorization()` requires `Auth0:Domain`, `Auth0:ClientId` (both mandatory), and `Auth0:ClientSecret` (recommended). The TestFactory only provided MongoDB config, causing startup to fail before the test could even execute.
+
+#### Solution
+
+Aragorn implemented the preferred approach (Option 1 from Gimli's analysis):
+
+1. **Added Auth0 environment variables** to ProgramSmokeTests:
+   ```csharp
+   Environment.SetEnvironmentVariable("Auth0__Domain", "test.auth0.com");
+   Environment.SetEnvironmentVariable("Auth0__ClientId", "test-client-id");
+   Environment.SetEnvironmentVariable("Auth0__ClientSecret", "test-client-secret");
+   ```
+
+2. **Key learnings:**
+   - Environment variables use double-underscore notation (`Auth0__Domain`) to represent hierarchical config keys (`Auth0:Domain`)
+   - Environment variables have higher priority in .NET configuration hierarchy than in-memory config
+   - Proper cleanup in `finally` block preserves original environment state
+
+3. **File Changes:**
+   - Modified: `tests/Web.Tests.Unit/Startup/ProgramSmokeTests.cs`
+   - Added copyright header (was missing)
+   - Added environment variable setup & cleanup in test method
+
+#### Verification
+
+- ✅ Web.Tests.Unit: 622/622 passing
+- ✅ Shared.Tests.Unit: 57/57 passing
+- ✅ Architecture.Tests: 43/43 passing
+- ✅ Web.Tests.Integration: 185/185 passing
+- **Total:** 906/906 tests passing (100%)
+
+**Pre-Push Gate:** ✅ UNBLOCKED
+
+#### Key Learning
+
+For future test factories that validate app startup:
+- Document all required configuration keys as inline comments
+- Provide ALL mandatory config keys—even with stub/test values
+- Use environment variables for config that auth/service providers read directly
+- Use in-memory configuration for app-specific settings
+- Always preserve and restore environment state in test cleanup
+
+---
+
+### 2026-05-10: Aspire AppHost User Secrets Corruption Fix
+
+**Date:** 2026-05-10T04:52:29Z  
+**Agent:** Boromir (DevOps)  
+**Status:** ✅ RESOLVED
+
+#### Problem
+
+Aspire AppHost startup was blocked by corrupted JSON in user secrets file.
+
+**Error:**
+```
+System.IO.InvalidDataException: Failed to load configuration from file 
+'/home/mpaulosky/.microsoft/usersecrets/8882ea07-326b-4521-bbdc-1f1fd68961c9/secrets.json'.
+
+System.FormatException: Could not parse the JSON file.
+'S' is invalid after a single JSON value. Expected end of data. 
+LineNumber: 7 | BytePositionInLine: 1.
+```
+
+**Root Cause:** Stray `S` character appended at end of `secrets.json` file.
+
+#### Solution
+
+1. Located user secrets file: `~/.microsoft/usersecrets/{ProjectId}/secrets.json`
+2. Identified stray `S` character after JSON closing brace
+3. Removed character and recreated valid JSON with exact same keys/values
+4. Verified AppHost startup successful
+
+#### Verification
+
+- ✅ Aspire AppHost now starts cleanly
+- ✅ Redis Cache (Healthy)
+- ✅ MongoDB Server (Healthy)
+- ✅ Blazor Web @ 5057 (Running)
+- ✅ Dashboard @ https://localhost:17057 (Accessible)
+- ✅ All resources online
+
+#### Key Learning
+
+User secrets file corruption is not recoverable via UI. Always inspect JSON format in `~/.microsoft/usersecrets/{ProjectId}/secrets.json` if startup fails with JSON parse errors. No code changes required—development environment artifact only.
