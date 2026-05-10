@@ -67,3 +67,53 @@
 **Log:** Full build log written to `/home/mpaulosky/Repos/ArticlesSite/build-log.txt`
 
 **Conclusion:** Solution is in excellent health. Previous PR #97 fixes (XML typo, MongoDB version alignment) are holding. No DevOps intervention required.
+
+---
+
+### 2026-05-10: Aspire AppHost Startup — Secrets.json Corruption Fix
+
+**Task:** Start and monitor the Aspire AppHost dashboard  
+**Date:** 2026-05-10  
+**Requested by:** Matthew Paulosky  
+
+**Problem Found:** AppHost startup failed with JSON parsing error in user secrets file.
+- **Location:** `/home/mpaulosky/.microsoft/usersecrets/8882ea07-326b-4521-bbdc-1f1fd68961c9/secrets.json`
+- **Issue:** Stray `S` character appended at end of file (line 8), breaking JSON parser
+- **Error Message:** `'S' is invalid after a single JSON value. Expected end of data. LineNumber: 7 | BytePositionInLine: 1`
+
+**Root Cause:** Corrupted secrets.json file in user secrets directory (not source-controlled, but cached locally).
+
+**Solution Applied:** 
+1. Identified and removed stray `S` character from secrets.json
+2. Verified JSON syntax
+3. Restarted AppHost
+
+**Startup Verification:** ✅ SUCCESS
+
+**Aspire Resources Confirmed:**
+1. **Redis Cache** — Container started (health: Healthy)
+   - Ports: 127.0.0.1:33291→6379 (TLS), 127.0.0.1:33292→6380 (password-protected)
+2. **MongoDB Server** — Container reused from earlier session (health: Healthy)
+   - Port: 127.0.0.1:33294→27017
+3. **Web (Blazor App)** — Resource configured (port 5057, HTTP binding)
+   - Status: Starting → Running (transitioned during startup)
+   - Health checks: `/health` endpoint configured
+
+**Aspire Dashboard:**
+- **URL:** https://localhost:17057
+- **Login Token:** Available at startup (token: 0ddb01d13b1771fff9493570d6bd345f)
+- **Full Login URL:** `https://localhost:17057/login?t=0ddb01d13b1771fff9493570d6bd345f`
+- **Version:** 13.3.0+4517e4a1ffb7f00a4c0e66882c2db952d637c0cc
+
+**AppHost Configuration:**
+- Aspire version: 13.3.0
+- Entry point: `src/AppHost/AppHost.cs`
+- Resources defined: `AppHost.AddMongoDbServices()`, `AppHost.AddRedisServices()`
+- Web project binds to: `http://localhost:5057` (hardcoded for Playwright compatibility)
+- Health checks enabled on `/health` endpoint
+
+**Key Learning:**
+- User secrets file at `~/.microsoft/usersecrets/{ProjectId}/secrets.json` stores sensitive config (API keys, DB passwords, Aspire dashboard tokens)
+- JSON parsing errors in this file prevent app startup (no recovery path)
+- Aspire DCP (Distributed Control Plane) automatically manages Docker containers and health checks
+- Resources auto-transition from Unhealthy → Healthy as their dependencies startup

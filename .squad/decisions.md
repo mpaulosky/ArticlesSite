@@ -149,3 +149,47 @@ For future test factories that validate app startup:
 - Use environment variables for config that auth/service providers read directly
 - Use in-memory configuration for app-specific settings
 - Always preserve and restore environment state in test cleanup
+
+---
+
+### 2026-05-10: Aspire AppHost User Secrets Corruption Fix
+
+**Date:** 2026-05-10T04:52:29Z  
+**Agent:** Boromir (DevOps)  
+**Status:** ✅ RESOLVED
+
+#### Problem
+
+Aspire AppHost startup was blocked by corrupted JSON in user secrets file.
+
+**Error:**
+```
+System.IO.InvalidDataException: Failed to load configuration from file 
+'/home/mpaulosky/.microsoft/usersecrets/8882ea07-326b-4521-bbdc-1f1fd68961c9/secrets.json'.
+
+System.FormatException: Could not parse the JSON file.
+'S' is invalid after a single JSON value. Expected end of data. 
+LineNumber: 7 | BytePositionInLine: 1.
+```
+
+**Root Cause:** Stray `S` character appended at end of `secrets.json` file.
+
+#### Solution
+
+1. Located user secrets file: `~/.microsoft/usersecrets/{ProjectId}/secrets.json`
+2. Identified stray `S` character after JSON closing brace
+3. Removed character and recreated valid JSON with exact same keys/values
+4. Verified AppHost startup successful
+
+#### Verification
+
+- ✅ Aspire AppHost now starts cleanly
+- ✅ Redis Cache (Healthy)
+- ✅ MongoDB Server (Healthy)
+- ✅ Blazor Web @ 5057 (Running)
+- ✅ Dashboard @ https://localhost:17057 (Accessible)
+- ✅ All resources online
+
+#### Key Learning
+
+User secrets file corruption is not recoverable via UI. Always inspect JSON format in `~/.microsoft/usersecrets/{ProjectId}/secrets.json` if startup fails with JSON parse errors. No code changes required—development environment artifact only.
