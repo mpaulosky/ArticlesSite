@@ -86,3 +86,66 @@ XML parsing stops at syntax error; all subsequent package versions not loaded �
 - ✅ Package version resolution complete across all projects
 
 **Key Learning:** XML parsing errors in centralized package files create cascading failures. One typo → dozens of errors across entire solution. Always verify XML syntax before commit. Always align related package versions (e.g., MongoDB.Driver ↔ MongoDB.Driver.Core).
+
+---
+
+### 2026-05-10: Build Repair Session — ProgramSmokeTests Auth0 Configuration Fix
+
+**Date:** 2026-05-10T04:40:52Z  
+**Session:** build-repair  
+**Status:** ✅ RESOLVED
+
+#### Agents Involved
+- **Boromir (DevOps):** Build validation
+- **Gimli (QA):** Test execution & failure identification
+- **Aragorn (Lead):** Root cause analysis & implementation
+
+#### Problem
+
+The `Web.Tests.Unit` test suite had 1 failure (621/622 passing):
+- **Test:** `ProgramSmokeTests.App_Should_Start_Without_Errors`
+- **Error:** `System.InvalidOperationException: Auth0:Domain configuration is missing.`
+- **Location:** `tests/Web.Tests.Unit/Startup/ProgramSmokeTests.cs:33`
+- **Stack Origin:** `src/Web/Services/AuthenticationServiceExtensions.cs:31`
+
+**Root Cause:** WebApplicationFactory-based smoke test lacked Auth0 configuration stubs. During app startup, `AddAuthenticationAndAuthorization()` requires `Auth0:Domain`, `Auth0:ClientId` (both mandatory), and `Auth0:ClientSecret` (recommended). The TestFactory only provided MongoDB config, causing startup to fail before the test could even execute.
+
+#### Solution
+
+Aragorn implemented the preferred approach (Option 1 from Gimli's analysis):
+
+1. **Added Auth0 environment variables** to ProgramSmokeTests:
+   ```csharp
+   Environment.SetEnvironmentVariable("Auth0__Domain", "test.auth0.com");
+   Environment.SetEnvironmentVariable("Auth0__ClientId", "test-client-id");
+   Environment.SetEnvironmentVariable("Auth0__ClientSecret", "test-client-secret");
+   ```
+
+2. **Key learnings:**
+   - Environment variables use double-underscore notation (`Auth0__Domain`) to represent hierarchical config keys (`Auth0:Domain`)
+   - Environment variables have higher priority in .NET configuration hierarchy than in-memory config
+   - Proper cleanup in `finally` block preserves original environment state
+
+3. **File Changes:**
+   - Modified: `tests/Web.Tests.Unit/Startup/ProgramSmokeTests.cs`
+   - Added copyright header (was missing)
+   - Added environment variable setup & cleanup in test method
+
+#### Verification
+
+- ✅ Web.Tests.Unit: 622/622 passing
+- ✅ Shared.Tests.Unit: 57/57 passing
+- ✅ Architecture.Tests: 43/43 passing
+- ✅ Web.Tests.Integration: 185/185 passing
+- **Total:** 906/906 tests passing (100%)
+
+**Pre-Push Gate:** ✅ UNBLOCKED
+
+#### Key Learning
+
+For future test factories that validate app startup:
+- Document all required configuration keys as inline comments
+- Provide ALL mandatory config keys—even with stub/test values
+- Use environment variables for config that auth/service providers read directly
+- Use in-memory configuration for app-specific settings
+- Always preserve and restore environment state in test cleanup
