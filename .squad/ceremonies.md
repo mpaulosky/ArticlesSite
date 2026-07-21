@@ -41,34 +41,45 @@
 - **Facilitator:** Agent or human working the task
 - **Participants:** Task owner, reviewers (for PR phase)
 - **Purpose:** Ensure consistent task execution with proper branch isolation and verification
-- **Enforcement:** The pre-push hook (Gate 0) blocks direct pushes to `main` — you must use a `squad/{issue}-{slug}` feature branch
+- **Enforcement:** The pre-push hook (Gate 0) blocks direct pushes to `main` and `dev` — you must use a `squad/{issue}-{slug}` feature branch
+- **Source of truth:** `.squad/workflows/git-gh-process-standard.md` (version `2026.07.1`)
 
 #### Phases
 
 ##### Phase 1: Setup
 
-1. Sync with main:
+1. Choose setup mode:
+   - **Standard flow** (single issue / one-off work)
+   - **Worktree flow** (plans or 2+ concurrent issues)
+
+2. Sync base branch:
 
    ```bash
    git checkout main
    git pull origin main
    ```
 
-2. Create branch:
+3. Create branch (standard flow):
 
    ```bash
    git checkout -b squad/{issue-number}-{kebab-slug}
-   ```
-
-3. Push branch to GitHub:
-
-   ```bash
    git push -u origin squad/{issue-number}-{kebab-slug}
    ```
 
-4. If branch falls behind main during work:
+4. Create isolated worktree (worktree flow):
 
    ```bash
+   git fetch origin main
+   git worktree add ../{repo-name}-{issue-number} \
+     -b squad/{issue-number}-{kebab-slug} origin/main
+   cd ../{repo-name}-{issue-number}
+   git push -u origin squad/{issue-number}-{kebab-slug}
+   ```
+
+5. If branch falls behind base during work:
+
+   ```bash
+   git fetch origin main
    git merge origin/main
    ```
 
@@ -107,17 +118,22 @@
 
 ##### Phase 5: Cleanup
 
-1. Return to main and sync:
+1. Standard flow cleanup:
 
    ```bash
    git checkout main
    git pull origin main
+   git branch -d squad/{issue-number}-{kebab-slug}
+   git push origin --delete squad/{issue-number}-{kebab-slug}
    ```
 
-2. Optionally delete local branch:
+2. Worktree flow cleanup:
 
    ```bash
+   git worktree remove ../{repo-name}-{issue-number}
+   git worktree prune
    git branch -d squad/{issue-number}-{kebab-slug}
+   git push origin --delete squad/{issue-number}-{kebab-slug}
    ```
 
 ### Integration Points
