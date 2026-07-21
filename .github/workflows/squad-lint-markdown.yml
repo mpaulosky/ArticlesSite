@@ -3,9 +3,9 @@ name: Lint Markdown
 
 on:
   push:
-    branches: [dev, release]
+    branches: [dev, preview, main, insider]
   pull_request:
-    branches: [dev, release]
+    branches: [dev, preview, main, insider]
 
 permissions:
   contents: read
