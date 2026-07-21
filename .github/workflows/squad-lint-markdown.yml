@@ -27,12 +27,12 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             git fetch origin "${{ github.base_ref }}" --depth=1
-            files=$(git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- '*.md')
+            files=$(git diff --name-only "origin/${{ github.base_ref }}..HEAD" -- '*.md')
           elif [[ "${{ github.event_name }}" == "push" ]]; then
             files=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" -- '*.md')
           else
             git fetch origin main --depth=1
-            files=$(git diff --name-only "origin/main...HEAD" -- '*.md')
+            files=$(git diff --name-only "origin/main..HEAD" -- '*.md')
           fi
 
           files=$(echo "$files" | grep -Ev '^(\.squad/|\.copilot/|\.github/agents/|\.github/skills/|\.github/copilot-instructions\.md$)' || true)
