@@ -64,5 +64,18 @@ jobs:
                 return;
               }
 
+              const nonBlockingSignals = [
+                'auto merge is disabled',
+                'resource not accessible by integration',
+                'not in a mergeable state',
+                'pull request is not mergeable',
+                'base branch does not allow auto-merge'
+              ];
+
+              if (nonBlockingSignals.some(signal => message.toLowerCase().includes(signal))) {
+                core.warning(`Auto-merge skipped for PR #${pullNumber}: ${message}`);
+                return;
+              }
+
               throw error;
             }
