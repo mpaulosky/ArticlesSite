@@ -56,10 +56,8 @@ public class MongoDbFixture : IAsyncLifetime
 	public async ValueTask InitializeAsync()
 	{
 
-		_mongoDbContainer = new MongoDbBuilder()
-				.WithImage("mongo:8.0")
+		_mongoDbContainer = new MongoDbBuilder("mongo:7.0.18")
 				.WithCleanUp(true)
-				.WithPortBinding(0, 27017) // Use random available port mapped to container's 27017
 				.Build();
 
 		await _mongoDbContainer.StartAsync();

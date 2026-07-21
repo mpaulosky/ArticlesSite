@@ -6,7 +6,7 @@ on:
     branches: [dev, preview, main, insider]
     types: [opened, synchronize, reopened]
   push:
-    branches: [dev, insider]
+    branches: [dev, insider, "squad/**"]
 
 permissions:
   contents: read
