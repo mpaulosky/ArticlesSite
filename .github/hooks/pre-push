@@ -38,13 +38,7 @@ if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "dev" ]]; then
   exit 1
 fi
 
-# sprint/* branches are merge targets (squad PRs land here); skip remaining gates.
-if [[ "$CURRENT_BRANCH" =~ ^sprint/[0-9]+-[a-z0-9-]+$ ]]; then
-  echo -e "${GREEN}✅  Sprint branch '${CURRENT_BRANCH}' — skipping feature gates.${RESET}"
-  exit 0
-fi
-
-if ! [[ "$CURRENT_BRANCH" =~ ^squad/[0-9]+-[a-z0-9-]+$ ]]; then
+if ! [[ "$CURRENT_BRANCH" =~ ^(squad|sprint)/[0-9]+-[a-z0-9-]+$ ]]; then
   echo -e "${RED}❌  Branch name '${CURRENT_BRANCH}' does not match naming convention.${RESET}"
   echo -e "    Feature branch: ${YELLOW}squad/{issue}-{slug}${RESET}  (e.g. squad/42-fix-login)"
   echo -e "    Sprint branch:  ${YELLOW}sprint/{N}-{slug}${RESET}     (e.g. sprint/3-mongodb-persistence)"
