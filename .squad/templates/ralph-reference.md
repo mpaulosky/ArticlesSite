@@ -77,6 +77,59 @@ After every 3-5 rounds, pause and report before continuing:
 
 **Do NOT ask for permission to continue.** Just report and keep going. The user must explicitly say "idle" or "stop" to break the loop. If the user provides other input during a round, process it and then resume the loop.
 
+### Ralph Cleanup Task (Local + Origin Orphans)
+
+When the user asks for cleanup, Ralph should clean both local and remote orphan branches in this order.
+
+1. Sync and fetch first (required):
+
+```bash
+git checkout main
+git pull origin main
+git fetch origin --prune
+```
+
+2. Discover candidate branches on `origin`:
+
+```bash
+# Merged PR branches (safe candidates)
+gh pr list --state merged --limit 200 --json headRefName,baseRefName,isCrossRepository
+
+# Open PR head branches (keep list)
+gh pr list --state open --limit 200 --json headRefName
+
+# Remote squad/temp branches currently on origin
+git branch -r | rg "origin/(squad/|temp/)"
+```
+
+3. Apply safe deletion criteria:
+- Delete only remote branches that are stale/orphaned by policy:
+  - PR branch is already merged/closed, or
+  - `squad/*` or `temp/*` branch has no open PR.
+- Never delete protected branches: `main`, `dev`, `master`, `release/*`, `hotfix/*`.
+- Never delete the current working branch or long-lived shared branches.
+
+4. Delete local branch copy first (if present):
+
+```bash
+git branch -d squad/{issue-number}-{slug}
+```
+
+5. Delete remote orphan branch on origin:
+
+```bash
+git push origin --delete squad/{issue-number}-{slug}
+```
+
+6. Re-verify remote state:
+
+```bash
+git fetch origin --prune
+git branch -r | rg "origin/(squad/|temp/)"
+```
+
+Ralph should report what was deleted and what was skipped (with reason).
+
 ### Watch Mode (`squad watch`)
 
 Ralph's in-session loop processes work while it exists, then idles. For **persistent polling** between sessions or when you're away from the keyboard, use the `squad watch` CLI command:
