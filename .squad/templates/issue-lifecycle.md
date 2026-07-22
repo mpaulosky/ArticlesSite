@@ -294,8 +294,38 @@ az repos pr update --id {pr-id} --status completed --delete-source-branch true
 **Standard workflow cleanup:**
 ```bash
 git checkout main
-git pull
+git pull origin main
+git fetch origin --prune
 git branch -d squad/{issue-number}-{slug}
+```
+
+**Ralph cleanup (include origin orphan branches):**
+1. Discover candidate remote branches:
+
+```bash
+# Merged PR branches
+gh pr list --state merged --limit 200 --json headRefName,baseRefName,isCrossRepository
+
+# Open PR branches (do not delete)
+gh pr list --state open --limit 200 --json headRefName
+
+# Remote squad/temp branches on origin
+git branch -r | rg "origin/(squad/|temp/)"
+```
+
+2. Delete only policy-safe orphans:
+- Delete only branches that are merged/closed PR branches, or `squad/*` / `temp/*` branches with no open PR.
+- Never delete protected branches (`main`, `dev`, `master`, `release/*`, `hotfix/*`).
+
+```bash
+git push origin --delete squad/{issue-number}-{slug}
+```
+
+3. Re-verify:
+
+```bash
+git fetch origin --prune
+git branch -r | rg "origin/(squad/|temp/)"
 ```
 
 **Worktree cleanup (future, #525):**

@@ -1,3 +1,4 @@
+---
 name: Dependabot Auto-Merge
 
 on:
@@ -61,6 +62,20 @@ jobs:
               const message = error.message ?? String(error);
               if (message.includes('already enabled')) {
                 core.info(`Auto-merge is already enabled for PR #${pullNumber}.`);
+                return;
+              }
+
+              const nonBlockingSignals = [
+                'auto merge is disabled',
+                'resource not accessible by integration',
+                'not in a mergeable state',
+                'pull request is not mergeable',
+                'base branch does not allow auto-merge',
+                'unstable status'
+              ];
+
+              if (nonBlockingSignals.some(signal => message.toLowerCase().includes(signal))) {
+                core.warning(`Auto-merge skipped for PR #${pullNumber}: ${message}`);
                 return;
               }
 

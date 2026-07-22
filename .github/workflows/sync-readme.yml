@@ -1,3 +1,4 @@
+---
 # Syncs README.md (root) → docs/README.md on every push to main that changes README.md.
 # Keeps the docs folder reference copy in sync with the project README.
 name: Sync README to docs
