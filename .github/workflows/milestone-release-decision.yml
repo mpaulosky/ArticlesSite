@@ -1,3 +1,4 @@
+---
 # Step 2 of the Milestone Review → Release/Blog ceremony.
 # Fires when Ralph labels a "Milestone Review" issue with:
 #   - "release-candidate" → triggers squad-milestone-release.yml + Bilbo release brief

@@ -1,3 +1,4 @@
+---
 name: Lint Markdown
 # Runs markdownlint-cli2 using the repo's .markdownlint.json config
 

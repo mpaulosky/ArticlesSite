@@ -1,3 +1,4 @@
+---
 name: Test Suite
 
 # NOTE: All test projects now use 'dotnet test' consistently.
