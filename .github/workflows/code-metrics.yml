@@ -35,7 +35,7 @@ jobs:
           echo 'Reason: ${{ github.event.inputs.reason }}'
       - name: .NET code metrics
         id: dotnet-code-metrics
-        uses: dotnet/samples/github-actions/DotNet.GitHubAction@main
+        uses: dotnet/samples/github-actions/DotNet.GitHubAction@v1
         env:
           GREETINGS: 'Hello, .NET developers!'  # ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -46,7 +46,7 @@ jobs:
 
       - name: Create pull request
         uses: peter-evans/create-pull-request@v8.1.1
-        if: ${{ steps.dotnet-code-metrics.outputs.updated-metrics }} == 'true'
+        if: steps.dotnet-code-metrics.outputs.updated-metrics == 'true'
         with:
           title: '${{ steps.dotnet-code-metrics.outputs.summary-title }}'
           body: '${{ steps.dotnet-code-metrics.outputs.summary-details }}'
