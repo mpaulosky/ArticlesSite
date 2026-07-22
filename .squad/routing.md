@@ -29,11 +29,29 @@
 - Squad work branches: `squad/{issue-number}-{slug}` — exempt from Protected Branch Guard
 - NEVER commit `.squad/` files on `feature/*` branches — guard will block the PR
 - Scribe commits `.squad/` changes on `squad/*` branches only
+- Canonical git/gh standard: `.squad/workflows/git-gh-process-standard.md`
+
+## Rules
+
+1. **Protected branch rule** — never push directly to `main` or `dev`. All
+   file-producing work uses `squad/{issue-number}-{slug}` branches.
+2. **Issue lifecycle rule** — issue-linked work MUST follow
+   `.squad/templates/issue-lifecycle.md`, which is aligned to
+   `.squad/workflows/git-gh-process-standard.md`.
+3. **PR review gate** — no merge without an explicit PR review approval.
+4. **Pre-push gate** — required pre-push checks must pass before push.
+5. **Cleanup gate** — after merge, delete the feature branch; if worktree mode
+   was used, remove and prune the worktree.
+6. **Flow selection rule** — single issue uses standard branch flow; 2+
+   concurrent issues use worktree flow.
+7. **Drift rule** — if local workflow standard version differs from canonical,
+   prompt user to apply updates before continuing gated work.
 
 ## Skill-Aware Routing
 
 Before spawning any agent, check `.squad/skills/` for relevant skills:
 
+- Any issue lifecycle work → `.squad/skills/git-workflow-standard/SKILL.md`
 - Any push/commit work → `.squad/skills/pre-push-test-gate/SKILL.md`
 - Any build/test failure → `.github/prompts/build-repair.prompt.md`
 - Any integration test work → `.squad/skills/pre-push-test-gate/SKILL.md` (Integration section)

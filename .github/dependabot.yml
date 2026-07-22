@@ -39,7 +39,7 @@ updates:
       all-actions:
         patterns: ["*"]
 
-  #Maintain DotNet Sdk
+  # Maintain DotNet Sdk
   - package-ecosystem: "dotnet-sdk"
     directory: "/nuget/helpers/lib/NuGetUpdater"
     schedule:

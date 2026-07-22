@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Pre-push gate: mirrors CI checks to catch failures before they reach GitHub
-# Runs: branch protection → untracked-file check → markdownlint → dotnet format → Release build → unit/architecture tests → integration tests
+# Runs: branch protection → untracked-file check → yamllint → markdownlint → dotnet format → Release build → unit/architecture tests → integration tests
 # NOTE: git provides refspecs on stdin; interactive prompts must use /dev/tty.
 # ⚠️  BYPASS POLICY: git push --no-verify is PROHIBITED without prior written
 # approval from Ralph + Aragorn documented in a GitHub issue comment.
@@ -38,13 +38,7 @@ if [[ "$CURRENT_BRANCH" == "main" || "$CURRENT_BRANCH" == "dev" ]]; then
   exit 1
 fi
 
-# sprint/* branches are merge targets (squad PRs land here); skip remaining gates.
-if [[ "$CURRENT_BRANCH" =~ ^sprint/[0-9]+-[a-z0-9-]+$ ]]; then
-  echo -e "${GREEN}✅  Sprint branch '${CURRENT_BRANCH}' — skipping feature gates.${RESET}"
-  exit 0
-fi
-
-if ! [[ "$CURRENT_BRANCH" =~ ^squad/[0-9]+-[a-z0-9-]+$ ]]; then
+if ! [[ "$CURRENT_BRANCH" =~ ^(squad|sprint)/[0-9]+-[a-z0-9-]+$ ]]; then
   echo -e "${RED}❌  Branch name '${CURRENT_BRANCH}' does not match naming convention.${RESET}"
   echo -e "    Feature branch: ${YELLOW}squad/{issue}-{slug}${RESET}  (e.g. squad/42-fix-login)"
   echo -e "    Sprint branch:  ${YELLOW}sprint/{N}-{slug}${RESET}     (e.g. sprint/3-mongodb-persistence)"
@@ -66,7 +60,58 @@ if [[ -n "$UNTRACKED_SRC" ]]; then
   fi
 fi
 
-# ── Gate 2: markdownlint check ─────────────────────────────────────────────
+# ── Gate 2: YAML lint check ────────────────────────────────────────────────
+echo -e "\n${CYAN}🧩 Checking YAML lint (yamllint)...${RESET}"
+YAML_FILES=$(git ls-files '*.yml' '*.yaml')
+if [[ -n "$YAML_FILES" ]]; then
+  if command -v yamllint &>/dev/null; then
+    # shellcheck disable=SC2086
+    yamllint -s $YAML_FILES
+    YAML_EXIT=$?
+  elif command -v docker &>/dev/null; then
+    YAML_CONFIG_FILE="$(mktemp)"
+    cat >"$YAML_CONFIG_FILE" <<'EOF'
+extends: default
+ignore: |
+  .squad/
+rules:
+  line-length:
+    max: 200
+    allow-non-breakable-inline-mappings: true
+  truthy:
+    allowed-values: ['true', 'false', 'on']
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+EOF
+    docker run --rm \
+      -v "$ROOT:/work" \
+      -v "$YAML_CONFIG_FILE:/tmp/yamllint.yml:ro" \
+      -w /work \
+      cytopia/yamllint:latest \
+      -s -c /tmp/yamllint.yml $YAML_FILES
+    YAML_EXIT=$?
+    rm -f "$YAML_CONFIG_FILE"
+  else
+    echo -e "${RED}❌  yamllint is not available.${RESET}"
+    echo -e "${YELLOW}    Fix:  install yamllint locally or ensure Docker is available.${RESET}"
+    echo -e "${YELLOW}    Then: re-push.${RESET}"
+    exit 1
+  fi
+else
+  echo -e "${GREEN}✅  No YAML files found.${RESET}"
+  YAML_EXIT=0
+fi
+
+if [[ $YAML_EXIT -ne 0 ]]; then
+  echo -e "${RED}❌  YAML lint violations detected.${RESET}"
+  echo -e "${YELLOW}    Fix:  yamllint -s \$(git ls-files '*.yml' '*.yaml')${RESET}"
+  echo -e "${YELLOW}    Then: git add -u && git commit (or --amend), then re-push.${RESET}"
+  exit 1
+fi
+echo -e "${GREEN}✅  YAML lint OK.${RESET}"
+
+# ── Gate 3: markdownlint check ─────────────────────────────────────────────
 echo -e "\n${CYAN}📝 Checking Markdown lint (markdownlint-cli2)...${RESET}"
 if [[ -x "$ROOT/src/Web/node_modules/.bin/markdownlint-cli2" ]]; then
   "$ROOT/src/Web/node_modules/.bin/markdownlint-cli2" "**/*.md" \
@@ -89,7 +134,7 @@ if [[ $MD_EXIT -ne 0 ]]; then
 fi
 echo -e "${GREEN}✅  Markdown lint OK.${RESET}"
 
-# ── Gate 3: dotnet format check ────────────────────────────────────────────
+# ── Gate 4: dotnet format check ────────────────────────────────────────────
 echo -e "\n${CYAN}🎨 Checking code formatting (dotnet format --verify-no-changes)...${RESET}"
 dotnet format MyBlog.slnx --verify-no-changes 2>&1
 FORMAT_EXIT=$?
@@ -116,7 +161,7 @@ if [[ $FORMAT_EXIT -ne 0 ]]; then
 fi
 echo -e "${GREEN}✅  Formatting OK.${RESET}"
 
-# ── Gate 4: Release build (mirrors CI exactly) ─────────────────────────────
+# ── Gate 5: Release build (mirrors CI exactly) ─────────────────────────────
 MAX_ATTEMPTS=3
 BUILD_ATTEMPT=0
 BUILD_OK=false
@@ -152,7 +197,7 @@ if [[ "$BUILD_OK" != true ]]; then
   exit 1
 fi
 
-# ── Gate 5: Unit + Architecture tests ──────────────────────────────────────
+# ── Gate 6: Unit + Architecture tests ──────────────────────────────────────
 TEST_PROJECTS=(
   "tests/Architecture.Tests/Architecture.Tests.csproj"
   "tests/Domain.Tests/Domain.Tests.csproj"
@@ -188,7 +233,7 @@ if [[ "$TESTS_OK" != true ]]; then
   exit 1
 fi
 
-# ── Gate 6: Docker-backed integration tests ────────────────────────────────
+# ── Gate 7: Docker-backed integration tests ────────────────────────────────
 # Requires Docker daemon for Testcontainers-backed dependencies.
 INTEGRATION_PROJECTS=(
   "tests/Web.Tests.Integration/Web.Tests.Integration.csproj"

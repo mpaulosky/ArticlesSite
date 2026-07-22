@@ -96,6 +96,13 @@ Planner does not have native Git integration. Squad uses Planner for task tracki
 
 ## Issue → Branch → PR → Merge Lifecycle
 
+## Workflow Standard Binding
+
+- Canonical source: `.squad/workflows/git-gh-process-standard.md`
+- Standard version: `2026.07.1`
+- Default branch policy: branch from `main`, PR to `main`
+- Enforcement level: hard gate
+
 ### 1. Issue Assignment (Triage)
 
 **Trigger:** Ralph detects an untriaged issue or user manually assigns work.
@@ -120,24 +127,37 @@ az boards work-item show --id {id} --output json
 **Trigger:** Agent accepts issue assignment and begins work.
 
 **Actions:**
-1. Ensure working on latest base branch (usually `main` or `dev`)
-2. Create feature branch using Squad naming convention
-3. Transition issue to `inProgress` state
+1. Choose start mode:
+   - **Standard flow** for one-off/single-issue work
+   - **Worktree flow** for plans or multiple concurrent issues
+2. Ensure working on latest base branch (`main`)
+3. Create feature branch using Squad naming convention
+4. Transition issue to `inProgress` state
 
 **Branch creation commands:**
 
 **Standard (single-agent, no parallelism):**
 ```bash
-git checkout main && git pull && git checkout -b squad/{issue-number}-{slug}
+git checkout main
+git pull origin main
+git checkout -b squad/{issue-number}-{slug}
+git push -u origin squad/{issue-number}-{slug}
 ```
 
-**Worktree (parallel multi-agent):**
+**Worktree (parallel multi-issue):**
 ```bash
-git worktree add ../worktrees/{issue-number} -b squad/{issue-number}-{slug}
-cd ../worktrees/{issue-number}
+git fetch origin main
+git worktree add ../{repo-name}-{issue-number} \
+  -b squad/{issue-number}-{slug} origin/main
+cd ../{repo-name}-{issue-number}
+git push -u origin squad/{issue-number}-{slug}
 ```
 
-> **Note:** Worktree support is in progress (#525). Current implementation uses standard checkout.
+**Mode-selection rule:** default to standard flow for single issues. Use
+worktrees when parallel issue execution is expected.
+
+**Drift guard:** if local workflow standard version differs from canonical,
+prompt before continuing (apply updates now, defer, or view diff).
 
 ### 3. Implementation & Commit
 
@@ -345,7 +365,7 @@ When spawning an agent to work on an issue, include this context block:
 2. Push branch
 3. Open PR using:
    ```
-   gh pr create --title "{title}" --body "Closes #{number}\n\n{description}" --head squad/{issue-number}-{slug} --base {base-branch}
+   gh pr create --title "{title}" --body "Closes #{number}\n\n{description}" --head squad/{issue-number}-{slug} --base main
    ```
 4. Report PR URL to coordinator
 ```
