@@ -73,11 +73,6 @@ if [[ -x "$ROOT/src/Web/node_modules/.bin/markdownlint-cli2" ]]; then
     "!**/node_modules/**" \
     "!**/bin/**" \
     "!**/obj/**" \
-    "!.squad/**" \
-    "!.copilot/**" \
-    "!.github/agents/**" \
-    "!.github/skills/**" \
-    "!.github/copilot-instructions.md" \
     --config "$ROOT/.markdownlint.json"
   MD_EXIT=$?
 else

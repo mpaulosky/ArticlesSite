@@ -22,9 +22,7 @@ jobs:
         with:
           globs: |
             **/*.md
-            !.squad/**
-            !.copilot/**
-            !.github/agents/**
-            !.github/skills/**
-            !.github/copilot-instructions.md
+            !**/node_modules/**
+            !**/bin/**
+            !**/obj/**
           config: '.markdownlint.json'
